@@ -1,4 +1,4 @@
-const CACHE_NAME = "snack-app-v4";
+const CACHE_NAME = "snack-app-v5";
 const APP_FILES = [
   "./",
   "./index.html",
