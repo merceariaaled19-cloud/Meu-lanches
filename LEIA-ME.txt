@@ -1,0 +1,19 @@
+Meu Lanche — pacote Android instalável (PWA)
+
+COMO INSTALAR NO ANDROID
+1. Publique todo o conteúdo desta pasta em um endereço HTTPS (por exemplo, hospedagem estática).
+2. Abra o endereço no Google Chrome do Android.
+3. Abra o menu ⋮ e toque em "Instalar app" ou "Adicionar à tela inicial".
+4. Confirme. O Meu Lanche aparecerá como aplicativo na tela inicial.
+
+IMPORTANTE
+- Este pacote é um PWA instalável, não um arquivo APK.
+- Para gerar um APK assinado é necessário empacotar o app com Android Studio/SDK ou Bubblewrap e configurar a hospedagem/domínio HTTPS.
+- O código atual continua usando localStorage. Isso significa que dados e pedidos ficam no próprio navegador/aparelho; para clientes e dono compartilharem catálogo e pedidos em aparelhos diferentes, será necessário conectar um banco de dados e autenticação online.
+- WhatsApp, PIX e imagens externas dependem de conexão com a internet.
+
+NOVIDADES (v2)
+- HORARIO DE FUNCIONAMENTO: botao no painel do dono. Fora do horario (ou com "Fechar a loja agora" marcado), o cliente ve "ESTAMOS FECHADOS - Obrigado pela procura!" com o horario e quando abre de novo.
+- LINK DO CARDAPIO: tocar no link (ou no botao verde) abre o WhatsApp pra escolher os contatos da agenda. O link agora leva o cardapio, precos e horario dentro dele, entao abre certinho no celular do cliente. Mudou algo? Mande o link de novo.
+- Fotos tiradas da galeria nao vao no link (ficam grandes demais); o cliente ve a foto padrao. Fotos com endereco https vao normalmente.
+- RELATORIO DE VENDAS: faturamento, pedidos, ticket medio, formas de pagamento, mais vendidos e vendas por dia. Cada pedido do WhatsApp traz um link "REGISTRAR NO MEU APP": o dono toca nele (logado no app) e o pedido entra no relatorio. Venda de balcao se registra no proprio relatorio.
