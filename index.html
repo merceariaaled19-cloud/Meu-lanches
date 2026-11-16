@@ -144,7 +144,7 @@ input,select.form{width:100%;padding:12px;border-radius:10px;border:1px solid #c
 </div>
 <div id="listaMenuDono"><div class="passo">MEU MENU - APERTA EDITAR PARA MUDAR</div><div class="cat">COMBOS E PROMOCOES</div><div id="listaCombosDono"></div><div class="cat">SANDUICHES</div><div id="listaSanduichesDono"></div><div class="cat">FRITAS</div><div id="listaFritasDono"></div><div class="cat">BEBIDAS</div><div id="listaBebidasDono"></div></div>
 </div>
-<div id="telaCliente" class="escondido">
+<div id="telaCliente" class="escondido"><button id="carrinhoFlutuante" class="escondido" onclick="irParaCadastroOuPagamento()" style="position:fixed;top:12px;right:12px;z-index:9999;background:#16a34a;color:#fff;border:3px solid #fff;border-radius:30px;padding:10px 14px;font-weight:900;font-size:15px;box-shadow:0 4px 14px rgba(0,0,0,.35);width:auto">🛒 <span id="qtdFlutuante">0</span> · <span id="totalFlutuante">R$ 0,00</span> ›</button>
 <div class="topo"><img id="imgCapaCliente" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800" alt="Loja"><div class="topo-texto"><h1 id="nomeLojaCliente">Meu Lanche</h1><p style="font-weight:900">LANCHE E PIZZARIA DELIVERY</p><span class="badge" id="badgeAbertoCliente">ABERTO</span><span class="badge">MANAUS - AM</span><span class="badge" id="badgeEntregaCliente">ENTREGA R$ 6,00</span><p style="margin-top:8px" id="txtZapCliente">WhatsApp: </p></div></div>
 <div id="telaFechado" class="escondido"><div class="fechado-box"><h2>ESTAMOS FECHADOS</h2><p style="font-size:16px;font-weight:bold">Obrigado pela procura! 💛</p><p id="txtFechadoMsg" style="margin-top:8px;font-size:14px"></p><p id="txtProximaAbertura" style="margin-top:8px;font-size:14px;font-weight:bold;color:#16a34a"></p><table class="tabela-hor" id="tabelaHorCliente"></table></div></div>
 <div id="telaEscolha">
@@ -281,6 +281,9 @@ function alternarCancelado(chave){ var lista=getPedidos(); lista.forEach(functio
 function valorPedido(p){ if(typeof p.valor==="number") return p.valor; return parseFloat(String(p.total||"0").replace(".","").replace(",","."))||0; }
 function tsPedido(p){ if(p.ts) return p.ts; var m=String(p.data||"").match(/(\d{2})\/(\d{2})\/(\d{4})/); return m?new Date(+m[3],+m[2]-1,+m[1]).getTime():0; }
 function brl(v){ return "R$ "+v.toFixed(2).replace(".",","); }
+
+function atualizarFlutuante(){ var b=document.getElementById("carrinhoFlutuante"); if(!b) return; var q=0; for(var k in carrinho) q+=carrinho[k]||0; var naEscolha=!document.getElementById("telaEscolha").classList.contains("escondido"); var cli=document.getElementById("telaCliente"); var visivel=cli && !cli.classList.contains("escondido"); if(q>0 && naEscolha && visivel){ document.getElementById("qtdFlutuante").innerText=q; document.getElementById("totalFlutuante").innerText="R$ "+(calcularSubtotal()+getEntregaAtual()).toFixed(2).replace(".",","); b.classList.remove("escondido"); } else b.classList.add("escondido"); }
+(function(){ var a1=atualizarCarrinho; atualizarCarrinho=function(){ var r=a1.apply(this,arguments); try{atualizarFlutuante();}catch(e){} return r; }; var a2=mostrarTela; mostrarTela=function(){ var r=a2.apply(this,arguments); try{atualizarFlutuante();}catch(e){} return r; }; })();
 var PERIODO_REL="hoje";
 function inicioDia(ts){ var d=new Date(ts); return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime(); }
 function pedidosEntre(ini,fim){ return getPedidos().filter(function(p){ var t=tsPedido(p); return p.status!=="CANCELADO" && t>=ini && t<fim; }); }
