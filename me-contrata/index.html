@@ -311,6 +311,7 @@ function filtrar() {
     var okBusca = termo === '' || nome.indexOf(termo) !== -1 || texto.indexOf(termo) !== -1;
     var okSalvo = !apenasSalvos || (salvos.indexOf(id) !== -1);
 
+    if (cat === 'anuncio') { c.style.display = (filtroAtual === 'todas' && !termo && !apenasSalvos) ? 'block' : 'none'; continue; }
     c.style.display = (okCat && okBusca && okSalvo) ? 'block' : 'none';
   }
 }
@@ -379,9 +380,29 @@ atualizarInterfaceUsuario();
 
 function esc(t){ return String(t||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function idEmpresa(n){ var h=0; for(var i=0;i<n.length;i++){ h=(h*31+n.charCodeAt(i))%1000000; } return h+1000; }
+
+// ===== ANUNCIOS (Google AdSense) =====
+// Coloque aqui o codigo do AdSense (ex: "ca-pub-1234567890123456"). Vazio = sem anuncio.
+var ADSENSE_CLIENT = "";
+var ADSENSE_SLOT = "";
+function blocoAnuncio(){
+  if(!ADSENSE_CLIENT) return '';
+  return '<div class="card anuncio" data-id="0" data-cat="anuncio" data-nome="" style="padding:8px;min-height:100px"><small style="color:#999">Publicidade</small><ins class="adsbygoogle" style="display:block" data-ad-client="'+ADSENSE_CLIENT+'"'+(ADSENSE_SLOT?' data-ad-slot="'+ADSENSE_SLOT+'"':'')+' data-ad-format="auto" data-full-width-responsive="true"></ins></div>';
+}
+function ativarAnuncios(){
+  if(!ADSENSE_CLIENT) return;
+  if(!document.getElementById('adsjs')){
+    var s=document.createElement('script'); s.id='adsjs'; s.async=true; s.crossOrigin='anonymous';
+    s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+ADSENSE_CLIENT;
+    document.head.appendChild(s);
+  }
+  var ins=document.querySelectorAll('ins.adsbygoogle:not([data-adsbygoogle-status])');
+  for(var i=0;i<ins.length;i++){ try{ (window.adsbygoogle=window.adsbygoogle||[]).push({}); }catch(e){} }
+}
 function montarLista(d){
   var lista=document.getElementById('lista'); var html=''; var total=0;
-  (d.empresas||[]).forEach(function(e){
+  (d.empresas||[]).forEach(function(e, idx){
+    if(idx>0 && idx%5===0) html+=blocoAnuncio();
     var id=idEmpresa(e.empresa); total+=e.vagas.length;
     var busca=(e.empresa+' '+e.vagas.map(function(v){return v.cargo;}).join(' ')).toLowerCase();
     var itens=e.vagas.map(function(v){
@@ -394,7 +415,7 @@ function montarLista(d){
   lista.innerHTML=html;
   var ne=(d.empresas||[]).length;
   document.getElementById('resumoVagas').innerText='🔥 '+total+' vagas abertas em '+ne+' empresas em '+LOCAL.cidade+' • atualizado '+(d.atualizado||'');
-  atualizarCoracoes(); filtrar();
+  atualizarCoracoes(); filtrar(); ativarAnuncios();
 }
 function listaDaCidade(d){
   var cs=d.cidades||{}, alvo=semAcento(LOCAL.cidade);
