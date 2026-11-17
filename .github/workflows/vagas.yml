@@ -17,6 +17,6 @@ jobs:
       - run: |
           git config user.name "robo-vagas"
           git config user.email "actions@users.noreply.github.com"
-          git add me-contrata/vagas.json
+          git add me-contrata/vagas.json me-contrata/vagas
           git diff --cached --quiet || git commit -m "Vagas atualizadas $(date -u +%F)"
           git push
