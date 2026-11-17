@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a7a42">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Me Contrata - Cadastro e Vagas em Manaus</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f2f2f2;padding-bottom:85px;color:#222}
+header{background:#0a7a42;color:white;padding:18px 15px;position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+header h1{font-size:21px}
+.loc{background:white;color:#0a7a42;border:none;padding:10px;border-radius:20px;font-weight:bold;margin-top:10px;width:100%;cursor:pointer;font-size:14px}
+.search{padding:12px}
+.search input{width:100%;padding:13px;border-radius:12px;border:1px solid #ddd;font-size:15px;background:white}
+.filtros{display:flex;gap:8px;overflow-x:auto;padding:0 12px 12px;scrollbar-width:none}
+.filtros::-webkit-scrollbar{display:none}
+.filtros button{white-space:nowrap;padding:8px 14px;border-radius:20px;border:1px solid #0a7a42;background:white;color:#0a7a42;font-weight:bold;cursor:pointer;font-size:13px}
+.filtros button.ativo{background:#0a7a42;color:white}
+.card{background:white;margin:0 12px 12px;padding:15px;border-radius:14px;box-shadow:0 2px 6px rgba(0,0,0,0.06);position:relative}
+.card .top{display:flex;gap:12px;align-items:center;padding-right:34px}
+.logo{width:52px;height:52px;border-radius:50%;background:#e8f5ee;display:flex;align-items:center;justify-content:center;font-size:24px;min-width:52px}
+.fav-btn{position:absolute;top:14px;right:14px;background:none;border:none;font-size:22px;cursor:pointer}
+.botoes{display:flex;gap:8px;margin-top:12px}
+.botoes a{flex:1;text-align:center;padding:12px;border-radius:10px;text-decoration:none;font-weight:bold;font-size:14px}
+.site{background:#0a7a42;color:white}
+.email{background:#ffcc00;color:#222}
+details{margin-top:12px;background:#f8fdf9;border:1px solid #d8efe3;border-radius:12px;padding:10px}
+summary{font-weight:bold;cursor:pointer;padding:6px;color:#0a7a42}
+.vaga-item{padding:10px 4px;border-bottom:1px solid #e5e5e5}
+.vaga-item:last-child{border:none}
+.canal{font-size:11px;font-weight:bold;padding:5px 8px;border-radius:10px;display:inline-block;margin-top:4px}
+.canal-direto{background:#fff3cd;color:#856404}
+.canal-cadastro{background:#e6f7ee;color:#0a7a42}
+.mini{display:flex;gap:6px;margin-top:8px}
+.mini a{flex:1;text-align:center;padding:9px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:bold}
+.mini .cad{background:#0a7a42;color:white}
+.mini .mail{background:#ffcc00;color:#222}
+footer{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #ddd;font-size:12px;text-align:center;z-index:20}
+footer div{cursor:pointer;flex:1;color:#666}
+footer div.nav-ativo{color:#0a7a42;font-weight:bold}
+
+/* TELA DE CADASTRO INICIAL */
+#telaCadastro{position:fixed;inset:0;background:#0a7a42;z-index:9999;padding:20px;overflow-y:auto;color:white;display:block}
+#telaCadastro .box{background:white;color:#222;border-radius:18px;padding:22px;margin-top:16px;box-shadow:0 6px 20px rgba(0,0,0,0.2)}
+#telaCadastro h2{color:#0a7a42;margin-bottom:6px;font-size:20px}
+#telaCadastro label{display:block;font-size:13px;font-weight:bold;margin-top:12px;color:#333}
+#telaCadastro input{width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;margin-top:5px;font-size:15px}
+#telaCadastro button{width:100%;background:#0a7a42;color:white;border:none;padding:15px;border-radius:12px;font-weight:bold;margin-top:16px;cursor:pointer;font-size:16px}
+#telaCadastro .pular{background:white;color:#0a7a42;border:1px solid #0a7a42;margin-top:10px}
+</style>
+</head>
+<body>
+
+<!-- PÁGINA 1: CADASTRO (ABRE PRIMEIRO) -->
+<div id="telaCadastro">
+  <h1 style="font-size:26px">📍 Me Contrata</h1>
+  <p style="font-size:14px;opacity:0.95;margin-top:4px">Empregos em Manaus - AM • Distrito Industrial e Comércio</p>
+  <div class="box">
+    <h2 id="tituloCadastro">Faça seu cadastro</h2>
+    <p style="font-size:13px;color:#666;line-height:1.4">Preencha seus dados abaixo para entrar e já ter seu nome, e-mail e WhatsApp prontos para enviar às empresas.</p>
+
+    <label for="nome">Seu Nome Completo *</label>
+    <input id="nome" type="text" placeholder="Digite seu nome completo">
+
+    <label for="emailUser">Seu E-mail *</label>
+    <input id="emailUser" type="email" placeholder="Ex: voce@gmail.com">
+
+    <label for="fone">Seu WhatsApp</label>
+    <input id="fone" type="tel" placeholder="Ex: (92) 99999-9999">
+
+    <p id="erroCadastro" style="color:#d00;font-size:13px;font-weight:bold;margin-top:10px;display:none"></p>
+
+    <button type="button" id="btnSalvarCadastro">Cadastrar e Ver Vagas ✅</button>
+    <button type="button" class="pular" id="btnPularCadastro">Entrar só para olhar 👀</button>
+  </div>
+</div>
+
+<!-- PÁGINA 2: LISTA DE VAGAS -->
+<header>
+  <h1>📍 Me Contrata</h1>
+  <p id="cidade">Manaus - AM | Distrito Industrial e Comércio</p>
+  <p id="olaUser" style="font-size:12px;margin-top:2px">Olá! Veja onde cadastrar teu currículo em Manaus.</p>
+  <p style="font-weight:bold;font-size:13px;margin-top:4px">🏢 34 empresas de Manaus • cadastre teu currículo direto no RH oficial</p>
+  <button type="button" class="loc" onclick="pegarLocal()">📍 Usar minha localização</button>
+</header>
+
+<div class="search"><input id="busca" oninput="filtrar()" placeholder="Buscar vaga ou empresa: BIC, Honda, Yamaha, Philco..."></div>
+<div class="filtros">
+<button type="button" class="ativo" onclick="setFiltro('todas',this)">Todas</button>
+<button type="button" onclick="setFiltro('industria',this)">🏭 Distrito</button>
+<button type="button" onclick="setFiltro('energia',this)">⚡ Energia</button>
+<button type="button" onclick="setFiltro('supermercado',this)">🛒 Supermercado</button>
+<button type="button" onclick="setFiltro('loja',this)">🏪 Lojas</button>
+
+</div>
+
+<div id="lista">
+
+<!-- 1 HONDA -->
+<div class="card" data-id="1" data-cat="industria" data-nome="honda"><button type="button" class="fav-btn" onclick="toggleSalvar(1)">🤍</button><div class="top"><div class="logo">🏍️</div><div><h3>HONDA</h3><small>Operador de Produção • Distrito Industrial - Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.vagas.com.br/vagas-de-moto-honda-em-manaus" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 2 YAMAHA -->
+<div class="card" data-id="2" data-cat="industria" data-nome="yamaha"><button type="button" class="fav-btn" onclick="toggleSalvar(2)">🤍</button><div class="top"><div class="logo">🏍️</div><div><h3>YAMAHA</h3><small>Auxiliar de Montagem • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://yamaha.gupy.io" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 3 BIC -->
+<div class="card" data-id="3" data-cat="industria" data-nome="bic"><button type="button" class="fav-btn" onclick="toggleSalvar(3)">🤍</button><div class="top"><div class="logo">🖊️</div><div><h3>BIC</h3><small>Auxiliar de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://careers.bic.com" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 4 SAMSUNG -->
+<div class="card" data-id="4" data-cat="industria" data-nome="samsung"><button type="button" class="fav-btn" onclick="toggleSalvar(4)">🤍</button><div class="top"><div class="logo">📱</div><div><h3>SAMSUNG</h3><small>Operador de Linha • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.infojobs.com.br/vagas-de-emprego-samsung-em-manaus,-am.aspx" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 5 PANASONIC -->
+<div class="card" data-id="5" data-cat="industria" data-nome="panasonic"><button type="button" class="fav-btn" onclick="toggleSalvar(5)">🤍</button><div class="top"><div class="logo">📺</div><div><h3>PANASONIC</h3><small>Operador de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://panasonicdobrasil.pandape.infojobs.com.br/" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 6 MICHELIN -->
+<div class="card" data-id="6" data-cat="industria" data-nome="michelin"><button type="button" class="fav-btn" onclick="toggleSalvar(6)">🤍</button><div class="top"><div class="logo">🛞</div><div><h3>MICHELIN</h3><small>Operador de Produção • Manaus - AM</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://vagas.michelin.com.br" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 7 LG -->
+<div class="card" data-id="7" data-cat="industria" data-nome="lg"><button type="button" class="fav-btn" onclick="toggleSalvar(7)">🤍</button><div class="top"><div class="logo">📺</div><div><h3>LG</h3><small>Operador de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.vagas.com.br/vagas-de-lg-electronics-em-manaus" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 8 FLEX -->
+<div class="card" data-id="8" data-cat="industria" data-nome="flex flextronics"><button type="button" class="fav-btn" onclick="toggleSalvar(8)">🤍</button><div class="top"><div class="logo">🔌</div><div><h3>FLEXTRONICS - FLEX</h3><small>Operador de Montagem • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://flex.com/careers" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 9 JABIL -->
+<div class="card" data-id="9" data-cat="industria" data-nome="jabil"><button type="button" class="fav-btn" onclick="toggleSalvar(9)">🤍</button><div class="top"><div class="logo">💻</div><div><h3>JABIL</h3><small>Operador de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://careers.jabil.com/locations/manaus.html" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 10 CALOI -->
+<div class="card" data-id="10" data-cat="industria" data-nome="caloi"><button type="button" class="fav-btn" onclick="toggleSalvar(10)">🤍</button><div class="top"><div class="logo">🚲</div><div><h3>CALOI</h3><small>Montador • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://caloi.gupy.io" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 11 BMW -->
+<div class="card" data-id="11" data-cat="industria" data-nome="bmw"><button type="button" class="fav-btn" onclick="toggleSalvar(11)">🤍</button><div class="top"><div class="logo">🏍️</div><div><h3>BMW MOTORRAD</h3><small>Montador • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.bmwgroup.jobs/br/pt.html" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 12 KAWASAKI -->
+<div class="card" data-id="12" data-cat="industria" data-nome="kawasaki"><button type="button" class="fav-btn" onclick="toggleSalvar(12)">🤍</button><div class="top"><div class="logo">🏍️</div><div><h3>KAWASAKI</h3><small>Operador de Montagem • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.vagas.com.br/vagas-de-kawasaki-motores-do-brasil" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 13 DAFRA -->
+<div class="card" data-id="13" data-cat="industria" data-nome="dafra"><button type="button" class="fav-btn" onclick="toggleSalvar(13)">🤍</button><div class="top"><div class="logo">🏍️</div><div><h3>DAFRA</h3><small>Operador de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://linkedin.com/company/daframotos" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 14 SUZUKI -->
+<div class="card" data-id="14" data-cat="industria" data-nome="suzuki"><button type="button" class="fav-btn" onclick="toggleSalvar(14)">🤍</button><div class="top"><div class="logo">🏍️</div><div><h3>SUZUKI</h3><small>Montador • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.infojobs.com.br/vagas-de-emprego-j-toledo-da-amazonia-em-manaus,-am.aspx" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 15 P&G -->
+<div class="card" data-id="15" data-cat="industria" data-nome="p&g pg"><button type="button" class="fav-btn" onclick="toggleSalvar(15)">🤍</button><div class="top"><div class="logo">🧴</div><div><h3>P&G</h3><small>Técnico de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.pgcareers.com/br/pt" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 16 PHILCO -->
+<div class="card" data-id="16" data-cat="industria" data-nome="philco"><button type="button" class="fav-btn" onclick="toggleSalvar(16)">🤍</button><div class="top"><div class="logo">📺</div><div><h3>PHILCO</h3><small>Operador / Auxiliar • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://philcoeletronicos.pandape.infojobs.com.br" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 17 MONDIAL -->
+<div class="card" data-id="17" data-cat="industria" data-nome="mondial"><button type="button" class="fav-btn" onclick="toggleSalvar(17)">🤍</button><div class="top"><div class="logo">🔌</div><div><h3>MONDIAL</h3><small>Auxiliar de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://mondial.pandape.catho.com.br/" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 18 FOXCONN -->
+<div class="card" data-id="18" data-cat="industria" data-nome="foxconn"><button type="button" class="fav-btn" onclick="toggleSalvar(18)">🤍</button><div class="top"><div class="logo">📱</div><div><h3>FOXCONN</h3><small>Operador de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.vagas.com.br/vagas-de-foxconn-em-manaus" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 19 DAIKIN -->
+<div class="card" data-id="19" data-cat="industria" data-nome="daikin"><button type="button" class="fav-btn" onclick="toggleSalvar(19)">🤍</button><div class="top"><div class="logo">❄️</div><div><h3>DAIKIN</h3><small>Operador / Técnico • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://daikinbrasil.gupy.io/" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 20 HARMAN -->
+<div class="card" data-id="20" data-cat="industria" data-nome="harman jbl"><button type="button" class="fav-btn" onclick="toggleSalvar(20)">🤍</button><div class="top"><div class="logo">🔊</div><div><h3>HARMAN / JBL</h3><small>Operador de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://jobs.harman.com/en/jobs/?search=Manaus" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 21 LENOVO -->
+<div class="card" data-id="21" data-cat="industria" data-nome="lenovo cce"><button type="button" class="fav-btn" onclick="toggleSalvar(21)">🤍</button><div class="top"><div class="logo">💻</div><div><h3>CCE / LENOVO</h3><small>Operador de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://jobs.lenovo.com" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 22 YAMADA -->
+<div class="card" data-id="22" data-cat="industria" data-nome="yamada"><button type="button" class="fav-btn" onclick="toggleSalvar(22)">🤍</button><div class="top"><div class="logo">🏭</div><div><h3>YAMADA</h3><small>Operador de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.infojobs.com.br/vagas-de-emprego-yamada-em-manaus,-am.aspx" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 23 SONOCO -->
+<div class="card" data-id="23" data-cat="industria" data-nome="sonoco"><button type="button" class="fav-btn" onclick="toggleSalvar(23)">🤍</button><div class="top"><div class="logo">📦</div><div><h3>SONOCO</h3><small>Operador • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.sonoco.com/careers" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 24 ABOMOLD -->
+<div class="card" data-id="24" data-cat="industria" data-nome="abomold"><button type="button" class="fav-btn" onclick="toggleSalvar(24)">🤍</button><div class="top"><div class="logo">🏭</div><div><h3>ABOMOLD</h3><small>Operador de Produção • Distrito Industrial</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.infojobs.com.br/vagas-de-emprego-abomold-em-manaus,-am.aspx" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 25 ENEVA -->
+<div class="card" data-id="25" data-cat="energia" data-nome="eneva"><button type="button" class="fav-btn" onclick="toggleSalvar(25)">🤍</button><div class="top"><div class="logo">⚡</div><div><h3>ENEVA</h3><small>Operador de Planta • Manaus / Silves</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://eneva.compleo.com.br" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 26 HAVAN -->
+<div class="card" data-id="26" data-cat="loja" data-nome="havan"><button type="button" class="fav-btn" onclick="toggleSalvar(26)">🤍</button><div class="top"><div class="logo">🏬</div><div><h3>HAVAN</h3><small>Vendedor / Caixa • Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://vagas.havan.com.br/" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 27 NOVA ERA -->
+<div class="card" data-id="27" data-cat="supermercado" data-nome="nova era"><button type="button" class="fav-btn" onclick="toggleSalvar(27)">🤍</button><div class="top"><div class="logo">🛒</div><div><h3>NOVA ERA</h3><small>Operador de Loja • Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://www.supernovaera.com.br/trabalheconosco" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 28 BEMOL -->
+<div class="card" data-id="28" data-cat="loja" data-nome="bemol"><button type="button" class="fav-btn" onclick="toggleSalvar(28)">🤍</button><div class="top"><div class="logo">🏪</div><div><h3>BEMOL</h3><small>Consultor de Vendas • Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://bemol.gupy.io" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 29 SOLAR -->
+<div class="card" data-id="29" data-cat="industria" data-nome="solar coca"><button type="button" class="fav-btn" onclick="toggleSalvar(29)">🤍</button><div class="top"><div class="logo">🥤</div><div><h3>SOLAR COCA-COLA</h3><small>Auxiliar de Produção • Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 TEM QUE CADASTRAR</small></div></div><div class="botoes"><a class="site" href="https://solarcocacola.gupy.io" target="_blank" style="flex:2">🚀 Fazer Cadastro no RH Oficial</a></div></div>
+
+<!-- 30 ATEM - DIRETO -->
+<div class="card" data-id="30" data-cat="energia" data-nome="atem"><button type="button" class="fav-btn" onclick="toggleSalvar(30)">🤍</button><div class="top"><div class="logo">⛽</div><div><h3>GRUPO ATEM</h3><small>Frentista • Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 CADASTRO NO SITE</small></div></div><div class="botoes"><a class="site" href="https://www.atem.com.br" target="_blank" style="flex:2">🚀 Ver Vagas e Cadastrar</a></div></div>
+
+<!-- 31 REAM - DIRETO -->
+<div class="card" data-id="31" data-cat="energia" data-nome="ream refinaria"><button type="button" class="fav-btn" onclick="toggleSalvar(31)">🤍</button><div class="top"><div class="logo">🏭</div><div><h3>REAM - REFINARIA DE MANAUS</h3><small>Refinaria - Grupo Atem • Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 CADASTRO NO SITE</small></div></div><div class="botoes"><a class="site" href="https://www.atem.com.br" target="_blank" style="flex:2">🚀 Ver Vagas e Cadastrar</a></div></div>
+
+<!-- 32 DB - DIRETO -->
+<div class="card" data-id="32" data-cat="supermercado" data-nome="db supermercado"><button type="button" class="fav-btn" onclick="toggleSalvar(32)">🤍</button><div class="top"><div class="logo">🛒</div><div><h3>SUPERMERCADO DB</h3><small>Caixa • Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 CADASTRO NO SITE</small></div></div><div class="botoes"><a class="site" href="https://www.db.com.br" target="_blank" style="flex:2">🚀 Ver Vagas e Cadastrar</a></div></div>
+
+<!-- 33 ATACADÃO -->
+<div class="card" data-id="33" data-cat="supermercado" data-nome="atacadao"><button type="button" class="fav-btn" onclick="toggleSalvar(33)">🤍</button><div class="top"><div class="logo">🛒</div><div><h3>ATACADÃO</h3><small>Repositor • Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 CADASTRO NO SITE</small></div></div><div class="botoes"><a class="site" href="https://www.atacadao.com.br/trabalhe-conosco" target="_blank" style="flex:2">🚀 Ver Vagas e Cadastrar</a></div></div>
+
+<!-- 34 ASSAÍ -->
+<div class="card" data-id="34" data-cat="supermercado" data-nome="assai"><button type="button" class="fav-btn" onclick="toggleSalvar(34)">🤍</button><div class="top"><div class="logo">🛒</div><div><h3>ASSAÍ</h3><small>Auxiliar de Loja • Manaus</small><br><small style="font-weight:bold;color:#0a7a42">🚀 CADASTRO NO SITE</small></div></div><div class="botoes"><a class="site" href="https://www.assai.com.br/trabalhe-conosco" target="_blank" style="flex:2">🚀 Ver Vagas e Cadastrar</a></div></div>
+
+<!-- 35 MEU LANCHE -->
+
+</div>
+
+<footer>
+  <div id="nav-inicio" class="nav-ativo" onclick="mudarAba('inicio')">🏠<br>Início</div>
+  <div id="nav-buscar" onclick="mudarAba('buscar')">🔍<br>Buscar</div>
+  <div id="nav-salvos" onclick="mudarAba('salvos')">❤️<br>Salvos (<span id="cont-salvos">0</span>)</div>
+  <div id="nav-perfil" onclick="mudarAba('perfil')">👤<br>Perfil</div>
+</footer>
+
+<script>
+var usuario = null;
+var salvos = [];
+var filtroAtual = "todas";
+var apenasSalvos = false;
+
+try {
+  var uSalvo = localStorage.getItem('mecontrata_user');
+  if (uSalvo) usuario = JSON.parse(uSalvo);
+  var sSalvo = localStorage.getItem('mecontrata_salvos');
+  if (sSalvo) salvos = JSON.parse(sSalvo);
+} catch(e) {}
+
+function mostrarVagas() {
+  var tela = document.getElementById('telaCadastro');
+  if (tela) tela.style.display = 'none';
+}
+
+function abrirPerfil() {
+  var erro = document.getElementById('erroCadastro');
+  if (erro) erro.style.display = 'none';
+  if (usuario) {
+    document.getElementById('tituloCadastro').innerText = 'Editar Meu Cadastro';
+    document.getElementById('nome').value = usuario.nome || '';
+    document.getElementById('emailUser').value = usuario.email || '';
+    document.getElementById('fone').value = usuario.fone || '';
+    document.getElementById('btnPularCadastro').innerText = 'Voltar para as vagas';
+  } else {
+    document.getElementById('tituloCadastro').innerText = 'Faça seu cadastro';
+    document.getElementById('btnPularCadastro').innerText = 'Entrar só para olhar 👀';
+  }
+  document.getElementById('telaCadastro').style.display = 'block';
+}
+
+function atualizarInterfaceUsuario() {
+  var ola = document.getElementById('olaUser');
+  if (usuario && usuario.nome) {
+    ola.innerText = 'Olá, ' + usuario.nome + (usuario.email ? ' • ' + usuario.email : '');
+    mostrarVagas();
+  } else {
+    ola.innerText = 'Visitante • Toque em Perfil para cadastrar seus dados.';
+  }
+  atualizarLinksEmail();
+  atualizarCoracoes();
+}
+
+function salvarDados() {
+  var nome = document.getElementById('nome').value.trim();
+  var email = document.getElementById('emailUser').value.trim();
+  var fone = document.getElementById('fone').value.trim();
+  var erro = document.getElementById('erroCadastro');
+
+  if (!nome) {
+    erro.innerText = '⚠️ Por favor, digite seu nome completo.';
+    erro.style.display = 'block';
+    document.getElementById('nome').focus();
+    return;
+  }
+  if (!email || email.indexOf('@') === -1) {
+    erro.innerText = '⚠️ Por favor, digite um e-mail válido (ex: voce@gmail.com).';
+    erro.style.display = 'block';
+    document.getElementById('emailUser').focus();
+    return;
+  }
+
+  erro.style.display = 'none';
+  usuario = { nome: nome, email: email, fone: fone };
+  try {
+    localStorage.setItem('mecontrata_user', JSON.stringify(usuario));
+  } catch(e) {}
+
+  atualizarInterfaceUsuario();
+  mostrarVagas();
+  window.scrollTo(0, 0);
+}
+
+function pularCadastro() {
+  mostrarVagas();
+  window.scrollTo(0, 0);
+}
+
+document.getElementById('btnSalvarCadastro').addEventListener('click', salvarDados);
+document.getElementById('btnPularCadastro').addEventListener('click', pularCadastro);
+
+function atualizarLinksEmail() {
+  var botoes = document.querySelectorAll('.btn-mail-dinamico');
+  for (var i = 0; i < botoes.length; i++) {
+    var btn = botoes[i];
+    var card = btn.closest('.card');
+    var emailDestino = card ? card.getAttribute('data-email') : '';
+    var vagaNome = btn.getAttribute('data-vaga') || 'Vaga';
+    if (!emailDestino) continue;
+
+    var nomeCand = (usuario && usuario.nome) ? usuario.nome : '[Seu Nome]';
+    var emailCand = (usuario && usuario.email) ? usuario.email : '[Seu E-mail]';
+    var foneCand = (usuario && usuario.fone) ? usuario.fone : '[Seu WhatsApp]';
+
+    var assunto = encodeURIComponent('Currículo - ' + vagaNome + (usuario && usuario.nome ? ' - ' + usuario.nome : ''));
+    var corpo = encodeURIComponent(
+      'Olá equipe de RH,\n\n' +
+      'Tenho interesse na oportunidade: ' + vagaNome + ' em Manaus - AM.\n\n' +
+      'Meus dados para contato:\n' +
+      'Nome: ' + nomeCand + '\n' +
+      'E-mail: ' + emailCand + '\n' +
+      'WhatsApp: ' + foneCand + '\n\n' +
+      'Segue meu currículo em anexo.\nObrigado!'
+    );
+    btn.href = 'mailto:' + emailDestino + '?subject=' + assunto + '&body=' + corpo;
+  }
+}
+
+function toggleSalvar(id) {
+  var idx = salvos.indexOf(id);
+  if (idx !== -1) {
+    salvos.splice(idx, 1);
+  } else {
+    salvos.push(id);
+  }
+  try {
+    localStorage.setItem('mecontrata_salvos', JSON.stringify(salvos));
+  } catch(e) {}
+  atualizarCoracoes();
+  if (apenasSalvos) filtrar();
+}
+
+function atualizarCoracoes() {
+  document.getElementById('cont-salvos').innerText = salvos.length;
+  var cards = document.querySelectorAll('.card');
+  for (var i = 0; i < cards.length; i++) {
+    var id = parseInt(cards[i].getAttribute('data-id'), 10);
+    var btn = cards[i].querySelector('.fav-btn');
+    if (btn) btn.innerText = (salvos.indexOf(id) !== -1) ? '❤️' : '🤍';
+  }
+}
+
+function mudarAba(aba) {
+  var itens = document.querySelectorAll('footer div');
+  for (var i = 0; i < itens.length; i++) {
+    itens[i].classList.remove('nav-ativo');
+  }
+  if (aba === 'inicio') {
+    apenasSalvos = false;
+    document.getElementById('nav-inicio').classList.add('nav-ativo');
+    filtrar();
+    window.scrollTo(0, 0);
+  } else if (aba === 'buscar') {
+    apenasSalvos = false;
+    document.getElementById('nav-buscar').classList.add('nav-ativo');
+    filtrar();
+    document.getElementById('busca').focus();
+  } else if (aba === 'salvos') {
+    apenasSalvos = true;
+    document.getElementById('nav-salvos').classList.add('nav-ativo');
+    filtrar();
+  } else if (aba === 'perfil') {
+    document.getElementById('nav-perfil').classList.add('nav-ativo');
+    abrirPerfil();
+  }
+}
+
+function setFiltro(f, btn) {
+  filtroAtual = f;
+  var btns = document.querySelectorAll('.filtros button');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.remove('ativo');
+  }
+  if (btn) btn.classList.add('ativo');
+  filtrar();
+}
+
+function filtrar() {
+  var termo = (document.getElementById('busca').value || '').toLowerCase();
+  var cards = document.querySelectorAll('.card');
+  for (var i = 0; i < cards.length; i++) {
+    var c = cards[i];
+    var id = parseInt(c.getAttribute('data-id'), 10);
+    var cat = c.getAttribute('data-cat') || '';
+    var nome = c.getAttribute('data-nome') || '';
+    var texto = c.innerText.toLowerCase();
+
+    var okCat = filtroAtual === 'todas' || cat === filtroAtual || (filtroAtual === 'tur4' && texto.indexOf('turno 4') !== -1);
+    var okBusca = termo === '' || nome.indexOf(termo) !== -1 || texto.indexOf(termo) !== -1;
+    var okSalvo = !apenasSalvos || (salvos.indexOf(id) !== -1);
+
+    c.style.display = (okCat && okBusca && okSalvo) ? 'block' : 'none';
+  }
+}
+
+function pegarLocal() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function() {
+      document.getElementById('cidade').innerText = 'Você está em Manaus - AM | Localização ativada ✅';
+    }, function() {
+      alert('Ative o GPS do celular para usar sua localização.');
+    });
+  }
+}
+
+atualizarInterfaceUsuario();
+</script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js");}</script>
+</body>
+</html>
