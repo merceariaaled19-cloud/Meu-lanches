@@ -1,50 +1,147 @@
 # Busca vagas reais abertas em Manaus nos portais oficiais das empresas
-# e grava me-contrata/vagas.json. Roda todo dia pelo GitHub Actions.
-import json, re, html, datetime, os, urllib.request
+# (Gupy, Workday, Pandape) e grava me-contrata/vagas.json.
+# Roda todo dia pelo GitHub Actions. Empresa sem vaga em Manaus nao entra.
+import json, re, html, datetime, os, urllib.request, urllib.parse
+from concurrent.futures import ThreadPoolExecutor
 
 UA = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36"
 
-def get(url):
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "pt-BR"})
+def get(url, data=None, headers=None):
+    h = {"User-Agent": UA, "Accept-Language": "pt-BR"}
+    h.update(headers or {})
+    req = urllib.request.Request(url, data=data, headers=h)
     with urllib.request.urlopen(req, timeout=30) as r:
         return r.read().decode("utf-8", "ignore")
-
-# subdominio gupy -> (nome, categoria, emoji)
-GUPY = {
-    "honda": ("HONDA", "industria", "🏍️"),
-    "yamaha": ("YAMAHA", "industria", "🏍️"),
-    "caloi": ("CALOI", "industria", "🚲"),
-    "daikinbrasil": ("DAIKIN", "industria", "❄️"),
-    "solarcocacola": ("SOLAR COCA-COLA", "industria", "🥤"),
-    "bemol": ("BEMOL", "loja", "🏪"),
-    "assai": ("ASSAÍ", "supermercado", "🛒"),
-}
-PANDAPE = {
-    "https://panasonicdobrasil.pandape.infojobs.com.br": ("PANASONIC", "industria", "📺"),
-    "https://mondial.pandape.catho.com.br": ("MONDIAL", "industria", "🔌"),
-    "https://philcoeletronicos.pandape.infojobs.com.br": ("PHILCO", "industria", "📺"),
-}
-JABIL = ("JABIL", "industria", "💻")
 
 def limpa(t):
     return re.sub(r"\s+", " ", html.unescape(t or "")).strip()
 
-def gupy(sub):
-    s = get(f"https://{sub}.gupy.io/")
+TIPOS = {"effective": "Efetivo", "apprentice": "Aprendiz", "internship": "Estágio", "temporary": "Temporário",
+         "talent_pool": "Banco de talentos", "associate": "Associado", "lecturer": "Professor", "trainee": "Trainee",
+         "summer": "Temporário", "outsource": "Terceirizado", "freelancer": "Autônomo", "autonomous": "Autônomo",
+         "legal_entity": "PJ", "volunteer": "Voluntário"}
+
+# ---------- categoria e emoji ----------
+REGRAS = [
+    ("supermercado", "🛒", r"assa[ií]|atacad|supermerc|nova era|carrefour|\bdb\b|mercado|hiper"),
+    ("outros", "🏨", r"hospitality|hotel"),
+    ("saude", "🏥", r"hospital|hapvida|sa[uú]de|farm[aá]c|pague menos|sabin|unimed|cl[ií]nica|davita|drogar|check ?up|laborat|\brd\b|ach[eé]"),
+    ("energia", "⚡", r"energ|enerwatt|fog[aá]s|g[aá]s|el[eé]tric|transformador|moura|eletro"),
+    ("loja", "🏪", r"loja|bemol|renner|torra|ramsons|riachuelo|havan|magazine|vivara|joias|farm\b|colch|cacau|petz|camicado|taco|bagaggio|dress|iplace|claro|vivo|[oó]tica|granado|centauro|espa[cç]olaser|bio mundo|varejo|extra natal|dufry|duty|brasileirissima|monte carlo|cantu"),
+    ("industria", "🏭", r"valgroup|ind[uú]stria|honda|yamaha|caloi|daikin|coca|panasonic|mondial|philco|jabil|samsung|lg\b|lg electronics|whirlpool|procter|p&g|michelin|elgin|positivo|weg|denso|tigre|crown|ccl|hana|itam|tesa|seb|bmw|eldorado|sidi|fortlev|dexco|votorantim|3cora|ambev|ind[uú]stria|f[aá]brica|tecnologia|electronics"),
+]
+def categoria(nome):
+    n = nome.lower()
+    for cat, emo, rx in REGRAS:
+        if re.search(rx, n):
+            return cat, emo
+    return "outros", "🧰"
+
+def nome_bonito(n):
+    n = limpa(n)
+    for sep in [" | ", " - O ", " #", " – "]:
+        if sep in n:
+            n = n.split(sep)[0]
+    n = re.sub(r"^(Vagas|Carreiras|Trabalhe Conosco -|Trabalhe Conosco)\s+", "", n, flags=re.I).strip()
+    return n.upper()
+
+# ---------- GUPY: descobre empresas com vaga em Manaus pelo portal e le a pagina de cada uma ----------
+TERMOS = ["", "operador", "auxiliar", "assistente", "tecnico", "analista", "vendedor", "atendente", "jovem aprendiz",
+          "estagio", "motorista", "caixa", "repositor", "producao", "manutencao", "enfermagem", "consultor", "supervisor",
+          "engenheiro", "logistica", "almoxarife", "eletricista", "promotor", "farmaceutico", "recepcionista", "cozinheiro",
+          "seguranca", "administrativo", "coordenador", "mecanico", "montador", "inspetor", "banco de talentos", "pcd",
+          "gerente", "especialista", "conferente", "balconista", "limpeza", "estoquista", "professor", "desenvolvedor",
+          "comercial", "financeiro", "qualidade", "operacional", "loja", "agente", "ajudante", "garcom"]
+EXTRA_GUPY = ["honda", "yamaha", "caloi", "daikinbrasil", "solarcocacola", "bemol", "assai", "lge", "novaera",
+              "ambev", "positivotecnologia", "sejaelgin", "lojasrenner", "farmaciaspmenos", "hapvidandi"]
+
+def portal(q):
+    try:
+        s = get("https://portal.gupy.io/job-search/" + q)
+        m = re.search(r'__NEXT_DATA__[^>]*>(.*?)</script>', s, re.S)
+        return (json.loads(m.group(1))["props"]["pageProps"].get("initialJobList") or {}).get("data", [])
+    except Exception:
+        return []
+
+def descobrir_gupy():
+    qs = [("term=" + urllib.parse.quote(t) + "&" if t else "") + "city=Manaus" + ("&page=%d" % p if p > 1 else "")
+          for t in TERMOS for p in range(1, 10)]
+    subs = {s: None for s in EXTRA_GUPY}
+    with ThreadPoolExecutor(10) as ex:
+        for data in ex.map(portal, qs):
+            for x in data:
+                m = re.match(r"https://([a-z0-9-]+)\.gupy\.io", x.get("jobUrl") or "")
+                if m and x.get("city") == "Manaus":
+                    subs[m.group(1)] = subs.get(m.group(1)) or x.get("careerPageName")
+    return subs
+
+NOMES = {"hapvidandi": "Hapvida NotreDame", "vagas-mrveco": "MRV&CO", "programadeestagiomrveco": "MRV&CO",
+         "konicaminolta": "Konica Minolta", "consultordevendastahto": "Tahto", "areastecnicasvivo": "Vivo",
+         "vivo": "Vivo", "lojasvivo": "Vivo", "vivodiversidade": "Vivo", "vempraftd": "FTD Educação",
+         "lge": "LG Electronics", "valgroup": "Valgroup (indústria)", "novaera": "Supermercados Nova Era",
+         "bagaggioextranatal": "Bagaggio", "extranatal-dressto": "Dress To", "extranatal": "Centauro",
+         "centaurotalentos": "Centauro", "assai": "Assaí Atacadista", "yamaha": "Yamaha"}
+
+def gupy_empresa(item):
+    sub, nome_portal = item
+    try:
+        s = get("https://%s.gupy.io/" % sub)
+    except Exception:
+        return None
     m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', s, re.S)
-    jobs = json.loads(m.group(1))["props"]["pageProps"].get("jobs", []) if m else []
-    out = []
+    if not m:
+        return None
+    pp = json.loads(m.group(1))["props"]["pageProps"]
+    jobs = pp.get("jobs") or []
+    nome = NOMES.get(sub) or nome_portal
+    if not nome:
+        t = re.search(r"<title>([^<]+)</title>", s)
+        nome = t.group(1) if t else sub
+    vagas = []
     for j in jobs:
         ad = ((j.get("workplace") or {}).get("address") or {})
         if (ad.get("city") or "").strip().lower() != "manaus":
             continue
         tipo = (j.get("type") or "").replace("vacancy_type_", "")
-        out.append({"cargo": limpa(j.get("title")), "local": "Manaus" + (" - " + ad["district"] if ad.get("district") else ""),
-                    "tipo": {"effective": "Efetivo", "apprentice": "Aprendiz", "internship": "Estágio", "temporary": "Temporário", "talent_pool": "Banco de talentos"}.get(tipo, ""),
-                    "link": f"https://{sub}.gupy.io/jobs/{j['id']}"})
-    return out
+        vagas.append({"cargo": limpa(j.get("title")),
+                      "local": "Manaus" + (" - " + limpa(ad["district"]) if ad.get("district") else ""),
+                      "tipo": TIPOS.get(tipo, ""), "link": "https://%s.gupy.io/jobs/%s" % (sub, j["id"])})
+    return (nome, vagas)
 
-def pandape(base):
+# ---------- WORKDAY ----------
+WORKDAY = [  # (tenant, servidor, site, nome)
+    ("sec", "wd3", "Samsung_Careers", "SAMSUNG"),
+    ("jabil", "wd5", "Jabil_Careers", "JABIL"),
+    ("pg", "wd5", "1000", "P&G (PROCTER & GAMBLE)"),
+    ("michelinhr", "wd3", "Michelin", "MICHELIN"),
+    ("flextronics", "wd1", "Careers", "FLEX"),
+]
+def workday(t):
+    tenant, srv, site, nome = t
+    base = "https://%s.%s.myworkdayjobs.com" % (tenant, srv)
+    vagas, off = [], 0
+    while off < 200:
+        body = json.dumps({"appliedFacets": {}, "limit": 20, "offset": off, "searchText": "Manaus"}).encode()
+        d = json.loads(get(base + "/wday/cxs/%s/%s/jobs" % (tenant, site), data=body,
+                           headers={"Content-Type": "application/json", "Accept": "application/json"}))
+        posts = d.get("jobPostings") or []
+        for j in posts:
+            loc, tit = j.get("locationsText") or "", j.get("title") or ""
+            if "manaus" not in (loc + " " + tit).lower():
+                continue
+            vagas.append({"cargo": limpa(tit), "local": "Manaus", "tipo": "",
+                          "link": base + "/" + site + j.get("externalPath", "")})
+        off += 20
+        if len(posts) < 20:
+            break
+    return (nome, vagas)
+
+# ---------- PANDAPE ----------
+PANDAPE = [("https://panasonicdobrasil.pandape.infojobs.com.br", "PANASONIC"),
+           ("https://mondial.pandape.catho.com.br", "MONDIAL"),
+           ("https://philcoeletronicos.pandape.infojobs.com.br", "PHILCO")]
+def pandape(t):
+    base, nome = t
     out, vistos = [], set()
     for p in range(1, 11):
         s = get(base + "/?PageNumber=%d" % p)
@@ -55,40 +152,49 @@ def pandape(base):
         for href, corpo in novos:
             vistos.add(href)
             tit = re.search(r'<h3[^>]*title="([^"]+)"', corpo)
-            txt = limpa(re.sub(r"<[^>]+>", " ", corpo))
-            if "Manaus" not in txt:
+            if "Manaus" not in re.sub(r"<[^>]+>", " ", corpo):
                 continue
             out.append({"cargo": limpa(tit.group(1)) if tit else "", "local": "Manaus", "tipo": "", "link": base + href})
-    return out
+    return (nome, out)
 
-def jabil():
-    out, vistos = [], set()
-    for p in [4]:
-        s = get("https://jobs.jabil.com/en/location/manaus-jobs/626/3469034-3665361-3663517/%d" % p)
-        itens = re.findall(r'href="(/en/job/manaus/[^"]+)"[^>]*>([^<]+)</a>', s)
-        novos = [i for i in itens if i[0] not in vistos]
-        if not novos:
-            break
-        for href, tit in novos:
-            vistos.add(href)
-            out.append({"cargo": limpa(tit), "local": "Manaus", "tipo": "", "link": "https://jobs.jabil.com" + href})
-    return out
-
-empresas, erros = [], []
-fontes = [(lambda s=s: gupy(s), GUPY[s]) for s in GUPY] + [(lambda b=b: pandape(b), PANDAPE[b]) for b in PANDAPE] + [(jabil, JABIL)]
-for fn, (nome, cat, emoji) in fontes:
+def seguro(fn, x):
     try:
-        vagas = fn()
-    except Exception as e:
-        erros.append(nome)
+        return fn(x)
+    except Exception:
+        return None
+
+# ---------- junta tudo ----------
+resultados = []
+subs = descobrir_gupy()
+with ThreadPoolExecutor(10) as ex:
+    resultados += list(ex.map(lambda i: seguro(gupy_empresa, i), subs.items()))
+    resultados += list(ex.map(lambda t: seguro(workday, t), WORKDAY))
+    resultados += list(ex.map(lambda t: seguro(pandape, t), PANDAPE))
+
+empresas = {}
+for r in resultados:
+    if not r:
+        continue
+    nome, vagas = r
+    nome = nome_bonito(nome)
+    if "CONFIDENCIA" in nome or nome in ("RECRUTAMENTO", "TRABALHE CONOSCO", "PÁGINA DE CARREIRA"):
         continue
     vagas = [v for v in vagas if v["cargo"]]
-    if vagas:
-        empresas.append({"empresa": nome, "cat": cat, "emoji": emoji, "vagas": vagas})
+    if not vagas:
+        continue
+    e = empresas.setdefault(nome, {"empresa": nome, "vagas": [], "_links": set()})
+    for v in vagas:
+        if v["link"] not in e["_links"]:
+            e["_links"].add(v["link"]); e["vagas"].append(v)
 
-empresas.sort(key=lambda e: -len(e["vagas"]))
+lista = []
+for e in empresas.values():
+    cat, emo = categoria(e["empresa"])
+    lista.append({"empresa": e["empresa"], "cat": cat, "emoji": emo, "vagas": e["vagas"]})
+lista.sort(key=lambda e: -len(e["vagas"]))
+
 agora = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-4)))
-dados = {"atualizado": agora.strftime("%d/%m/%Y %H:%M"), "empresas": empresas, "fontes_com_erro": erros}
+dados = {"atualizado": agora.strftime("%d/%m/%Y %H:%M"), "empresas": lista}
 destino = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vagas.json")
 json.dump(dados, open(destino, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-print(sum(len(e["vagas"]) for e in empresas), "vagas em", len(empresas), "empresas; erros:", erros)
+print(sum(len(e["vagas"]) for e in lista), "vagas em", len(lista), "empresas")
