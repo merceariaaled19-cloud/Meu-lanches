@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0a7a42">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -10,8 +10,8 @@
 <title>Me Contrata - Cadastro e Vagas em Manaus</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#f2f2f2;padding-bottom:85px;color:#222}
-header{background:#0a7a42;color:white;padding:18px 15px;position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+body{background:#f2f2f2;padding-bottom:150px;color:#222}
+header{background:#0a7a42;color:white;padding:18px 15px;padding-top:calc(18px + max(env(safe-area-inset-top), 28px));position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
 header h1{font-size:21px}
 .loc{background:white;color:#0a7a42;border:none;padding:10px;border-radius:20px;font-weight:bold;margin-top:10px;width:100%;cursor:pointer;font-size:14px}
 .search{padding:12px}
@@ -39,7 +39,7 @@ summary{font-weight:bold;cursor:pointer;padding:6px;color:#0a7a42}
 .mini a{flex:1;text-align:center;padding:9px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:bold}
 .mini .cad{background:#0a7a42;color:white}
 .mini .mail{background:#ffcc00;color:#222}
-footer{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #ddd;font-size:12px;text-align:center;z-index:20}
+footer{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:space-around;padding:10px 0;padding-bottom:calc(10px + max(env(safe-area-inset-bottom), 48px));border-top:1px solid #ddd;font-size:13px;text-align:center;z-index:20}
 footer div{cursor:pointer;flex:1;color:#666}
 footer div.nav-ativo{color:#0a7a42;font-weight:bold}
 
@@ -358,6 +358,7 @@ function confirmarCidade(){
 function pegarLocal() {
   if (!navigator.geolocation) { abrirCidade(); return; }
   document.getElementById('resumoVagas').innerText='📍 Procurando tua cidade...';
+  var resumoAntes=document.getElementById('resumoVagas').innerText;
   navigator.geolocation.getCurrentPosition(function(pos) {
     var u='https://nominatim.openstreetmap.org/reverse?format=json&zoom=10&accept-language=pt-BR&lat='+pos.coords.latitude+'&lon='+pos.coords.longitude;
     fetch(u).then(function(r){return r.json();}).then(function(g){
@@ -366,11 +367,12 @@ function pegarLocal() {
       if(!uf||!cid){ abrirCidade(); return; }
       document.getElementById('telaCidade').style.display='none';
       definirLocal(uf,cid);
-    }).catch(function(){ abrirCidade(); });
+    }).catch(function(){ document.getElementById('resumoVagas').innerText=resumoAntes; abrirCidade(); });
   }, function() {
+    document.getElementById('resumoVagas').innerText=resumoAntes;
     alert('Ative o GPS do celular, ou escolha tua cidade na lista.');
     abrirCidade();
-  });
+  }, {timeout:15000, maximumAge:600000});
 }
 
 atualizarInterfaceUsuario();
