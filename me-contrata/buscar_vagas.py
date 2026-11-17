@@ -45,13 +45,21 @@ def nome_bonito(n):
     n = re.sub(r"^(Vagas|Carreiras|Trabalhe Conosco -|Trabalhe Conosco)\s+", "", n, flags=re.I).strip()
     return n.upper()
 
-# ---------- GUPY: descobre empresas com vaga em Manaus pelo portal e le a pagina de cada uma ----------
+# ---------- GUPY: descobre empresas com vaga em cada estado pelo portal e le a pagina de cada uma ----------
+UFS = {"AC": "Acre", "AL": "Alagoas", "AP": "Amapá", "AM": "Amazonas", "BA": "Bahia", "CE": "Ceará",
+       "DF": "Distrito Federal", "ES": "Espírito Santo", "GO": "Goiás", "MA": "Maranhão", "MT": "Mato Grosso",
+       "MS": "Mato Grosso do Sul", "MG": "Minas Gerais", "PA": "Pará", "PB": "Paraíba", "PR": "Paraná",
+       "PE": "Pernambuco", "PI": "Piauí", "RJ": "Rio de Janeiro", "RN": "Rio Grande do Norte",
+       "RS": "Rio Grande do Sul", "RO": "Rondônia", "RR": "Roraima", "SC": "Santa Catarina", "SP": "São Paulo",
+       "SE": "Sergipe", "TO": "Tocantins"}
+UF_POR_NOME = {v.lower(): k for k, v in UFS.items()}
 TERMOS = ["", "operador", "auxiliar", "assistente", "tecnico", "analista", "vendedor", "atendente", "jovem aprendiz",
           "estagio", "motorista", "caixa", "repositor", "producao", "manutencao", "enfermagem", "consultor", "supervisor",
           "engenheiro", "logistica", "almoxarife", "eletricista", "promotor", "farmaceutico", "recepcionista", "cozinheiro",
           "seguranca", "administrativo", "coordenador", "mecanico", "montador", "inspetor", "banco de talentos", "pcd",
           "gerente", "especialista", "conferente", "balconista", "limpeza", "estoquista", "professor", "desenvolvedor",
           "comercial", "financeiro", "qualidade", "operacional", "loja", "agente", "ajudante", "garcom"]
+TERMOS_UF = TERMOS[:25]   # outros estados: menos termos pra caber no tempo
 EXTRA_GUPY = ["honda", "yamaha", "caloi", "daikinbrasil", "solarcocacola", "bemol", "assai", "lge", "novaera",
               "ambev", "positivotecnologia", "sejaelgin", "lojasrenner", "farmaciaspmenos", "hapvidandi"]
 
@@ -64,14 +72,20 @@ def portal(q):
         return []
 
 def descobrir_gupy():
-    qs = [("term=" + urllib.parse.quote(t) + "&" if t else "") + "city=Manaus" + ("&page=%d" % p if p > 1 else "")
-          for t in TERMOS for p in range(1, 10)]
+    qs = []
+    for p in range(1, 10):
+        pg = "&page=%d" % p if p > 1 else ""
+        for t in TERMOS:   # Manaus completo
+            qs.append(("term=" + urllib.parse.quote(t) + "&" if t else "") + "city=Manaus" + pg)
+        for uf, nome in UFS.items():
+            for t in TERMOS_UF:
+                qs.append(("term=" + urllib.parse.quote(t) + "&" if t else "") + "state=" + urllib.parse.quote(nome) + pg)
     subs = {s: None for s in EXTRA_GUPY}
-    with ThreadPoolExecutor(10) as ex:
+    with ThreadPoolExecutor(16) as ex:
         for data in ex.map(portal, qs):
             for x in data:
                 m = re.match(r"https://([a-z0-9-]+)\.gupy\.io", x.get("jobUrl") or "")
-                if m and x.get("city") == "Manaus":
+                if m:
                     subs[m.group(1)] = subs.get(m.group(1)) or x.get("careerPageName")
     return subs
 
@@ -83,6 +97,7 @@ NOMES = {"hapvidandi": "Hapvida NotreDame", "vagas-mrveco": "MRV&CO", "programad
          "centaurotalentos": "Centauro", "assai": "Assaí Atacadista", "yamaha": "Yamaha"}
 
 def gupy_empresa(item):
+    """devolve (nome, [vaga com uf e cidade])"""
     sub, nome_portal = item
     try:
         s = get("https://%s.gupy.io/" % sub)
@@ -91,8 +106,7 @@ def gupy_empresa(item):
     m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', s, re.S)
     if not m:
         return None
-    pp = json.loads(m.group(1))["props"]["pageProps"]
-    jobs = pp.get("jobs") or []
+    jobs = json.loads(m.group(1))["props"]["pageProps"].get("jobs") or []
     nome = NOMES.get(sub) or nome_portal
     if not nome:
         t = re.search(r"<title>([^<]+)</title>", s)
@@ -100,11 +114,13 @@ def gupy_empresa(item):
     vagas = []
     for j in jobs:
         ad = ((j.get("workplace") or {}).get("address") or {})
-        if (ad.get("city") or "").strip().lower() != "manaus":
+        cidade = limpa(ad.get("city"))
+        uf = (ad.get("stateShortName") or UF_POR_NOME.get((ad.get("state") or "").lower().strip()) or "").upper()
+        if not cidade or uf not in UFS:
             continue
         tipo = (j.get("type") or "").replace("vacancy_type_", "")
-        vagas.append({"cargo": limpa(j.get("title")),
-                      "local": "Manaus" + (" - " + limpa(ad["district"]) if ad.get("district") else ""),
+        vagas.append({"uf": uf, "cidade": cidade, "cargo": limpa(j.get("title")),
+                      "local": cidade + (" - " + limpa(ad["district"]) if ad.get("district") else ""),
                       "tipo": TIPOS.get(tipo, ""), "link": "https://%s.gupy.io/jobs/%s" % (sub, j["id"])})
     return (nome, vagas)
 
@@ -129,7 +145,7 @@ def workday(t):
             loc, tit = j.get("locationsText") or "", j.get("title") or ""
             if "manaus" not in (loc + " " + tit).lower():
                 continue
-            vagas.append({"cargo": limpa(tit), "local": "Manaus", "tipo": "",
+            vagas.append({"uf": "AM", "cidade": "Manaus", "cargo": limpa(tit), "local": "Manaus", "tipo": "",
                           "link": base + "/" + site + j.get("externalPath", "")})
         off += 20
         if len(posts) < 20:
@@ -154,7 +170,7 @@ def pandape(t):
             tit = re.search(r'<h3[^>]*title="([^"]+)"', corpo)
             if "Manaus" not in re.sub(r"<[^>]+>", " ", corpo):
                 continue
-            out.append({"cargo": limpa(tit.group(1)) if tit else "", "local": "Manaus", "tipo": "", "link": base + href})
+            out.append({"uf": "AM", "cidade": "Manaus", "cargo": limpa(tit.group(1)) if tit else "", "local": "Manaus", "tipo": "", "link": base + href})
     return (nome, out)
 
 def seguro(fn, x):
@@ -166,12 +182,18 @@ def seguro(fn, x):
 # ---------- junta tudo ----------
 resultados = []
 subs = descobrir_gupy()
-with ThreadPoolExecutor(10) as ex:
+print("empresas gupy descobertas:", len(subs), flush=True)
+with ThreadPoolExecutor(16) as ex:
     resultados += list(ex.map(lambda i: seguro(gupy_empresa, i), subs.items()))
     resultados += list(ex.map(lambda t: seguro(workday, t), WORKDAY))
     resultados += list(ex.map(lambda t: seguro(pandape, t), PANDAPE))
 
-empresas = {}
+def chave_cidade(c):
+    import unicodedata
+    return unicodedata.normalize("NFKD", c).encode("ascii", "ignore").decode().lower().strip()
+
+# estrutura: uf -> chave cidade -> {"nome": cidade, "empresas": {nome: {...}}}
+porUF = {}
 for r in resultados:
     if not r:
         continue
@@ -179,22 +201,38 @@ for r in resultados:
     nome = nome_bonito(nome)
     if "CONFIDENCIA" in nome or nome in ("RECRUTAMENTO", "TRABALHE CONOSCO", "PÁGINA DE CARREIRA"):
         continue
-    vagas = [v for v in vagas if v["cargo"]]
-    if not vagas:
-        continue
-    e = empresas.setdefault(nome, {"empresa": nome, "vagas": [], "_links": set()})
+    cat, emo = categoria(nome)
     for v in vagas:
-        if v["link"] not in e["_links"]:
-            e["_links"].add(v["link"]); e["vagas"].append(v)
-
-lista = []
-for e in empresas.values():
-    cat, emo = categoria(e["empresa"])
-    lista.append({"empresa": e["empresa"], "cat": cat, "emoji": emo, "vagas": e["vagas"]})
-lista.sort(key=lambda e: -len(e["vagas"]))
+        if not v["cargo"]:
+            continue
+        cid = porUF.setdefault(v["uf"], {}).setdefault(chave_cidade(v["cidade"]), {"nome": v["cidade"], "empresas": {}})
+        e = cid["empresas"].setdefault(nome, {"empresa": nome, "cat": cat, "emoji": emo, "vagas": [], "_l": set()})
+        if v["link"] in e["_l"]:
+            continue
+        e["_l"].add(v["link"])
+        e["vagas"].append({"cargo": v["cargo"], "local": v["local"], "tipo": v["tipo"], "link": v["link"]})
 
 agora = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-4)))
-dados = {"atualizado": agora.strftime("%d/%m/%Y %H:%M"), "empresas": lista}
-destino = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vagas.json")
-json.dump(dados, open(destino, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-print(sum(len(e["vagas"]) for e in lista), "vagas em", len(lista), "empresas")
+quando = agora.strftime("%d/%m/%Y %H:%M")
+pasta = os.path.dirname(os.path.abspath(__file__))
+os.makedirs(os.path.join(pasta, "vagas"), exist_ok=True)
+indice, total = {}, 0
+for uf in UFS:
+    cidades = porUF.get(uf, {})
+    saida = {}
+    for k, c in cidades.items():
+        lista = [{kk: vv for kk, vv in e.items() if kk != "_l"} for e in c["empresas"].values()]
+        lista.sort(key=lambda e: -len(e["vagas"]))
+        saida[c["nome"]] = lista
+    n = sum(len(e["vagas"]) for l in saida.values() for e in l)
+    total += n
+    indice[uf] = {"estado": UFS[uf], "vagas": n,
+                  "cidades": sorted(([c, sum(len(e["vagas"]) for e in l)] for c, l in saida.items()), key=lambda x: -x[1])}
+    json.dump({"atualizado": quando, "uf": uf, "cidades": saida},
+              open(os.path.join(pasta, "vagas", uf + ".json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+json.dump({"atualizado": quando, "estados": indice},
+          open(os.path.join(pasta, "vagas", "index.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+# arquivo antigo (so Manaus) pra quem ainda tem a versao anterior do app
+manaus = json.load(open(os.path.join(pasta, "vagas", "AM.json"), encoding="utf-8"))["cidades"].get("Manaus", [])
+json.dump({"atualizado": quando, "empresas": manaus}, open(os.path.join(pasta, "vagas.json"), "w", encoding="utf-8"), ensure_ascii=False)
+print(total, "vagas no Brasil;", sum(len(e["vagas"]) for e in manaus), "em Manaus")

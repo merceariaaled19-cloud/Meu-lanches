@@ -58,7 +58,7 @@ footer div.nav-ativo{color:#0a7a42;font-weight:bold}
 <!-- PÁGINA 1: CADASTRO (ABRE PRIMEIRO) -->
 <div id="telaCadastro">
   <h1 style="font-size:26px">📍 Me Contrata</h1>
-  <p style="font-size:14px;opacity:0.95;margin-top:4px">Empregos em Manaus - AM • Distrito Industrial e Comércio</p>
+  <p style="font-size:14px;opacity:0.95;margin-top:4px">Vagas reais abertas na tua cidade, atualizadas todo dia</p>
   <div class="box">
     <h2 id="tituloCadastro">Faça seu cadastro</h2>
     <p style="font-size:13px;color:#666;line-height:1.4">Preencha seus dados abaixo para entrar e já ter seu nome, e-mail e WhatsApp prontos para enviar às empresas.</p>
@@ -72,6 +72,10 @@ footer div.nav-ativo{color:#0a7a42;font-weight:bold}
     <label for="fone">Seu WhatsApp</label>
     <input id="fone" type="tel" placeholder="Ex: (92) 99999-9999">
 
+    <label>Tua cidade</label>
+    <button type="button" class="pular" style="margin-top:6px" onclick="pegarLocal()">📍 Usar minha localização</button>
+    <p id="cidadeCadastro" style="font-size:13px;color:#0a7a42;font-weight:bold;margin-top:6px"></p>
+
     <p id="erroCadastro" style="color:#d00;font-size:13px;font-weight:bold;margin-top:10px;display:none"></p>
 
     <button type="button" id="btnSalvarCadastro">Cadastrar e Ver Vagas ✅</button>
@@ -82,16 +86,29 @@ footer div.nav-ativo{color:#0a7a42;font-weight:bold}
 <!-- PÁGINA 2: LISTA DE VAGAS -->
 <header>
   <h1>📍 Me Contrata</h1>
-  <p id="cidade">Manaus - AM | Distrito Industrial e Comércio</p>
-  <p id="olaUser" style="font-size:12px;margin-top:2px">Olá! Vagas abertas agora nas empresas de Manaus.</p>
+  <p id="cidade" onclick="abrirCidade()" style="cursor:pointer;text-decoration:underline">📍 Manaus - AM (trocar)</p>
+  <p id="olaUser" style="font-size:12px;margin-top:2px">Olá! Vagas abertas agora na tua cidade.</p>
   <p id="resumoVagas" style="font-weight:bold;font-size:13px;margin-top:4px">🔎 Buscando vagas reais...</p>
   <button type="button" class="loc" onclick="pegarLocal()">📍 Usar minha localização</button>
+  <button type="button" class="loc" onclick="abrirCidade()">🏙️ Escolher cidade</button>
 </header>
+<div id="telaCidade" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;padding:20px">
+  <div style="background:white;border-radius:16px;padding:18px;max-width:420px;margin:40px auto">
+    <h3 style="margin-bottom:10px">🏙️ Escolher cidade</h3>
+    <label style="font-size:13px;font-weight:bold">Estado</label>
+    <select id="selUF" onchange="preencherCidades()" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;margin:6px 0 12px;font-size:15px"></select>
+    <label style="font-size:13px;font-weight:bold">Cidade (com vagas hoje)</label>
+    <select id="selCidade" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;margin:6px 0 14px;font-size:15px"></select>
+    <button type="button" onclick="confirmarCidade()" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a7a42;color:white;font-weight:bold;font-size:15px">Ver vagas ✅</button>
+    <button type="button" onclick="pegarLocal()" style="width:100%;padding:12px;border:1px solid #0a7a42;border-radius:12px;background:white;color:#0a7a42;font-weight:bold;margin-top:8px">📍 Usar minha localização</button>
+    <button type="button" onclick="document.getElementById('telaCidade').style.display='none'" style="width:100%;padding:10px;border:none;background:none;color:#666;margin-top:6px">Fechar</button>
+  </div>
+</div>
 
-<div class="search"><input id="busca" oninput="filtrar()" placeholder="Buscar vaga ou empresa: operador, caixa, Honda, Yamaha..."></div>
+<div class="search"><input id="busca" oninput="filtrar()" placeholder="Buscar vaga ou empresa: operador, caixa, vendedor..."></div>
 <div class="filtros">
 <button type="button" class="ativo" onclick="setFiltro('todas',this)">Todas</button>
-<button type="button" onclick="setFiltro('industria',this)">🏭 Distrito</button>
+<button type="button" onclick="setFiltro('industria',this)">🏭 Indústria</button>
 <button type="button" onclick="setFiltro('energia',this)">⚡ Energia</button>
 <button type="button" onclick="setFiltro('supermercado',this)">🛒 Supermercado</button>
 <button type="button" onclick="setFiltro('loja',this)">🏪 Lojas</button>
@@ -183,6 +200,7 @@ function salvarDados() {
   atualizarInterfaceUsuario();
   mostrarVagas();
   window.scrollTo(0, 0);
+  try { if (!localStorage.getItem('mecontrata_local')) pegarLocal(); } catch(e) {}
 }
 
 function pularCadastro() {
@@ -297,14 +315,62 @@ function filtrar() {
   }
 }
 
-function pegarLocal() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function() {
-      document.getElementById('cidade').innerText = 'Você está em Manaus - AM | Localização ativada ✅';
-    }, function() {
-      alert('Ative o GPS do celular para usar sua localização.');
+var LOCAL = {uf:'AM', cidade:'Manaus'};
+try { var lc = JSON.parse(localStorage.getItem('mecontrata_local')); if (lc && lc.uf) LOCAL = lc; } catch(e) {}
+var INDICE = null, DADOS_UF = null;
+function semAcento(t){ return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
+function mostrarCidade(){
+  var t='📍 '+LOCAL.cidade+' - '+LOCAL.uf+' (trocar)';
+  document.getElementById('cidade').innerText=t;
+  var cc=document.getElementById('cidadeCadastro'); if(cc) cc.innerText='📍 '+LOCAL.cidade+' - '+LOCAL.uf;
+}
+function definirLocal(uf, cidade){
+  LOCAL={uf:uf, cidade:cidade};
+  try{ localStorage.setItem('mecontrata_local', JSON.stringify(LOCAL)); }catch(e){}
+  mostrarCidade(); carregarVagas();
+}
+function carregarIndice(cb){
+  if(INDICE) return cb(INDICE);
+  fetch('vagas/index.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){INDICE=d;cb(d);}).catch(function(){cb(null);});
+}
+function abrirCidade(){
+  carregarIndice(function(d){
+    if(!d){ alert('Sem internet agora. Tenta de novo.'); return; }
+    var s=document.getElementById('selUF'); s.innerHTML='';
+    Object.keys(d.estados).sort(function(a,b){return d.estados[a].estado.localeCompare(d.estados[b].estado);}).forEach(function(uf){
+      var o=document.createElement('option'); o.value=uf; o.text=d.estados[uf].estado+' ('+d.estados[uf].vagas+' vagas)'; if(uf===LOCAL.uf) o.selected=true; s.appendChild(o);
     });
-  }
+    preencherCidades();
+    document.getElementById('telaCidade').style.display='block';
+  });
+}
+function preencherCidades(){
+  var uf=document.getElementById('selUF').value, s=document.getElementById('selCidade'); s.innerHTML='';
+  (INDICE.estados[uf].cidades||[]).forEach(function(c){
+    var o=document.createElement('option'); o.value=c[0]; o.text=c[0]+' ('+c[1]+' vagas)'; if(c[0]===LOCAL.cidade) o.selected=true; s.appendChild(o);
+  });
+}
+function confirmarCidade(){
+  var uf=document.getElementById('selUF').value, c=document.getElementById('selCidade').value;
+  document.getElementById('telaCidade').style.display='none';
+  if(c) definirLocal(uf,c);
+}
+function pegarLocal() {
+  if (!navigator.geolocation) { abrirCidade(); return; }
+  document.getElementById('resumoVagas').innerText='📍 Procurando tua cidade...';
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var u='https://nominatim.openstreetmap.org/reverse?format=json&zoom=10&accept-language=pt-BR&lat='+pos.coords.latitude+'&lon='+pos.coords.longitude;
+    fetch(u).then(function(r){return r.json();}).then(function(g){
+      var a=g.address||{}; var cid=a.city||a.town||a.municipality||a.village||'';
+      var iso=a['ISO3166-2-lvl4']||''; var uf=iso.replace('BR-','');
+      if(!uf||!cid){ abrirCidade(); return; }
+      document.getElementById('telaCidade').style.display='none';
+      definirLocal(uf,cid);
+    }).catch(function(){ abrirCidade(); });
+  }, function() {
+    alert('Ative o GPS do celular, ou escolha tua cidade na lista.');
+    abrirCidade();
+  });
 }
 
 atualizarInterfaceUsuario();
@@ -322,19 +388,26 @@ function montarLista(d){
     var n=e.vagas.length;
     html+='<div class="card" data-id="'+id+'" data-cat="'+esc(e.cat)+'" data-nome="'+esc(busca)+'"><button type="button" class="fav-btn" onclick="toggleSalvar('+id+')">🤍</button><div class="top"><div class="logo">'+esc(e.emoji)+'</div><div><h3>'+esc(e.empresa)+'</h3><small style="font-weight:bold;color:#0a7a42">✅ '+n+(n==1?' vaga aberta':' vagas abertas')+' agora</small></div></div><details><summary>Ver as vagas ▼</summary>'+itens+'</details></div>';
   });
-  if(!html) html='<p style="text-align:center;padding:30px 15px;color:#555">Nenhuma vaga aberta encontrada hoje. Volta amanhã cedo que o app atualiza sozinho. 🙏</p>';
+  if(!html) html='<p style="text-align:center;padding:30px 15px;color:#555">Nenhuma vaga aberta encontrada hoje em '+esc(LOCAL.cidade)+'. Toca em Escolher cidade pra ver as cidades vizinhas, ou volta amanhã que o app atualiza sozinho. 🙏</p>';
   lista.innerHTML=html;
   var ne=(d.empresas||[]).length;
-  document.getElementById('resumoVagas').innerText='🔥 '+total+' vagas abertas em '+ne+' empresas • atualizado '+(d.atualizado||'');
+  document.getElementById('resumoVagas').innerText='🔥 '+total+' vagas abertas em '+ne+' empresas em '+LOCAL.cidade+' • atualizado '+(d.atualizado||'');
   atualizarCoracoes(); filtrar();
 }
+function listaDaCidade(d){
+  var cs=d.cidades||{}, alvo=semAcento(LOCAL.cidade);
+  for(var k in cs){ if(semAcento(k)===alvo){ LOCAL.cidade=k; return {atualizado:d.atualizado, empresas:cs[k]}; } }
+  return {atualizado:d.atualizado, empresas:[]};
+}
 function carregarVagas(){
-  fetch('vagas.json?t='+Date.now(),{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
-    try{ localStorage.setItem('mecontrata_cache',JSON.stringify(d)); }catch(e){}
-    montarLista(d);
+  mostrarCidade();
+  var ck='mecontrata_cache_'+LOCAL.uf;
+  fetch('vagas/'+LOCAL.uf+'.json?t='+Date.now(),{cache:'no-store'}).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(d){
+    DADOS_UF=d; try{ localStorage.setItem(ck,JSON.stringify(d)); }catch(e){}
+    montarLista(listaDaCidade(d));
   }).catch(function(){
-    var c=null; try{ c=JSON.parse(localStorage.getItem('mecontrata_cache')); }catch(e){}
-    if(c){ montarLista(c); document.getElementById('resumoVagas').innerText+=' (sem internet)'; }
+    var c=null; try{ c=JSON.parse(localStorage.getItem(ck)); }catch(e){}
+    if(c){ montarLista(listaDaCidade(c)); document.getElementById('resumoVagas').innerText+=' (sem internet)'; }
     else document.getElementById('lista').innerHTML='<p style="text-align:center;padding:30px">Sem internet. Conecta e abre de novo. 📶</p>';
   });
 }
