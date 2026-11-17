@@ -1,5 +1,5 @@
 {
- "atualizado": "17/11/2026 09:53",
+ "atualizado": "17/11/2026 10:11",
  "empresas": [
   {
    "empresa": "VALGROUP (INDÚSTRIA)",
@@ -291,6 +291,271 @@
    ]
   },
   {
+   "empresa": "HOSPITAL ADVENTISTA DE MANAUS",
+   "cat": "saude",
+   "emoji": "🏥",
+   "vagas": [
+    {
+     "cargo": "Analista de Central de Autorização",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12827909"
+    },
+    {
+     "cargo": "Aprendiz",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Aprendiz",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12805007"
+    },
+    {
+     "cargo": "Aprendiz",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Aprendiz",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12784078"
+    },
+    {
+     "cargo": "Aprendiz - BANCO DE TALENTOS.",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Banco de talentos",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/8413388"
+    },
+    {
+     "cargo": "Aprendiz - Recepção Consultórios",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Aprendiz",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12787853"
+    },
+    {
+     "cargo": "Aprendiz - Recepção Consultórios",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Aprendiz",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12837955"
+    },
+    {
+     "cargo": "Aprendiz - Recepção Consultórios",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Aprendiz",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12789659"
+    },
+    {
+     "cargo": "Auxiliar Administrativo - Agência Transfusional (Banco de Sangue)",
+     "local": "Manaus - DISTRITO INDUSTRIAL",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12738268"
+    },
+    {
+     "cargo": "Auxiliar de Cozinha",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Temporário",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12738718"
+    },
+    {
+     "cargo": "Auxiliar de Utilidades",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12663442"
+    },
+    {
+     "cargo": "Auxiliar Geral de Conservação",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12822978"
+    },
+    {
+     "cargo": "Enfermeiro (a) - Clínica Médica I",
+     "local": "Manaus",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12815479"
+    },
+    {
+     "cargo": "Enfermeiro(a) Consultórios",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12757151"
+    },
+    {
+     "cargo": "Enfermeiro(a) diversas áreas - Banco de Talentos",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Banco de talentos",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/10907652"
+    },
+    {
+     "cargo": "Enfermeiro(a) - Feirista Unidades",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Banco de talentos",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12798185"
+    },
+    {
+     "cargo": "ENFERMEIRO(A) - U.T.I. PED/ MISTA",
+     "local": "Manaus - Distrito Industrial",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12757258"
+    },
+    {
+     "cargo": "Enfermeiro Hemodinâmica",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12092212"
+    },
+    {
+     "cargo": "Estagiário(a) em T.I",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Banco de talentos",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12788657"
+    },
+    {
+     "cargo": "ESTOFADOR (A)",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12289206"
+    },
+    {
+     "cargo": "Faturista",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12793793"
+    },
+    {
+     "cargo": "Oficial de Manutenção",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/11467155"
+    },
+    {
+     "cargo": "RECEPCIONISTA - BANCO DE TALENTOS",
+     "local": "Manaus - DISTRITO INDUSTRIAL I",
+     "tipo": "Banco de talentos",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/10825709"
+    },
+    {
+     "cargo": "RECEPCIONISTA - CONSULTÓRIOS",
+     "local": "Manaus - DISTRITO INDUSTRIAL I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12787819"
+    },
+    {
+     "cargo": "RECEPCIONISTA - CONSULTÓRIOS",
+     "local": "Manaus - DISTRITO INDUSTRIAL I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12825812"
+    },
+    {
+     "cargo": "RECEPCIONISTA - CONSULTÓRIOS",
+     "local": "Manaus - DISTRITO INDUSTRIAL I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12825820"
+    },
+    {
+     "cargo": "TÉCNICO(A) EM NUTRIÇÃO E DIETÉTICA",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12745618"
+    },
+    {
+     "cargo": "TÉCNICO(A) EM NUTRIÇÃO E DIETÉTICA - BANCO DE TALENTO",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Banco de talentos",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12077664"
+    },
+    {
+     "cargo": "TÉCNICO DE ENFERMAGEM",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Banco de talentos",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12858662"
+    },
+    {
+     "cargo": "Técnico de Enfermagem - Centro Cirúrgico",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12848647"
+    },
+    {
+     "cargo": "TÉCNICO DE ENFERMAGEM - Clínica Cirúrgica",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12830508"
+    },
+    {
+     "cargo": "TÉCNICO DE ENFERMAGEM - Clínica Cirúrgica",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12715124"
+    },
+    {
+     "cargo": "Técnico de Enfermagem- Clínica Médica I",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12857007"
+    },
+    {
+     "cargo": "Técnico de Enfermagem- Clínica Médica I",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12840894"
+    },
+    {
+     "cargo": "Técnico de Enfermagem - Clínica Médica II",
+     "local": "Manaus - Distrito Industrial",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12783178"
+    },
+    {
+     "cargo": "Técnico de Enfermagem C.T.I Adulto",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12863572"
+    },
+    {
+     "cargo": "Técnico de Enfermagem C.T.I Adulto",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12863694"
+    },
+    {
+     "cargo": "Técnico de Enfermagem C.T.I Adulto",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12872900"
+    },
+    {
+     "cargo": "Técnico de Enfermagem C.T.I Adulto",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12863601"
+    },
+    {
+     "cargo": "Técnico de Enfermagem de C.M.E.",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Aprendiz",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12574687"
+    },
+    {
+     "cargo": "Técnico de Enfermagem- Pediatria",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12856569"
+    },
+    {
+     "cargo": "Técnico de Enfermagem - Pronto Atendimento",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12724482"
+    },
+    {
+     "cargo": "Técnico de Enfermagem- Unidade de Internação I (Obstetrícia)",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12834562"
+    },
+    {
+     "cargo": "TÉCNICO DE ENFERMAGEM - U.T.I. NEO/PED.",
+     "local": "Manaus - Distrito Industrial",
+     "tipo": "Efetivo",
+     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12834573"
+    }
+   ]
+  },
+  {
    "empresa": "HAPVIDA NOTREDAME",
    "cat": "saude",
    "emoji": "🏥",
@@ -405,15 +670,15 @@
     },
     {
      "cargo": "NUTRICIONISTA - MANAUS (AM)",
-     "local": "Manaus - Adrianópolis",
-     "tipo": "Efetivo",
-     "link": "https://hapvidandi.gupy.io/jobs/12862146"
-    },
-    {
-     "cargo": "NUTRICIONISTA - MANAUS (AM)",
      "local": "Manaus - Centro",
      "tipo": "Efetivo",
      "link": "https://hapvidandi.gupy.io/jobs/12861950"
+    },
+    {
+     "cargo": "NUTRICIONISTA - MANAUS (AM)",
+     "local": "Manaus - Adrianópolis",
+     "tipo": "Efetivo",
+     "link": "https://hapvidandi.gupy.io/jobs/12862146"
     },
     {
      "cargo": "PORTEIRO - MANAUS",
@@ -546,265 +811,6 @@
      "local": "Manaus - Adrianópolis",
      "tipo": "Efetivo",
      "link": "https://hapvidandi.gupy.io/jobs/12629787"
-    }
-   ]
-  },
-  {
-   "empresa": "HOSPITAL ADVENTISTA DE MANAUS",
-   "cat": "saude",
-   "emoji": "🏥",
-   "vagas": [
-    {
-     "cargo": "Analista de Central de Autorização",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12827909"
-    },
-    {
-     "cargo": "Aprendiz",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Aprendiz",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12805007"
-    },
-    {
-     "cargo": "Aprendiz",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Aprendiz",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12784078"
-    },
-    {
-     "cargo": "Aprendiz - BANCO DE TALENTOS.",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Banco de talentos",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/8413388"
-    },
-    {
-     "cargo": "Aprendiz - Recepção Consultórios",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Aprendiz",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12789659"
-    },
-    {
-     "cargo": "Aprendiz - Recepção Consultórios",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Aprendiz",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12837955"
-    },
-    {
-     "cargo": "Aprendiz - Recepção Consultórios",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Aprendiz",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12787853"
-    },
-    {
-     "cargo": "Auxiliar Administrativo - Agência Transfusional (Banco de Sangue)",
-     "local": "Manaus - DISTRITO INDUSTRIAL",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12738268"
-    },
-    {
-     "cargo": "Auxiliar de Cozinha",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Temporário",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12738718"
-    },
-    {
-     "cargo": "Auxiliar de Utilidades",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12663442"
-    },
-    {
-     "cargo": "Auxiliar Geral de Conservação",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12822978"
-    },
-    {
-     "cargo": "Enfermeiro (a) - Clínica Médica I",
-     "local": "Manaus",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12815479"
-    },
-    {
-     "cargo": "Enfermeiro(a) Consultórios",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12757151"
-    },
-    {
-     "cargo": "Enfermeiro(a) diversas áreas - Banco de Talentos",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Banco de talentos",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/10907652"
-    },
-    {
-     "cargo": "Enfermeiro(a) - Feirista Unidades",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Banco de talentos",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12798185"
-    },
-    {
-     "cargo": "ENFERMEIRO(A) - U.T.I. PED/ MISTA",
-     "local": "Manaus - Distrito Industrial",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12757258"
-    },
-    {
-     "cargo": "Enfermeiro Hemodinâmica",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12092212"
-    },
-    {
-     "cargo": "Estagiário(a) em T.I",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Banco de talentos",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12788657"
-    },
-    {
-     "cargo": "ESTOFADOR (A)",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12289206"
-    },
-    {
-     "cargo": "Faturista",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12793793"
-    },
-    {
-     "cargo": "Oficial de Manutenção",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/11467155"
-    },
-    {
-     "cargo": "RECEPCIONISTA - BANCO DE TALENTOS",
-     "local": "Manaus - DISTRITO INDUSTRIAL I",
-     "tipo": "Banco de talentos",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/10825709"
-    },
-    {
-     "cargo": "RECEPCIONISTA - CONSULTÓRIOS",
-     "local": "Manaus - DISTRITO INDUSTRIAL I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12825812"
-    },
-    {
-     "cargo": "RECEPCIONISTA - CONSULTÓRIOS",
-     "local": "Manaus - DISTRITO INDUSTRIAL I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12825820"
-    },
-    {
-     "cargo": "RECEPCIONISTA - CONSULTÓRIOS",
-     "local": "Manaus - DISTRITO INDUSTRIAL I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12787819"
-    },
-    {
-     "cargo": "TÉCNICO(A) EM NUTRIÇÃO E DIETÉTICA",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12745618"
-    },
-    {
-     "cargo": "TÉCNICO(A) EM NUTRIÇÃO E DIETÉTICA - BANCO DE TALENTO",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Banco de talentos",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12077664"
-    },
-    {
-     "cargo": "TÉCNICO DE ENFERMAGEM",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Banco de talentos",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12858662"
-    },
-    {
-     "cargo": "Técnico de Enfermagem - Centro Cirúrgico",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12848647"
-    },
-    {
-     "cargo": "TÉCNICO DE ENFERMAGEM - Clínica Cirúrgica",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12830508"
-    },
-    {
-     "cargo": "TÉCNICO DE ENFERMAGEM - Clínica Cirúrgica",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12715124"
-    },
-    {
-     "cargo": "Técnico de Enfermagem- Clínica Médica I",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12840894"
-    },
-    {
-     "cargo": "Técnico de Enfermagem- Clínica Médica I",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12857007"
-    },
-    {
-     "cargo": "Técnico de Enfermagem - Clínica Médica II",
-     "local": "Manaus - Distrito Industrial",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12783178"
-    },
-    {
-     "cargo": "Técnico de Enfermagem C.T.I Adulto",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12863601"
-    },
-    {
-     "cargo": "Técnico de Enfermagem C.T.I Adulto",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12863694"
-    },
-    {
-     "cargo": "Técnico de Enfermagem C.T.I Adulto",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12863572"
-    },
-    {
-     "cargo": "Técnico de Enfermagem de C.M.E.",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Aprendiz",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12574687"
-    },
-    {
-     "cargo": "Técnico de Enfermagem- Pediatria",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12856569"
-    },
-    {
-     "cargo": "Técnico de Enfermagem - Pronto Atendimento",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12724482"
-    },
-    {
-     "cargo": "Técnico de Enfermagem- Unidade de Internação I (Obstetrícia)",
-     "local": "Manaus - Distrito Industrial I",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12834562"
-    },
-    {
-     "cargo": "TÉCNICO DE ENFERMAGEM - U.T.I. NEO/PED.",
-     "local": "Manaus - Distrito Industrial",
-     "tipo": "Efetivo",
-     "link": "https://hospitaladventistademanaus.gupy.io/jobs/12834573"
     }
    ]
   },
@@ -1311,13 +1317,13 @@
      "cargo": "Mecânico(a) de Autos",
      "local": "Manaus - Novo Israel",
      "tipo": "Efetivo",
-     "link": "https://solarcocacola.gupy.io/jobs/12644672"
+     "link": "https://solarcocacola.gupy.io/jobs/12722550"
     },
     {
      "cargo": "Mecânico(a) de Autos",
      "local": "Manaus - Novo Israel",
      "tipo": "Efetivo",
-     "link": "https://solarcocacola.gupy.io/jobs/12722550"
+     "link": "https://solarcocacola.gupy.io/jobs/12644672"
     },
     {
      "cargo": "Motorista Carreteiro - Temporário",
@@ -1339,15 +1345,15 @@
     },
     {
      "cargo": "Operador(a) de Empilhadeira",
-     "local": "Manaus",
-     "tipo": "Efetivo",
-     "link": "https://solarcocacola.gupy.io/jobs/12491070"
-    },
-    {
-     "cargo": "Operador(a) de Empilhadeira",
      "local": "Manaus - Colônia Terra Nova",
      "tipo": "Efetivo",
      "link": "https://solarcocacola.gupy.io/jobs/12849440"
+    },
+    {
+     "cargo": "Operador(a) de Empilhadeira",
+     "local": "Manaus",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12491070"
     },
     {
      "cargo": "Operador(a) de Execução e Vendas - Presidente Figueiredo",
@@ -1661,13 +1667,13 @@
      "cargo": "Caixa - Manaus/AM - Filial 506",
      "local": "Manaus - Adrianópolis",
      "tipo": "Efetivo",
-     "link": "https://farmaciaspmenos.gupy.io/jobs/12827820"
+     "link": "https://farmaciaspmenos.gupy.io/jobs/12794283"
     },
     {
      "cargo": "Caixa - Manaus/AM - Filial 506",
      "local": "Manaus - Adrianópolis",
      "tipo": "Efetivo",
-     "link": "https://farmaciaspmenos.gupy.io/jobs/12794283"
+     "link": "https://farmaciaspmenos.gupy.io/jobs/12827820"
     },
     {
      "cargo": "Caixa - Manaus/AM - Filial 570",
@@ -3206,13 +3212,13 @@
      "cargo": "FARM | Jovem Aprendiz | MANAUARA",
      "local": "Manaus - Adrianópolis",
      "tipo": "Aprendiz",
-     "link": "https://farm.gupy.io/jobs/12619413"
+     "link": "https://farm.gupy.io/jobs/12619209"
     },
     {
      "cargo": "FARM | Jovem Aprendiz | MANAUARA",
      "local": "Manaus - Adrianópolis",
      "tipo": "Aprendiz",
-     "link": "https://farm.gupy.io/jobs/12619209"
+     "link": "https://farm.gupy.io/jobs/12619413"
     },
     {
      "cargo": "FARM | Vendedor Extra Natal | Amazonas Shopping",
@@ -5193,25 +5199,6 @@
    ]
   },
   {
-   "empresa": "PETZ",
-   "cat": "loja",
-   "emoji": "🏪",
-   "vagas": [
-    {
-     "cargo": "Atendente - Petz Djalma Batista",
-     "local": "Manaus - Parque Dez de Novembro",
-     "tipo": "Efetivo",
-     "link": "https://petz.gupy.io/jobs/12788588"
-    },
-    {
-     "cargo": "Repositor - Petz Djalma Batista",
-     "local": "Manaus - Parque Dez de Novembro",
-     "tipo": "Efetivo",
-     "link": "https://petz.gupy.io/jobs/12787156"
-    }
-   ]
-  },
-  {
    "empresa": "DUTYFREE AVOLTA",
    "cat": "loja",
    "emoji": "🏪",
@@ -5634,6 +5621,19 @@
      "local": "Manaus - Parque 10 de Novembro",
      "tipo": "Efetivo",
      "link": "https://granado.gupy.io/jobs/12789496"
+    }
+   ]
+  },
+  {
+   "empresa": "PETZ",
+   "cat": "loja",
+   "emoji": "🏪",
+   "vagas": [
+    {
+     "cargo": "Atendente - Petz Djalma Batista",
+     "local": "Manaus - Parque Dez de Novembro",
+     "tipo": "Efetivo",
+     "link": "https://petz.gupy.io/jobs/12788588"
     }
    ]
   },
