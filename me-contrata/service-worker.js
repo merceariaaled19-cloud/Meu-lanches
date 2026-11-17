@@ -1,4 +1,4 @@
-const CACHE_NAME = "mecontrata-v1";
+const CACHE_NAME = "mecontrata-v2";
 const APP_FILES = [
   "./",
   "./index.html",

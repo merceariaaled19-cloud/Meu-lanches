@@ -1,0 +1,1084 @@
+{
+ "atualizado": "17/11/2026 09:44",
+ "empresas": [
+  {
+   "empresa": "ASSAÍ",
+   "cat": "supermercado",
+   "emoji": "🛒",
+   "vagas": [
+    {
+     "cargo": "Açougueiro(a)",
+     "local": "Manaus - Novo Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12623829"
+    },
+    {
+     "cargo": "Açougueiro(a)- Manaus - Efigênio Sales/Aleixo",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12690888"
+    },
+    {
+     "cargo": "Aprendiz Repositor de Mercadorias/MATUTINO",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12713003"
+    },
+    {
+     "cargo": "Aprendiz Repositor de Mercadorias - Tarde - Assaí Efigênio Sales/Aleixo.",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12825518"
+    },
+    {
+     "cargo": "Atendente de Loja Passaí - Assaí Bola da Suframa",
+     "local": "Manaus - Crespo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12848060"
+    },
+    {
+     "cargo": "Auxiliar de Açougue- Assaí Efigênio Sales- Aleixo- Manaus",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12795111"
+    },
+    {
+     "cargo": "Auxiliar de Cozinha Refeitório (Efigênio Salles)",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12749916"
+    },
+    {
+     "cargo": "Auxiliar de Cozinha Refeitório- Grande Circular",
+     "local": "Manaus - Novo Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12644776"
+    },
+    {
+     "cargo": "Empacotador(a)",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12844945"
+    },
+    {
+     "cargo": "Empacotador(a) - Assaí Efigênio Sales-Aleixo",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12825517"
+    },
+    {
+     "cargo": "Empacotador(a)- Assaí Manaus Efigênio Sales- Aleixo",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12506722"
+    },
+    {
+     "cargo": "Operador(a) de Caixa",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12200584"
+    },
+    {
+     "cargo": "Operador(a) de Caixa - Assaí Bola da Suframa",
+     "local": "Manaus - Crespo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12848062"
+    },
+    {
+     "cargo": "Operador(a) de Caixa- Assaí Efigênio Sales- Manaus -Aleixo",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12841010"
+    },
+    {
+     "cargo": "Operador(a) de Caixa - FECHAMENTO",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12889916"
+    },
+    {
+     "cargo": "Operador(a) de Caixa - FECHAMENTO DE LOJA",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12692222"
+    },
+    {
+     "cargo": "Operador(a) de Empilhadeira - ASSAÍ BOLA DA SUFRAMA",
+     "local": "Manaus - Crespo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12779580"
+    },
+    {
+     "cargo": "Operador(a) de Empilhadeira - Assaí Efigênio Sales/Aleixo",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12741402"
+    },
+    {
+     "cargo": "Operador(a) de Empilhadeira- Grande Circular",
+     "local": "Manaus - Novo Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12691012"
+    },
+    {
+     "cargo": "Operador(a) de Loja",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12535673"
+    },
+    {
+     "cargo": "Operador(a) de Loja - Assaí Manaus - Efigênio Sales - Aleixo",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12601578"
+    },
+    {
+     "cargo": "Operador(a) de Loja /depósito",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12889920"
+    },
+    {
+     "cargo": "Operador(a) de Loja / depósito",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12845174"
+    },
+    {
+     "cargo": "Operador(a) de Loja - Depósito Assaí Bola da Suframa",
+     "local": "Manaus - Crespo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12681153"
+    },
+    {
+     "cargo": "Operador(a) de Loja - Deposito - Grande Circular",
+     "local": "Manaus - Novo Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12867135"
+    },
+    {
+     "cargo": "Operador(a) de Loja / EMPORIO",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12712993"
+    },
+    {
+     "cargo": "Operador(a) de Loja - Empório- Assaí Manaus - Efigênio Sales- Aleixo",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12591023"
+    },
+    {
+     "cargo": "Operador(a) de Loja - mercearia",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12732026"
+    },
+    {
+     "cargo": "Operador(a) de Loja /mercearia",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12842039"
+    },
+    {
+     "cargo": "Operador(a) de Loja - MERCEARIA",
+     "local": "Manaus - Novo Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12855073"
+    },
+    {
+     "cargo": "Operador(a) de Loja - Mercearia- Assaí Efigênio Sales- Manaus-Aleixo",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12841018"
+    },
+    {
+     "cargo": "Operador(a) de Loja - Mercearia- Assaí Manaus Efigênio Sales-Aleixo.",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12616846"
+    },
+    {
+     "cargo": "Operador(a) de Loja - Mercearia - Manaus II Efigênio Salles",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12687279"
+    },
+    {
+     "cargo": "Operador(a) de Loja Pleno - Assaí Efigênio Sales - Aleixo (Depósito)",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12534849"
+    },
+    {
+     "cargo": "Operador(a) de Loja Pleno - Canal Digital- Assaí Efigênio Sales - Aleixo.",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12535189"
+    },
+    {
+     "cargo": "Operador(a) de Loja Pleno - Prevenção",
+     "local": "Manaus - Aleixo",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12715076"
+    },
+    {
+     "cargo": "Operador(a) de Loja Pleno/PREVENÇÃO DE PERDAS",
+     "local": "Manaus - Flores",
+     "tipo": "Efetivo",
+     "link": "https://assai.gupy.io/jobs/12608233"
+    }
+   ]
+  },
+  {
+   "empresa": "SOLAR COCA-COLA",
+   "cat": "industria",
+   "emoji": "🥤",
+   "vagas": [
+    {
+     "cargo": "Analista de Engenharia III",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12592836"
+    },
+    {
+     "cargo": "Analista de Sistema de Gestão Integrada II - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12811764"
+    },
+    {
+     "cargo": "Assistente de Asseguração da Qualidade",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12776123"
+    },
+    {
+     "cargo": "Auxiliar Administrativo - PCD (Estoque)",
+     "local": "Manaus - Colônia Terra Nova",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12722540"
+    },
+    {
+     "cargo": "Auxiliar de Carga e Descarga",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12569546"
+    },
+    {
+     "cargo": "Auxiliar de Entrega",
+     "local": "Manaus - Colônia Terra Nova",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12480359"
+    },
+    {
+     "cargo": "Auxiliar de Entrega - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12757655"
+    },
+    {
+     "cargo": "Auxiliar de Expedição - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12653787"
+    },
+    {
+     "cargo": "Consultor(a) de Vendas I - Caapiranga/Beruri/Anamã",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12676393"
+    },
+    {
+     "cargo": "Coordenador de Recursos Humanos | Manaus/AM",
+     "local": "Manaus - Colônia Terra Nova",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12747119"
+    },
+    {
+     "cargo": "Frentista - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12786325"
+    },
+    {
+     "cargo": "Mecânico(a) de Autos",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12644672"
+    },
+    {
+     "cargo": "Mecânico(a) de Autos",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12722550"
+    },
+    {
+     "cargo": "Motorista Carreteiro - Temporário",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Temporário",
+     "link": "https://solarcocacola.gupy.io/jobs/12679906"
+    },
+    {
+     "cargo": "Motorista Carreteiro - Temporário - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Temporário",
+     "link": "https://solarcocacola.gupy.io/jobs/12467031"
+    },
+    {
+     "cargo": "Motorista de Entrega - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12757682"
+    },
+    {
+     "cargo": "Operador(a) de Empilhadeira",
+     "local": "Manaus",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12491070"
+    },
+    {
+     "cargo": "Operador(a) de Empilhadeira",
+     "local": "Manaus - Colônia Terra Nova",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12849440"
+    },
+    {
+     "cargo": "Operador(a) de Execução e Vendas - Presidente Figueiredo",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12782138"
+    },
+    {
+     "cargo": "Operador(a) de Processos I",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12903588"
+    },
+    {
+     "cargo": "Operador(a) de Processos III",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12903610"
+    },
+    {
+     "cargo": "Operador(a) de Processos IV - Afirmativa para Pessoas com Deficiência",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12903653"
+    },
+    {
+     "cargo": "Promotor(a) de Vendas - Plano Verão",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12699081"
+    },
+    {
+     "cargo": "Promotor(a) de Vendas - Presidente Figueiredo",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Estágio",
+     "link": "https://solarcocacola.gupy.io/jobs/12729701"
+    },
+    {
+     "cargo": "Supervisor(a) da Asseguração da Qualidade - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12860753"
+    },
+    {
+     "cargo": "Supervisor(a) de Infraestrutura - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12838312"
+    },
+    {
+     "cargo": "Supervisor(a) de Manutenção Elétrica - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12838311"
+    },
+    {
+     "cargo": "Supervisor(a) de Produção - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12714918"
+    },
+    {
+     "cargo": "Técnico(a) de Automação - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12594147"
+    },
+    {
+     "cargo": "Torneiro Mecânico - (Manaus - AM)",
+     "local": "Manaus - Novo Israel",
+     "tipo": "Efetivo",
+     "link": "https://solarcocacola.gupy.io/jobs/12638365"
+    }
+   ]
+  },
+  {
+   "empresa": "MONDIAL",
+   "cat": "industria",
+   "emoji": "🔌",
+   "vagas": [
+    {
+     "cargo": "Jovem Aprendiz - Banco de Talentos",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3898378"
+    },
+    {
+     "cargo": "Analista de Almoxarifado",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3870936"
+    },
+    {
+     "cargo": "Assistente de Suprimentos (PCP) - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3710701"
+    },
+    {
+     "cargo": "Assistente de Importação (Temporário)",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3682664"
+    },
+    {
+     "cargo": "Assistente de Suprimentos (Compras Nacional)",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3648962"
+    },
+    {
+     "cargo": "Key Account / Executivo de Contas - Região Norte",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/2910203"
+    },
+    {
+     "cargo": "Técnico(a) de Segurança do Trabalho",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3611872"
+    },
+    {
+     "cargo": "Analista de Qualidade",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3598281"
+    },
+    {
+     "cargo": "Assistente de Suprimentos",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3556231"
+    },
+    {
+     "cargo": "Almoxarife",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3520573"
+    },
+    {
+     "cargo": "Assistente de Suprimentos",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3520484"
+    },
+    {
+     "cargo": "Analista de Almoxarifado",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3520415"
+    },
+    {
+     "cargo": "Jovem Aprendiz - Recursos Humanos",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3492638"
+    },
+    {
+     "cargo": "Técnico(a) Eletrônico(a)",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3487370"
+    },
+    {
+     "cargo": "Estágio em Suprimentos",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3487242"
+    },
+    {
+     "cargo": "Assistente de Suprimentos (Compras Nacional)",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3484840"
+    },
+    {
+     "cargo": "Jovem Aprendiz - Banco de Talentos",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3412512"
+    },
+    {
+     "cargo": "Montador(a) Multifuncional (Pessoa com Deficiência)",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3403796"
+    },
+    {
+     "cargo": "Montador(a) Multifuncional - Banco de Talentos",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3243359"
+    },
+    {
+     "cargo": "Almoxarife",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3208509"
+    },
+    {
+     "cargo": "Auxiliar Administrativo (RH)",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3207519"
+    },
+    {
+     "cargo": "Analista de Suprimentos Jr - Compras Estratégicas (Procurement)",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/2932030"
+    },
+    {
+     "cargo": "Assistente de Suprimentos",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3125562"
+    },
+    {
+     "cargo": "Técnico(a) de Segurança do Trabalho",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/2741451"
+    },
+    {
+     "cargo": "Analista de Suprimentos Jr - Almoxarifado",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3080265"
+    },
+    {
+     "cargo": "Montador(a) Multifuncional (Pessoa com Deficiência)",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/3079372"
+    },
+    {
+     "cargo": "Analista de Suprimentos Jr - Compras",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/2932153"
+    },
+    {
+     "cargo": "Montador(a) Multifuncional - Banco de Talentos",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://mondial.pandape.catho.com.br/Detail/2825895"
+    }
+   ]
+  },
+  {
+   "empresa": "PHILCO",
+   "cat": "industria",
+   "emoji": "📺",
+   "vagas": [
+    {
+     "cargo": "Técnico de Segurança do Trabalho I - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3939901"
+    },
+    {
+     "cargo": "Operador Multifuncional (PCD) - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3924719"
+    },
+    {
+     "cargo": "Analista de Automação Industrial Sênior - Manaus -AM",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3912749"
+    },
+    {
+     "cargo": "Assistente Fiscal",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3903546"
+    },
+    {
+     "cargo": "Analista Fiscal SR",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3893280"
+    },
+    {
+     "cargo": "Líder de Produção – Injeção Plástica",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3837721"
+    },
+    {
+     "cargo": "Téc. Enfermagem do Trabalho - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3801454"
+    },
+    {
+     "cargo": "Operador Multifuncional I - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3681251"
+    },
+    {
+     "cargo": "Reparador de Produção - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3679994"
+    },
+    {
+     "cargo": "Operador Multifuncional I - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3674076"
+    },
+    {
+     "cargo": "Conferente de Materiais I",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3526013"
+    },
+    {
+     "cargo": "Operador de Máquina SMD I - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3526008"
+    },
+    {
+     "cargo": "Médico do Trabalho - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3475263"
+    },
+    {
+     "cargo": "Operador Multifuncional II - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3471658"
+    },
+    {
+     "cargo": "Analista Adm. de Pessoal SR - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3461837"
+    },
+    {
+     "cargo": "Jovem Aprendiz - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3441676"
+    },
+    {
+     "cargo": "Operador Multifuncional I - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3438515"
+    },
+    {
+     "cargo": "Operador de Depósito I - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3438388"
+    },
+    {
+     "cargo": "Supervisor(a) Eng. de Produto - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3281500"
+    },
+    {
+     "cargo": "Analista de Materiais Jr - Manaus",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://philcoeletronicos.pandape.infojobs.com.br/Detail/3275597"
+    }
+   ]
+  },
+  {
+   "empresa": "YAMAHA",
+   "cat": "industria",
+   "emoji": "🏍️",
+   "vagas": [
+    {
+     "cargo": "AJUSTADOR DE FERRAMENTAS III - PROGRAMADOR E OPERADOR DE CNC (FERRAMENTARIA)",
+     "local": "Manaus - Parque São Jorge",
+     "tipo": "Efetivo",
+     "link": "https://yamaha.gupy.io/jobs/12480067"
+    },
+    {
+     "cargo": "ANALISTA DE CUSTOS PL",
+     "local": "Manaus - Parque São Jorge",
+     "tipo": "Efetivo",
+     "link": "https://yamaha.gupy.io/jobs/12788883"
+    },
+    {
+     "cargo": "APRENDIZ ADMINISTRATIVO",
+     "local": "Manaus",
+     "tipo": "Aprendiz",
+     "link": "https://yamaha.gupy.io/jobs/12088720"
+    },
+    {
+     "cargo": "BANCO DE TALENTOS - AUXILIAR DE ALMOXARIFADO",
+     "local": "Manaus",
+     "tipo": "Banco de talentos",
+     "link": "https://yamaha.gupy.io/jobs/11617819"
+    },
+    {
+     "cargo": "BANCO DE TALENTOS - AUXILIAR DE MONTAGEM",
+     "local": "Manaus",
+     "tipo": "Banco de talentos",
+     "link": "https://yamaha.gupy.io/jobs/11093648"
+    },
+    {
+     "cargo": "BANCO DE TALENTOS - AUXILIAR DE PINTURA",
+     "local": "Manaus",
+     "tipo": "Banco de talentos",
+     "link": "https://yamaha.gupy.io/jobs/11094121"
+    },
+    {
+     "cargo": "BANCO DE TALENTOS - AUXILIAR DE SOLDA",
+     "local": "Manaus",
+     "tipo": "Banco de talentos",
+     "link": "https://yamaha.gupy.io/jobs/11336667"
+    },
+    {
+     "cargo": "BANCO DE TALENTOS - AUXILIAR DE USINAGEM",
+     "local": "Manaus",
+     "tipo": "Banco de talentos",
+     "link": "https://yamaha.gupy.io/jobs/11238164"
+    },
+    {
+     "cargo": "BANCO DE TALENTOS - OPERADOR DE SERVIÇOS",
+     "local": "Manaus",
+     "tipo": "Banco de talentos",
+     "link": "https://yamaha.gupy.io/jobs/12178910"
+    },
+    {
+     "cargo": "BANCO DE TALENTOS PCD – ÁREAS PRODUTIVAS",
+     "local": "Manaus",
+     "tipo": "Banco de talentos",
+     "link": "https://yamaha.gupy.io/jobs/11476082"
+    },
+    {
+     "cargo": "BANCO DE TALENTOS - SOLDADOR",
+     "local": "Manaus",
+     "tipo": "Banco de talentos",
+     "link": "https://yamaha.gupy.io/jobs/11337711"
+    },
+    {
+     "cargo": "ESTAGIÁRIO(A) DE ENGENHARIA",
+     "local": "Manaus - Parque São Jorge",
+     "tipo": "Estágio",
+     "link": "https://yamaha.gupy.io/jobs/12810625"
+    },
+    {
+     "cargo": "ESTAGIÁRIO (A) ENSINO SUPERIOR EM ADMNISTRAÇÃO",
+     "local": "Manaus - Parque São Jorge",
+     "tipo": "Estágio",
+     "link": "https://yamaha.gupy.io/jobs/12741341"
+    },
+    {
+     "cargo": "FERRAMENTEIRO I (PROGRAMADOR E OPERADOR DE CNC)",
+     "local": "Manaus - Parque São Jorge",
+     "tipo": "Efetivo",
+     "link": "https://yamaha.gupy.io/jobs/12480233"
+    },
+    {
+     "cargo": "Vistoriador de Pátio",
+     "local": "Manaus - Parque São Jorge",
+     "tipo": "Efetivo",
+     "link": "https://yamaha.gupy.io/jobs/12714606"
+    }
+   ]
+  },
+  {
+   "empresa": "JABIL",
+   "cat": "industria",
+   "emoji": "💻",
+   "vagas": [
+    {
+     "cargo": "Estagiário de Logística",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/estagiario-de-logistica/626/103418820720"
+    },
+    {
+     "cargo": "ALMOXARIFE 2",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/almoxarife-2/626/103375418912"
+    },
+    {
+     "cargo": "TECNICO DE PRODUCAO/DIAGNOSTICO PL",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/tecnico-de-producao-diagnostico-pl/626/103305764912"
+    },
+    {
+     "cargo": "TÉCNICO DE MANUTENÇÃO PL",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/tecnico-de-manutencao-pl/626/103305764848"
+    },
+    {
+     "cargo": "Tecnico de Produção / Diagnóstico Pl",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/tecnico-de-producao-diagnostico-pl/626/103305764928"
+    },
+    {
+     "cargo": "PLANEJADOR DE MATERIAIS E PRODUÇÃO PL",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/planejador-de-materiais-e-producao-pl/626/103256114352"
+    },
+    {
+     "cargo": "Assistente de Serviços de Facilities",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/assistente-de-servicos-de-facilities/626/103246572544"
+    },
+    {
+     "cargo": "Estagiário de Controle de Inventário",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/estagiario-de-controle-de-inventario/626/103246572608"
+    },
+    {
+     "cargo": "Coordenador de Engenharia",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/coordenador-de-engenharia/626/103219524368"
+    },
+    {
+     "cargo": "COMPRADOR I",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/comprador-i/626/103219524512"
+    },
+    {
+     "cargo": "Estagiário de Engenharia",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/estagiario-de-engenharia/626/103173979648"
+    },
+    {
+     "cargo": "Estagiário de Planejamento",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/estagiario-de-planejamento/626/103154948256"
+    },
+    {
+     "cargo": "Analista de Serviços de Facilities",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/analista-de-servicos-de-facilities/626/103084635728"
+    },
+    {
+     "cargo": "PLANEJADOR DE MATERIAIS E PRODUÇÃO PL",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/planejador-de-materiais-e-producao-pl/626/103084635360"
+    },
+    {
+     "cargo": "ESTÁGIO EM SEGURANÇA PATRIMONIAL",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://jobs.jabil.com/en/job/manaus/estagio-em-seguranca-patrimonial/626/103084635488"
+    }
+   ]
+  },
+  {
+   "empresa": "BEMOL",
+   "cat": "loja",
+   "emoji": "🏪",
+   "vagas": [
+    {
+     "cargo": "Assistente Administrativo CD",
+     "local": "Manaus - Tarumã",
+     "tipo": "Efetivo",
+     "link": "https://bemol.gupy.io/jobs/12837107"
+    },
+    {
+     "cargo": "Assistente de dados",
+     "local": "Manaus - Tarumã",
+     "tipo": "Efetivo",
+     "link": "https://bemol.gupy.io/jobs/12837030"
+    },
+    {
+     "cargo": "Assistente de Loja e Atendimento - Manaus",
+     "local": "Manaus - Cidade Nova",
+     "tipo": "Efetivo",
+     "link": "https://bemol.gupy.io/jobs/12788934"
+    },
+    {
+     "cargo": "Assistente de Padaria - Manaus",
+     "local": "Manaus - Cidade Nova",
+     "tipo": "Efetivo",
+     "link": "https://bemol.gupy.io/jobs/12827129"
+    },
+    {
+     "cargo": "Auxiliar Administrativo Centro de distribuição",
+     "local": "Manaus - Tarumã",
+     "tipo": "Efetivo",
+     "link": "https://bemol.gupy.io/jobs/12759654"
+    },
+    {
+     "cargo": "Auxiliar de Entregas - Centro de Distribuição",
+     "local": "Manaus - Cachoeirinha",
+     "tipo": "Banco de talentos",
+     "link": "https://bemol.gupy.io/jobs/12699894"
+    },
+    {
+     "cargo": "Auxiliar de Entregas - Centro de Distribuição Porto Velho",
+     "local": "Manaus - Centro",
+     "tipo": "Banco de talentos",
+     "link": "https://bemol.gupy.io/jobs/12057116"
+    },
+    {
+     "cargo": "Auxiliar Interno - Centro de Distribuição",
+     "local": "Manaus - Tarumã",
+     "tipo": "Banco de talentos",
+     "link": "https://bemol.gupy.io/jobs/12715452"
+    },
+    {
+     "cargo": "CONSULTOR(A) DE VENDAS - MANAUS",
+     "local": "Manaus - Cidade Nova",
+     "tipo": "Banco de talentos",
+     "link": "https://bemol.gupy.io/jobs/12533244"
+    },
+    {
+     "cargo": "Estagiário (a) de Direito – Jurídico",
+     "local": "Manaus - Centro",
+     "tipo": "Estágio",
+     "link": "https://bemol.gupy.io/jobs/12470416"
+    },
+    {
+     "cargo": "Medico(a) - Ultrassonografista - Clínica Bemol Saúde",
+     "local": "Manaus - Cidade Nova",
+     "tipo": "Efetivo",
+     "link": "https://bemol.gupy.io/jobs/12784908"
+    },
+    {
+     "cargo": "Motorista - Cat D - Centro de Distribuição",
+     "local": "Manaus - Tarumã",
+     "tipo": "Efetivo",
+     "link": "https://bemol.gupy.io/jobs/12842702"
+    },
+    {
+     "cargo": "Operador(a) de Empilhadeira - Centro de Distribuição Turismo",
+     "local": "Manaus - Tarumã",
+     "tipo": "Temporário",
+     "link": "https://bemol.gupy.io/jobs/12670067"
+    },
+    {
+     "cargo": "Supervisor (a) de Operações - CD Manaus",
+     "local": "Manaus - Tarumã",
+     "tipo": "Efetivo",
+     "link": "https://bemol.gupy.io/jobs/12881168"
+    }
+   ]
+  },
+  {
+   "empresa": "HONDA",
+   "cat": "industria",
+   "emoji": "🏍️",
+   "vagas": [
+    {
+     "cargo": "Assistente Técnico PCD",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://honda.gupy.io/jobs/11984839"
+    },
+    {
+     "cargo": "Banco de Talentos | Manaus - HDA",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Banco de talentos",
+     "link": "https://honda.gupy.io/jobs/7712675"
+    },
+    {
+     "cargo": "Banco de Talentos PCD MANAUS - FORMAÇÃO TÉCNICA/SUPERIOR",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Banco de talentos",
+     "link": "https://honda.gupy.io/jobs/9967810"
+    },
+    {
+     "cargo": "Banco de Talentos PCD | Manaus - HDA",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Banco de talentos",
+     "link": "https://honda.gupy.io/jobs/7730413"
+    }
+   ]
+  },
+  {
+   "empresa": "PANASONIC",
+   "cat": "industria",
+   "emoji": "📺",
+   "vagas": [
+    {
+     "cargo": "Estagiário(a) de Importação",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://panasonicdobrasil.pandape.infojobs.com.br/Detail/3875416"
+    },
+    {
+     "cargo": "Estagiário (a) Engenharia Eletrônica",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://panasonicdobrasil.pandape.infojobs.com.br/Detail/3875189"
+    },
+    {
+     "cargo": "Banco de Talentos - Montador (PCD)",
+     "local": "Manaus",
+     "tipo": "",
+     "link": "https://panasonicdobrasil.pandape.infojobs.com.br/Detail/3489861"
+    }
+   ]
+  },
+  {
+   "empresa": "CALOI",
+   "cat": "industria",
+   "emoji": "🚲",
+   "vagas": [
+    {
+     "cargo": "Analista de Engenharia de Processos Junior",
+     "local": "Manaus - Distrito Industrial I",
+     "tipo": "Efetivo",
+     "link": "https://caloi.gupy.io/jobs/12748893"
+    },
+    {
+     "cargo": "Aprendiz Administrativo",
+     "local": "Manaus - Distrito I",
+     "tipo": "Aprendiz",
+     "link": "https://caloi.gupy.io/jobs/12878646"
+    }
+   ]
+  }
+ ],
+ "fontes_com_erro": []
+}
