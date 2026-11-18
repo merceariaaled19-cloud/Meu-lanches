@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Duelo dos Monstros</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1e1b4b">
+<link rel="icon" href="icon-192.png">
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{height:100%;background:radial-gradient(circle at 50% 50%,#312e81,#0f0a2e);color:#fff;overflow:hidden}
+button{border:0;border-radius:10px;padding:11px 14px;font-weight:800;font-size:15px;cursor:pointer;background:#fbbf24;color:#1e1b4b}
+button.sec{background:#4c1d95;color:#fff}button.ver{background:#dc2626;color:#fff}button:disabled{opacity:.4}
+input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-align:center}
+.esc{display:none!important}
+#menu{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center}
+#menu h1{font-size:34px;color:#fbbf24;text-shadow:0 3px 0 #7c2d12}
+#menu .bx{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px}
+#jogo{height:100%;display:flex;flex-direction:column;padding:4px;gap:3px;max-width:620px;margin:0 auto}
+.barra{display:flex;align-items:center;gap:6px;font-size:12px;padding:2px 4px}
+.barra .nome{font-weight:800;font-size:14px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp{font-weight:900;font-size:18px;color:#fbbf24;min-width:70px;text-align:right}
+.lpbar{height:5px;background:#333;border-radius:3px;overflow:hidden;margin:0 4px}.lpbar div{height:100%;background:linear-gradient(90deg,#22c55e,#fbbf24)}
+.mini{background:rgba(255,255,255,.12);border-radius:6px;padding:2px 6px}
+.linha{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.slot{aspect-ratio:3/4;border:1px dashed rgba(255,255,255,.25);border-radius:7px;position:relative;display:flex;align-items:center;justify-content:center}
+.slot.st{aspect-ratio:3/2.3}
+.carta{width:100%;height:100%;border-radius:7px;background:linear-gradient(160deg,#b45309,#78350f);border:2px solid #fbbf24;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:2px;overflow:hidden;position:relative;transition:transform .25s}
+.carta.mag{background:linear-gradient(160deg,#047857,#064e3b);border-color:#6ee7b7}
+.carta.arm{background:linear-gradient(160deg,#9d174d,#500724);border-color:#f9a8d4}
+.carta.verso{background:repeating-linear-gradient(45deg,#4c1d95,#4c1d95 6px,#3b0764 6px,#3b0764 12px);border-color:#a78bfa}
+.carta.verso::after{content:"✦";font-size:22px;color:#c4b5fd;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.carta.def{transform:rotate(90deg) scale(.78)}
+.carta .em{font-size:min(7vw,34px);line-height:1}
+.carta .nm{font-size:min(2.1vw,10px);font-weight:800;text-align:center;line-height:1.05;max-height:2.2em;overflow:hidden}
+.carta .st2{font-size:min(2.2vw,10px);font-weight:900;background:rgba(0,0,0,.45);border-radius:4px;padding:0 3px;white-space:nowrap}
+.carta .lv{font-size:min(1.8vw,8px);color:#fde68a}
+.carta.buff .st2{color:#86efac}
+.sel{outline:3px solid #22d3ee;outline-offset:1px;border-radius:8px}
+.alvo{animation:pis 0.8s infinite}
+@keyframes pis{50%{outline:3px solid #f87171;outline-offset:2px;border-radius:8px}}
+.usado{filter:brightness(.6)}
+#mao{display:flex;gap:4px;overflow-x:auto;padding:4px 2px;min-height:calc(min(19vw,105px)*4/3 + 8px)}
+#mao .mc{flex:0 0 min(19vw,105px);aspect-ratio:3/4}
+#maoOp{display:flex;gap:2px;justify-content:center;height:22px}
+#maoOp div{width:15px;height:21px;border-radius:3px;background:repeating-linear-gradient(45deg,#4c1d95,#4c1d95 3px,#3b0764 3px,#3b0764 6px);border:1px solid #a78bfa}
+#meio{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:3px 2px}
+#fase{font-weight:900;font-size:13px;color:#fde68a}
+#meio button{padding:9px 12px;font-size:13px}
+#toast{position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.85);border:2px solid #fbbf24;padding:12px 18px;border-radius:12px;font-weight:900;font-size:17px;text-align:center;z-index:60;pointer-events:none;max-width:90vw;opacity:0;transition:opacity .25s}
+#toast.on{opacity:1}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:50;padding:14px}
+#modal>div{background:#1e1b4b;border:2px solid #fbbf24;border-radius:14px;padding:14px;width:100%;max-width:360px;max-height:92vh;overflow:auto;text-align:center}
+#modal .grande{width:150px;height:200px;margin:0 auto 8px}
+#modal .grande .em{font-size:64px}#modal .grande .nm{font-size:13px}#modal .grande .st2{font-size:13px}#modal .grande .lv{font-size:11px}
+#modal p{font-size:14px;margin:6px 0;color:#ddd}
+#modal .acoes{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+#aviso{font-size:12px;text-align:center;color:#a5b4fc;min-height:16px}
+#topo{display:flex;gap:6px;justify-content:flex-end}
+#topo button{padding:5px 9px;font-size:12px}
+.cod{font-size:42px;font-weight:900;letter-spacing:8px;color:#fbbf24}
+</style>
+</head>
+<body>
+<div id="menu">
+ <h1>⚔️ Duelo dos Monstros</h1>
+ <div class="bx">
+  <input id="meuNome" placeholder="Seu nome de duelista" maxlength="14">
+  <button onclick="jogarCPU()">🤖 Jogar contra o computador</button>
+  <button class="sec" onclick="criarSala()">🎮 Criar sala (jogar com amigo)</button>
+  <div style="display:flex;gap:6px"><input id="codIn" placeholder="CÓDIGO" maxlength="5" style="text-transform:uppercase"><button class="sec" onclick="entrarSala()">Entrar</button></div>
+  <button class="sec" onclick="regras()">📖 Regras</button>
+  <div id="lobby" class="esc" style="margin-top:10px"></div>
+ </div>
+</div>
+
+<div id="jogo" class="esc">
+ <div id="topo"><button class="sec esc" id="btMic" onclick="toggleMic()">🎤 Mic ligado</button><button class="sec" onclick="sairJogo()">Sair</button></div>
+ <div class="barra"><span class="nome" id="opNome">Computador</span><span class="mini" id="opDeck">🂠 0</span><span class="mini" id="opGy" onclick="verCemiterio(1-ME)">🪦 0</span><span class="lp" id="opLp">8000</span></div>
+ <div class="lpbar"><div id="opBar" style="width:100%"></div></div>
+ <div id="maoOp"></div>
+ <div class="linha" id="opSt"></div>
+ <div class="linha" id="opMz"></div>
+ <div id="meio"><span id="fase">-</span><span id="aviso"></span><span id="botoes"></span></div>
+ <div class="linha" id="meMz"></div>
+ <div class="linha" id="meSt"></div>
+ <div class="lpbar"><div id="meBar" style="width:100%"></div></div>
+ <div class="barra"><span class="nome" id="meNome">Você</span><span class="mini" id="meDeck">🂠 0</span><span class="mini" id="meGy" onclick="verCemiterio(ME)">🪦 0</span><span class="lp" id="meLp">8000</span></div>
+ <div id="mao"></div>
+</div>
+<div id="modal" class="esc"><div id="modalC"></div></div>
+<div id="toast"></div>
+<audio id="somAmigo" autoplay playsinline></audio>
+
+<script>
+// ================= CARTAS =================
+var C={
+ m1:{n:"Mago Sombrio",e:"🧙‍♂️",t:"M",lv:7,a:2500,d:2100,x:"O mago mais poderoso em ataque e defesa."},
+ m2:{n:"Dragão Alvo de Olhos Gélidos",e:"🐉",t:"M",lv:8,a:3000,d:2500,x:"Dragão lendário de poder destruidor."},
+ m3:{n:"Dragão Rubro Sombrio",e:"🐲",t:"M",lv:7,a:2400,d:2000,x:"Dragão feroz de olhos vermelhos."},
+ m4:{n:"Caveira Convocada",e:"💀",t:"M",lv:6,a:2500,d:1200,x:"Demônio de ossos que lança raios."},
+ m5:{n:"Cavaleiro Gaio Feroz",e:"🏇",t:"M",lv:7,a:2300,d:2100,x:"Cavaleiro veloz com lanças em espiral."},
+ m6:{n:"Pequena Maga Sombria",e:"🧝‍♀️",t:"M",lv:6,a:2000,d:1700,x:"Aprendiz do Mago Sombrio."},
+ m7:{n:"Leão Alado Real",e:"🦁",t:"M",lv:5,a:2000,d:1400,x:"Rei dos céus."},
+ m8:{n:"Tigre de Fogo",e:"🐯",t:"M",lv:5,a:2100,d:1000,x:"Ataca em chamas."},
+ m9:{n:"Goblin Atacador",e:"👺",t:"M",lv:4,a:1900,d:0,x:"Forte no ataque, mas sem defesa."},
+ m10:{n:"Guerreiro Celta Guardião",e:"🗡️",t:"M",lv:4,a:1400,d:1200,x:"Elfo guerreiro de espada."},
+ m11:{n:"Cavaleira Lunar",e:"🌙",t:"M",lv:4,a:1700,d:1000,x:"Guerreira da noite."},
+ m12:{n:"Robô Cibernético",e:"🤖",t:"M",lv:4,a:1600,d:1200,x:"Máquina de guerra."},
+ m13:{n:"Muralha da Ilusão",e:"🧱",t:"M",lv:4,a:1000,d:1850,x:"Parede viva difícil de derrubar."},
+ m14:{n:"Elfo Místico",e:"🧝",t:"M",lv:4,a:800,d:2000,x:"Reza pela proteção dos aliados."},
+ m15:{n:"Golem de Pedra",e:"🗿",t:"M",lv:4,a:1300,d:2000,x:"Gigante de rocha."},
+ m16:{n:"Lobo Prateado",e:"🐺",t:"M",lv:4,a:1200,d:800,x:"Caça em bando."},
+ m17:{n:"Morcego Vampiro",e:"🦇",t:"M",lv:4,a:1600,d:1300,x:"Criatura das sombras."},
+ m18:{n:"Dragão Bebê",e:"🐣",t:"M",lv:3,a:1200,d:700,x:"Pequeno, mas corajoso."},
+ m19:{n:"Fada Curandeira",e:"🧚",t:"M",lv:3,a:1000,d:900,x:"Espírito da floresta."},
+ m20:{n:"Kuribola",e:"🐾",t:"M",lv:1,a:300,d:200,x:"Bolinha peluda. Fofa e inofensiva."},
+ m21:{n:"Serpente do Pântano",e:"🐍",t:"M",lv:3,a:1100,d:600,x:"Venenosa."},
+ e1:{n:"Exódio, a Cabeça Selada",e:"👹",t:"M",lv:3,a:1000,d:1000,ex:1,x:"Junte as 5 partes do Exódio na mão e GANHE o duelo!"},
+ e2:{n:"Braço Direito do Selado",e:"💪",t:"M",lv:1,a:200,d:300,ex:1,x:"Parte do Exódio. Junte as 5 na mão e ganhe."},
+ e3:{n:"Braço Esquerdo do Selado",e:"🤜",t:"M",lv:1,a:200,d:300,ex:1,x:"Parte do Exódio. Junte as 5 na mão e ganhe."},
+ e4:{n:"Perna Direita do Selado",e:"🦵",t:"M",lv:1,a:200,d:300,ex:1,x:"Parte do Exódio. Junte as 5 na mão e ganhe."},
+ e5:{n:"Perna Esquerda do Selado",e:"🦶",t:"M",lv:1,a:200,d:300,ex:1,x:"Parte do Exódio. Junte as 5 na mão e ganhe."},
+ s1:{n:"Raio Divino",e:"⚡",t:"S",f:"raio",x:"Destrói TODOS os monstros do adversário."},
+ s2:{n:"Buraco Negro Sombrio",e:"🕳️",t:"S",f:"buraco",x:"Destrói TODOS os monstros do campo, os seus também."},
+ s3:{n:"Pote da Gula",e:"🏺",t:"S",f:"pote",x:"Compre 2 cartas."},
+ s4:{n:"Poção Vermelha",e:"🧪",t:"S",f:"pocao",x:"Ganhe 1000 pontos de vida."},
+ s5:{n:"Bola de Fogo",e:"🔥",t:"S",f:"fogo",x:"Causa 800 de dano ao adversário."},
+ s6:{n:"Espadas da Luz Revelada",e:"✨",t:"S",f:"espadas",x:"Vira pra cima os monstros do adversário. Ele não pode atacar por 3 turnos dele."},
+ s7:{n:"Renascer do Monstro",e:"♻️",t:"S",f:"reborn",x:"Traz de volta o monstro mais forte de qualquer cemitério pro seu lado."},
+ s8:{n:"Força Bélica",e:"💪",t:"S",f:"forca",x:"Um monstro seu ganha +700 de ataque."},
+ s9:{n:"Pluma de Harpia",e:"🪶",t:"S",f:"pluma",x:"Destrói todas as magias e armadilhas do adversário."},
+ t1:{n:"Força Espelhada",e:"🪞",t:"T",f:"espelho",x:"Quando o adversário atacar: destrói todos os monstros dele em posição de ataque."},
+ t2:{n:"Cilindro Mágico",e:"🎩",t:"T",f:"cilindro",x:"Quando o adversário atacar: anula o ataque e ele leva o dano do próprio monstro."},
+ t3:{n:"Buraco Armadilha",e:"🪤",t:"T",f:"armadilha",x:"Quando o adversário invocar um monstro com 1000 ou mais de ataque: destrói ele."},
+ t4:{n:"Anular Ataque",e:"🛡️",t:"T",f:"anular",x:"Quando o adversário atacar: anula o ataque e acaba a fase de batalha dele."}
+};
+var LISTA=["m1","m2","m3","m4","m5","m6","m7","m8","m9","m9","m10","m10","m11","m11","m12","m12","m13","m14","m15","m15","m16","m16","m17","m18","m18","m19","m20","m21","e1","e2","e3","e4","e5","s1","s2","s3","s4","s5","s6","s7","s8","s9","t1","t2","t3","t3","t4","t4"];
+// ================= MOTOR =================
+var S=null, UID=1;
+function emb(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function novoDeck(){ var l=emb(LISTA.slice()).slice(0,40); return l.map(function(id){ return {u:UID++,id:id}; }); }
+function novoP(nome){ return {nome:nome,lp:8000,deck:novoDeck(),hand:[],mz:[null,null,null,null,null],st:[null,null,null,null,null],gy:[]}; }
+function novoJogo(n0,n1){ S={p:[novoP(n0),novoP(n1)],turn:Math.random()<.5?0:1,phase:"main",tn:1,normal:false,swords:[0,0],win:null,why:"",ev:[],evn:0}; for(var i=0;i<5;i++){ comprar(0); comprar(1); } ev("Duelo começou! "+S.p[S.turn].nome+" começa."); checar(); }
+function ev(m){ S.evn++; S.ev.push({n:S.evn,m:m}); if(S.ev.length>8) S.ev.shift(); }
+function comprar(p){ var P=S.p[p]; if(!P.deck.length){ fim(1-p,P.nome+" ficou sem cartas no deck!"); return; } P.hand.push(P.deck.pop()); }
+function fim(w,why){ if(S.win!==null) return; S.win=w; S.why=why; ev(why); }
+function checar(){ for(var p=0;p<2;p++){ var ids=S.p[p].hand.map(function(c){return c.id}); if(["e1","e2","e3","e4","e5"].every(function(x){return ids.indexOf(x)>=0})) fim(p,"EXÓDIO COMPLETO! "+S.p[p].nome+" venceu na hora!"); } for(p=0;p<2;p++) if(S.p[p].lp<=0){ S.p[p].lp=0; fim(1-p,S.p[p].nome+" ficou sem pontos de vida!"); } }
+function atk(m){ return C[m.id].a+(m.buff||0); }
+function destroiM(p,s){ var m=S.p[p].mz[s]; if(!m) return; S.p[p].gy.push({u:m.u,id:m.id}); S.p[p].mz[s]=null; }
+function destroiST(p,s){ var c=S.p[p].st[s]; if(!c) return; S.p[p].gy.push({u:c.u,id:c.id}); S.p[p].st[s]=null; }
+function livre(a){ return a.indexOf(null); }
+function tribNec(id){ var l=C[id].lv; return l>=7?2:l>=5?1:0; }
+function trapPronta(p,f){ var st=S.p[p].st; for(var i=0;i<5;i++){ var c=st[i]; if(c&&C[c.id].t==="T"&&C[c.id].f===f&&c.tn<S.tn) return i; } return -1; }
+function iniciaTurno(p){ S.turn=p; S.phase="main"; S.normal=false; S.p[p].mz.forEach(function(m){ if(m){ m.at=false; m.ch=false; } }); if(S.tn>1) comprar(p); checar(); }
+function act(pl,a){
+ if(S.win!==null) return "O duelo acabou.";
+ if(pl!==S.turn) return "Não é sua vez.";
+ var P=S.p[pl], O=S.p[1-pl], o=1-pl;
+ if(a.t==="summon"){
+  if(S.phase!=="main") return "Só na fase principal.";
+  if(S.normal) return "Você já invocou um monstro neste turno.";
+  var c=P.hand[a.h]; if(!c||C[c.id].t!=="M") return "Carta inválida.";
+  var n=tribNec(c.id), tr=a.tr||[]; if(tr.length!==n) return "Precisa sacrificar "+n+" monstro(s).";
+  if(tr.some(function(s){return !P.mz[s]})) return "Sacrifício inválido.";
+  if(!n&&livre(P.mz)<0) return "Campo cheio.";
+  tr.forEach(function(s){ destroiM(pl,s); });
+  P.hand.splice(a.h,1); var s=livre(P.mz); var m={u:c.u,id:c.id,pos:a.set?"def":"atk",down:!!a.set,tns:S.tn,at:false,ch:false}; P.mz[s]=m; S.normal=true;
+  ev(a.set?P.nome+" baixou um monstro virado.":P.nome+" invocou "+C[c.id].n+"!");
+  if(!a.set&&C[c.id].a>=1000){ var t=trapPronta(o,"armadilha"); if(t>=0){ ev("🪤 "+O.nome+" ativou Buraco Armadilha! "+C[c.id].n+" foi destruído."); destroiST(o,t); destroiM(pl,s); } }
+  return null;
+ }
+ if(a.t==="setst"){
+  if(S.phase!=="main") return "Só na fase principal.";
+  var c2=P.hand[a.h]; if(!c2||C[c2.id].t==="M") return "Carta inválida."; var s2=livre(P.st); if(s2<0) return "Sem espaço pra magia/armadilha.";
+  P.hand.splice(a.h,1); P.st[s2]={u:c2.u,id:c2.id,down:true,tn:S.tn}; ev(P.nome+" baixou uma carta virada."); return null;
+ }
+ if(a.t==="spell"){
+  if(S.phase!=="main") return "Magia só na fase principal.";
+  var card=a.h!=null?P.hand[a.h]:P.st[a.s]; if(!card||C[card.id].t!=="S") return "Carta inválida.";
+  var f=C[card.id].f, err=podeMagia(pl,f,a.tg); if(err) return err;
+  if(a.h!=null) P.hand.splice(a.h,1); else P.st[a.s]=null; P.gy.push({u:card.u,id:card.id});
+  ev("✨ "+P.nome+" ativou "+C[card.id].n+"!");
+  if(f==="raio") for(var i=0;i<5;i++) destroiM(o,i);
+  if(f==="buraco") for(i=0;i<5;i++){ destroiM(0,i); destroiM(1,i); }
+  if(f==="pote"){ comprar(pl); comprar(pl); }
+  if(f==="pocao") P.lp+=1000;
+  if(f==="fogo") O.lp-=800;
+  if(f==="espadas"){ S.swords[pl]=3; O.mz.forEach(function(m){ if(m) m.down=false; }); }
+  if(f==="forca") P.mz[a.tg].buff=(P.mz[a.tg].buff||0)+700;
+  if(f==="pluma") for(i=0;i<5;i++) destroiST(o,i);
+  if(f==="reborn"){ var b=melhorGy(); var G=S.p[b.p].gy[b.i]; S.p[b.p].gy.splice(b.i,1); P.mz[livre(P.mz)]={u:G.u,id:G.id,pos:"atk",down:false,tns:S.tn,at:false,ch:true}; ev(C[G.id].n+" voltou do cemitério!"); }
+  checar(); return null;
+ }
+ if(a.t==="pos"){
+  if(S.phase!=="main") return "Só na fase principal."; var m2=P.mz[a.m]; if(!m2) return "Sem monstro.";
+  if(m2.tns===S.tn) return "Não pode mudar no turno em que entrou."; if(m2.ch||m2.at) return "Esse monstro já agiu neste turno.";
+  if(m2.down){ m2.down=false; m2.pos="atk"; ev(P.nome+" virou "+C[m2.id].n+" pra cima!"); var t2=trapPronta(o,"armadilha"); }
+  else { m2.pos=m2.pos==="atk"?"def":"atk"; ev(C[m2.id].n+" foi pra "+(m2.pos==="atk"?"ataque":"defesa")+"."); }
+  m2.ch=true; return null;
+ }
+ if(a.t==="battle"){ if(S.phase!=="main") return "Já está na batalha."; if(S.tn===1) return "Quem começa não ataca no 1º turno."; S.phase="battle"; return null; }
+ if(a.t==="attack"){
+  if(S.phase!=="battle") return "Entre na fase de batalha primeiro."; var A=P.mz[a.m];
+  if(!A||A.pos!=="atk"||A.down) return "Só monstro em ataque pode atacar."; if(A.at) return "Esse monstro já atacou.";
+  if(S.swords[o]>0) return "As Espadas de Luz te impedem de atacar ("+S.swords[o]+" turnos).";
+  var tem=O.mz.some(function(x){return x}); if(a.tg===-1&&tem) return "O adversário tem monstros. Ataque um deles."; if(a.tg!==-1&&!O.mz[a.tg]) return "Alvo inválido.";
+  A.at=true; ev("⚔️ "+C[A.id].n+" ataca "+(a.tg===-1?"direto!":(O.mz[a.tg].down?"o monstro virado!":C[O.mz[a.tg].id].n+"!")));
+  var t=trapPronta(o,"espelho"); if(t>=0){ ev("🪞 "+O.nome+" ativou Força Espelhada!"); destroiST(o,t); for(var k=0;k<5;k++) if(P.mz[k]&&P.mz[k].pos==="atk"&&!P.mz[k].down) destroiM(pl,k); return null; }
+  t=trapPronta(o,"cilindro"); if(t>=0){ ev("🎩 "+O.nome+" ativou Cilindro Mágico! "+P.nome+" leva "+atk(A)+" de dano."); destroiST(o,t); P.lp-=atk(A); checar(); return null; }
+  t=trapPronta(o,"anular"); if(t>=0){ ev("🛡️ "+O.nome+" ativou Anular Ataque! A batalha acabou."); destroiST(o,t); S.phase="main2"; return null; }
+  var va=atk(A);
+  if(a.tg===-1){ O.lp-=va; ev("💥 "+O.nome+" perdeu "+va+"!"); checar(); return null; }
+  var D=O.mz[a.tg]; D.down=false;
+  if(D.pos==="atk"){ var vd=atk(D); if(va>vd){ destroiM(o,a.tg); O.lp-=va-vd; ev("💥 "+C[D.id].n+" destruído! "+O.nome+" perdeu "+(va-vd)+"."); } else if(va<vd){ destroiM(pl,a.m); P.lp-=vd-va; ev("💥 "+C[A.id].n+" destruído! "+P.nome+" perdeu "+(vd-va)+"."); } else { destroiM(o,a.tg); destroiM(pl,a.m); ev("💥 Empate! Os dois foram destruídos."); } }
+  else { var df=C[D.id].d; if(va>df){ destroiM(o,a.tg); ev("💥 "+C[D.id].n+" destruído na defesa!"); } else if(va<df){ P.lp-=df-va; ev("🛡️ Defesa forte! "+P.nome+" perdeu "+(df-va)+"."); } else ev("🛡️ Ninguém foi destruído."); }
+  checar(); return null;
+ }
+ if(a.t==="end"){
+  while(P.hand.length>6){ var w=0; P.hand.forEach(function(c,i){ if(valor(c.id)<valor(P.hand[w].id)) w=i; }); P.gy.push(P.hand.splice(w,1)[0]); }
+  if(S.swords[o]>0) S.swords[o]--; S.tn++; ev("Vez de "+O.nome+"."); iniciaTurno(o); return null;
+ }
+ return "Ação desconhecida.";
+}
+function valor(id){ var c=C[id]; if(c.ex) return 5000; if(c.t!=="M") return 1500; return c.a; }
+function melhorGy(){ var b=null; [0,1].forEach(function(p){ S.p[p].gy.forEach(function(g,i){ if(C[g.id].t==="M"&&!C[g.id].ex&&(!b||C[g.id].a>C[S.p[b.p].gy[b.i].id].a)) b={p:p,i:i}; }); }); return b; }
+function podeMagia(pl,f,tg){ var P=S.p[pl],O=S.p[1-pl]; if(f==="forca"&&(tg==null||!P.mz[tg])) return "Escolha um monstro seu."; if(f==="reborn"&&(!melhorGy()||livre(P.mz)<0)) return "Não tem monstro no cemitério ou seu campo está cheio."; if(f==="raio"&&!O.mz.some(function(x){return x})) return "O adversário não tem monstros."; return null; }
+
+// ================= REDE / MODO =================
+var MODO=null, ME=0, peer=null, conn=null, call=null, MIC=null, VISTO=0;
+function nomeMeu(){ var n=meuNome.value.trim()||"Duelista"; localStorage.setItem("duelo_nome",n); return n; }
+meuNome.value=localStorage.getItem("duelo_nome")||"";
+function jogarCPU(){ MODO="cpu"; ME=0; novoJogo(nomeMeu(),"Computador"); abrirJogo(); }
+function enviar(){ if(MODO==="host"&&conn&&conn.open) conn.send({t:"st",s:S}); }
+function fazer(a){ var e; if(MODO==="guest"){ if(S.turn!==ME) return toast("Não é sua vez."); conn.send({t:"act",a:a}); return; } e=act(ME,a); if(e) toast(e); enviar(); render(); if(MODO==="cpu") setTimeout(cpu,600); }
+var ICE={iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"turn:openrelay.metered.ca:80",username:"openrelayproject",credential:"openrelayproject"},{urls:"turn:openrelay.metered.ca:443?transport=tcp",username:"openrelayproject",credential:"openrelayproject"}]};
+async function pegaMic(){ try{ MIC=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false}); }catch(e){ MIC=null; } }
+function tocaAudio(st){ somAmigo.srcObject=st; somAmigo.play().catch(function(){}); }
+async function criarSala(){ var nome=nomeMeu(); var cod=""; var ab="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; for(var i=0;i<5;i++) cod+=ab[Math.floor(Math.random()*ab.length)];
+ lobby.classList.remove("esc"); lobby.innerHTML="Criando sala..."; await pegaMic();
+ peer=new Peer("duelomonstros-"+cod,{config:ICE});
+ peer.on("open",function(){ lobby.innerHTML='<p>Passe esse código pro seu amigo:</p><div class="cod">'+cod+'</div><p>Esperando ele entrar... 🎤 '+(MIC?"Microfone pronto":"sem microfone")+'</p>'; });
+ peer.on("error",function(e){ if(e.type==="unavailable-id") return criarSala(); lobby.innerHTML="Erro de conexão: "+e.type+". Tente de novo."; });
+ peer.on("connection",function(c){ if(conn&&conn.open){ c.close(); return; } conn=c; c.on("open",function(){ c.on("data",function(d){ if(d.t==="hello"){ MODO="host"; ME=0; novoJogo(nome,d.nome||"Amigo"); abrirJogo(); enviar(); if(MIC||true){ var cl=peer.call(c.peer,MIC||vazio()); ligaCall(cl); } } if(d.t==="act"){ var e=act(1,d.a); if(e) c.send({t:"err",m:e}); enviar(); render(); } if(d.t==="again"){ novoJogo(S.p[0].nome,S.p[1].nome); enviar(); render(); } }); }); c.on("close",function(){ toast("Seu amigo saiu da sala."); }); });
+}
+function vazio(){ var ctx=new (window.AudioContext||window.webkitAudioContext)(); var d=ctx.createMediaStreamDestination(); return d.stream; }
+function ligaCall(cl){ call=cl; cl.on("stream",tocaAudio); btMic.classList.toggle("esc",!MIC); }
+async function entrarSala(){ var cod=codIn.value.trim().toUpperCase(); if(cod.length!==5) return toast("Digite o código de 5 letras."); var nome=nomeMeu(); lobby.classList.remove("esc"); lobby.innerHTML="Entrando na sala "+cod+"..."; await pegaMic();
+ peer=new Peer({config:ICE});
+ peer.on("call",function(cl){ cl.answer(MIC||vazio()); ligaCall(cl); });
+ peer.on("error",function(e){ lobby.innerHTML=e.type==="peer-unavailable"?"Sala não encontrada. Confira o código.":"Erro: "+e.type; });
+ peer.on("open",function(){ conn=peer.connect("duelomonstros-"+cod,{reliable:true}); conn.on("open",function(){ conn.send({t:"hello",nome:nome}); MODO="guest"; ME=1; }); conn.on("data",function(d){ if(d.t==="st"){ var primeiro=!S; S=d.s; if(primeiro||jogo.classList.contains("esc")) abrirJogo(); render(); } if(d.t==="err") toast(d.m); }); conn.on("close",function(){ toast("A conexão caiu."); }); });
+}
+function toggleMic(){ if(!MIC) return; var t=MIC.getAudioTracks()[0]; t.enabled=!t.enabled; btMic.innerText=t.enabled?"🎤 Mic ligado":"🔇 Mic mudo"; }
+function sairJogo(){ if(!confirm("Sair do duelo?")) return; location.reload(); }
+function abrirJogo(){ menu.classList.add("esc"); jogo.classList.remove("esc"); VISTO=S.evn-1; render(); if(MODO==="cpu"&&S.turn===1) setTimeout(cpu,900); }
+
+// ================= TELA =================
+var UI={modo:null};
+function cartaHTML(c,opt){ opt=opt||{}; if(!c) return ""; var k=C[c.id]; if(opt.verso) return '<div class="carta verso'+(c.pos==="def"?" def":"")+'"></div>'; var cls=k.t==="S"?" mag":k.t==="T"?" arm":""; var st=k.t==="M"?'<span class="st2">'+atk(c)+' / '+k.d+'</span>':'<span class="st2">'+(k.t==="S"?"MAGIA":"ARMADILHA")+'</span>'; return '<div class="carta'+cls+(c.pos==="def"?" def":"")+(c.buff?" buff":"")+(c.at?" usado":"")+'">'+(k.t==="M"?'<span class="lv">'+"★".repeat(k.lv)+'</span>':'<span class="lv"></span>')+'<span class="em">'+k.e+'</span><span class="nm">'+k.n+'</span>'+st+'</div>'; }
+function render(){ if(!S) return; var P=S.p[ME],O=S.p[1-ME];
+ opNome.innerText=O.nome; meNome.innerText=P.nome; opLp.innerText=O.lp; meLp.innerText=P.lp; opBar.style.width=Math.min(100,O.lp/80)+"%"; meBar.style.width=Math.min(100,P.lp/80)+"%"; opDeck.innerText="🂠 "+O.deck.length; meDeck.innerText="🂠 "+P.deck.length; opGy.innerText="🪦 "+O.gy.length; meGy.innerText="🪦 "+P.gy.length;
+ maoOp.innerHTML=O.hand.map(function(){return "<div></div>"}).join("");
+ opSt.innerHTML=O.st.map(function(c,i){ return '<div class="slot st">'+(c?cartaHTML(c,{verso:c.down}):"")+'</div>'; }).join("");
+ opMz.innerHTML=O.mz.map(function(c,i){ var alvo=UI.modo==="attack"&&c; return '<div class="slot'+(alvo?" alvo":"")+'" onclick="toqueOp('+i+')">'+(c?cartaHTML(c,{verso:c.down}):"")+'</div>'; }).join("");
+ meMz.innerHTML=P.mz.map(function(c,i){ var sel=(UI.modo==="trib"&&UI.tr.indexOf(i)>=0)||(UI.modo==="attack"&&UI.m===i); var alvo=(UI.modo==="trib"||UI.modo==="forca")&&c; return '<div class="slot'+(sel?" sel":"")+(alvo&&!sel?" alvo":"")+'" onclick="toqueMz('+i+')">'+(c?cartaHTML(c):"")+(c&&c.down?'<span style="position:absolute;bottom:1px;font-size:9px">virado</span>':'')+'</div>'; }).join("");
+ meSt.innerHTML=P.st.map(function(c,i){ return '<div class="slot st" onclick="toqueSt('+i+')">'+(c?cartaHTML(c)+(c.down?'<span style="position:absolute;top:1px;right:3px;font-size:9px">🔒</span>':''):"")+'</div>'; }).join("");
+ mao.innerHTML=P.hand.map(function(c,i){ return '<div class="mc" onclick="toqueMao('+i+')">'+cartaHTML(c)+'</div>'; }).join("");
+ var minha=S.turn===ME&&S.win===null; fase.innerText=S.win!==null?"FIM":minha?(S.phase==="main"?"Sua vez • Principal":S.phase==="battle"?"Sua vez • Batalha":"Sua vez • Fim da batalha"):"Vez de "+O.nome;
+ var b=""; if(minha){ if(UI.modo==="trib") b='<button onclick="confTrib()">Confirmar ('+UI.tr.length+'/'+UI.n+')</button> <button class="sec" onclick="cancelaUI()">✖</button>'; else if(UI.modo==="attack") b=(O.mz.some(function(x){return x})?'':'<button class="ver" onclick="fazer({t:\'attack\',m:'+UI.m+',tg:-1});cancelaUI()">Ataque direto!</button> ')+'<button class="sec" onclick="cancelaUI()">✖</button>'; else if(UI.modo==="forca") b='<button class="sec" onclick="cancelaUI()">✖</button>'; else { if(S.phase==="main"&&S.tn>1) b+='<button class="ver" onclick="fazer({t:\'battle\'})">⚔️ Batalha</button> '; b+='<button class="sec" onclick="UI={modo:null};fazer({t:\'end\'})">Passar a vez</button>'; } }
+ botoes.innerHTML=b;
+ aviso.innerText=UI.modo==="trib"?"Toque nos monstros pra sacrificar":UI.modo==="attack"?"Toque no monstro que vai levar o ataque":UI.modo==="forca"?"Escolha seu monstro":(S.swords[1-ME]>0&&minha?"Espadas: sem ataque por "+S.swords[1-ME]+" turno(s)":"");
+ var novos=S.ev.filter(function(e){return e.n>VISTO}); if(novos.length){ VISTO=S.evn; mostraEventos(novos.map(function(e){return e.m})); }
+ if(S.win!==null) setTimeout(fimTela,1500); else if(FIMOK){ FIMOK=false; fecha(); }
+}
+var FILA=[],RODANDO=false; function mostraEventos(l){ FILA=FILA.concat(l); if(!RODANDO) proximo(); }
+function proximo(){ if(!FILA.length){ RODANDO=false; return; } RODANDO=true; var m=FILA.shift(); toast(m,FILA.length?900:1500); setTimeout(proximo,FILA.length?950:400); }
+var tT=null; function toast(m,ms){ var t=document.getElementById("toast"); t.innerText=m; t.classList.add("on"); clearTimeout(tT); tT=setTimeout(function(){ t.classList.remove("on"); },ms||1700); }
+var FIMOK=false; function fimTela(){ if(FIMOK||!S||S.win===null) return; FIMOK=true; var ganhei=S.win===ME; abre('<div style="font-size:60px">'+(ganhei?"🏆":"💀")+'</div><h2>'+(ganhei?"VOCÊ VENCEU!":"Você perdeu")+'</h2><p>'+S.why+'</p><div class="acoes">'+(MODO!=="guest"?'<button onclick="deNovo()">Jogar de novo</button>':'<p>Espere o dono da sala começar outro.</p>')+'<button class="sec" onclick="location.reload()">Menu</button></div>'); }
+function deNovo(){ fecha(); FIMOK=false; UI={modo:null}; if(MODO==="cpu") jogarCPU(); else { novoJogo(S.p[0].nome,S.p[1].nome); enviar(); VISTO=S.evn-1; render(); } }
+function abre(h){ modalC.innerHTML=h; modal.classList.remove("esc"); }
+function fecha(){ modal.classList.add("esc"); }
+modal.addEventListener("click",function(e){ if(e.target===modal) fecha(); });
+function cancelaUI(){ UI={modo:null}; render(); }
+function info(c,acoes){ var k=C[c.id]; abre('<div class="grande">'+cartaHTML(c)+'</div><b>'+k.n+'</b>'+(k.t==="M"?'<p>Nível '+k.lv+' • ATQ '+atk(c)+' • DEF '+k.d+(tribNec(c.id)?' • precisa sacrificar '+tribNec(c.id):'')+'</p>':'')+'<p>'+k.x+'</p><div class="acoes">'+(acoes||"")+'<button class="sec" onclick="fecha()">Fechar</button></div>'); }
+function minhaVez(){ return S.turn===ME&&S.win===null; }
+function toqueMao(i){ if(UI.modo) cancelaUI(); var P=S.p[ME],c=P.hand[i],k=C[c.id],a=""; if(minhaVez()&&S.phase==="main"){ if(k.t==="M"&&!S.normal){ a='<button onclick="invocar('+i+',false)">⬆️ Invocar em ataque</button><button class="sec" onclick="invocar('+i+',true)">🔽 Baixar virado (defesa)</button>'; } if(k.t==="S"){ a='<button onclick="magia('+i+',null)">✨ Ativar agora</button><button class="sec" onclick="fecha();fazer({t:\'setst\',h:'+i+'})">Baixar virada</button>'; } if(k.t==="T") a='<button onclick="fecha();fazer({t:\'setst\',h:'+i+'})">🔒 Baixar armadilha</button><p style="font-size:12px">Ela ativa sozinha a partir do próximo turno do adversário.</p>'; } info(c,a); }
+function invocar(i,set){ fecha(); var c=S.p[ME].hand[i],n=tribNec(c.id); if(!n) return fazer({t:"summon",h:i,set:set}); var tem=S.p[ME].mz.filter(function(x){return x}).length; if(tem<n) return toast("Precisa de "+n+" monstro(s) no campo pra sacrificar."); UI={modo:"trib",h:i,set:set,n:n,tr:[]}; render(); }
+function confTrib(){ if(UI.tr.length!==UI.n) return toast("Escolha "+UI.n+" monstro(s)."); var a={t:"summon",h:UI.h,set:UI.set,tr:UI.tr}; UI={modo:null}; fazer(a); }
+function magia(h,s){ fecha(); var id=h!=null?S.p[ME].hand[h].id:S.p[ME].st[s].id; if(C[id].f==="forca"){ if(!S.p[ME].mz.some(function(x){return x})) return toast("Você não tem monstro no campo."); UI={modo:"forca",h:h,s:s}; render(); return; } fazer({t:"spell",h:h,s:s}); }
+function toqueMz(i){ var P=S.p[ME],m=P.mz[i]; if(UI.modo==="trib"){ if(!m) return; var k=UI.tr.indexOf(i); if(k>=0) UI.tr.splice(k,1); else if(UI.tr.length<UI.n) UI.tr.push(i); render(); return; } if(UI.modo==="forca"){ if(!m) return; var a={t:"spell",h:UI.h,s:UI.s,tg:i}; UI={modo:null}; fazer(a); return; } if(UI.modo) cancelaUI(); if(!m) return; var ac=""; if(minhaVez()){ if(S.phase==="battle"&&m.pos==="atk"&&!m.down&&!m.at) ac='<button class="ver" onclick="fecha();UI={modo:\'attack\',m:'+i+'};render()">⚔️ Atacar</button>'; if(S.phase==="main"&&m.tns!==S.tn&&!m.ch&&!m.at) ac+='<button class="sec" onclick="fecha();fazer({t:\'pos\',m:'+i+'})">'+(m.down?"Virar pra cima (ataque)":m.pos==="atk"?"Mudar pra defesa":"Mudar pra ataque")+'</button>'; } info(m,ac); }
+function toqueOp(i){ var m=S.p[1-ME].mz[i]; if(!m) return; if(UI.modo==="attack"){ var a={t:"attack",m:UI.m,tg:i}; UI={modo:null}; fazer(a); return; } if(m.down) return toast("Monstro virado. Não dá pra ver."); info(m,""); }
+function toqueSt(i){ var c=S.p[ME].st[i]; if(!c) return; var ac=""; if(minhaVez()&&S.phase==="main"&&C[c.id].t==="S") ac='<button onclick="magia(null,'+i+')">✨ Ativar</button>'; info(c,ac); }
+function verCemiterio(p){ var g=S.p[p].gy; abre('<h3>Cemitério de '+S.p[p].nome+'</h3><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px">'+(g.map(function(c){return '<div style="aspect-ratio:3/4">'+cartaHTML(c)+'</div>'}).join("")||"<p>Vazio</p>")+'</div><div class="acoes"><button class="sec" onclick="fecha()">Fechar</button></div>'); }
+function regras(){ abre('<h3>📖 Como jogar</h3><div style="text-align:left;font-size:14px;line-height:1.45;margin-top:8px">• Cada um começa com <b>8000</b> de vida e 5 cartas. Zere a vida do outro pra ganhar.<br>• Todo turno você compra 1 carta (quem começa não compra nem ataca no 1º turno).<br>• <b>1 invocação por turno</b>. Nível 5 e 6 sacrifica 1 monstro, nível 7+ sacrifica 2.<br>• Ataque x ataque: o mais fraco morre e o dono perde a diferença.<br>• Ataque x defesa: se o ataque for maior, a defesa morre sem dano; se for menor, quem atacou perde a diferença.<br>• Sem monstros do outro lado: <b>ataque direto</b>.<br>• <b>Magias</b> 🟩 usa na sua vez. <b>Armadilhas</b> 🟥 baixa virada e ativa sozinha a partir do próximo turno.<br>• Junte as <b>5 partes do Exódio</b> na mão e ganhe na hora!<br>• Mão máxima de 6 cartas no fim do turno.</div><div class="acoes"><button onclick="fecha()">Entendi</button></div>'); }
+
+// ================= COMPUTADOR =================
+var CPUON=false;
+function cpu(){ if(MODO!=="cpu"||!S||S.win!==null||S.turn!==1||CPUON) return; CPUON=true; var passos=planoCpu(); (function vai(){ if(S.win!==null){ CPUON=false; render(); return; } var a=passos(); if(!a){ CPUON=false; render(); return; } act(1,a); render(); setTimeout(vai,a.t==="end"?300:1100); })(); }
+function planoCpu(){ var etapa=0, tentativas=0; return function(){ var P=S.p[1],O=S.p[0]; tentativas++; if(tentativas>40) return {t:"end"};
+ var meusM=function(){ return P.mz.map(function(m,i){return m?i:-1}).filter(function(i){return i>=0}); }, deles=function(){ return O.mz.map(function(m,i){return m?i:-1}).filter(function(i){return i>=0}); };
+ var maxO=Math.max.apply(null,[0].concat(deles().map(function(i){ var m=O.mz[i]; return m.down?1500:atk(m); }))), maxP=Math.max.apply(null,[0].concat(meusM().map(function(i){return atk(P.mz[i])})));
+ if(S.phase==="main"&&etapa===0){
+  for(var h=0;h<P.hand.length;h++){ var k=C[P.hand[h].id]; if(k.t!=="S") continue; var f=k.f, ok=false, tg=null;
+   if(f==="pote"||f==="fogo") ok=true; if(f==="pocao") ok=P.lp<8000; if(f==="raio") ok=deles().length>0; if(f==="buraco") ok=deles().length>meusM().length||maxO>maxP+500; if(f==="pluma") ok=O.st.some(function(x){return x}); if(f==="reborn"){ var b=melhorGy(); ok=b&&C[S.p[b.p].gy[b.i].id].a>=1500&&livre(P.mz)>=0; } if(f==="espadas") ok=maxO>maxP; if(f==="forca"&&meusM().length){ ok=true; tg=meusM().sort(function(a,b){return atk(P.mz[b])-atk(P.mz[a])})[0]; }
+   if(ok&&!podeMagia(1,f,tg)) return {t:"spell",h:h,tg:tg}; }
+  etapa=1; }
+ if(S.phase==="main"&&etapa===1){ etapa=2; if(!S.normal){ var melhor=null; P.hand.forEach(function(c,h){ var k=C[c.id]; if(k.t!=="M"||k.ex) return; var n=tribNec(c.id), ms=meusM().sort(function(a,b){return atk(P.mz[a])-atk(P.mz[b])}); if(ms.length<n) return; if(!n&&livre(P.mz)<0) return; var tr=ms.slice(0,n), perda=tr.reduce(function(s,i){return s+atk(P.mz[i])},0); var v=k.a-perda; if(n&&v<=0) return; if(!melhor||k.a>melhor.a) melhor={h:h,tr:tr,a:k.a,d:k.d}; }); if(melhor){ var set=melhor.a<maxO&&melhor.d>melhor.a; return {t:"summon",h:melhor.h,tr:melhor.tr,set:set}; } } }
+ if(S.phase==="main"&&etapa===2){ for(var j=0;j<P.hand.length;j++){ if(C[P.hand[j].id].t==="T"&&livre(P.st)>=0) return {t:"setst",h:j}; } etapa=3; }
+ if(S.phase==="main"&&etapa===3){ etapa=4; if(S.tn>1&&S.swords[0]===0&&meusM().some(function(i){return P.mz[i].pos==="atk"&&!P.mz[i].down})) return {t:"battle"}; }
+ if(S.phase==="battle"){ var atac=meusM().filter(function(i){ var m=P.mz[i]; return m.pos==="atk"&&!m.down&&!m.at; }).sort(function(a,b){return atk(P.mz[b])-atk(P.mz[a])}); for(var x=0;x<atac.length;x++){ var A=P.mz[atac[x]], va=atk(A), alvos=deles(); if(!alvos.length) return {t:"attack",m:atac[x],tg:-1}; var best=-1,bv=-1; alvos.forEach(function(i){ var D=O.mz[i]; var forca=D.down?1400:(D.pos==="atk"?atk(D):C[D.id].d); if(va>forca&&forca>bv){ bv=forca; best=i; } }); if(best>=0) return {t:"attack",m:atac[x],tg:best}; } }
+ if(etapa===4&&S.phase==="main"){ etapa=5; }
+ return {t:"end"}; }; }
+
+if("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js");
+</script>
+</body>
+</html>
