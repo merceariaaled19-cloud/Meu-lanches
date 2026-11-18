@@ -68,7 +68,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
  <h1>⚔️ Duelo dos Monstros</h1>
  <div class="bx">
   <input id="meuNome" placeholder="Seu nome de duelista" maxlength="14">
-  <button onclick="jogarCPU()">🤖 Jogar contra o computador</button>
+  <div style="font-size:13px;margin:4px 0 2px">🤖 Contra o computador:</div><div style="display:flex;gap:6px"><button onclick="jogarCPU(0)" style="background:#16a34a">😊 Fácil</button><button onclick="jogarCPU(1)" style="background:#d97706">😐 Médio</button><button onclick="jogarCPU(2)" style="background:#dc2626">😈 Difícil</button></div><button class="sec" id="btSomMenu" onclick="trocaSom()">🔊 Som ligado</button>
   <button class="sec" onclick="criarSala()">🎮 Criar sala (jogar com amigo)</button>
   <div style="display:flex;gap:6px"><input id="codIn" placeholder="CÓDIGO" maxlength="5" style="text-transform:uppercase"><button class="sec" onclick="entrarSala()">Entrar</button></div>
   <button class="sec" onclick="regras()">📖 Regras</button>
@@ -77,7 +77,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
 </div>
 
 <div id="jogo" class="esc">
- <div id="topo"><button class="sec esc" id="btMic" onclick="toggleMic()">🎤 Mic ligado</button><button class="sec" onclick="sairJogo()">Sair</button></div>
+ <div id="topo"><button class="sec esc" id="btMic" onclick="toggleMic()">🎤 Mic ligado</button><button class="sec" id="btSom" onclick="trocaSom()">🔊</button><button class="sec" onclick="sairJogo()">Sair</button></div>
  <div class="barra"><span class="nome" id="opNome">Computador</span><span class="mini" id="opDeck">🂠 0</span><span class="mini" id="opGy" onclick="verCemiterio(1-ME)">🪦 0</span><span class="lp" id="opLp">8000</span></div>
  <div class="lpbar"><div id="opBar" style="width:100%"></div></div>
  <div id="maoOp"></div>
@@ -228,11 +228,44 @@ function valor(id){ var c=C[id]; if(c.ex) return 5000; if(c.t!=="M") return 1500
 function melhorGy(){ var b=null; [0,1].forEach(function(p){ S.p[p].gy.forEach(function(g,i){ if(C[g.id].t==="M"&&!C[g.id].ex&&(!b||C[g.id].a>C[S.p[b.p].gy[b.i].id].a)) b={p:p,i:i}; }); }); return b; }
 function podeMagia(pl,f,tg){ var P=S.p[pl],O=S.p[1-pl]; if(f==="forca"&&(tg==null||!P.mz[tg])) return "Escolha um monstro seu."; if(f==="reborn"&&(!melhorGy()||livre(P.mz)<0)) return "Não tem monstro no cemitério ou seu campo está cheio."; if(f==="raio"&&!O.mz.some(function(x){return x})) return "O adversário não tem monstros."; return null; }
 
+
+// ================= SONS =================
+var SOM=true; try{ SOM=localStorage.getItem("duelo_som")!=="0"; }catch(e){}
+var AC=null;
+function ac(){ if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; } } if(AC.state==="suspended") AC.resume(); return AC; }
+function tom(f,d,tipo,vol,ate,q){ var a=ac(); if(!a) return; var t=a.currentTime+(q||0); var o=a.createOscillator(), g=a.createGain(); o.type=tipo||"sine"; o.frequency.setValueAtTime(f,t); if(ate) o.frequency.exponentialRampToValueAtTime(ate,t+d); g.gain.setValueAtTime(vol||.2,t); g.gain.exponentialRampToValueAtTime(.001,t+d); o.connect(g); g.connect(a.destination); o.start(t); o.stop(t+d+.05); }
+function ruido(d,vol,q,freq){ var a=ac(); if(!a) return; var t=a.currentTime+(q||0); var n=Math.floor(a.sampleRate*d), b=a.createBuffer(1,n,a.sampleRate), x=b.getChannelData(0); for(var i=0;i<n;i++) x[i]=Math.random()*2-1; var s=a.createBufferSource(); s.buffer=b; var fl=a.createBiquadFilter(); fl.type="lowpass"; fl.frequency.value=freq||2000; var g=a.createGain(); g.gain.setValueAtTime(vol||.3,t); g.gain.exponentialRampToValueAtTime(.001,t+d); s.connect(fl); fl.connect(g); g.connect(a.destination); s.start(t); s.stop(t+d+.05); }
+var SONS={
+ toque:function(){ tom(700,.05,"triangle",.07); },
+ invoca:function(){ tom(200,.35,"sawtooth",.1,700); tom(440,.4,"sine",.12,880,.15); },
+ baixa:function(){ ruido(.1,.25,0,1500); tom(160,.12,"square",.05); },
+ vira:function(){ ruido(.06,.2,0,3000); tom(500,.12,"triangle",.08,900); },
+ magia:function(){ [523,659,784,1047,1319].forEach(function(f,i){ tom(f,.3,"sine",.09,0,i*.06); }); },
+ armadilha:function(){ tom(140,.5,"square",.13,50); ruido(.35,.25,.05,900); },
+ ataque:function(){ ruido(.22,.35,0,4000); tom(900,.22,"sawtooth",.08,150); },
+ explosao:function(){ ruido(.7,.5,0,500); tom(110,.6,"sine",.35,30); },
+ dano:function(){ tom(320,.35,"square",.1,110); ruido(.2,.15,0,1200); },
+ cura:function(){ [392,523,659,784].forEach(function(f,i){ tom(f,.35,"sine",.1,0,i*.09); }); },
+ fogo:function(){ ruido(.8,.4,0,900); tom(200,.6,"sawtooth",.1,60); },
+ defesa:function(){ tom(240,.15,"square",.11); tom(240,.2,"square",.09,0,.13); },
+ compra:function(){ ruido(.12,.15,0,5000); tom(1200,.06,"triangle",.05,0,.05); },
+ turno:function(){ tom(587,.12,"triangle",.1); tom(880,.2,"triangle",.1,0,.12); },
+ vitoria:function(){ [523,659,784,1047,1319,1568].forEach(function(f,i){ tom(f,.4,"triangle",.14,0,i*.12); }); },
+ derrota:function(){ [392,330,262,196].forEach(function(f,i){ tom(f,.5,"sawtooth",.09,0,i*.22); }); },
+ exodio:function(){ tom(55,2,"sawtooth",.2,110); ruido(1.5,.3,0,300); [262,330,392,523,659,784].forEach(function(f,i){ tom(f,.6,"triangle",.12,0,.3+i*.15); }); }
+};
+function som(n){ if(SOM&&SONS[n]) try{ SONS[n](); }catch(e){} }
+function somEvento(m){ if(/EXÓDIO/.test(m)) return som("exodio"); if(/🪞|🎩|🪤|Anular Ataque/.test(m)) return som("armadilha"); if(/Poção/.test(m)) return som("cura"); if(/Bola de Fogo/.test(m)) return som("fogo"); if(/Pote da Gula/.test(m)) { som("magia"); return setTimeout(function(){ som("compra"); },350); } if(/✨|voltou do cemitério/.test(m)) return som("magia"); if(/⚔️/.test(m)) return som("ataque"); if(/destruído|Empate/.test(m)) return som("explosao"); if(/💥/.test(m)) return som("dano"); if(/🛡️|Ninguém/.test(m)) return som("defesa"); if(/invocou/.test(m)) return som("invoca"); if(/baixou/.test(m)) return som("baixa"); if(/virou|foi pra/.test(m)) return som("vira"); if(/Vez de|começou/.test(m)) return som("turno"); }
+function trocaSom(){ SOM=!SOM; try{ localStorage.setItem("duelo_som",SOM?"1":"0"); }catch(e){} atualizaSomBt(); if(SOM) som("toque"); }
+function atualizaSomBt(){ var a=document.getElementById("btSom"), b=document.getElementById("btSomMenu"); if(a) a.innerText=SOM?"🔊":"🔇"; if(b) b.innerText=SOM?"🔊 Som ligado":"🔇 Som desligado"; }
+document.addEventListener("click",function(e){ if(e.target.closest&&e.target.closest("button,.mc,.slot")) som("toque"); },true);
+
 // ================= REDE / MODO =================
 var MODO=null, ME=0, peer=null, conn=null, call=null, MIC=null, VISTO=0;
 function nomeMeu(){ var n=meuNome.value.trim()||"Duelista"; localStorage.setItem("duelo_nome",n); return n; }
 meuNome.value=localStorage.getItem("duelo_nome")||"";
-function jogarCPU(){ MODO="cpu"; ME=0; novoJogo(nomeMeu(),"Computador"); abrirJogo(); }
+var NOMENV=["Fácil","Médio","Difícil"];
+function jogarCPU(n){ if(n==null) n=NIVEL; NIVEL=n; try{ localStorage.setItem("duelo_nivel",n); }catch(e){} MODO="cpu"; ME=0; novoJogo(nomeMeu(),"PC "+NOMENV[n]); if(n===2) comprar(1); abrirJogo(); }
 function enviar(){ if(MODO==="host"&&conn&&conn.open) conn.send({t:"st",s:S}); }
 function fazer(a){ var e; if(MODO==="guest"){ if(S.turn!==ME) return toast("Não é sua vez."); conn.send({t:"act",a:a}); return; } e=act(ME,a); if(e) toast(e); enviar(); render(); if(MODO==="cpu") setTimeout(cpu,600); }
 var ICE={iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"turn:openrelay.metered.ca:80",username:"openrelayproject",credential:"openrelayproject"},{urls:"turn:openrelay.metered.ca:443?transport=tcp",username:"openrelayproject",credential:"openrelayproject"}]};
@@ -276,9 +309,9 @@ function render(){ if(!S) return; var P=S.p[ME],O=S.p[1-ME];
  if(S.win!==null) setTimeout(fimTela,1500); else if(FIMOK){ FIMOK=false; fecha(); }
 }
 var FILA=[],RODANDO=false; function mostraEventos(l){ FILA=FILA.concat(l); if(!RODANDO) proximo(); }
-function proximo(){ if(!FILA.length){ RODANDO=false; return; } RODANDO=true; var m=FILA.shift(); toast(m,FILA.length?900:1500); setTimeout(proximo,FILA.length?950:400); }
+function proximo(){ if(!FILA.length){ RODANDO=false; return; } RODANDO=true; var m=FILA.shift(); somEvento(m); toast(m,FILA.length?900:1500); setTimeout(proximo,FILA.length?950:400); }
 var tT=null; function toast(m,ms){ var t=document.getElementById("toast"); t.innerText=m; t.classList.add("on"); clearTimeout(tT); tT=setTimeout(function(){ t.classList.remove("on"); },ms||1700); }
-var FIMOK=false; function fimTela(){ if(FIMOK||!S||S.win===null) return; FIMOK=true; var ganhei=S.win===ME; abre('<div style="font-size:60px">'+(ganhei?"🏆":"💀")+'</div><h2>'+(ganhei?"VOCÊ VENCEU!":"Você perdeu")+'</h2><p>'+S.why+'</p><div class="acoes">'+(MODO!=="guest"?'<button onclick="deNovo()">Jogar de novo</button>':'<p>Espere o dono da sala começar outro.</p>')+'<button class="sec" onclick="location.reload()">Menu</button></div>'); }
+var FIMOK=false; function fimTela(){ if(FIMOK||!S||S.win===null) return; FIMOK=true; var ganhei=S.win===ME; som(ganhei?"vitoria":"derrota"); abre('<div style="font-size:60px">'+(ganhei?"🏆":"💀")+'</div><h2>'+(ganhei?"VOCÊ VENCEU!":"Você perdeu")+'</h2><p>'+S.why+'</p><div class="acoes">'+(MODO!=="guest"?'<button onclick="deNovo()">Jogar de novo</button>':'<p>Espere o dono da sala começar outro.</p>')+'<button class="sec" onclick="location.reload()">Menu</button></div>'); }
 function deNovo(){ fecha(); FIMOK=false; UI={modo:null}; if(MODO==="cpu") jogarCPU(); else { novoJogo(S.p[0].nome,S.p[1].nome); enviar(); VISTO=S.evn-1; render(); } }
 function abre(h){ modalC.innerHTML=h; modal.classList.remove("esc"); }
 function fecha(){ modal.classList.add("esc"); }
@@ -299,21 +332,41 @@ function regras(){ abre('<h3>📖 Como jogar</h3><div style="text-align:left;fon
 // ================= COMPUTADOR =================
 var CPUON=false;
 function cpu(){ if(MODO!=="cpu"||!S||S.win!==null||S.turn!==1||CPUON) return; CPUON=true; var passos=planoCpu(); (function vai(){ if(S.win!==null){ CPUON=false; render(); return; } var a=passos(); if(!a){ CPUON=false; render(); return; } act(1,a); render(); setTimeout(vai,a.t==="end"?300:1100); })(); }
-function planoCpu(){ var etapa=0, tentativas=0; return function(){ var P=S.p[1],O=S.p[0]; tentativas++; if(tentativas>40) return {t:"end"};
+var NIVEL=1; try{ NIVEL=+(localStorage.getItem("duelo_nivel")||1); }catch(e){}
+function planoCpu(){ var etapa=0, tentativas=0, nv=NIVEL, rnd=Math.random; return function(){ var P=S.p[1],O=S.p[0]; tentativas++; if(tentativas>60) return {t:"end"};
  var meusM=function(){ return P.mz.map(function(m,i){return m?i:-1}).filter(function(i){return i>=0}); }, deles=function(){ return O.mz.map(function(m,i){return m?i:-1}).filter(function(i){return i>=0}); };
- var maxO=Math.max.apply(null,[0].concat(deles().map(function(i){ var m=O.mz[i]; return m.down?1500:atk(m); }))), maxP=Math.max.apply(null,[0].concat(meusM().map(function(i){return atk(P.mz[i])})));
+ var forcaDe=function(D){ if(nv===2) return D.pos==="atk"&&!D.down?atk(D):C[D.id].d; return D.down?1500:(D.pos==="atk"?atk(D):C[D.id].d); };
+ var armO=function(f){ return trapPronta(0,f)>=0; };
+ var maxO=Math.max.apply(null,[0].concat(deles().map(function(i){ return forcaDe(O.mz[i]); }))), maxP=Math.max.apply(null,[0].concat(meusM().map(function(i){return atk(P.mz[i])})));
+ var podeBater=S.tn>1&&S.swords[0]===0;
+ // 0: magias
  if(S.phase==="main"&&etapa===0){
   for(var h=0;h<P.hand.length;h++){ var k=C[P.hand[h].id]; if(k.t!=="S") continue; var f=k.f, ok=false, tg=null;
-   if(f==="pote"||f==="fogo") ok=true; if(f==="pocao") ok=P.lp<8000; if(f==="raio") ok=deles().length>0; if(f==="buraco") ok=deles().length>meusM().length||maxO>maxP+500; if(f==="pluma") ok=O.st.some(function(x){return x}); if(f==="reborn"){ var b=melhorGy(); ok=b&&C[S.p[b.p].gy[b.i].id].a>=1500&&livre(P.mz)>=0; } if(f==="espadas") ok=maxO>maxP; if(f==="forca"&&meusM().length){ ok=true; tg=meusM().sort(function(a,b){return atk(P.mz[b])-atk(P.mz[a])})[0]; }
+   if(f==="pote") ok=true; if(f==="fogo") ok=nv<2||true; if(f==="pocao") ok=nv===0?P.lp<8000:P.lp<=7000; if(f==="raio") ok=nv===0?deles().length>0:(deles().length>=2||maxO>=maxP); if(f==="buraco") ok=nv===0?deles().length>0:(deles().length>meusM().length||maxO>maxP+500); if(f==="pluma") ok=nv===2?O.st.some(function(x){return x&&C[x.id].t==="T"}):O.st.some(function(x){return x}); if(f==="reborn"){ var b=melhorGy(); ok=b&&C[S.p[b.p].gy[b.i].id].a>=1500&&livre(P.mz)>=0; } if(f==="espadas") ok=maxO>maxP||(nv===2&&deles().some(function(i){return O.mz[i].down})); if(f==="forca"&&meusM().length){ var at=meusM().filter(function(i){return P.mz[i].pos==="atk"||P.mz[i].down}); if(nv===0||!podeBater){ ok=nv===0||!at.length?true:false; tg=meusM()[0]; } else { tg=null; at.sort(function(a,b){return atk(P.mz[b])-atk(P.mz[a])}).some(function(i){ var va=atk(P.mz[i]); var vira=deles().some(function(j){ var fd=forcaDe(O.mz[j]); return va<=fd&&va+700>fd; }); if(vira||!deles().length){ tg=i; return true; } }); ok=tg!=null; } }
+   if(nv===0&&rnd()<0.4) ok=false;
    if(ok&&!podeMagia(1,f,tg)) return {t:"spell",h:h,tg:tg}; }
   etapa=1; }
- if(S.phase==="main"&&etapa===1){ etapa=2; if(!S.normal){ var melhor=null; P.hand.forEach(function(c,h){ var k=C[c.id]; if(k.t!=="M"||k.ex) return; var n=tribNec(c.id), ms=meusM().sort(function(a,b){return atk(P.mz[a])-atk(P.mz[b])}); if(ms.length<n) return; if(!n&&livre(P.mz)<0) return; var tr=ms.slice(0,n), perda=tr.reduce(function(s,i){return s+atk(P.mz[i])},0); var v=k.a-perda; if(n&&v<=0) return; if(!melhor||k.a>melhor.a) melhor={h:h,tr:tr,a:k.a,d:k.d}; }); if(melhor){ var set=melhor.a<maxO&&melhor.d>melhor.a; return {t:"summon",h:melhor.h,tr:melhor.tr,set:set}; } } }
- if(S.phase==="main"&&etapa===2){ for(var j=0;j<P.hand.length;j++){ if(C[P.hand[j].id].t==="T"&&livre(P.st)>=0) return {t:"setst",h:j}; } etapa=3; }
- if(S.phase==="main"&&etapa===3){ etapa=4; if(S.tn>1&&S.swords[0]===0&&meusM().some(function(i){return P.mz[i].pos==="atk"&&!P.mz[i].down})) return {t:"battle"}; }
- if(S.phase==="battle"){ var atac=meusM().filter(function(i){ var m=P.mz[i]; return m.pos==="atk"&&!m.down&&!m.at; }).sort(function(a,b){return atk(P.mz[b])-atk(P.mz[a])}); for(var x=0;x<atac.length;x++){ var A=P.mz[atac[x]], va=atk(A), alvos=deles(); if(!alvos.length) return {t:"attack",m:atac[x],tg:-1}; var best=-1,bv=-1; alvos.forEach(function(i){ var D=O.mz[i]; var forca=D.down?1400:(D.pos==="atk"?atk(D):C[D.id].d); if(va>forca&&forca>bv){ bv=forca; best=i; } }); if(best>=0) return {t:"attack",m:atac[x],tg:best}; } }
- if(etapa===4&&S.phase==="main"){ etapa=5; }
+ // 1: invocar
+ if(S.phase==="main"&&etapa===1){ etapa=2; if(!S.normal){ var melhor=null; P.hand.forEach(function(c,h){ var k=C[c.id]; if(k.t!=="M"||k.ex) return; var n=tribNec(c.id), ms=meusM().sort(function(a,b){return atk(P.mz[a])-atk(P.mz[b])}); if(ms.length<n) return; if(!n&&livre(P.mz)<0) return; var tr=ms.slice(0,n), perda=tr.reduce(function(s,i){return s+atk(P.mz[i])},0); if(n&&k.a-perda<=0) return; var sc=nv===0?rnd()*3000:k.a; if(!melhor||sc>melhor.sc) melhor={h:h,tr:tr,a:k.a,d:k.d,sc:sc}; }); if(melhor){ var set=nv===0?false:(melhor.a<maxO&&melhor.d>melhor.a); if(nv===2&&!deles().length) set=false; if(nv===2&&melhor.a>=1000&&trapPronta(0,"armadilha")>=0) set=true; return {t:"summon",h:melhor.h,tr:melhor.tr,set:set}; } } }
+ // 2: virar monstros virados / trocar pra ataque quando vale
+ if(S.phase==="main"&&etapa===2){ if(nv>0&&podeBater){ var mud=meusM().filter(function(i){ var m=P.mz[i]; if(m.tns===S.tn||m.ch||m.at||m.pos==="atk") return false; return !deles().length||atk(m)>maxO||(nv===2&&atk(m)>=C[m.id].d&&atk(m)>=maxO-100); }); if(mud.length) return {t:"pos",m:mud[0]}; }
+  if(nv>0){ var minO=Math.min.apply(null,[99999].concat(deles().map(function(i){ return forcaDe(O.mz[i]); }))); var rec=meusM().filter(function(i){ var m=P.mz[i]; if(m.tns===S.tn||m.ch||m.at||m.pos!=="atk"||m.down) return false; var oatk=Math.max.apply(null,[0].concat(deles().map(function(j){ var D=O.mz[j]; return D.pos==="atk"&&!D.down?atk(D):0; }))); return oatk>atk(m)&&C[m.id].d>atk(m)&&atk(m)<=minO; }); if(rec.length) return {t:"pos",m:rec[0]}; } etapa=3; }
+ // 3: armadilhas
+ if(S.phase==="main"&&etapa===3){ for(var j=0;j<P.hand.length;j++){ if(C[P.hand[j].id].t==="T"&&livre(P.st)>=0) return {t:"setst",h:j}; } etapa=4; }
+ // 4: batalha
+ if(S.phase==="main"&&etapa===4){ etapa=5; if(podeBater&&meusM().some(function(i){return P.mz[i].pos==="atk"&&!P.mz[i].down})&&!(nv===0&&rnd()<0.25)) return {t:"battle"}; }
+ if(S.phase==="battle"){ var atac=meusM().filter(function(i){ var m=P.mz[i]; return m.pos==="atk"&&!m.down&&!m.at; }).sort(function(a,b){return atk(P.mz[b])-atk(P.mz[a])});
+  if(atac.length){ var alvos=deles();
+   if(!alvos.length) return {t:"attack",m:atac[0],tg:-1};
+   if(nv===0){ var x0=atac[0], va0=atk(P.mz[x0]); var ganha=alvos.filter(function(i){return va0>forcaDe(O.mz[i])}); if(ganha.length) return {t:"attack",m:x0,tg:ganha[Math.floor(rnd()*ganha.length)]}; if(rnd()<0.3) return {t:"attack",m:x0,tg:alvos[Math.floor(rnd()*alvos.length)]}; return {t:"end"}; }
+   // medio/dificil: melhor golpe (destroi e causa dano), do mais forte ao mais fraco
+   var best=null; atac.forEach(function(x){ var va=atk(P.mz[x]); alvos.forEach(function(i){ var D=O.mz[i], fd=forcaDe(D); var sc=-1; if(va>fd){ sc=1000+(D.down?600:D.pos==="atk"?(va-fd)+C[D.id].a:C[D.id].a*0.6); if(nv===2) sc-=va*0.2; } else if(nv===2&&va===fd&&!D.down&&D.pos==="atk"&&C[D.id].a>=va) sc=500; if(sc>0&&(!best||sc>best.sc)) best={m:x,tg:i,sc:sc}; }); });
+   if(nv===2&&(armO("cilindro")||armO("espelho"))&&atac.length>1){ var fr=atac[atac.length-1]; var vf=atk(P.mz[fr]); var a2=alvos.filter(function(i){return vf>forcaDe(O.mz[i])}); if(a2.length) return {t:"attack",m:fr,tg:a2[0]}; if(armO("cilindro")) return {t:"end"}; }
+   if(best) return {t:"attack",m:best.m,tg:best.tg}; }
+  return {t:"end"}; }
  return {t:"end"}; }; }
 
+atualizaSomBt();
 if("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js");
 </script>
 </body>
