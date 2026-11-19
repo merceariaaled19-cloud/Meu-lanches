@@ -77,7 +77,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
 </div>
 
 <div id="jogo" class="esc">
- <div id="topo"><button class="sec esc" id="btMic" onclick="toggleMic()">🎤 Mic ligado</button><button class="sec" id="btSom" onclick="trocaSom()">🔊</button><button class="sec" onclick="sairJogo()">Sair</button></div>
+ <div id="topo"><button class="sec esc" id="btMic" onclick="toggleMic()">🎤 Mic ligado</button><button class="esc" id="vozBt" onclick="liberaVoz()">🔈 Ouvir amigo</button><span id="vozSt" style="font-size:12px;align-self:center"></span><button class="sec" id="btSom" onclick="trocaSom()">🔊</button><button class="sec" onclick="sairJogo()">Sair</button></div>
  <div class="barra"><span class="nome" id="opNome">Computador</span><span class="mini" id="opDeck">🂠 0</span><span class="mini" id="opGy" onclick="verCemiterio(1-ME)">🪦 0</span><span class="lp" id="opLp">8000</span></div>
  <div class="lpbar"><div id="opBar" style="width:100%"></div></div>
  <div id="maoOp"></div>
@@ -269,8 +269,12 @@ function jogarCPU(n){ if(n==null) n=NIVEL; NIVEL=n; try{ localStorage.setItem("d
 function enviar(){ if(MODO==="host"&&conn&&conn.open) conn.send({t:"st",s:S}); }
 function fazer(a){ var e; if(MODO==="guest"){ if(S.turn!==ME) return toast("Não é sua vez."); conn.send({t:"act",a:a}); return; } e=act(ME,a); if(e) toast(e); enviar(); render(); if(MODO==="cpu") setTimeout(cpu,600); }
 var ICE={iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.relay.metered.ca:80"},{urls:"turn:global.relay.metered.ca:80",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:80?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:443",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turns:global.relay.metered.ca:443?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"}]};
-async function pegaMic(){ try{ MIC=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false}); }catch(e){ MIC=null; } }
-function tocaAudio(st){ somAmigo.srcObject=st; somAmigo.play().catch(function(){}); }
+async function pegaMic(){ try{ MIC=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false}); }catch(e){ MIC=null; setTimeout(function(){ toast("Microfone bloqueado. Libere o microfone pro site nas configurações do Chrome."); },800); } }
+var VOZOK=false;
+function vozStatus(t){ var b=document.getElementById("vozSt"); if(b) b.innerText=t; }
+function tocaAudio(st){ VOZOK=true; somAmigo.srcObject=st; somAmigo.muted=false; somAmigo.volume=1; vozStatus("🎙️ Voz conectada"); somAmigo.play().then(function(){ vozBt.classList.add("esc"); }).catch(function(){ vozBt.classList.remove("esc"); toast("Toque em 🔈 Ouvir amigo pra liberar a voz."); }); }
+function liberaVoz(){ somAmigo.play().then(function(){ vozBt.classList.add("esc"); vozStatus("🎙️ Voz conectada"); }).catch(function(){}); }
+document.addEventListener("click",function(){ if(VOZOK&&somAmigo.paused) liberaVoz(); },true);
 async function criarSala(){ var nome=nomeMeu(); var cod=""; var ab="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; for(var i=0;i<5;i++) cod+=ab[Math.floor(Math.random()*ab.length)];
  lobby.classList.remove("esc"); lobby.innerHTML="Criando sala..."; await pegaMic();
  peer=new Peer("duelomonstros-"+cod,{config:ICE});
@@ -279,7 +283,10 @@ async function criarSala(){ var nome=nomeMeu(); var cod=""; var ab="ABCDEFGHJKLM
  peer.on("connection",function(c){ if(conn&&conn.open){ c.close(); return; } conn=c; c.on("open",function(){ c.on("data",function(d){ if(d.t==="hello"){ MODO="host"; ME=0; novoJogo(nome,d.nome||"Amigo"); abrirJogo(); enviar(); if(MIC||true){ var cl=peer.call(c.peer,MIC||vazio()); ligaCall(cl); } } if(d.t==="act"){ var e=act(1,d.a); if(e) c.send({t:"err",m:e}); enviar(); render(); } if(d.t==="again"){ novoJogo(S.p[0].nome,S.p[1].nome); enviar(); render(); } }); }); c.on("close",function(){ toast("Seu amigo saiu da sala."); }); });
 }
 function vazio(){ var ctx=new (window.AudioContext||window.webkitAudioContext)(); var d=ctx.createMediaStreamDestination(); return d.stream; }
-function ligaCall(cl){ call=cl; cl.on("stream",tocaAudio); btMic.classList.toggle("esc",!MIC); }
+function ligaCall(cl){ call=cl; VOZOK=false; vozStatus("🎙️ Conectando voz..."); cl.on("stream",tocaAudio); cl.on("error",function(){ vozStatus("🎙️ Voz falhou"); }); cl.on("close",function(){ vozStatus("🎙️ Voz caiu"); });
+ try{ cl.peerConnection.addEventListener("iceconnectionstatechange",function(){ var x=cl.peerConnection.iceConnectionState; if(x==="failed"||x==="disconnected") vozStatus("🎙️ Voz caiu"); }); }catch(e){}
+ btMic.classList.toggle("esc",!MIC);
+ if(MODO==="host") setTimeout(function(){ if(!VOZOK&&conn&&conn.open&&call===cl){ try{cl.close();}catch(e){} ligaCall(peer.call(conn.peer,MIC||vazio())); } },12000); }
 async function entrarSala(){ var cod=codIn.value.trim().toUpperCase(); if(cod.length!==5) return toast("Digite o código de 5 letras."); var nome=nomeMeu(); lobby.classList.remove("esc"); lobby.innerHTML="Entrando na sala "+cod+"..."; await pegaMic();
  peer=new Peer({config:ICE});
  peer.on("call",function(cl){ cl.answer(MIC||vazio()); ligaCall(cl); });
