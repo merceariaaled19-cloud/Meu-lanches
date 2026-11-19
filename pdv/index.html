@@ -92,7 +92,7 @@ tr.sel td{background:#ccfbf1}
    <p style="text-align:center"><a href="#" onclick="trocaLogin(0);return false">Já tenho cadastro</a></p>
   </div>
   <p id="lgMsg" style="color:#dc2626;text-align:center"></p>
-  <p style="font-size:12px;color:#555;text-align:center">Os dados ficam salvos neste computador. Faça backup em Configurações.</p>
+  <p style="font-size:12px;color:#555;text-align:center">Entrando com o mesmo e-mail e senha, celular e PC ficam com o mesmo cadastro.</p>
  </div>
 </div>
 
@@ -260,7 +260,15 @@ async function hash(s){ var b=await crypto.subtle.digest("SHA-256",new TextEncod
 // ---------- login ----------
 function trocaLogin(c){ document.getElementById("boxEntrar").classList.toggle("esc",!!c); document.getElementById("boxCriar").classList.toggle("esc",!c); document.getElementById("lgMsg").innerText=""; }
 async function criarConta(){ var n=crNome.value.trim(), e=crEmail.value.trim().toLowerCase(), s=crSenha.value; if(!n||!e||s.length<4){ lgMsg.innerText="Preencha tudo. Senha com 4 letras ou mais."; return; } var contas=(await dbGet("contas"))||{}; if(contas[e]){ lgMsg.innerText="Esse e-mail já tem cadastro. Entre com ele."; return; } contas[e]={nome:n,h:await hash(e+"|"+s)}; await dbSet("contas",contas); LOJA=e; CFG={nome:n,rodape:"Obrigado pela preferência! Volte sempre.",cor:"#0f766e",papel:"80",auto:"perguntar",proxNum:1}; await salvar("config"); await carregar(); }
-async function entrar(){ var e=lgEmail.value.trim().toLowerCase(), s=lgSenha.value; var contas=(await dbGet("contas"))||{}; if(!contas[e]){ lgMsg.innerText="Esse cadastro é só do outro aparelho. Toque em ☁️ Entrar com Google pra usar a mesma conta no celular e no PC."; return; } if(contas[e].h!==await hash(e+"|"+s)){ lgMsg.innerText="Senha errada."; return; } LOJA=e; await carregar(); }
+var EMAILS_NUVEM=["alexprotasgohan@gmail.com","merceariaaled19@gmail.com","alexprotasioficial@gmail.com"];
+async function entrar(){ var e=lgEmail.value.trim().toLowerCase(), s=lgSenha.value; if(!e||!s){ lgMsg.innerText="Coloque e-mail e senha."; return; } var contas=(await dbGet("contas"))||{}; var localOk=!!(contas[e]&&contas[e].h===await hash(e+"|"+s));
+ if(EMAILS_NUVEM.indexOf(e)>=0&&navigator.onLine&&fbIni()){ lgMsg.style.color="#555"; lgMsg.innerText="Entrando..."; var au=firebase.auth();
+  try{ await au.signInWithEmailAndPassword(e,s); lgMsg.innerText=""; iniciaNuvem(); return; }catch(x){ var c=x.code||"";
+   if(c==="auth/invalid-credential"||c==="auth/user-not-found"||c==="auth/invalid-login-credentials"){ try{ await au.createUserWithEmailAndPassword(e,s); lgMsg.innerText=""; iniciaNuvem(); return; }catch(y){ lgMsg.style.color="#dc2626"; if(y.code==="auth/email-already-in-use"){ lgMsg.innerText="Senha errada (ou essa conta entra pelo botão do Google)."; return; } if(y.code==="auth/weak-password"){ lgMsg.innerText="A senha precisa ter 6 caracteres ou mais."; return; } if(y.code!=="auth/network-request-failed"){ lgMsg.innerText="Erro ao entrar: "+y.code; return; } } }
+   else if(c==="auth/wrong-password"){ lgMsg.style.color="#dc2626"; lgMsg.innerText="Senha errada."; return; }
+   else if(c==="auth/too-many-requests"){ lgMsg.style.color="#dc2626"; lgMsg.innerText="Muitas tentativas. Espere um pouco."; return; }
+   else if(c!=="auth/network-request-failed"){ lgMsg.style.color="#dc2626"; lgMsg.innerText="Erro ao entrar: "+c; return; } } }
+ lgMsg.style.color="#dc2626"; if(!contas[e]){ lgMsg.innerText=navigator.onLine?"Cadastro não encontrado.":"Sem internet. Conecte pra entrar."; return; } if(!localOk){ lgMsg.innerText="Senha errada."; return; } LOJA=e; await carregar(); }
 async function carregar(){ localStorage.setItem("pdv_logado",LOJA); PROD=(await dbGet(k("produtos")))||[]; VENDAS=(await dbGet(k("vendas")))||[]; CLI=(await dbGet(k("clientes")))||[]; CX=(await dbGet(k("caixa")))||null; CXH=(await dbGet(k("caixas")))||[]; CFG=(await dbGet(k("config")))||{nome:"Meu Mercadinho",papel:"80",auto:"perguntar",proxNum:1}; telaLogin.classList.add("esc"); app.classList.remove("esc"); aplicaCfg(); aba("vender"); if(LOJA!=="nuvem") avisoLocal(); }
 function avisoLocal(){ if(document.getElementById("avLocal")) return; var d=document.createElement("div"); d.id="avLocal"; d.style.cssText="background:#fef3c7;color:#111;padding:8px 12px;text-align:center;font-size:14px"; d.innerHTML='⚠️ Esse login é só deste aparelho. <button class="pri" style="padding:6px 10px;font-size:13px" onclick="passarNuvem()">☁️ Passar pra nuvem com Google</button>'; app.insertBefore(d,app.firstChild); }
 async function passarNuvem(){ if(VENDA.itens.length){ alert("Termine a venda aberta primeiro."); return; } if(!confirm("Vai entrar com Google e levar os produtos, vendas e fiado deste aparelho pra nuvem. No celular, entre com o mesmo Google. Continuar?")) return; await entrarGoogle(); }
@@ -376,7 +384,7 @@ function abreModal(h){ modalC.innerHTML=h; modal.classList.remove("esc"); }
 function fechaModal(){ modal.classList.add("esc"); modalC.innerHTML=""; PAG=PAG&&null; if(ABA==="vender") setTimeout(foco,30); }
 
 // ---------- inicio ----------
-abrirDB().then(async function(){ var l=localStorage.getItem("pdv_logado"); if(l==="nuvem"){ iniciaNuvem(); return; } if(l){ var contas=(await dbGet("contas"))||{}; if(contas[l]){ LOJA=l; await carregar(); return; } } });
+abrirDB().then(async function(){ var l=localStorage.getItem("pdv_logado"); if(l==="nuvem"){ iniciaNuvem(); return; } if(l&&EMAILS_NUVEM.indexOf(l)>=0&&navigator.onLine){ localStorage.removeItem("pdv_logado"); lgEmail.value=l; lgMsg.style.color="#0f766e"; lgMsg.innerText="Novidade: digite sua senha pra ligar a nuvem (celular e PC juntos)."; setTimeout(function(){ lgSenha.focus(); },100); return; } if(l){ var contas=(await dbGet("contas"))||{}; if(contas[l]){ LOJA=l; await carregar(); return; } } });
 if("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js");
 window.addEventListener("beforeunload",function(e){ if(VENDA.itens.length){ e.preventDefault(); e.returnValue=""; } });
 </script>
