@@ -35,7 +35,7 @@ input[type=range]{padding:0;accent-color:var(--or)}
 .chips-sel{display:flex;flex-wrap:wrap;gap:8px}
 .opt{background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:12px;padding:12px 14px;font-size:.95rem;flex:1 1 45%}
 .opt.on{border-color:var(--or);background:#2b1a0e;color:#ffb27a;font-weight:700}
-.hero{text-align:center;padding:24px 8px 4px}.hero .logo{font-size:3rem}.hero h1{background:linear-gradient(135deg,var(--or),var(--rd));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2rem}
+.hero{text-align:center;padding:8px 0 4px}.herologo{display:block;width:100%;max-width:340px;aspect-ratio:1;margin:0 auto -18px;border-radius:24px;-webkit-mask-image:radial-gradient(circle,#000 62%,transparent 72%);mask-image:radial-gradient(circle,#000 62%,transparent 72%)}.toplogo{width:46px;height:46px;border-radius:12px;vertical-align:middle;margin-right:10px}.hero .logo{font-size:3rem}.hero h1{background:linear-gradient(135deg,var(--or),var(--rd));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2rem}
 .today{background:linear-gradient(160deg,#21160f,#17191e 60%);border-color:#3a2414}
 .bigletter{font-size:2.6rem;font-weight:900;color:var(--or);line-height:1.1}
 .sub{font-weight:600;margin-bottom:8px}
@@ -477,7 +477,7 @@ function bindProfileForm(form){
   $("#f-days",form).addEventListener("input",e=>$("#f-dv",form).textContent=e.target.value);
 }
 function viewOnboarding(){
-  return `<div class="hero"><div class="logo"><img src="icon-192.png" alt="Projeto Z" style="width:96px;height:96px;border-radius:22px"></div><h1>Projeto Z</h1><p>Seu treino ABC, sua dieta e seu treinador no bolso. Tudo fica salvo só neste celular.</p></div>
+  return `<div class="hero"><img class="herologo" src="logo.jpg" alt="Projeto Z"><p>Seu treino ABC, sua dieta e seu treinador no bolso. Tudo fica salvo só neste celular.</p></div>
   <form id="onb" class="card">${profileForm({})}<button class="btn big" type="submit">Montar minha tabela 💪</button></form>
   <p class="muted small center">Este app não substitui médico, nutricionista ou educador físico.</p>`;
 }
@@ -494,7 +494,7 @@ function bindOnboarding(){
 function viewHome(){
   const p=S.profile,n=nutri(),L=nextLetter(),d=S.plan.days[L],wc=weekCount(),tgt=+p.days;
   const water=S.water[today()]||0, tot=dayTotals();
-  return `<header class="top"><div><small class="muted">Olá,</small><h2>${esc(p.name.split(" ")[0])} 👊</h2></div><div class="pill">${GOAL_TXT[p.goal].split(" (")[0]}</div></header>
+  return `<header class="top"><div style="display:flex;align-items:center"><img class="toplogo" src="icon-192.png" alt="Projeto Z"><div><small class="muted">Olá,</small><h2>${esc(p.name.split(" ")[0])} 👊</h2></div></div><div class="pill">${GOAL_TXT[p.goal].split(" (")[0]}</div></header>
   ${S.session?`<div class="card hot"><b>Treino ${S.session.letter} em andamento</b><button class="btn" data-go="sessao">Continuar treino ▶</button></div>`:""}
   <div class="card today">
     <small class="muted">${doneToday()?"Você já treinou hoje ✅ — o próximo é":"Hoje é o"}</small>
@@ -796,7 +796,8 @@ $("#modal").addEventListener("click",e=>{if(e.target.id==="modal"||e.target.clos
 $("#rest-skip").onclick=stopRest;
 $("#rest-plus").onclick=()=>{restEnd+=15000;};
 render();
-if("serviceWorker" in navigator && location.protocol!=="file:") window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(()=>{}));
+if("serviceWorker" in navigator && location.protocol!=="file:") window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).then(r=>r.update()).catch(()=>{}));
+if("serviceWorker" in navigator){let _rl=false;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(_rl)return;_rl=true;location.reload();});}
 
 </script>
 </body>

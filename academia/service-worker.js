@@ -1,5 +1,5 @@
 // Projeto Z — service worker (cache-first, só mesma origem)
-const CACHE = "projetoz-v4";
+const CACHE = "projetoz-v5";
 const FILES = [
 "./",
 "./index.html",
@@ -7,6 +7,7 @@ const FILES = [
 "./icon-192.png",
 "./icon-512.png",
 "./icon-512-maskable.png",
+"./logo.jpg",
 "./videos/Ab_Roller.mp4",
 "./videos/Air_Bike.mp4",
 "./videos/Alternate_Incline_Dumbbell_Curl.mp4",
@@ -99,7 +100,7 @@ self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith("maromba-") && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 async function rangeResponse(req, res) {
   const range = req.headers.get("range"); if (!range || !res) return res;
@@ -118,6 +119,9 @@ self.addEventListener("fetch", e => {
   e.respondWith((async () => {
     const cache = await caches.open(CACHE);
     const key = req.mode === "navigate" ? "./index.html" : url.pathname + url.search;
+    if (req.mode === "navigate") {
+      try { const net = await fetch(req); if (net.ok) { cache.put("./index.html", net.clone()); return net; } } catch (err) {}
+    }
     let res = await cache.match(key, {ignoreSearch: req.mode === "navigate"});
     if (!res) {
       try {
