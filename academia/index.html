@@ -66,6 +66,12 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--or);font-weight:600}d
 .mac{margin:8px 0}
 .cups{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.cup{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card2);font-size:1.3rem;filter:grayscale(1);opacity:.5}.cup.on{filter:none;opacity:1;border-color:var(--bl)}
 .food{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+.food .qty{display:flex;gap:4px}.food .qty .btn,.food .rm{margin:0;padding:8px 11px}
+.addfood2{margin-top:10px}.addfood2>select{margin-top:0}
+.qrow{display:flex;gap:6px;align-items:center;margin-top:8px}.qrow input{width:72px;flex:0 0 72px;margin:0;text-align:center;padding:12px 6px}.qrow select{flex:1;margin:0}.qrow .btn{width:auto;margin:0;padding:12px 16px;flex:0 0 auto}
+#fprev{margin-top:6px}
+.novid{display:flex;align-items:center;justify-content:center;font-size:2.2rem;background:var(--card2)!important;border:1px solid var(--line)}.vid.xs.novid{font-size:1.3rem}.vid.lg.novid{font-size:4rem;height:160px}
+.msg.typing{opacity:.75;font-style:italic}
 .total{padding-top:8px;font-weight:700}
 .addfood{display:flex;gap:8px;align-items:center;margin-top:10px}.addfood select{flex:2}.addfood input{flex:1}.addfood .btn{width:auto;margin:6px 0 0;padding:13px 18px}
 #chat{display:flex;flex-direction:column;gap:8px;padding:6px 0}
@@ -203,7 +209,15 @@ const EX = [
 {id:"Elliptical_Trainer",n:"Elíptico (transport)",g:"cardio",eq:"máquina",lv:1,c:0,pr:8,t:["Postura ereta, use os braços.","Baixo impacto nos joelhos.","Ajuste a carga para ficar ofegante, mas conseguindo falar."]},
 {id:"Rowing_Stationary",n:"Remo ergômetro",g:"cardio",eq:"máquina",lv:2,c:0,pr:6,t:["Empurre com as pernas primeiro, depois puxe com os braços.","Coluna reta durante todo o movimento.","Volte na ordem inversa: braços, tronco, pernas."]},
 {id:"Mountain_Climbers",n:"Escalador (mountain climber)",g:"cardio",eq:"peso do corpo",lv:2,c:0,pr:5,reps:"30 s",t:["Posição de prancha alta.","Traga os joelhos ao peito alternando, rápido.","Quadril baixo e abdômen firme."]},
-{id:"Rope_Jumping",n:"Pular corda",g:"cardio",eq:"outro",lv:2,c:0,pr:5,reps:"1 min",t:["Saltos baixos na ponta dos pés.","Gire a corda com os punhos, não com os braços.","Comece com intervalos curtos."]}
+{id:"Rope_Jumping",n:"Pular corda",g:"cardio",eq:"outro",lv:2,c:0,pr:5,reps:"1 min",t:["Saltos baixos na ponta dos pés.","Gire a corda com os punhos, não com os braços.","Comece com intervalos curtos."]},
+// ANTEBRAÇO (sem vídeo no app)
+{id:"Wrist_Curl",n:"Rosca punho com barra (sentado)",g:"antebraco",eq:"barra",lv:1,c:0,pr:8,novid:1,reps:"15–20",t:["Sentado, antebraços apoiados nas coxas ou no banco, palmas para cima.","Deixe a barra rolar até a ponta dos dedos e suba flexionando só o punho.","Carga leve e movimento controlado."]},
+{id:"Reverse_Wrist_Curl",n:"Rosca punho invertida",g:"antebraco",eq:"barra",lv:1,c:0,pr:7,novid:1,reps:"15–20",t:["Mesma posição da rosca punho, mas com as palmas para baixo.","Suba o dorso da mão estendendo o punho.","Use carga bem leve."]},
+{id:"Reverse_Barbell_Curl",n:"Rosca inversa (pegada pronada)",g:"antebraco",eq:"barra",lv:2,c:0,pr:6,novid:1,t:["Segure a barra com as palmas para baixo.","Cotovelos colados ao corpo, suba até a altura do peito.","Desça devagar, sem balançar o tronco."]},
+{id:"Farmers_Walk",n:"Caminhada do fazendeiro (halteres)",g:"antebraco",eq:"halter",lv:1,c:0,pr:5,novid:1,reps:"30–40 s",t:["Segure um halter pesado em cada mão.","Caminhe com o tronco ereto e ombros para trás.","Aperte bem a pegada o tempo todo."]},
+// ESTEIRA (aquecimento e final de todo treino)
+{id:"Esteira_Aquecimento",n:"Aquecimento: esteira",g:"cardio",eq:"máquina",lv:1,c:0,pr:0,v:"Jogging_Treadmill",t:["Caminhada em ritmo leve a moderado por 5–10 min.","Aumente a velocidade aos poucos até aquecer e suar levemente.","Depois, faça 1–2 séries leves do primeiro exercício."]},
+{id:"Esteira_Final",n:"Esteira final",g:"cardio",eq:"máquina",lv:1,c:0,pr:0,v:"Jogging_Treadmill",t:["Caminhada rápida ou trote leve; use inclinação para gastar mais sem correr.","Ritmo em que você fica ofegante mas ainda consegue falar.","Nos últimos 2 min, diminua para desacelerar."]}
 ];
 // famílias: o gerador evita escolher dois exercícios quase iguais no mesmo dia
 const FAM = {roscabarra:["Barbell_Curl","EZ-Bar_Curl"],pulley:["Triceps_Pushdown","Triceps_Pushdown_-_Rope_Attachment","Cable_One_Arm_Tricep_Extension"],
@@ -214,7 +228,7 @@ const FAM = {roscabarra:["Barbell_Curl","EZ-Bar_Curl"],pulley:["Triceps_Pushdown
  rosca1:["Dumbbell_Bicep_Curl","Alternate_Incline_Dumbbell_Curl","Concentration_Curls"],martelo:["Hammer_Curls","Cable_Hammer_Curls_-_Rope_Attachment"],crucifixo:["Dumbbell_Flyes","Butterfly","Cable_Crossover"]};
 for(const [f,ids] of Object.entries(FAM)) ids.forEach(id=>{const e=EX.find(x=>x.id===id); if(e) e.fam=f;});
 const EXM = Object.fromEntries(EX.map(e=>[e.id,e]));
-const GRUPOS = {peito:"Peito",costas:"Costas",ombro:"Ombros",biceps:"Bíceps",triceps:"Tríceps",quadriceps:"Quadríceps/coxas",posterior:"Posterior de coxa",gluteos:"Glúteos",panturrilha:"Panturrilha",abdomen:"Abdômen",cardio:"Cardio"};
+const GRUPOS = {peito:"Peito",costas:"Costas",ombro:"Ombros",biceps:"Bíceps",triceps:"Tríceps",quadriceps:"Quadríceps/coxas",posterior:"Posterior de coxa",gluteos:"Glúteos",panturrilha:"Panturrilha",antebraco:"Antebraço",abdomen:"Abdômen",cardio:"Cardio"};
 
 // ===== ALIMENTOS (por 100 g; valores aproximados baseados na Tabela TACO/Unicamp e rótulos médios) =====
 // cat: p proteína, c carboidrato, g gordura, f fruta, v vegetal, l laticínio
@@ -260,7 +274,75 @@ const FOODS = [
 {id:"tomate",n:"Tomate",k:15,p:1.1,c:3.1,g:0.2,cat:"v"},
 {id:"cenoura",n:"Cenoura crua",k:34,p:1.3,c:7.7,g:0.2,cat:"v"}
 ];
+// medidas caseiras: [singular, plural, gramas por unidade, só inteiros?]
+const UNITS={
+ arroz:["colher de arroz","colheres de arroz",25],arrozint:["colher de arroz integral","colheres de arroz integral",25],
+ feijao:["concha de feijão","conchas de feijão",80],feijaop:["concha de feijão preto","conchas de feijão preto",80],
+ macarrao:["pegador de macarrão","pegadores de macarrão",60],batatadoce:["pedaço de batata-doce","pedaços de batata-doce",100],
+ batata:["batata média","batatas médias",120],macaxeira:["pedaço de macaxeira","pedaços de macaxeira",100],
+ cuscuz:["pedaço de cuscuz","pedaços de cuscuz",100],tapioca:["tapioca média","tapiocas médias",60],
+ farinha:["colher de farinha","colheres de farinha",15],aveia:["colher de aveia","colheres de aveia",15],
+ paofrances:["pão francês","pães franceses",50],paoint:["fatia de pão integral","fatias de pão integral",25],
+ frango:["filé de frango","filés de frango",120],patinho:["bife de patinho","bifes de patinho",100],
+ ovo:["ovo","ovos",50,1],clara:["clara","claras",33,1],tilapia:["filé de tilápia","filés de tilápia",120],
+ tambaqui:["posta de tambaqui","postas de tambaqui",150],atum:["lata de atum","latas de atum",120],sardinha:["lata de sardinha","latas de sardinha",85],
+ whey:["scoop de whey","scoops de whey",30],leite:["copo de leite","copos de leite",200],leitedesn:["copo de leite desnatado","copos de leite desnatado",200],
+ iogurte:["pote de iogurte","potes de iogurte",170,1],queijominas:["fatia de queijo minas","fatias de queijo minas",20],mucarela:["fatia de muçarela","fatias de muçarela",20],
+ banana:["banana","bananas",80],maca:["maçã","maçãs",130],mamao:["fatia de mamão","fatias de mamão",100],acai:["tigela de açaí","tigelas de açaí",200],
+ pastaamendoim:["colher de pasta de amendoim","colheres de pasta de amendoim",15],castanha:["castanha","castanhas",4,1],
+ azeite:["colher de azeite","colheres de azeite",8],mel:["colher de mel","colheres de mel",20],
+ brocolis:["ramo de brócolis","ramos de brócolis",25],alface:["folha de alface","folhas de alface",10],
+ tomate:["rodela de tomate","rodelas de tomate",15],cenoura:["cenoura","cenouras",100]};
+FOODS.forEach(f=>{const u=UNITS[f.id];if(u){f.un=u[0];f.unp=u[1];f.ug=u[2];f.whole=!!u[3]||u[2]<30;}});
 const FOODM = Object.fromEntries(FOODS.map(f=>[f.id,f]));
+// ===== PORÇÕES (lógica pura) =====
+function fmtQ(q){q=Math.round(q*100)/100;const w=Math.floor(q),fr=q-w;if(Math.abs(fr-0.5)<0.01)return (w?w:"")+"½";return Number.isInteger(q)?String(q):String(q).replace(".",",");}
+function mkItem(fid,q,u){const f=FOODM[fid];if(u==="un"&&f&&f.ug){q=Math.max(0.5,Math.round(q*2)/2);return {f:fid,q,u:"un",g:Math.round(q*f.ug)};}q=Math.max(1,Math.round(q));return {f:fid,q,u:"g",g:q};}
+function normItem(it){if(!it||it.u)return it;const f=FOODM[it.f];const g=+it.g||0;if(f&&f.ug){const q=g/f.ug;if(q>=0.5&&Math.abs(q*2-Math.round(q*2))<0.01){it.u="un";it.q=Math.round(q*2)/2;return it;}}it.u="g";it.q=g;return it;}
+function portion(it){const f=FOODM[it.f];if(!f)return "?";if(it.u==="un"&&f.ug)return `${fmtQ(it.q)} ${it.q>1?f.unp:f.un} (${Math.round(it.g)} g)`;return `${Math.round(it.g)} g de ${f.n}`;}
+function stepItem(it,dir){const f=FOODM[it.f];let q=+it.q||1;
+  if(it.u==="un"&&f&&f.ug){const min=f.whole?1:0.5;if(dir>0)q=q<1?1:q+1;else q=q>1?Math.max(min,q-1):min;return mkItem(it.f,q,"un");}
+  q=dir>0?q+10:Math.max(10,q-10);return mkItem(it.f,q,"g");}
+function toPortion(fid,g){const f=FOODM[fid];if(!f||!f.ug)return mkItem(fid,Math.max(10,Math.round(g/10)*10),"g");let q=g/f.ug;q=f.whole?Math.max(1,Math.round(q)):Math.max(0.5,Math.round(q*2)/2);return mkItem(fid,q,"un");}
+// ===== LEITURA DE "bebi 500 ml" / "comi 2 pães" (lógica pura) =====
+const low=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+const NUMW={um:1,uma:1,dois:2,duas:2,tres:3,quatro:4,cinco:5,seis:6,sete:7,oito:8,nove:9,dez:10,meio:0.5,meia:0.5};
+const QTY="(\\d+(?:[.,]\\d+)?|um|uma|dois|duas|tres|quatro|cinco|seis|sete|oito|nove|dez|meio|meia)";
+function numTok(t){t=String(t||"").replace(",",".");if(/^\d+(\.\d+)?$/.test(t))return +t;return NUMW[t]!=null?NUMW[t]:null;}
+function parseWater(q){
+  let s=" "+low(q)+" ";
+  if(!/(^|[^a-z])(bebi|tomei|bebemos|tomamos|acabei de (beber|tomar)|anota|anote|registra|registre|adiciona|adicione|marca|marque)([^a-z]|$)/.test(s) && !/^\s*\+/.test(s)) return 0;
+  if(/\bnao (bebi|tomei)\b/.test(s)) return 0;
+  if(/\b(leite|suco|refri|refrigerante|cafe|whey|cerveja|cha|acai|vitamina|energetico|shake|iogurte|isotonico|vinho|coca|guarana|caldo|sopa)\b/.test(s) && !/\bagua\b/.test(s)) return 0;
+  let ml=0;
+  s=s.replace(/(\d+(?:[.,]\d+)?)\s*(ml|mls|mililitros?)\b/g,(m,n)=>{ml+=numTok(n);return " ";});
+  s=s.replace(new RegExp(QTY+"\\s*(l|lt|lts|litros?)\\b(\\s+e\\s+meio)?","g"),(m,n,u,h)=>{ml+=numTok(n)*1000+(h?500:0);return " ";});
+  s=s.replace(new RegExp(QTY+"\\s+(copos?|garrafas?|garrafinhas?)\\b","g"),(m,n,u)=>{ml+=numTok(n)*(/^garraf/.test(u)?500:250);return " ";});
+  ml=Math.round(ml);
+  return ml>0&&ml<=5000?ml:0;
+}
+// [id do alimento, palavras (regex)] — os mais específicos primeiro
+const FOODKW=[["paoint","pao de forma|paes de forma|pao integral|paes integrais"],["paofrances","paes franceses|pao frances|paezinhos|paozinho|paes|pao"],
+ ["clara","claras?"],["ovo","ovos?"],["arrozint","arroz integral"],["arroz","arroz"],["feijaop","feijao preto"],["feijao","feijao|feijoes"],
+ ["frango","frango|peito de frango"],["patinho","patinho|bifes?|carne"],["tilapia","tilapias?"],["tambaqui","tambaquis?"],["atum","atum"],["sardinha","sardinhas?"],
+ ["macaxeira","macaxeiras?|mandiocas?|aipim"],["batatadoce","batatas? doces?|batata-doce"],["batata","batatas?"],["cuscuz","cuscuz"],["tapioca","tapiocas?"],
+ ["farinha","farinha"],["aveia","aveia"],["macarrao","macarrao"],["whey","whey"],["leitedesn","leite desnatado"],["leite","leite"],["iogurte","iogurtes?"],
+ ["mucarela","mucarela|mussarela"],["queijominas","queijos?"],["banana","bananas?"],["maca","macas?"],["mamao","mamao|mamoes"],["acai","acai"],
+ ["pastaamendoim","pasta de amendoim"],["castanha","castanhas?"],["azeite","azeite"],["mel","mel"],["brocolis","brocolis"],["alface","alface"],["tomate","tomates?"],["cenoura","cenouras?"]];
+const FILL="(?:(?:colher(?:es)?|conchas?|files?|fatias?|copos?|scoops?|pedacos?|potes?|latas?|postas?|bifes?|unidades?|pegadores?|ramos?|folhas?|rodelas?|tigelas?|de|do|da|sopa|servir|cheias?|grandes?|medias?|medios?|pequen[oa]s?|cozid[oa]s?|frit[oa]s?|grelhad[oa]s?|assad[oa]s?|mexid[oa]s?)\\s+){0,4}";
+function parseFood(q){
+  let s=" "+low(q).replace(/[^a-z0-9.,\- ]/g," ")+" ";
+  if(!/\b(comi|comemos|almocei|jantei|lanchei|merendei|tomei|bebi|acabei de comer)\b/.test(s)) return [];
+  const out=[];
+  for(const [id,kw] of FOODKW){
+    if(!FOODM[id]) continue;
+    // gramas: "150 g de arroz"
+    s=s.replace(new RegExp("(\\d+(?:[.,]\\d+)?)\\s*(?:g|gr|gramas?)\\s+(?:de\\s+)?"+FILL+"(?:"+kw+")\\b","g"),(m,n)=>{out.push(mkItem(id,numTok(n),"g"));return " ";});
+    // unidades: "2 pães", "1 colher de arroz", "meio filé de frango"
+    s=s.replace(new RegExp("\\b"+QTY+"\\s+"+FILL+"(?:"+kw+")\\b","g"),(m,n)=>{const v=numTok(n);if(v>0&&v<=20)out.push(mkItem(id,v,FOODM[id].ug?"un":"g"));return " ";});
+  }
+  return out;
+}
 const MEALS = {cafe:"Café da manhã",almoco:"Almoço",lanche:"Lanche",jantar:"Jantar"};
 
 </script>
@@ -269,7 +351,14 @@ const MEALS = {cafe:"Café da manhã",almoco:"Almoço",lanche:"Lanche",jantar:"J
 const KEY = "maromba_v1";
 const DEF = () => ({profile:null, plan:null, history:[], session:null, weights:[], water:{}, food:{}, chat:[], seed:1});
 let S = load();
-function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&typeof s==="object") return Object.assign(DEF(), s);}catch(e){} return DEF(); }
+function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&typeof s==="object") return migrate(Object.assign(DEF(), s));}catch(e){} return migrate(DEF()); }
+// v6: água em ml (antes: copos de 250 ml) e porções com unidade caseira
+function migrate(s){
+  if(!s.wml){ for(const d in (s.water||{})) s.water[d]=Math.round((+s.water[d]||0)*250); s.wml=1; }
+  for(const d in (s.food||{})) for(const m in s.food[d]) (s.food[d][m]||[]).forEach(normItem);
+  if(!s.aiIntro){ s.aiIntro=1; if(s.profile&&Array.isArray(s.chat)&&s.chat.length) s.chat.push({from:"bot",text:"Novidade: agora eu respondo com **inteligência artificial** 🤖 Pode perguntar qualquer coisa! E me conte o que bebeu ou comeu, tipo \"bebi 500 ml\" ou \"comi 2 ovos\", que eu anoto pra você."}); }
+  return s;
+}
 function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
 
 // ===== UTIL =====
@@ -283,7 +372,7 @@ const fmtDate = iso=>{const d=new Date(iso);return d.toLocaleDateString("pt-BR",
 const r0 = n=>Math.round(n);
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2200);}
 function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return((s>>>0)%100000)/100000;};}
-function vid(id,cls="vid"){return `<video class="${cls}" src="videos/${encodeURIComponent(id)}.mp4" autoplay loop muted playsinline preload="auto" aria-label="${esc(EXM[id]?.n||"")}"></video>`;}
+function vid(id,cls="vid"){const e=EXM[id];if(e&&e.novid)return `<div class="${cls} novid" role="img" aria-label="${esc(e.n)}">${e.g==="cardio"?"🏃":"💪"}</div>`;return `<video class="${cls}" src="videos/${encodeURIComponent((e&&e.v)||id)}.mp4" autoplay loop muted playsinline preload="auto" aria-label="${esc(EXM[id]?.n||"")}"></video>`;}
 function weekStart(){const d=new Date();d.setHours(0,0,0,0);const wd=(d.getDay()+6)%7;d.setDate(d.getDate()-wd);return d;}
 
 // ===== GERADOR DE TREINO =====
@@ -326,40 +415,48 @@ function prescribe(ex, goal, level, isFocus){
   return {sets,reps,rest};
 }
 
+// Estrutura pedida: homem A=peito/ombro/tríceps, B=costas/bíceps/antebraço, C=pernas; mulher com ênfase em inferiores.
+// Todo treino: aquecimento na esteira, 2 de abdômen e esteira final.
+const SPLIT={
+  M:{A:{nome:"Peito, ombros e tríceps",slots:[["peito",3],["ombro",3],["triceps",3]]},
+     B:{nome:"Costas, bíceps e antebraço",slots:[["costas",3],["biceps",3],["antebraco",1]]},
+     C:{nome:"Pernas",slots:[["quadriceps",3],["posterior",2],["gluteos",1],["panturrilha",1]]}},
+  F:{A:{nome:"Quadríceps e glúteos",slots:[["quadriceps",3],["gluteos",2]]},
+     B:{nome:"Costas, ombros e braços",slots:[["costas",2],["ombro",2],["biceps",1],["triceps",1]]},
+     C:{nome:"Posterior, glúteos e panturrilha",slots:[["posterior",2],["gluteos",2],["panturrilha",1]]}}};
+// foco escolhido = +1 exercício no grupo focado
+const FOCUS_EXTRA={
+  M:{gluteos:{C:["gluteos"]},bracos:{A:["triceps"],B:["biceps"]},peitocostas:{A:["peito"],B:["costas"]}},
+  F:{gluteos:{A:["gluteos"],C:["gluteos"]},bracos:{B:["biceps","triceps"]},peitocostas:{B:["costas"]}}};
 function generatePlan(seed){
-  const p=S.profile, R=rng(seed||Date.now());
-  const tpl=TEMPLATES[p.focus]||TEMPLATES.equilibrado;
-  const plan={letters:["A","B","C"],days:{},created:new Date().toISOString(),goal:p.goal,focus:p.focus,level:p.level};
+  const p=S.profile, R=rng(seed||Date.now()), sx=p.sex==="F"?"F":"M";
+  const tpl=SPLIT[sx], ext=(FOCUS_EXTRA[sx]||{})[p.focus]||{};
+  const plan={ver:2,letters:["A","B","C"],days:{},created:new Date().toISOString(),goal:p.goal,focus:p.focus,level:p.level,sex:sx};
   const maxLv = p.level==="iniciante"?2:3;
+  const big=["quadriceps","gluteos","posterior","peito","costas","ombro","biceps","triceps","antebraco","panturrilha","abdomen"];
   for(const L of ["A","B","C"]){
     const day=tpl[L]; const used=new Set(); let items=[];
-    let slots=day.slots.map(s=>s.slice());
-    if(p.level==="iniciante"){ // menos volume: tira 1 do maior grupo
-      let mx=slots.reduce((a,s,i)=>s[1]>=slots[a][1]?i:a,0); if(slots[mx][1]>2) slots[mx][1]--; }
-    if(p.level==="avancado" && day.focus){ const f=slots.find(s=>s[0]===day.focus[0]); if(f) f[1]++; }
+    const slots=day.slots.map(s=>s.slice());
+    for(const g of (ext[L]||[])){const sl=slots.find(x=>x[0]===g); if(sl) sl[1]++; else slots.push([g,1]);}
+    slots.push(["abdomen",2]);
     for(const [g,n,sub] of slots){
       let pool=EX.filter(e=>e.g===g && e.lv<=maxLv && !used.has(e.id) && (!sub||e.sub===sub));
-      if(!sub && g==="ombro") pool=pool.filter(e=>!e.sub||n>=3); // ombro de trás só quando pedido
+      if(!sub && g==="ombro") pool=pool.filter(e=>!e.sub||n>=3); // ombro de trás só quando há 3+
       pool=pool.map(e=>({e,s:e.pr+R()*4+(p.level==="iniciante"&&e.eq==="máquina"?2:0)})).sort((a,b)=>b.s-a.s);
-      // garante 1 composto quando houver 2+
       let pick=[]; const fams=new Set(items.map(it=>EXM[it.id].fam).filter(Boolean));
       for(const x of pool){ if(pick.length>=n) break; if(x.e.fam&&fams.has(x.e.fam)) continue; pick.push(x.e); if(x.e.fam) fams.add(x.e.fam); }
       for(const x of pool){ if(pick.length>=n) break; if(!pick.includes(x.e)) pick.push(x.e); }
       if(n>=2 && !pick.some(e=>e.c)){ const comp=pool.find(x=>x.e.c); if(comp) pick[pick.length-1]=comp.e; }
-      if(g==="ombro" && pick.filter(e=>e.c).length>1){ // no máx. 1 desenvolvimento; o resto isolado (elevação lateral etc.)
+      if(g==="ombro" && pick.filter(e=>e.c).length>1){ // no máx. 1 desenvolvimento
         let seen=false; pick=pick.map(e=>{ if(!e.c) return e; if(!seen){seen=true;return e;} const iso=pool.map(x=>x.e).find(x=>!x.c&&!pick.includes(x)); return iso||e; });
         pick=[...new Set(pick)]; }
       pick.forEach(e=>used.add(e.id));
-      const isF=(day.focus||[]).includes(g);
-      items.push(...pick.map(e=>Object.assign({id:e.id},prescribe(e.id,p.goal,p.level,isF))));
+      items.push(...pick.map(e=>Object.assign({id:e.id},prescribe(e.id,p.goal,p.level,false))));
     }
     // ordem: compostos de grupos grandes primeiro, abdômen no fim
-    const big=["quadriceps","gluteos","posterior","peito","costas","ombro","biceps","triceps","panturrilha","abdomen"];
     items.sort((a,b)=>(EXM[a.id].g==="abdomen")-(EXM[b.id].g==="abdomen") || (EXM[b.id].c-EXM[a.id].c) || big.indexOf(EXM[a.id].g)-big.indexOf(EXM[b.id].g));
-    if(p.goal==="perder"||p.goal==="recomp"){
-      const cardio=EX.filter(e=>e.g==="cardio"&&e.lv<=maxLv).sort((a,b)=>b.pr+R()*6-(a.pr+R()*6))[0];
-      items.push(Object.assign({id:cardio.id,finisher:true},prescribe(cardio.id,p.goal,p.level,false)));
-    }
+    items.unshift({id:"Esteira_Aquecimento",warmup:true,sets:1,reps:"5–10 min",rest:0});
+    items.push({id:"Esteira_Final",finisher:true,sets:1,reps:p.goal==="perder"?"20–30 min":"10–20 min",rest:0});
     plan.days[L]={nome:day.nome,items};
   }
   return plan;
@@ -380,8 +477,9 @@ function lastLoad(exId){
   return null;
 }
 function shortVersion(L){
-  const d=S.plan.days[L]; const it=d.items.filter(x=>!x.finisher&&EXM[x.id].g!=="abdomen");
-  return it.slice(0,4).map(x=>Object.assign({},x,{sets:Math.max(2,x.sets-1),rest:Math.min(x.rest,45)}));
+  const d=S.plan.days[L]; const it=d.items.filter(x=>!x.finisher&&!x.warmup&&EXM[x.id]&&EXM[x.id].g!=="abdomen"&&EXM[x.id].g!=="cardio");
+  const main=it.slice(0,4).map(x=>Object.assign({},x,{sets:Math.max(2,x.sets-1),rest:Math.min(x.rest,45)}));
+  const w=d.items.find(x=>x.warmup); return w?[Object.assign({},w,{reps:"5 min"}),...main]:main;
 }
 
 // ===== NUTRIÇÃO =====
@@ -425,8 +523,8 @@ function autoMenu(seed){
     fC=Math.min(4,Math.max(0.3,fC*(1+0.5*(n.carb-t.c)/Math.max(n.carb,1))));
     oil=Math.min(15,Math.max(0,oil+(n.fat-t.g)/4));}
   const out={};
-  for(const ml in m){out[ml]=m[ml].map(([f,g,r])=>{let gg=g*(r==="P"?fP:r==="C"?fC:1);gg=f==="ovo"?Math.max(50,Math.round(gg/50)*50):Math.max(10,Math.round(gg/10)*10);return {f,g:gg};});}
-  const o=Math.round(oil*2/4)*4; if(o>0){out.almoco.push({f:"azeite",g:Math.ceil(o/2)});out.jantar.push({f:"azeite",g:Math.floor(o/2)||4});}
+  for(const ml in m){out[ml]=m[ml].map(([f,g,r])=>toPortion(f,g*(r==="P"?fP:r==="C"?fC:1)));}
+  const o=oil*2; if(o>=4){out.almoco.push(toPortion("azeite",o/2));out.jantar.push(toPortion("azeite",o/2));}
   return out;
 }
 
@@ -486,7 +584,7 @@ function bindOnboarding(){
   f.addEventListener("submit",e=>{e.preventDefault();const p=readProfileForm(f);
     if(!p.name||!p.age||!p.weight||!p.height){toast("Preencha todos os campos");return;}
     S.profile=p; S.weights=[{d:today(),kg:p.weight}]; S.seed=Date.now()%100000; S.plan=generatePlan(S.seed);
-    S.chat=[{from:"bot",text:`Fala, ${p.name.split(" ")[0]}! Sou seu treinador aqui no app. Pergunte o que quiser: treino de hoje, proteína, água, como fazer um exercício… 💪`}];
+    S.chat=[{from:"bot",text:`Fala, ${p.name.split(" ")[0]}! Sou seu treinador com IA aqui no app. Pergunte o que quiser: treino de hoje, proteína, dieta, como fazer um exercício… E me conta o que bebeu ou comeu (ex.: "bebi 500 ml", "comi 2 ovos") que eu anoto. 💪`}];
     save(); TAB="home"; render(); toast("Tabela montada! Bora treinar 🔥");});
 }
 
@@ -511,9 +609,9 @@ function viewHome(){
     <div class="card mini" data-go="comida"><small>Calorias hoje</small><b>${r0(tot.k)}<span>/${n.kcal}</span></b><div class="bar"><i style="width:${Math.min(100,tot.k/n.kcal*100)}%"></i></div></div>
     <div class="card mini" data-go="comida"><small>Proteína</small><b>${r0(tot.p)}<span>/${n.prot} g</span></b><div class="bar"><i style="width:${Math.min(100,tot.p/n.prot*100)}%"></i></div></div>
   </div>
-  <div class="card"><div class="between"><b>💧 Água</b><span>${(water*0.25).toFixed(2).replace(".",",")} / ${(n.water/1000).toFixed(1).replace(".",",")} L</span></div>
-    <div class="bar water"><i style="width:${Math.min(100,water*250/n.water*100)}%"></i></div>
-    <div class="row2"><button class="btn" id="cup">+ 1 copo (250 ml)</button><button class="btn ghost" id="uncup">− copo</button></div></div>
+  <div class="card"><div class="between"><b>💧 Água</b><span>${(water/1000).toFixed(2).replace(".",",")} / ${(n.water/1000).toFixed(1).replace(".",",")} L</span></div>
+    <div class="bar water"><i style="width:${Math.min(100,water/n.water*100)}%"></i></div>
+    <div class="row2"><button class="btn" id="cup">+ 1 copo (250 ml)</button><button class="btn ghost" id="uncup">− 250 ml</button></div></div>
   <div class="card"><b>Últimos treinos</b>${S.history.length?S.history.slice(-5).reverse().map(h=>`<div class="hist"><span class="lt">${h.letter}</span><span>${fmtDate(h.date)}${h.short?" · versão curta":""}</span><small class="muted">${h.dur?h.dur+" min":""}</small></div>`).join(""):`<p class="muted">Nenhum treino ainda. O primeiro é o mais importante! 🔥</p>`}
   ${S.history.length>5?`<button class="btn ghost small" data-go="perfil">Ver histórico completo</button>`:""}</div>`;
 }
@@ -522,8 +620,8 @@ function bindHome(){
   $("#start").onclick=()=>startSession(nextLetter(),false);
   $("#short").onclick=()=>startSession(nextLetter(),true);
   $("#other").onclick=()=>{const L=prompt("Qual treino você quer fazer? (A, B ou C)",nextLetter());if(!L)return;const u=L.trim().toUpperCase();if(!S.plan.letters.includes(u)){toast("Digite A, B ou C");return;}startSession(u,false);};
-  $("#cup").onclick=()=>{S.water[today()]=(S.water[today()]||0)+1;save();render();const n=nutri();if(S.water[today()]*250>=n.water)toast("Meta de água batida! 💧");};
-  $("#uncup").onclick=()=>{S.water[today()]=Math.max(0,(S.water[today()]||0)-1);save();render();};
+  $("#cup").onclick=()=>{S.water[today()]=(S.water[today()]||0)+250;save();render();const n=nutri();if(S.water[today()]>=n.water)toast("Meta de água batida! 💧");};
+  $("#uncup").onclick=()=>{S.water[today()]=Math.max(0,(S.water[today()]||0)-250);save();render();};
 }
 function bindGo(){$$("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));}
 
@@ -594,9 +692,10 @@ function viewTreino(){
   const d=S.plan.days[PL];
   return `<header class="top"><div><small class="muted">Minha tabela · ${FOCUS_TXT[S.plan.focus]||""}</small><h2>Treino ABC</h2></div></header>
   <div class="tabs">${S.plan.letters.map(L=>`<button class="${L===PL?"on":""}" data-l="${L}">${L}${L===nextLetter()?" •":""}</button>`).join("")}</div>
+  ${S.plan.ver!==2?`<div class="card hot"><b>Nova estrutura de treino 🔥</b><small class="muted block">${S.profile.sex==="F"?"A: quadríceps e glúteos · B: costas, ombros e braços · C: posterior, glúteos e panturrilha":"A: peito, ombros e tríceps · B: costas, bíceps e antebraço · C: pernas"}. Todo treino começa com esteira, termina com abdômen + esteira. Seu histórico continua.</small><button class="btn" id="upg">Atualizar minha tabela</button></div>`:""}
   <div class="card"><b>Treino ${PL}: ${esc(d.nome)}</b><small class="muted block">Toque no vídeo para ver como fazer. Edite séries e repetições à vontade.</small></div>
   ${d.items.map((it,i)=>{const e=EXM[it.id];return `<div class="card pit" data-i="${i}">
-    <div class="exhead">${vid(it.id,"vid sm")}<div class="grow"><b>${esc(e.n)}</b>${it.finisher?` <span class="tag">finalizador</span>`:""}<small class="muted block">${GRUPOS[e.g]} · ${e.eq}</small></div></div>
+    <div class="exhead">${vid(it.id,"vid sm")}<div class="grow"><b>${esc(e.n)}</b>${it.finisher?` <span class="tag">finalizador</span>`:""}${it.warmup?` <span class="tag">aquecimento</span>`:""}<small class="muted block">${GRUPOS[e.g]} · ${e.eq}</small></div></div>
     <div class="edit"><label>Séries<input class="e-sets" type="number" min="1" max="10" value="${it.sets}"></label><label>Reps<input class="e-reps" value="${esc(it.reps)}"></label><label>Desc. (s)<input class="e-rest" type="number" min="0" max="300" value="${it.rest}"></label></div>
     <div class="acts"><button class="btn ghost small a-up" ${i?"":"disabled"}>↑</button><button class="btn ghost small a-down" ${i<d.items.length-1?"":"disabled"}>↓</button><button class="btn ghost small a-swap">🔄 Trocar</button><button class="btn ghost small a-del">🗑️</button></div>
   </div>`;}).join("")}
@@ -626,6 +725,7 @@ function bindTreino(){
   $("#addg").onchange=e=>{const g=e.target.value;$("#addlist").innerHTML=g?EX.filter(x=>x.g===g).map(x=>`<button class="altbtn" data-id="${x.id}">${vid(x.id,"vid xs")}<span>${esc(x.n)}</span></button>`).join(""):"";
     $$("#addlist .altbtn").forEach(b=>b.onclick=()=>{const id=b.dataset.id;const fin=items.findIndex(x=>x.finisher);const item=Object.assign({id},prescribe(id,S.profile.goal,S.profile.level,false));if(fin>=0)items.splice(fin,0,item);else items.push(item);save();render();toast("Adicionado: "+EXM[id].n);});};
   $("#startp").onclick=()=>startSession(PL,false);
+  if($("#upg")) $("#upg").onclick=()=>{if(!confirm("Trocar pela nova estrutura de treino? Suas edições manuais na tabela atual serão substituídas (o histórico continua)."))return;S.seed=(S.seed*7+13)%100003;S.plan=generatePlan(S.seed);save();render();toast("Tabela atualizada!");};
   $("#regen").onclick=()=>{if(!confirm("Gerar uma nova tabela? Suas edições manuais serão substituídas (o histórico continua)."))return;S.seed=(S.seed*7+13)%100003;S.plan=generatePlan(S.seed);save();render();toast("Nova tabela gerada!");};
 }
 function showExercise(id){const e=EXM[id];openModal(`<h3>${esc(e.n)}</h3>${vid(id,"vid lg")}<small class="muted">${GRUPOS[e.g]} · ${e.eq}</small><ul>${e.t.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`);}
@@ -636,6 +736,7 @@ function closeModal(){$("#modal").classList.remove("show");$("#modal-body").inne
 
 // ===== COMIDA =====
 let MEALSEL="cafe";
+let FSEL={f:"paofrances",q:1,u:"un"};
 function viewComida(){
   const n=nutri(), t=dayTotals(), df=dayFood(), water=S.water[today()]||0;
   const bar=(lbl,v,tg,u)=>`<div class="mac"><div class="between"><span>${lbl}</span><span>${r0(v)} / ${tg} ${u}</span></div><div class="bar"><i style="width:${Math.min(100,v/tg*100)}%;${v>tg*1.1?"background:#e53935":""}"></i></div></div>`;
@@ -643,26 +744,41 @@ function viewComida(){
   <div class="card"><b>Suas metas diárias</b>
    <div class="kpis"><div><b>${n.kcal}</b><small>kcal</small></div><div><b>${n.prot} g</b><small>proteína</small></div><div><b>${n.carb} g</b><small>carbo</small></div><div><b>${n.fat} g</b><small>gordura</small></div></div>
    <small class="muted block">Metabolismo basal (Mifflin-St Jeor): ${n.bmr} kcal · Gasto total estimado: ${n.tdee} kcal · Meta: ${n.how}.<br>Proteína: ${n.protK.toFixed(1).replace(".",",")} g por kg = <b>${n.prot} g/dia</b>. Gordura: ${n.fatK.toFixed(1).replace(".",",")} g/kg. Carboidrato: o restante.</small></div>
-  <div class="card"><div class="between"><b>💧 Água: ${(n.water/1000).toFixed(1).replace(".",",")} L hoje</b><span>${water} copos</span></div>
+  <div class="card"><div class="between"><b>💧 Água: ${(n.water/1000).toFixed(1).replace(".",",")} L hoje</b><span>${water} ml</span></div>
    <small class="muted block">35 ml por kg${n.trainDay?" + 500 ml por ser dia de treino":""}.</small>
-   <div class="bar water"><i style="width:${Math.min(100,water*250/n.water*100)}%"></i></div>
-   <div class="cups">${Array.from({length:Math.ceil(n.water/250)},(_,i)=>`<button class="cup ${i<water?"on":""}" data-c="${i}">🥤</button>`).join("")}</div></div>
+   <div class="bar water"><i style="width:${Math.min(100,water/n.water*100)}%"></i></div>
+   <div class="cups">${Array.from({length:Math.ceil(n.water/250)},(_,i)=>`<button class="cup ${i<Math.floor(water/250)?"on":""}" data-c="${i}">🥤</button>`).join("")}</div>
+   <small class="muted block">Cada copo = 250 ml. No Treinador, escreva "bebi 360 ml" para anotar outra quantidade.</small></div>
   <div class="card"><b>Hoje</b>${bar("Calorias",t.k,n.kcal,"kcal")}${bar("Proteína",t.p,n.prot,"g")}${bar("Carboidrato",t.c,n.carb,"g")}${bar("Gordura",t.g,n.fat,"g")}
    <button class="btn" id="auto">✨ Montar cardápio automático</button></div>
   <div class="tabs">${Object.entries(MEALS).map(([k,v])=>`<button class="${k===MEALSEL?"on":""}" data-m="${k}">${v.split(" ")[0]}</button>`).join("")}</div>
   <div class="card"><b>${MEALS[MEALSEL]}</b>
-   ${df[MEALSEL].length?df[MEALSEL].map((it,i)=>{const f=FOODM[it.f],m=macrosOf([it]);return `<div class="food"><div class="grow">${esc(f.n)}<small class="muted block">${it.g} g · ${r0(m.k)} kcal · P ${m.p.toFixed(0)} · C ${m.c.toFixed(0)} · G ${m.g.toFixed(0)}</small></div><button class="btn ghost small rm" data-i="${i}">✕</button></div>`;}).join(""):`<p class="muted">Nada aqui ainda.</p>`}
+   ${df[MEALSEL].length?df[MEALSEL].map((it,i)=>{const f=FOODM[it.f];if(!f)return "";const m=macrosOf([it]);return `<div class="food"><div class="grow">${esc(portion(it))}<small class="muted block">${it.u==="un"?esc(f.n)+" · ":""}${r0(m.k)} kcal · ${r0(m.p)} g prot · C ${r0(m.c)} · G ${r0(m.g)}</small></div><div class="qty"><button class="btn ghost small qm" data-i="${i}" aria-label="Menos">−</button><button class="btn ghost small qp" data-i="${i}" aria-label="Mais">+</button></div><button class="btn ghost small rm" data-i="${i}" aria-label="Remover">✕</button></div>`;}).join(""):`<p class="muted">Nada aqui ainda.</p>`}
    ${(()=>{const m=macrosOf(df[MEALSEL]);return df[MEALSEL].length?`<div class="between total"><span>Total</span><span>${r0(m.k)} kcal · P ${r0(m.p)} g</span></div>`:"";})()}
-   <div class="addfood"><select id="ff">${FOODS.map(f=>`<option value="${f.id}">${esc(f.n)}</option>`).join("")}</select><input id="fg" type="number" inputmode="numeric" placeholder="gramas" value="100"><button class="btn" id="fadd">+</button></div>
+   <div class="addfood2"><select id="ff">${FOODS.map(f=>`<option value="${f.id}" ${f.id===FSEL.f?"selected":""}>${esc(f.n)}</option>`).join("")}</select>
+    <div class="qrow"><button type="button" class="btn ghost" id="fqm" aria-label="Menos">−</button><input id="fq" type="number" inputmode="decimal" step="any" min="0"><button type="button" class="btn ghost" id="fqp" aria-label="Mais">+</button><select id="fu"></select></div>
+    <div id="fprev" class="small"></div>
+    <button class="btn" id="fadd">Adicionar em ${MEALS[MEALSEL]}</button></div>
    <small class="muted block" id="fhint"></small></div>
   <p class="muted small">Valores aproximados por 100 g, baseados na Tabela TACO (Unicamp) e rótulos médios. Ajuste com seu nutricionista.</p>`;
 }
 function bindComida(){
   $$(".tabs button").forEach(b=>b.onclick=()=>{MEALSEL=b.dataset.m;render();});
-  $$(".cup").forEach(b=>b.onclick=()=>{const c=+b.dataset.c;S.water[today()]=(S.water[today()]||0)>c?c:c+1;save();render();});
-  const hint=()=>{const f=FOODM[$("#ff").value];$("#fhint").textContent=`${f.k} kcal · P ${f.p} · C ${f.c} · G ${f.g} por 100 g${f.u?" — "+f.u:""}`;};
-  $("#ff").onchange=hint;hint();
-  $("#fadd").onclick=()=>{const g=+$("#fg").value;if(!g||g<=0){toast("Informe os gramas");return;}dayFood()[MEALSEL].push({f:$("#ff").value,g});save();render();};
+  $$(".cup").forEach(b=>b.onclick=()=>{const c=+b.dataset.c,cups=Math.floor((S.water[today()]||0)/250);S.water[today()]=(cups>c?c:c+1)*250;save();render();});
+  const cur=()=>mkItem(FSEL.f,FSEL.q,FSEL.u);
+  const paint=()=>{const f=FOODM[FSEL.f];
+    $("#fu").innerHTML=(f.ug?`<option value="un" ${FSEL.u==="un"?"selected":""}>${esc(f.unp)} (${f.ug} g)</option>`:"")+`<option value="g" ${FSEL.u==="g"?"selected":""}>gramas</option>`;
+    $("#fq").value=FSEL.q; const it=cur(),m=macrosOf([it]);
+    $("#fprev").innerHTML=`= <b>${esc(portion(it))}</b> · ${r0(m.k)} kcal · ${r0(m.p)} g prot`;
+    $("#fhint").textContent=`${f.k} kcal · P ${f.p} · C ${f.c} · G ${f.g} por 100 g${f.ug?` — 1 ${f.un} ≈ ${f.ug} g`:""}`;};
+  $("#ff").onchange=()=>{const f=FOODM[$("#ff").value];FSEL={f:f.id,q:f.ug?1:100,u:f.ug?"un":"g"};paint();};
+  $("#fu").onchange=()=>{const f=FOODM[FSEL.f],u=$("#fu").value;if(u===FSEL.u)return;FSEL.q=u==="g"?Math.round((+FSEL.q||1)*(f.ug||100)):1;FSEL.u=u;paint();};
+  $("#fq").oninput=()=>{const v=+String($("#fq").value).replace(",",".");if(v>0){FSEL.q=v;const it=cur(),m=macrosOf([it]);$("#fprev").innerHTML=`= <b>${esc(portion(it))}</b> · ${r0(m.k)} kcal · ${r0(m.p)} g prot`;}};
+  $("#fqm").onclick=()=>{const it=stepItem(cur(),-1);FSEL.q=it.q;paint();};
+  $("#fqp").onclick=()=>{const it=stepItem(cur(),1);FSEL.q=it.q;paint();};
+  paint();
+  $("#fadd").onclick=()=>{if(!(+FSEL.q>0)){toast("Informe a quantidade");return;}const it=cur();dayFood()[MEALSEL].push(it);save();render();toast("Adicionado: "+portion(it));};
+  $$(".qm,.qp").forEach(b=>b.onclick=()=>{const L=dayFood()[MEALSEL],i=+b.dataset.i;L[i]=stepItem(normItem(L[i]),b.classList.contains("qp")?1:-1);save();const y=window.scrollY;render();window.scrollTo(0,y);});
   $$(".rm").forEach(b=>b.onclick=()=>{dayFood()[MEALSEL].splice(+b.dataset.i,1);save();render();});
   $("#auto").onclick=()=>{const hasAny=Object.values(dayFood()).flat().length;if(hasAny&&!confirm("Substituir as refeições de hoje pelo cardápio automático?"))return;S.food[today()]=autoMenu(Date.now()%99991);save();render();const t=dayTotals(),n=nutri();toast(`Cardápio pronto: ${r0(t.k)} kcal, ${r0(t.p)} g de proteína`);};
 }
@@ -670,10 +786,10 @@ function bindComida(){
 // ===== TREINADOR (chat) =====
 const CHIPS=["Qual meu treino hoje?","Quanto de proteína?","Quanta água?","Estou sem tempo","Como fazer agachamento?","Trocar exercício","Calorias","Cardápio","Motivação"];
 function viewCoach(){
-  return `<header class="top"><div><small class="muted">Treinador virtual (respostas automáticas)</small><h2>Treinador</h2></div></header>
-  <div id="chat">${S.chat.map(m=>`<div class="msg ${m.from}">${m.html||esc(m.text)}</div>`).join("")}</div>
+  return `<header class="top"><div><small class="muted">Treinador com IA ✨</small><h2>Treinador</h2></div></header>
+  <div id="chat">${S.chat.map(m=>`<div class="msg ${m.from}">${m.html||(mdSafe(m.text)+(m.acts||""))}</div>`).join("")}${AI_BUSY?`<div class="msg bot typing">digitando…${AI_WAIT?"<br><small>(IA gratuita: pode levar alguns segundos)</small>":""}</div>`:""}</div>
   <div class="chips">${CHIPS.map(c=>`<button class="chip">${c}</button>`).join("")}</div>
-  <form id="chatf" class="chatbar"><input id="chatin" placeholder="Pergunte algo…" autocomplete="off"><button class="btn">Enviar</button></form>`;
+  <form id="chatf" class="chatbar"><input id="chatin" placeholder="Pergunte qualquer coisa ou \"bebi 500 ml\"…" autocomplete="off"><button class="btn">Enviar</button></form>`;
 }
 function bindCoach(){
   const box=$("#chat"); box.scrollTop=box.scrollHeight; setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),50);
@@ -682,7 +798,89 @@ function bindCoach(){
   $$("#chat [data-act]").forEach(b=>b.onclick=()=>chatAction(b.dataset.act,b.dataset.arg));
 }
 function chatAction(a,arg){ if(a==="short")startSession(nextLetter(),true); else if(a==="start")startSession(nextLetter(),false); else if(a==="menu"){S.food[today()]=autoMenu(Date.now()%99991);save();go("comida");} else if(a==="go")go(arg); else if(a==="swap"){PL=arg.split("|")[0];go("treino");setTimeout(()=>swapModal(+arg.split("|")[1]),50);} }
-function ask(q){ S.chat.push({from:"me",text:q}); const r=reply(q); S.chat.push(Object.assign({from:"bot"},r)); if(S.chat.length>80) S.chat=S.chat.slice(-80); save(); render(); }
+// ===== IA (Pollinations, grátis e sem chave) =====
+const AI_URL="https://text.pollinations.ai/openai";
+let AI_BUSY=false, AI_WAIT=false, AI_LAST=+localStorage.getItem("pz_ai_last")||0;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function mdSafe(t){return esc(t||"").replace(/^#{1,4}\s*(.+)$/gm,"<b>$1</b>").replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/^\s*[-*]\s+/gm,"• ").replace(/\n/g,"<br>");}
+function htmlText(h){try{const b=new DOMParser().parseFromString(String(h||""),"text/html").body;b.querySelectorAll("video,button").forEach(x=>x.remove());b.querySelectorAll("li").forEach(x=>x.prepend("- "));return b.textContent.replace(/\s+\n/g,"\n").trim();}catch(e){return "";}}
+function cleanAI(t){t=String(t||"").trim();const parts=t.split(/\n\s*-{3,}\s*\n/);if(parts.length>1&&/pollinations|sponsor|patrocin/i.test(parts[parts.length-1]))parts.pop();t=parts.join("\n---\n").split("\n").filter(l=>!/pollinations\.ai/i.test(l)).join("\n").trim();return t.length>2500?t.slice(0,2500)+"…":t;}
+function curMeal(nq){
+  if(/\b(cafe da manha|no cafe|desjejum)\b/.test(nq))return "cafe"; if(/\b(almoco|almocei)\b/.test(nq))return "almoco";
+  if(/\b(lanche|lanchei|merenda|merendei)\b/.test(nq))return "lanche"; if(/\b(janta|jantar|jantei|ceia)\b/.test(nq))return "jantar";
+  const h=new Date().getHours(); return h<10?"cafe":h<15?"almoco":h<18?"lanche":"jantar";
+}
+function buildContext(acts){
+  const p=S.profile,n=nutri(),L=nextLetter(),d=S.plan.days[L],t=dayTotals(),df=dayFood(),w=S.water[today()]||0;
+  const nn=v=>String(v).replace(".",","), now=new Date();
+  const ex=d.items.map((x,i)=>`${i+1}. ${EXM[x.id]?EXM[x.id].n:x.id} — ${x.sets}x ${x.reps}`).join("\n");
+  const foods=Object.entries(MEALS).map(([k,v])=>`- ${v}: ${df[k].length?df[k].map(it=>{const m=macrosOf([it]);return `${portion(it)} (${r0(m.k)} kcal, ${r0(m.p)} g prot)`;}).join("; "):"nada registrado"}`).join("\n");
+  return `Você é o "Treinador" do app Projeto Z: um personal trainer e orientador de alimentação parceiro, que fala com o usuário pelo chat do app.
+REGRAS:
+- Responda SEMPRE em português do Brasil, curto (no máximo ~6 linhas ou poucos tópicos), amigável, direto e prático.
+- Responda qualquer pergunta, mas use os dados abaixo para personalizar. Use os números já calculados aqui (metas, totais, quanto falta); não invente outros.
+- Não faça diagnóstico médico nem indique remédios. Em caso de dor, lesão, tontura, falta de ar ou problema de saúde: oriente parar e procurar médico ou fisioterapeuta (emergência: SAMU 192).
+- Sem HTML e sem tabelas. Pode usar **negrito** e listas com "- ".
+- O próprio app anota água quando o usuário escreve, por exemplo, "bebi 500 ml" ou "bebi 2 copos", e comida com "comi 2 ovos". Você não anota nada sozinho: se pedirem para registrar algo que não está em AÇÕES, explique como escrever ou para usar a aba Comida.
+- Abas do app: Início, Treino (tabela ABC), Comida (metas, cardápio automático, água), Treinador (este chat), Perfil (peso, dados, backup).
+DADOS DO USUÁRIO (agora: ${now.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit"})}, ${pad(now.getHours())}:${pad(now.getMinutes())}):
+- Nome: ${p.name}; sexo: ${p.sex==="F"?"feminino":"masculino"}; idade: ${p.age} anos; peso: ${nn(p.weight)} kg; altura: ${p.height} cm; IMC ${nn(n.imc.toFixed(1))}
+- Objetivo: ${GOAL_TXT[p.goal]||p.goal}; nível: ${LEVEL_TXT[p.level]||p.level}; foco: ${FOCUS_TXT[p.focus]||p.focus}; atividade: ${(ACT[p.activity]||ACT.moderado)[1]}
+- Treinos por semana: ${p.days} (feitos nesta semana: ${weekCount()}); total de treinos no app: ${S.history.length}${S.session?`; treino ${S.session.letter} em andamento agora`:""}
+- ${doneToday()?"Já treinou hoje. Próximo treino":"Treino de hoje"}: Treino ${L} — ${d.nome}:
+${ex}
+- Metas diárias: ${n.kcal} kcal; proteína ${n.prot} g; carboidrato ${n.carb} g; gordura ${n.fat} g; água ${n.water} ml
+- Água hoje: ${w} ml de ${n.water} ml (${w>=n.water?"meta batida":`faltam ${n.water-w} ml`})
+- Comido hoje: ${r0(t.k)} kcal (faltam ${Math.max(0,n.kcal-r0(t.k))}), proteína ${r0(t.p)} g (faltam ${Math.max(0,n.prot-r0(t.p))} g), carbo ${r0(t.c)} g, gordura ${r0(t.g)} g
+- Refeições de hoje:
+${foods}${acts.length?`
+AÇÕES QUE O APP ACABOU DE REGISTRAR (confirme ao usuário usando exatamente estes números):
+- ${acts.join("\n- ")}`:""}`;
+}
+async function askAI(acts){
+  if(navigator.onLine===false) return null;
+  const hist=S.chat.slice(-10).map(m=>({role:m.from==="me"?"user":"assistant",content:m.from==="me"?m.text:(m.text||htmlText(m.html))})).filter(m=>m.content);
+  while(hist.length&&hist[0].role!=="user") hist.shift();
+  const body=JSON.stringify({model:"openai",messages:[{role:"system",content:buildContext(acts)},...hist]});
+  const wait=AI_LAST+46000-Date.now(); // limite grátis: ~1 resposta a cada 45 s por IP
+  if(wait>0){AI_WAIT=true;if(TAB==="coach")render();await sleep(wait);}
+  for(let attempt=0;attempt<2;attempt++){
+    AI_LAST=Date.now(); try{localStorage.setItem("pz_ai_last",AI_LAST);}catch(e){}
+    const ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),30000);
+    try{
+      const r=await fetch(AI_URL,{method:"POST",headers:{"Content-Type":"application/json"},body,signal:ctl.signal});
+      if(r.status===402||r.status===429){const ra=+r.headers.get("retry-after")||0;clearTimeout(to);if(attempt===0&&ra>0&&ra<=25){AI_WAIT=true;if(TAB==="coach")render();await sleep(ra*1000+600);continue;}return null;}
+      if(!r.ok) return null;
+      const txt=await r.text(); let out="";
+      try{const j=JSON.parse(txt);out=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||"";}catch(e){out="";}
+      out=cleanAI(out); return out||null;
+    }catch(e){return null;}finally{clearTimeout(to);}
+  }
+  return null;
+}
+function actWater(ml){
+  const n=nutri(); S.water[today()]=(S.water[today()]||0)+ml; const tot=S.water[today()], left=Math.max(0,n.water-tot);
+  return `Anotado ${ml} ml de água 💧 Hoje você já tomou ${tot} ml. `+(left?`Faltam ${left} ml pra meta de ${n.water} ml.`:`Meta de ${n.water} ml batida! 🎉`);
+}
+function actFood(items,meal){
+  dayFood()[meal].push(...items); const t=dayTotals(),n=nutri();
+  return `Anotei no ${MEALS[meal]}: ${items.map(it=>{const m=macrosOf([it]);return `${portion(it)} · ${r0(m.k)} kcal · ${r0(m.p)} g prot`;}).join("; ")}. Hoje: ${r0(t.k)} de ${n.kcal} kcal e ${r0(t.p)} de ${n.prot} g de proteína.`;
+}
+async function ask(q){
+  if(AI_BUSY){toast("Calma, ainda estou respondendo…");return;}
+  S.chat.push({from:"me",text:q});
+  const acts=[]; const ml=parseWater(q); if(ml>0) acts.push(actWater(ml));
+  const fd=parseFood(q); if(fd.length) acts.push(actFood(fd,curMeal(low(q))));
+  save(); AI_BUSY=true; AI_WAIT=false; if(TAB==="coach") render();
+  let ans=null; try{ ans=await askAI(acts); }catch(e){ ans=null; }
+  AI_BUSY=false; AI_WAIT=false;
+  const r=reply(q), btns=((r.html||"").match(/<button[^>]*data-act[^>]*>[^<]*<\/button>/g)||[]).join(" ");
+  if(ans) S.chat.push({from:"bot",text:ans,ai:1,acts:btns?"<br>"+btns:""});
+  else if(acts.length) S.chat.push({from:"bot",text:acts.join("\n")});
+  else S.chat.push(Object.assign({from:"bot"},r));
+  if(S.chat.length>80) S.chat=S.chat.slice(-80); save();
+  if(TAB==="coach") render(); else toast("O Treinador respondeu 💬");
+}
 function findExercise(q){
   const nq=" "+norm(q)+" "; const stop=new Set(["com","de","do","da","na","no","em","o","a","e","para","sentado","em pe"]);
   const syn={"agachamento":"Barbell_Squat","supino":"Barbell_Bench_Press_-_Medium_Grip","leg":"Leg_Press","terra":"Barbell_Deadlift","hip thrust":"Barbell_Hip_Thrust","elevacao pelvica":"Barbell_Hip_Thrust","stiff":"Stiff-Legged_Dumbbell_Deadlift","rosca":"Barbell_Curl","puxada":"Wide-Grip_Lat_Pulldown","remada":"Seated_Cable_Rows","flexao":"Pushups","prancha":"Plank","abdominal":"Crunches","desenvolvimento":"Seated_Dumbbell_Press","triceps":"Triceps_Pushdown","panturrilha":"Standing_Calf_Raises","afundo":"Dumbbell_Lunges","esteira":"Jogging_Treadmill","extensora":"Leg_Extensions","flexora":"Lying_Leg_Curls","abdutora":"Thigh_Abductor","crucifixo":"Dumbbell_Flyes","elevacao lateral":"Side_Lateral_Raise","barra fixa":"Pullups","serrote":"One-Arm_Dumbbell_Row","bulgaro":"Split_Squat_with_Dumbbells","sumo":"Plie_Dumbbell_Squat","coice":"One-Legged_Cable_Kickback","voador":"Butterfly"};
@@ -720,7 +918,7 @@ function reply(q){
     return {html:`Sua meta é <b>${n.prot} g de proteína por dia</b> (${n.protK.toFixed(1).replace(".",",")} g por kg × ${p.weight} kg). Divida em 4 refeições: ~${r0(n.prot/4)} g cada.<br>Exemplos de ~30 g: 1 filé de frango (100 g), 4 ovos + 1 clara, 1 scoop de whey, 120 g de tilápia ou tambaqui.`};
   }
   if(has(nq,"agua","hidrat","beber","liquido")){
-    const w=S.water[today()]||0; return {html:`Sua meta hoje: <b>${(n.water/1000).toFixed(1).replace(".",",")} L</b> (35 ml/kg${n.trainDay?" + 500 ml do treino":""}). Você já tomou ${w} copo(s) = ${(w*0.25).toFixed(2).replace(".",",")} L. No calor de Manaus, leve sempre a garrafinha! 💧<br><button class="btn small" data-act="go" data-arg="comida">Marcar copos</button>`};
+    const w=S.water[today()]||0; return {html:`Sua meta hoje: <b>${n.water} ml</b> (35 ml/kg${n.trainDay?" + 500 ml do treino":""}). Você já tomou ${w} ml${w<n.water?`, faltam <b>${n.water-w} ml</b>`:" — meta batida! 🎉"}. Para anotar, escreva por exemplo "bebi 500 ml". No calor de Manaus, leve sempre a garrafinha! 💧<br><button class="btn small" data-act="go" data-arg="comida">Marcar copos</button>`};
   }
   if(has(nq,"cardapio","o que comer","oque comer","refeic","almoco","jantar","cafe","lanche","comida","comer","dieta")){
     return {html:`Posso montar um cardápio do dia com comida do dia a dia (arroz, feijão, frango, peixe, macaxeira…) batendo ~${n.kcal} kcal e ${n.prot} g de proteína.<br><button class="btn small" data-act="menu">Montar cardápio automático</button>`};
@@ -747,7 +945,7 @@ function reply(q){
   if(has(nq,"oi ","ola","bom dia","boa tarde","boa noite","eai","e ai","salve","fala ")){ return {text:`Fala, ${first}! 👊 Bora? Posso te dizer o treino de hoje, sua proteína, água, ou ensinar um exercício.`}; }
   if(has(nq,"obrigad","valeu","vlw","tmj")){ return {text:"Tamo junto! 💪 Qualquer coisa é só chamar."}; }
   if(ex) return {html:`<b>${esc(ex.n)}</b> (${GRUPOS[ex.g]})${vid(ex.id,"vid lg")}<ul>${ex.t.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`};
-  return {text:`Não entendi bem 😅. Sou um treinador automático e respondo sobre: treino de hoje, versão curta, como fazer um exercício (ex.: "como fazer supino"), trocar exercício, proteína, água, calorias, cardápio, suplementos, descanso e motivação.`};
+  return {text:`Não entendi bem 😅. Estou sem conexão com a IA agora, então respondo no modo automático sobre: treino de hoje, versão curta, como fazer um exercício (ex.: "como fazer supino"), trocar exercício, proteína, água, calorias, cardápio, suplementos, descanso e motivação.`};
 }
 
 // ===== PERFIL / CONFIG =====
@@ -763,7 +961,7 @@ function viewPerfil(){
    <div class="row2"><button class="btn" id="exp">⬇️ Exportar</button><label class="btn ghost filebtn">⬆️ Importar<input type="file" id="imp" accept="application/json,.json" hidden></label></div>
    <button class="btn danger" id="reset">Apagar tudo e recomeçar</button></div>
   <div class="card disclaimer"><b>Aviso importante</b><p class="small">O Projeto Z dá orientações gerais e automáticas. Ele <b>não substitui</b> médico, nutricionista ou educador físico. Antes de começar, especialmente se tiver alguma condição de saúde, consulte um profissional. Sentiu dor, tontura ou falta de ar, pare e procure ajuda.</p>
-   <p class="small muted">Imagens dos exercícios: free-exercise-db (domínio público). Tabela de alimentos: valores aproximados baseados na TACO/Unicamp. O Treinador responde por palavras-chave (não é uma IA de verdade).</p></div>`;
+   <p class="small muted">Imagens dos exercícios: free-exercise-db (domínio público). Tabela de alimentos: valores aproximados baseados na TACO/Unicamp. O Treinador usa uma IA gratuita (Pollinations), que pode errar ou demorar; sem internet, responde por palavras-chave. Ao conversar com ele, suas mensagens e os dados do dia (perfil, metas, treino e refeições) são enviados para gerar a resposta.</p></div>`;
 }
 function drawChart(){
   const c=$("#wchart"); if(!c) return; const x=c.getContext("2d"),W=c.width,H=c.height; x.clearRect(0,0,W,H);
@@ -786,7 +984,7 @@ function bindPerfil(){
   $("#regen2").onclick=()=>{if(savep()){S.seed=(S.seed*7+13)%100003;S.plan=generatePlan(S.seed);save();go("treino");toast("Nova tabela gerada!");}};
   $$(".hdel").forEach(b=>b.onclick=()=>{if(confirm("Apagar este treino do histórico?")){S.history.splice(+b.dataset.i,1);save();render();}});
   $("#exp").onclick=()=>{const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`maromba-backup-${today()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);};
-  $("#imp").onchange=e=>{const file=e.target.files[0];if(!file)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);if(!d||!d.profile||!d.plan)throw 0;if(!confirm("Importar este backup? Os dados atuais serão substituídos."))return;S=Object.assign(DEF(),d);save();TAB="home";render();toast("Backup importado!");}catch(err){toast("Arquivo de backup inválido");}};rd.readAsText(file);};
+  $("#imp").onchange=e=>{const file=e.target.files[0];if(!file)return;const rd=new FileReader();rd.onload=()=>{try{const d=JSON.parse(rd.result);if(!d||!d.profile||!d.plan)throw 0;if(!confirm("Importar este backup? Os dados atuais serão substituídos."))return;S=migrate(Object.assign(DEF(),d));save();TAB="home";render();toast("Backup importado!");}catch(err){toast("Arquivo de backup inválido");}};rd.readAsText(file);};
   $("#reset").onclick=()=>{if(confirm("Apagar TODOS os dados deste app neste celular?")&&confirm("Tem certeza? Não dá para desfazer.")){localStorage.removeItem(KEY);S=DEF();TAB="home";render();}};
 }
 
