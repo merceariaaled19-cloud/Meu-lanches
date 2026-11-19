@@ -1,5 +1,5 @@
-// Academia Maromba — service worker (cache-first, só mesma origem)
-const CACHE = "maromba-72d6f386";
+// Projeto Z — service worker (cache-first, só mesma origem)
+const CACHE = "projetoz-v1";
 const FILES = [
 "./",
 "./index.html",

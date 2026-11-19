@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Academia Maromba</title>
+<title>Projeto Z</title>
 <meta name="theme-color" content="#0e0f12">
 <meta name="description" content="Treino ABC, dieta e treinador no bolso.">
 <link rel="manifest" href="manifest.webmanifest">
@@ -477,7 +477,7 @@ function bindProfileForm(form){
   $("#f-days",form).addEventListener("input",e=>$("#f-dv",form).textContent=e.target.value);
 }
 function viewOnboarding(){
-  return `<div class="hero"><div class="logo">🏋️</div><h1>Academia Maromba</h1><p>Seu treino ABC, sua dieta e seu treinador no bolso. Tudo fica salvo só neste celular.</p></div>
+  return `<div class="hero"><div class="logo"><img src="icon-192.png" alt="Projeto Z" style="width:96px;height:96px;border-radius:22px"></div><h1>Projeto Z</h1><p>Seu treino ABC, sua dieta e seu treinador no bolso. Tudo fica salvo só neste celular.</p></div>
   <form id="onb" class="card">${profileForm({})}<button class="btn big" type="submit">Montar minha tabela 💪</button></form>
   <p class="muted small center">Este app não substitui médico, nutricionista ou educador físico.</p>`;
 }
@@ -762,7 +762,7 @@ function viewPerfil(){
   <div class="card"><b>Backup</b><small class="muted block">Seus dados ficam só neste celular. Exporte para guardar ou passar para outro aparelho.</small>
    <div class="row2"><button class="btn" id="exp">⬇️ Exportar</button><label class="btn ghost filebtn">⬆️ Importar<input type="file" id="imp" accept="application/json,.json" hidden></label></div>
    <button class="btn danger" id="reset">Apagar tudo e recomeçar</button></div>
-  <div class="card disclaimer"><b>Aviso importante</b><p class="small">O Academia Maromba dá orientações gerais e automáticas. Ele <b>não substitui</b> médico, nutricionista ou educador físico. Antes de começar, especialmente se tiver alguma condição de saúde, consulte um profissional. Sentiu dor, tontura ou falta de ar, pare e procure ajuda.</p>
+  <div class="card disclaimer"><b>Aviso importante</b><p class="small">O Projeto Z dá orientações gerais e automáticas. Ele <b>não substitui</b> médico, nutricionista ou educador físico. Antes de começar, especialmente se tiver alguma condição de saúde, consulte um profissional. Sentiu dor, tontura ou falta de ar, pare e procure ajuda.</p>
    <p class="small muted">Imagens dos exercícios: free-exercise-db (domínio público). Tabela de alimentos: valores aproximados baseados na TACO/Unicamp. O Treinador responde por palavras-chave (não é uma IA de verdade).</p></div>`;
 }
 function drawChart(){
