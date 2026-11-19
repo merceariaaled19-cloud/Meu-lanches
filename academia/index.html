@@ -79,6 +79,16 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--or);font-weight:600}d
 .msg.me{align-self:flex-end;background:linear-gradient(135deg,var(--or),var(--rd));border-bottom-right-radius:4px}
 .msg.bot{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
 .msg ul,.msg ol{padding-left:20px;margin:6px 0}
+.msg.bot{position:relative;padding-right:40px}.say{position:absolute;top:6px;right:6px;background:var(--card2);border:1px solid var(--line);border-radius:999px;width:28px;height:28px;font-size:.8rem;line-height:1;padding:0;color:var(--tx)}.say.on{border-color:var(--or)}
+.vhead{font-size:.8rem;font-weight:700;opacity:.9;margin-bottom:4px;display:flex;align-items:center;gap:6px}.vwave{letter-spacing:1px;opacity:.75}
+.vtog{background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:999px;padding:8px 12px;font-size:.82rem;font-weight:600}
+.micbtn{width:48px;flex:0 0 48px;height:48px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--or),var(--rd));color:#fff;font-size:1.25rem;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.micbtn.on{background:var(--rd);animation:rpulse 1s infinite}
+#recbar{position:fixed;left:12px;right:12px;bottom:calc(140px + env(safe-area-inset-bottom));max-width:536px;margin:0 auto;background:#1b1210;border:2px solid var(--rd);border-radius:18px;padding:10px 14px;display:none;z-index:40;box-shadow:0 10px 30px #000a}#recbar.show{display:block}
+.rtop{display:flex;align-items:center;gap:10px}.rdot{width:12px;height:12px;border-radius:50%;background:var(--rd);animation:rpulse 1s infinite}.rtop b{color:var(--rd);font-variant-numeric:tabular-nums}.rhint{flex:1;color:var(--mu);font-size:.85rem}
+.rbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card2);color:var(--tx);font-size:1rem}.rbtn.send{background:var(--or);border:0}
+.rlive{margin-top:6px;font-size:.92rem;max-height:30vh;overflow:auto}
+@keyframes rpulse{0%{box-shadow:0 0 0 0 #e5393599}70%{box-shadow:0 0 0 12px #e5393500}100%{box-shadow:0 0 0 0 #e5393500}}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0;scrollbar-width:none}.chip{flex-shrink:0;background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:999px;padding:9px 13px;font-size:.88rem}
 .chatbar{display:flex;gap:8px;position:sticky;bottom:calc(80px + env(safe-area-inset-bottom));background:var(--bg);padding:6px 0}.chatbar input{margin:0}.chatbar .btn{width:auto;margin:0;padding:12px 16px}
 #nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:rgba(14,15,18,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:20}
@@ -349,7 +359,7 @@ const MEALS = {cafe:"Café da manhã",almoco:"Almoço",lanche:"Lanche",jantar:"J
 <script>
 // ===== ESTADO =====
 const KEY = "maromba_v1";
-const DEF = () => ({profile:null, plan:null, history:[], session:null, weights:[], water:{}, food:{}, chat:[], seed:1});
+const DEF = () => ({profile:null, plan:null, history:[], session:null, weights:[], water:{}, food:{}, chat:[], seed:1, settings:{voice:false}});
 let S = load();
 function load(){ try{ const s=JSON.parse(localStorage.getItem(KEY)); if(s&&typeof s==="object") return migrate(Object.assign(DEF(), s));}catch(e){} return migrate(DEF()); }
 // v6: água em ml (antes: copos de 250 ml) e porções com unidade caseira
@@ -370,7 +380,7 @@ const pad = n=>String(n).padStart(2,"0");
 const today = ()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;};
 const fmtDate = iso=>{const d=new Date(iso);return d.toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit"});};
 const r0 = n=>Math.round(n);
-function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2200);}
+function toast(msg,ms){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),ms||2200);}
 function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return((s>>>0)%100000)/100000;};}
 function vid(id,cls="vid"){const e=EXM[id];if(e&&e.novid)return `<div class="${cls} novid" role="img" aria-label="${esc(e.n)}">${e.g==="cardio"?"🏃":"💪"}</div>`;return `<video class="${cls}" src="videos/${encodeURIComponent((e&&e.v)||id)}.mp4" autoplay loop muted playsinline preload="auto" aria-label="${esc(EXM[id]?.n||"")}"></video>`;}
 function weekStart(){const d=new Date();d.setHours(0,0,0,0);const wd=(d.getDay()+6)%7;d.setDate(d.getDate()-wd);return d;}
@@ -530,7 +540,7 @@ function autoMenu(seed){
 
 // ===== NAVEGAÇÃO =====
 let TAB="home";
-function go(tab){TAB=tab;render();window.scrollTo(0,0);}
+function go(tab){try{if(REC&&tab!=="coach")recClear();}catch(e){}TAB=tab;render();window.scrollTo(0,0);}
 function render(){
   const app=$("#app");
   if(!S.profile){ $("#nav").style.display="none"; app.innerHTML=viewOnboarding(); bindOnboarding(); return; }
@@ -786,16 +796,18 @@ function bindComida(){
 // ===== TREINADOR (chat) =====
 const CHIPS=["Qual meu treino hoje?","Quanto de proteína?","Quanta água?","Estou sem tempo","Como fazer agachamento?","Trocar exercício","Calorias","Cardápio","Motivação"];
 function viewCoach(){
-  return `<header class="top"><div><small class="muted">Treinador com IA ✨</small><h2>Treinador</h2></div></header>
-  <div id="chat">${S.chat.map(m=>`<div class="msg ${m.from}">${m.html||(mdSafe(m.text)+(m.acts||""))}</div>`).join("")}${AI_BUSY?`<div class="msg bot typing">digitando…${AI_WAIT?"<br><small>(IA gratuita: pode levar alguns segundos)</small>":""}</div>`:""}</div>
+  return `<header class="top"><div><small class="muted">Treinador com IA ✨</small><h2>Treinador</h2></div><button type="button" id="voicet" class="vtog">${voiceOn()?"🔊 Voz: ligada":"🔇 Voz: desligada"}</button></header>
+  <div id="chat">${S.chat.map((m,i)=>m.from==="me"&&m.voice?`<div class="msg me"><div class="vhead">🎤 áudio <span class="vwave">▁▃▅▂▆▃▅▁</span> ${fmtDur(m.dur||1)}</div>${esc(m.text)}</div>`:`<div class="msg ${m.from}">${m.from==="bot"?`<button type="button" class="say${i===SPEAK_IDX?" on":""}" data-say="${i}" title="Ouvir">${i===SPEAK_IDX?"⏹️":"▶️"}</button>`:""}${m.html||(mdSafe(m.text)+(m.acts||""))}</div>`).join("")}${AI_BUSY?`<div class="msg bot typing">digitando…${AI_WAIT?"<br><small>(IA gratuita: pode levar alguns segundos)</small>":""}</div>`:""}</div>
   <div class="chips">${CHIPS.map(c=>`<button class="chip">${c}</button>`).join("")}</div>
-  <form id="chatf" class="chatbar"><input id="chatin" placeholder="Pergunte qualquer coisa ou \"bebi 500 ml\"…" autocomplete="off"><button class="btn">Enviar</button></form>`;
+  <form id="chatf" class="chatbar"><input id="chatin" placeholder="Pergunte qualquer coisa ou \"bebi 500 ml\"…" autocomplete="off"><button class="btn">Enviar</button><button type="button" id="micbtn" class="micbtn${REC?" on":""}" title="Segure para gravar áudio" aria-label="Gravar áudio">🎤</button></form>`;
 }
 function bindCoach(){
   const box=$("#chat"); box.scrollTop=box.scrollHeight; setTimeout(()=>window.scrollTo(0,document.body.scrollHeight),50);
   $$(".chip").forEach(c=>c.onclick=()=>ask(c.textContent));
   $("#chatf").onsubmit=e=>{e.preventDefault();const v=$("#chatin").value.trim();if(v)ask(v);};
   $$("#chat [data-act]").forEach(b=>b.onclick=()=>chatAction(b.dataset.act,b.dataset.arg));
+  $$("#chat .say").forEach(b=>b.onclick=()=>{const i=+b.dataset.say; if(i===SPEAK_IDX) ttsStop(); else speakMsg(i);});
+  $("#voicet").onclick=voiceToggle; bindMic();
 }
 function chatAction(a,arg){ if(a==="short")startSession(nextLetter(),true); else if(a==="start")startSession(nextLetter(),false); else if(a==="menu"){S.food[today()]=autoMenu(Date.now()%99991);save();go("comida");} else if(a==="go")go(arg); else if(a==="swap"){PL=arg.split("|")[0];go("treino");setTimeout(()=>swapModal(+arg.split("|")[1]),50);} }
 // ===== IA (Pollinations, grátis e sem chave) =====
@@ -866,9 +878,9 @@ function actFood(items,meal){
   dayFood()[meal].push(...items); const t=dayTotals(),n=nutri();
   return `Anotei no ${MEALS[meal]}: ${items.map(it=>{const m=macrosOf([it]);return `${portion(it)} · ${r0(m.k)} kcal · ${r0(m.p)} g prot`;}).join("; ")}. Hoje: ${r0(t.k)} de ${n.kcal} kcal e ${r0(t.p)} de ${n.prot} g de proteína.`;
 }
-async function ask(q){
+async function ask(q,opt={}){
   if(AI_BUSY){toast("Calma, ainda estou respondendo…");return;}
-  S.chat.push({from:"me",text:q});
+  ttsUnlock(); S.chat.push(opt.voice?{from:"me",text:q,voice:1,dur:opt.dur||1}:{from:"me",text:q});
   const acts=[]; const ml=parseWater(q); if(ml>0) acts.push(actWater(ml));
   const fd=parseFood(q); if(fd.length) acts.push(actFood(fd,curMeal(low(q))));
   save(); AI_BUSY=true; AI_WAIT=false; if(TAB==="coach") render();
@@ -880,7 +892,111 @@ async function ask(q){
   else S.chat.push(Object.assign({from:"bot"},r));
   if(S.chat.length>80) S.chat=S.chat.slice(-80); save();
   if(TAB==="coach") render(); else toast("O Treinador respondeu 💬");
+  if((opt.voice||voiceOn())&&!REC) speakMsg(S.chat.length-1);
 }
+// ===== VOZ: áudio estilo WhatsApp (SpeechRecognition) + respostas faladas (speechSynthesis) =====
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let REC=null;
+function voiceOn(){return !!(S.settings&&S.settings.voice);}
+const fmtDur=s=>`${Math.floor(s/60)}:${pad(Math.floor(s%60))}`;
+function recBar(){let b=$("#recbar");if(!b){b=document.createElement("div");b.id="recbar";document.body.appendChild(b);}return b;}
+function recUI(){
+  const b=recBar(); if(!REC){b.classList.remove("show");b.innerHTML="";document.body.classList.remove("recording");return;}
+  document.body.classList.add("recording");
+  const live=(REC.final+" "+REC.interim).trim();
+  b.innerHTML=`<div class="rtop"><span class="rdot"></span><b id="rtime">${fmtDur((Date.now()-REC.t0)/1000)}</b>
+  <span class="rhint">${REC.stopping?"processando…":REC.hold?(REC.slide?"solte para cancelar ✖":"◀ deslize para cancelar"):"toque ✖ para cancelar"}</span>
+  ${REC.hold||REC.stopping?"":`<button type="button" id="rcancel" class="rbtn">✖</button><button type="button" id="rsend" class="rbtn send">➤</button>`}</div>
+  <div class="rlive">${live?esc(live):"<i>fale agora…</i>"}</div>`;
+  b.classList.add("show");
+  if($("#rcancel")) $("#rcancel").onclick=()=>recCancel();
+  if($("#rsend")) $("#rsend").onclick=()=>recStop();
+}
+function recErr(code){
+  const m={"not-allowed":"Microfone bloqueado. Toque no cadeado ao lado do endereço e permita o microfone 🎤","service-not-allowed":"O reconhecimento de voz foi bloqueado. Use o Google Chrome e permita o microfone.","audio-capture":"Não achei o microfone do celular 🎤","network":"O reconhecimento de voz precisa de internet 📶","language-not-supported":"Seu navegador não reconhece português. Use o Google Chrome."}[code];
+  return m||"Não consegui ouvir. Tente de novo 🎤";
+}
+function recStart(hold,x){
+  if(REC) return;
+  if(!SR){toast("Seu navegador não tem reconhecimento de voz. Use o Google Chrome 🎤",4200);return;}
+  if(AI_BUSY){toast("Calma, ainda estou respondendo…");return;}
+  if(navigator.onLine===false){toast("O áudio precisa de internet 📶 Escreva a mensagem por enquanto.",3500);return;}
+  ttsStop(); ttsUnlock();
+  const r=new SR(); r.lang="pt-BR"; r.interimResults=true; r.continuous=true; r.maxAlternatives=1;
+  REC={r,hold,x0:x||0,slide:false,t0:Date.now(),final:"",seg:"",interim:"",stopping:false,done:false};
+  const me=REC;
+  r.onresult=e=>{ if(REC!==me)return; let fin="",intr="";
+    for(let i=0;i<e.results.length;i++){const t=e.results[i][0].transcript.trim(); if(!t)continue;
+      if(e.results[i].isFinal){ // Chrome Android às vezes repete o texto acumulado
+        if(fin&&norm(t).startsWith(norm(fin))) fin=t; else if(!norm(fin).endsWith(norm(t))) fin=(fin+" "+t).trim(); }
+      else intr=(intr+" "+t).trim(); }
+    me.seg=fin; me.interim=intr; recUI(); };
+  r.onerror=e=>{ if(REC!==me)return; if(e.error==="no-speech"||e.error==="aborted")return; me.err=e.error; };
+  r.onend=()=>{ if(REC!==me)return;
+    if(me.seg||me.interim){me.final=(me.final+" "+(me.seg||me.interim)).trim();me.seg="";me.interim="";}
+    if(me.err&&me.err!=="no-speech"){const c=me.err;recClear();toast(recErr(c),4500);return;}
+    if(me.stopping){recFinish();return;}
+    try{me.r.start();}catch(err){recFinish();} }; // Android encerra sozinho no silêncio: reinicia
+  try{r.start();}catch(err){REC=null;toast(recErr(""));return;}
+  me.tick=setInterval(()=>{const t=$("#rtime");if(t&&REC===me)t.textContent=fmtDur((Date.now()-me.t0)/1000);if(Date.now()-me.t0>120000)recStop();},250);
+  if(navigator.vibrate) try{navigator.vibrate(30);}catch(e){}
+  $$(".micbtn").forEach(b=>b.classList.add("on")); recUI();
+}
+function recClear(){ if(!REC)return; clearInterval(REC.tick); clearTimeout(REC.guard); const r=REC.r; REC=null; try{r.onend=null;r.abort();}catch(e){} $$(".micbtn").forEach(b=>b.classList.remove("on")); recUI(); }
+function recCancel(){ if(!REC)return; recClear(); toast("Áudio cancelado"); }
+function recStop(){ if(!REC||REC.stopping)return; REC.stopping=true; REC.hold=false; recUI();
+  const me=REC; me.guard=setTimeout(()=>{if(REC===me)recFinish();},2500); try{me.r.stop();}catch(e){recFinish();} }
+function recFinish(){ if(!REC||REC.done)return; const me=REC; me.done=true;
+  const text=(me.final+" "+me.seg+" "+(me.seg?"":me.interim)).replace(/\s+/g," ").trim(); const dur=Math.max(1,Math.round((Date.now()-me.t0)/1000));
+  recClear();
+  if(!text){toast("Não entendi o áudio. Fale perto do microfone e tente de novo 🎤",3500);return;}
+  ask(text.charAt(0).toUpperCase()+text.slice(1),{voice:true,dur}); }
+function bindMic(){
+  const b=$("#micbtn"); if(!b) return;
+  b.oncontextmenu=e=>e.preventDefault();
+  b.onpointerdown=e=>{ e.preventDefault();
+    if(REC){ if(!REC.hold) recStop(); return; }
+    const x=e.clientX, t=Date.now(); recStart(true,x); if(!REC) return; const me=REC;
+    const mv=ev=>{ if(REC!==me||!me.hold)return; const s=(me.x0-ev.clientX)>70; if(s!==me.slide){me.slide=s;recUI();} };
+    const up=()=>{ document.removeEventListener("pointermove",mv); document.removeEventListener("pointerup",up); document.removeEventListener("pointercancel",up);
+      if(REC!==me) return;
+      if(me.slide){recCancel();return;}
+      if(Date.now()-t<450){me.hold=false;recUI();return;} // toque rápido: continua gravando até tocar de novo
+      recStop(); };
+    document.addEventListener("pointermove",mv); document.addEventListener("pointerup",up); document.addEventListener("pointercancel",up);
+  };
+}
+// --- fala ---
+const TTS=window.speechSynthesis; let TTS_VOICE=null, SPEAK_IDX=-1, TTS_Q=[], TTS_GEN=0;
+function pickVoice(){ if(!TTS) return null; const vs=TTS.getVoices()||[]; const L=v=>String(v.lang||"").toLowerCase().replace("_","-");
+  const br=vs.filter(v=>L(v)==="pt-br"||L(v).startsWith("pt-br")), pt=vs.filter(v=>L(v).startsWith("pt"));
+  const score=v=>(/google/i.test(v.name)?4:0)+(/brasil|brazil/i.test(v.name)?2:0)+(/natural|neural|online/i.test(v.name)?2:0)+(v.localService?0:1);
+  const pool=br.length?br:pt; TTS_VOICE=pool.sort((a,b)=>score(b)-score(a))[0]||null; return TTS_VOICE; }
+if(TTS){ pickVoice(); try{TTS.addEventListener("voiceschanged",pickVoice);}catch(e){TTS.onvoiceschanged=pickVoice;} }
+let TTS_OK=false;
+function ttsUnlock(){ if(!TTS||TTS_OK)return; TTS_OK=true; try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;u.lang="pt-BR";TTS.speak(u);}catch(e){} }
+function speechText(t){ return String(t||"")
+  .replace(/https?:\/\/\S+|www\.\S+/gi," ").replace(/[*_`#>]+/g," ").replace(/^\s*[-•]\s+/gm,"").replace(/---+/g," ")
+  .replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{200D}\u{20E3}]/gu," ")
+  .replace(/(\d)\s?kcal\b/gi,"$1 calorias").replace(/\bkcal\b/gi,"calorias").replace(/(\d)\s?ml\b/gi,"$1 mililitros").replace(/(\d)\s?kg\b/gi,"$1 quilos").replace(/(\d)\s?g\b/g,"$1 gramas")
+  .replace(/(\d+)x\s?(\d)/gi,"$1 séries de $2").replace(/\s*\n+\s*/g,". ").replace(/\.\s*\./g,".").replace(/\s+/g," ").trim(); }
+function chunks(t){ const out=[]; (t.match(/[^.!?;:]+[.!?;:]*/g)||[t]).forEach(s=>{ s=s.trim(); if(!s||!/[\p{L}\d]/u.test(s))return;
+  while(s.length>180){let k=s.lastIndexOf(",",180);if(k<60)k=s.lastIndexOf(" ",180);if(k<60)k=180;out.push(s.slice(0,k+1));s=s.slice(k+1).trim();}
+  if(s) out.push(s); }); return out; }
+function msgText(m){ return m.text||htmlText(m.html); }
+function ttsStop(){ TTS_GEN++; TTS_Q=[]; SPEAK_IDX=-1; if(TTS) try{TTS.cancel();}catch(e){} sayBtns(); }
+function speakMsg(i){
+  if(!TTS){toast("Seu navegador não fala respostas. Use o Google Chrome 🔊",3500);return;}
+  const m=S.chat[i]; if(!m) return; const parts=chunks(speechText(msgText(m))); ttsStop(); if(!parts.length) return;
+  if(!TTS_VOICE) pickVoice(); const gen=TTS_GEN; SPEAK_IDX=i; TTS_Q=parts; sayBtns();
+  const next=()=>{ if(gen!==TTS_GEN) return; const s=TTS_Q.shift(); if(!s){SPEAK_IDX=-1;sayBtns();return;}
+    const u=new SpeechSynthesisUtterance(s); u.lang="pt-BR"; if(TTS_VOICE) u.voice=TTS_VOICE; u.rate=1.05; u.pitch=1;
+    u.onend=()=>next(); u.onerror=()=>next(); TTS.speak(u); };
+  try{TTS.cancel();}catch(e){} setTimeout(next,60);
+}
+function sayBtns(){ $$("#chat .say").forEach(b=>{const on=+b.dataset.say===SPEAK_IDX;b.textContent=on?"⏹️":"▶️";b.classList.toggle("on",on);b.title=on?"Parar":"Ouvir";}); }
+function voiceToggle(){ S.settings=Object.assign({},S.settings,{voice:!voiceOn()}); save(); if(!voiceOn()) ttsStop(); else ttsUnlock();
+  const b=$("#voicet"); if(b) b.textContent=voiceOn()?"🔊 Voz: ligada":"🔇 Voz: desligada"; toast(voiceOn()?"Vou falar todas as respostas 🔊":"Só falo quando você mandar áudio 🎤"); }
 function findExercise(q){
   const nq=" "+norm(q)+" "; const stop=new Set(["com","de","do","da","na","no","em","o","a","e","para","sentado","em pe"]);
   const syn={"agachamento":"Barbell_Squat","supino":"Barbell_Bench_Press_-_Medium_Grip","leg":"Leg_Press","terra":"Barbell_Deadlift","hip thrust":"Barbell_Hip_Thrust","elevacao pelvica":"Barbell_Hip_Thrust","stiff":"Stiff-Legged_Dumbbell_Deadlift","rosca":"Barbell_Curl","puxada":"Wide-Grip_Lat_Pulldown","remada":"Seated_Cable_Rows","flexao":"Pushups","prancha":"Plank","abdominal":"Crunches","desenvolvimento":"Seated_Dumbbell_Press","triceps":"Triceps_Pushdown","panturrilha":"Standing_Calf_Raises","afundo":"Dumbbell_Lunges","esteira":"Jogging_Treadmill","extensora":"Leg_Extensions","flexora":"Lying_Leg_Curls","abdutora":"Thigh_Abductor","crucifixo":"Dumbbell_Flyes","elevacao lateral":"Side_Lateral_Raise","barra fixa":"Pullups","serrote":"One-Arm_Dumbbell_Row","bulgaro":"Split_Squat_with_Dumbbells","sumo":"Plie_Dumbbell_Squat","coice":"One-Legged_Cable_Kickback","voador":"Butterfly"};
