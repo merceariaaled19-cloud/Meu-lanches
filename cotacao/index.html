@@ -62,23 +62,28 @@ function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&
 function brl(v){return "R$ "+v.toFixed(2).replace(".",",").replace(/\B(?=(\d{3})+(?!\d))/g,".")}
 var F=[]; /* {nome, itens:[{n,p}]} */
 var GR=[],ABA="prod";
-try{F=JSON.parse(localStorage.getItem("cot_f")||"[]")}catch(e){}
-function salva(){try{localStorage.setItem("cot_f",JSON.stringify(F))}catch(e){toast("Memória cheia, não salvei.")}}
+try{F=JSON.parse(localStorage.getItem("cot_f2")||"[]")}catch(e){}
+function salva(){try{localStorage.setItem("cot_f2",JSON.stringify(F))}catch(e){toast("Memória cheia, não salvei.")}}
 function desenhaF(){$("#lfor").innerHTML=F.map(function(f,i){return '<div class="chip">🏪<input value="'+esc(f.nome)+'" onchange="F['+i+'].nome=this.value;salva();if(GR.length)desenha()"><small>'+f.itens.length+'</small><button onclick="F.splice('+i+',1);salva();desenhaF();if(F.length>1)analisa()">✖</button></div>'}).join("");$("#st").textContent=F.length?F.length+" fornecedor(es) carregado(s).":""}
 desenhaF();
 
 /* ===== LER PDF ===== */
 async function linhasPDF(buf){var pdf=await pdfjsLib.getDocument({data:buf}).promise,out=[];
   for(var p=1;p<=pdf.numPages;p++){var pg=await pdf.getPage(p),tc=await pg.getTextContent(),rows={};
-    tc.items.forEach(function(it){if(!it.str||!it.str.trim())return;var y=Math.round(it.transform[5]/3);(rows[y]=rows[y]||[]).push({x:it.transform[4],s:it.str})});
-    Object.keys(rows).sort(function(a,b){return b-a}).forEach(function(y){out.push(rows[y].sort(function(a,b){return a.x-b.x}).map(function(o){return o.s}).join(" ").replace(/\s+/g," ").trim())});}
+    var its=tc.items.filter(function(it){return it.str&&it.str.trim()}).map(function(it){return {x:it.transform[4],y:it.transform[5],h:Math.abs(it.transform[3])||8,s:it.str}}).sort(function(a,b){return b.y-a.y});
+    var ln=[];its.forEach(function(o){var L=ln.length?ln[ln.length-1]:null;if(L&&Math.abs(L.y-o.y)<=Math.max(3,o.h*0.45))L.a.push(o);else ln.push({y:o.y,a:[o]})});
+    ln.forEach(function(L){out.push(L.a.sort(function(a,b){return a.x-b.x}).map(function(o){return o.s}).join(" ").replace(/\s+/g," ").trim())});}
   return out;}
 var RP=/(?:R\$\s*)?(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2}|\d+\.\d{2})(?!\d)/g;
 function num(s){s=s.replace(/R\$\s*/,"");if(s.indexOf(",")>=0)s=s.replace(/\./g,"").replace(",",".");return parseFloat(s)}
 function extrai(linhas){var it=[],vis={};
-  linhas.forEach(function(l){var m=l.match(RP);if(!m)return;
-    var nome=l.replace(RP,"").replace(/R\$/g,"");
-    nome=nome.replace(/\b\d{6,14}\b/g,"").replace(/^\s*\d{1,6}\s*[-–.]?\s+/,"").replace(/\s{2,}/g," ").replace(/[|;]+/g," ").trim();
+  var ant="";
+  function limpaN(t){return t.replace(RP,"").replace(/R\$/g,"").replace(/\b\d{6,14}\b/g,"").replace(/^\s*\d{1,6}\s*[-–.]?\s+/,"").replace(/[|;]+/g," ").replace(/\s{2,}/g," ").trim()}
+  function letras(t){return t.replace(/[^a-zA-ZÀ-ú]/g,"").replace(/\b(un|und|cx|fd|pct|kg|r)\b/gi,"").length}
+  linhas.forEach(function(l){var m=l.match(RP);if(!m){var t=limpaN(l);if(letras(t)>=4)ant=t;return}
+    var nome=limpaN(l);
+    if(letras(nome)<6&&ant){nome=(ant+" "+nome).trim()}
+    ant="";
     if(nome.replace(/[^a-zA-ZÀ-ú]/g,"").length<4)return;
     /* preço: usa o primeiro valor monetário da linha que não for unitário muito pequeno de impostos; regra simples: o último valor */
     var vals=m.map(num).filter(function(v){return v>0&&v<100000});if(!vals.length)return;
