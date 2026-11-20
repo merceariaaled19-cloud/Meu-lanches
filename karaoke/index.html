@@ -113,7 +113,7 @@ function lista(el,arr,fn){
 }
 
 /* ===== TV ===== */
-var peer,COD,LOCAL=false,FILA=[],ATUAL=null,YT=null,YTOK=false,conns=[],AC,AN,GAIN,VOZV=1;
+var peer,COD,LOCAL=false,FILA=[],ATUAL=null,PL=null,YTOK=false,conns=[],AC,AN,GAIN,VOZV=1;
 function codNovo(){var a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",c="";for(var i=0;i<4;i++)c+=a[Math.floor(Math.random()*a.length)];return c}
 function telaCheia(){try{var d=document.documentElement;(d.requestFullscreen||d.webkitRequestFullscreen).call(d).then(function(){try{screen.orientation.lock("landscape")}catch(e){}}).catch(function(){})}catch(e){}}
 function abreTV(local){LOCAL=local;$("#home").classList.add("esc");$("#tv").classList.remove("esc");telaCheia();iniAudio();carregaYT();
@@ -144,12 +144,13 @@ function volVoz(d){VOZV=Math.max(0,Math.min(3,VOZV+d*0.25));if(GAIN)GAIN.gain.va
 async function buscaTV(){var q=$("#buscaTV").value.trim();if(!q)return;$("#resTV").innerHTML='<p class="muted">Buscando...</p>';var r=await busca(q);lista($("#resTV"),r,function(v){addFila(v)});var f=$("#resTV .res");if(f)f.focus()}
 function addFila(v){FILA.push(v);toast("➕ "+v.t);desenhaFila();conns.forEach(function(c){try{c.send({t:"fila",n:FILA.length})}catch(e){}});if(!ATUAL)proxima()}
 function desenhaFila(){$("#filaN").textContent=FILA.length?FILA.length+" na fila":"vazia";$("#fila").innerHTML=(ATUAL?'<div class="res" style="background:#5a1a7a"><img src="'+ATUAL.th+'"><div><b>▶ '+esc(ATUAL.t)+'</b></div></div>':"")+FILA.map(function(x){return '<div class="res"><img src="'+x.th+'"><div><b>'+esc(x.t)+'</b></div></div>'}).join("")}
-function carregaYT(){if(window.YT&&YT)return;var s=document.createElement("script");s.src="https://www.youtube.com/iframe_api";document.head.appendChild(s)}
+function carregaYT(){if(window.YT&&window.YT.Player){YTOK=true;return}if(document.getElementById("ytapi"))return;var s=document.createElement("script");s.id="ytapi";s.src="https://www.youtube.com/iframe_api";document.head.appendChild(s)}
 window.onYouTubeIframeAPIReady=function(){YTOK=true;if(ATUAL)toca(ATUAL)};
-function proxima(){ATUAL=FILA.shift()||null;desenhaFila();if(!ATUAL){$("#idle").classList.remove("esc");if(YT&&YT.stopVideo)YT.stopVideo();return}toca(ATUAL)}
-function toca(v){if(!YTOK)return;$("#idle").classList.add("esc");zeraNota();
-  if(!YT){YT=new window.YT.Player("player",{videoId:v.id,playerVars:{autoplay:1,rel:0,modestbranding:1,playsinline:1},events:{onReady:function(e){e.target.playVideo()},onStateChange:estado,onError:function(){toast("Esse vídeo não deixa tocar fora do YouTube. Pulando...");setTimeout(proxima,1500)}}})}
-  else YT.loadVideoById(v.id);}
+function proxima(){ATUAL=FILA.shift()||null;desenhaFila();if(!ATUAL){$("#idle").classList.remove("esc");if(PL&&PL.stopVideo)PL.stopVideo();return}toca(ATUAL)}
+function toca(v){if(!YTOK){toast("Carregando o player...");return}$("#idle").classList.add("esc");zeraNota();
+  if(!PL){PL=new window.YT.Player("player",{videoId:v.id,playerVars:{autoplay:1,rel:0,modestbranding:1,playsinline:1},events:{onReady:function(e){e.target.unMute();e.target.setVolume(100);e.target.playVideo()},onStateChange:estado,onError:function(e){toast("Esse vídeo não deixa tocar fora do YouTube. Pulando pro próximo...");setTimeout(proxima,1500)}}})}
+  else PL.loadVideoById(v.id);
+  clearTimeout(toca._t);toca._t=setTimeout(function(){try{if(PL&&PL.getPlayerState&&PL.getPlayerState()!==1&&PL.getPlayerState()!==3)toast("Se não começou, toque no vídeo ▶")}catch(e){}},4000);}
 function estado(e){if(e.data===0){mostraNota();}}
 function pular(){if(ATUAL&&N.cantou>8)mostraNota();else proxima()}
 
@@ -162,7 +163,7 @@ function pitch(buf,sr){var n=buf.length,rms=0;for(var i=0;i<n;i++)rms+=buf[i]*bu
 var BUF=new Float32Array(2048),tick=0;
 function loopVoz(){requestAnimationFrame(loopVoz);if(!AN)return;AN.getFloatTimeDomainData(BUF);var r=Math.sqrt(BUF.reduce(function(a,b){return a+b*b},0)/BUF.length);
   $("#medidor i").style.width=Math.min(100,r*600)+"%";if(++tick%3)return;
-  var tocando=YT&&YT.getPlayerState&&YT.getPlayerState()===1;if(!tocando||!N)return;
+  var tocando=PL&&PL.getPlayerState&&PL.getPlayerState()===1;if(!tocando||!N)return;
   N.fr++;var p=pitch(BUF,AC.sampleRate);
   if(p.f>70&&p.f<1000){N.cantou++;var midi=69+12*Math.log2(p.f/440),dev=Math.abs(midi-Math.round(midi));N.afin+=1-dev*2;N.afinN++;
     if(N.last){var d=Math.abs(midi-N.last);N.estav+=d<1?1:(d<3?0.5:0);N.estN++}N.last=midi;N.pico=Math.max(N.pico,p.rms)}else N.last=0;
