@@ -81,6 +81,7 @@ details{margin-top:10px}summary{cursor:pointer;color:var(--or);font-weight:600}d
 .msg ul,.msg ol{padding-left:20px;margin:6px 0}
 .msg.bot{position:relative;padding-right:40px}.say{position:absolute;top:6px;right:6px;background:var(--card2);border:1px solid var(--line);border-radius:999px;width:28px;height:28px;font-size:.8rem;line-height:1;padding:0;color:var(--tx)}.say.on{border-color:var(--or)}
 .vhead{font-size:.8rem;font-weight:700;opacity:.9;margin-bottom:4px;display:flex;align-items:center;gap:6px}.vwave{letter-spacing:1px;opacity:.75}
+.vbar{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.vtog.on{background:var(--rd);border-color:var(--rd);color:#fff}
 .vtog{background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:999px;padding:8px 12px;font-size:.82rem;font-weight:600}
 .micbtn{width:48px;flex:0 0 48px;height:48px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--or),var(--rd));color:#fff;font-size:1.25rem;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .micbtn.on{background:var(--rd);animation:rpulse 1s infinite}
@@ -796,7 +797,7 @@ function bindComida(){
 // ===== TREINADOR (chat) =====
 const CHIPS=["Qual meu treino hoje?","Quanto de proteína?","Quanta água?","Estou sem tempo","Como fazer agachamento?","Trocar exercício","Calorias","Cardápio","Motivação"];
 function viewCoach(){
-  return `<header class="top"><div><small class="muted">Treinador com IA ✨</small><h2>Treinador</h2></div><button type="button" id="voicet" class="vtog">${voiceOn()?"🔊 Voz: ligada":"🔇 Voz: desligada"}</button></header>
+  return `<header class="top"><div><small class="muted">Treinador com IA ✨</small><h2>Treinador</h2></div><div class="vbar"><button type="button" id="convt" class="vtog${CONV?" on":""}">${CONV?"🗣️ Conversando…":"🗣️ Conversar"}</button><button type="button" id="bravot" class="vtog${bravoOn()?" on":""}">😤 Modo bravo</button><button type="button" id="voicet" class="vtog">${voiceOn()?"🔊 Voz: ligada":"🔇 Voz: desligada"}</button></div></header>
   <div id="chat">${S.chat.map((m,i)=>m.from==="me"&&m.voice?`<div class="msg me"><div class="vhead">🎤 áudio <span class="vwave">▁▃▅▂▆▃▅▁</span> ${fmtDur(m.dur||1)}</div>${esc(m.text)}</div>`:`<div class="msg ${m.from}">${m.from==="bot"?`<button type="button" class="say${i===SPEAK_IDX?" on":""}" data-say="${i}" title="Ouvir">${i===SPEAK_IDX?"⏹️":"▶️"}</button>`:""}${m.html||(mdSafe(m.text)+(m.acts||""))}</div>`).join("")}${AI_BUSY?`<div class="msg bot typing">digitando…${AI_WAIT?"<br><small>(IA gratuita: pode levar alguns segundos)</small>":""}</div>`:""}</div>
   <div class="chips">${CHIPS.map(c=>`<button class="chip">${c}</button>`).join("")}</div>
   <form id="chatf" class="chatbar"><input id="chatin" placeholder="Pergunte qualquer coisa ou \"bebi 500 ml\"…" autocomplete="off"><button class="btn">Enviar</button><button type="button" id="micbtn" class="micbtn${REC?" on":""}" title="Segure para gravar áudio" aria-label="Gravar áudio">🎤</button></form>`;
@@ -807,7 +808,7 @@ function bindCoach(){
   $("#chatf").onsubmit=e=>{e.preventDefault();const v=$("#chatin").value.trim();if(v)ask(v);};
   $$("#chat [data-act]").forEach(b=>b.onclick=()=>chatAction(b.dataset.act,b.dataset.arg));
   $$("#chat .say").forEach(b=>b.onclick=()=>{const i=+b.dataset.say; if(i===SPEAK_IDX) ttsStop(); else speakMsg(i);});
-  $("#voicet").onclick=voiceToggle; bindMic();
+  $("#voicet").onclick=voiceToggle; $("#convt").onclick=convToggle; $("#bravot").onclick=bravoToggle; bindMic();
 }
 function chatAction(a,arg){ if(a==="short")startSession(nextLetter(),true); else if(a==="start")startSession(nextLetter(),false); else if(a==="menu"){S.food[today()]=autoMenu(Date.now()%99991);save();go("comida");} else if(a==="go")go(arg); else if(a==="swap"){PL=arg.split("|")[0];go("treino");setTimeout(()=>swapModal(+arg.split("|")[1]),50);} }
 // ===== IA (Pollinations, grátis e sem chave) =====
@@ -827,6 +828,8 @@ function buildContext(acts){
   const nn=v=>String(v).replace(".",","), now=new Date();
   const ex=d.items.map((x,i)=>`${i+1}. ${EXM[x.id]?EXM[x.id].n:x.id} — ${x.sets}x ${x.reps}`).join("\n");
   const foods=Object.entries(MEALS).map(([k,v])=>`- ${v}: ${df[k].length?df[k].map(it=>{const m=macrosOf([it]);return `${portion(it)} (${r0(m.k)} kcal, ${r0(m.p)} g prot)`;}).join("; "):"nada registrado"}`).join("\n");
+  const bravo=bravoOn()?`
+MODO BRAVO LIGADO: fale como um sargento/treinador durão de quartel: bronca, cobrança firme, frases curtas e enérgicas, provocações bem-humoradas ("levanta desse sofá!", "sem moleza!", "frango não cresce!"). Nunca use palavrão, xingamento ofensivo ou humilhação de verdade; o objetivo é motivar. Continue dando a informação certa.`:"";
   return `Você é o "Treinador" do app Projeto Z: um personal trainer e orientador de alimentação parceiro, que fala com o usuário pelo chat do app.
 REGRAS:
 - Responda SEMPRE em português do Brasil, curto (no máximo ~6 linhas ou poucos tópicos), amigável, direto e prático.
@@ -835,6 +838,7 @@ REGRAS:
 - Sem HTML e sem tabelas. Pode usar **negrito** e listas com "- ".
 - O próprio app anota água quando o usuário escreve, por exemplo, "bebi 500 ml" ou "bebi 2 copos", e comida com "comi 2 ovos". Você não anota nada sozinho: se pedirem para registrar algo que não está em AÇÕES, explique como escrever ou para usar a aba Comida.
 - Abas do app: Início, Treino (tabela ABC), Comida (metas, cardápio automático, água), Treinador (este chat), Perfil (peso, dados, backup).
+- Se o usuário estiver falando por voz, responda em no máximo 3 frases curtas, sem listas.${bravo}
 DADOS DO USUÁRIO (agora: ${now.toLocaleDateString("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit"})}, ${pad(now.getHours())}:${pad(now.getMinutes())}):
 - Nome: ${p.name}; sexo: ${p.sex==="F"?"feminino":"masculino"}; idade: ${p.age} anos; peso: ${nn(p.weight)} kg; altura: ${p.height} cm; IMC ${nn(n.imc.toFixed(1))}
 - Objetivo: ${GOAL_TXT[p.goal]||p.goal}; nível: ${LEVEL_TXT[p.level]||p.level}; foco: ${FOCUS_TXT[p.focus]||p.focus}; atividade: ${(ACT[p.activity]||ACT.moderado)[1]}
@@ -892,7 +896,7 @@ async function ask(q,opt={}){
   else S.chat.push(Object.assign({from:"bot"},r));
   if(S.chat.length>80) S.chat=S.chat.slice(-80); save();
   if(TAB==="coach") render(); else toast("O Treinador respondeu 💬");
-  if((opt.voice||voiceOn())&&!REC) speakMsg(S.chat.length-1);
+  if((opt.voice||voiceOn())&&!REC){ if(TTS) speakMsg(S.chat.length-1); else if(CONV) setTimeout(convListen,400); }
 }
 // ===== VOZ: áudio estilo WhatsApp (SpeechRecognition) + respostas faladas (speechSynthesis) =====
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -905,7 +909,7 @@ function recUI(){
   document.body.classList.add("recording");
   const live=(REC.final+" "+REC.interim).trim();
   b.innerHTML=`<div class="rtop"><span class="rdot"></span><b id="rtime">${fmtDur((Date.now()-REC.t0)/1000)}</b>
-  <span class="rhint">${REC.stopping?"processando…":REC.hold?(REC.slide?"solte para cancelar ✖":"◀ deslize para cancelar"):"toque ✖ para cancelar"}</span>
+  <span class="rhint">${REC.stopping?"processando…":REC.conv?"🗣️ pode falar, eu tô ouvindo":REC.hold?(REC.slide?"solte para cancelar ✖":"◀ deslize para cancelar"):"toque ✖ para cancelar"}</span>
   ${REC.hold||REC.stopping?"":`<button type="button" id="rcancel" class="rbtn">✖</button><button type="button" id="rsend" class="rbtn send">➤</button>`}</div>
   <div class="rlive">${live?esc(live):"<i>fale agora…</i>"}</div>`;
   b.classList.add("show");
@@ -916,40 +920,42 @@ function recErr(code){
   const m={"not-allowed":"Microfone bloqueado. Toque no cadeado ao lado do endereço e permita o microfone 🎤","service-not-allowed":"O reconhecimento de voz foi bloqueado. Use o Google Chrome e permita o microfone.","audio-capture":"Não achei o microfone do celular 🎤","network":"O reconhecimento de voz precisa de internet 📶","language-not-supported":"Seu navegador não reconhece português. Use o Google Chrome."}[code];
   return m||"Não consegui ouvir. Tente de novo 🎤";
 }
-function recStart(hold,x){
+function recStart(hold,x,conv){
   if(REC) return;
   if(!SR){toast("Seu navegador não tem reconhecimento de voz. Use o Google Chrome 🎤",4200);return;}
   if(AI_BUSY){toast("Calma, ainda estou respondendo…");return;}
   if(navigator.onLine===false){toast("O áudio precisa de internet 📶 Escreva a mensagem por enquanto.",3500);return;}
   ttsStop(); ttsUnlock();
   const r=new SR(); r.lang="pt-BR"; r.interimResults=true; r.continuous=true; r.maxAlternatives=1;
-  REC={r,hold,x0:x||0,slide:false,t0:Date.now(),final:"",seg:"",interim:"",stopping:false,done:false};
+  REC={r,hold,conv:!!conv,x0:x||0,slide:false,t0:Date.now(),final:"",seg:"",interim:"",stopping:false,done:false};
   const me=REC;
   r.onresult=e=>{ if(REC!==me)return; let fin="",intr="";
     for(let i=0;i<e.results.length;i++){const t=e.results[i][0].transcript.trim(); if(!t)continue;
       if(e.results[i].isFinal){ // Chrome Android às vezes repete o texto acumulado
         if(fin&&norm(t).startsWith(norm(fin))) fin=t; else if(!norm(fin).endsWith(norm(t))) fin=(fin+" "+t).trim(); }
       else intr=(intr+" "+t).trim(); }
-    me.seg=fin; me.interim=intr; recUI(); };
+    me.seg=fin; me.interim=intr; recUI();
+    if(me.conv){ clearTimeout(me.sil); me.sil=setTimeout(()=>{ if(REC===me&&!me.stopping&&(me.final||me.seg||me.interim)) recStop(); },1700); } };
   r.onerror=e=>{ if(REC!==me)return; if(e.error==="no-speech"||e.error==="aborted")return; me.err=e.error; };
   r.onend=()=>{ if(REC!==me)return;
     if(me.seg||me.interim){me.final=(me.final+" "+(me.seg||me.interim)).trim();me.seg="";me.interim="";}
-    if(me.err&&me.err!=="no-speech"){const c=me.err;recClear();toast(recErr(c),4500);return;}
+    if(me.err&&me.err!=="no-speech"){const c=me.err;recClear();if(CONV){CONV=false;convUI();}toast(recErr(c),4500);return;}
     if(me.stopping){recFinish();return;}
     try{me.r.start();}catch(err){recFinish();} }; // Android encerra sozinho no silêncio: reinicia
   try{r.start();}catch(err){REC=null;toast(recErr(""));return;}
   me.tick=setInterval(()=>{const t=$("#rtime");if(t&&REC===me)t.textContent=fmtDur((Date.now()-me.t0)/1000);if(Date.now()-me.t0>120000)recStop();},250);
+  if(conv) me.sil=setTimeout(()=>{ if(REC===me&&!me.final&&!me.seg&&!me.interim){ recClear(); CONV=false; convUI(); toast("Fiquei sem ouvir nada, encerrei a conversa 🗣️",3500);} },40000);
   if(navigator.vibrate) try{navigator.vibrate(30);}catch(e){}
   $$(".micbtn").forEach(b=>b.classList.add("on")); recUI();
 }
-function recClear(){ if(!REC)return; clearInterval(REC.tick); clearTimeout(REC.guard); const r=REC.r; REC=null; try{r.onend=null;r.abort();}catch(e){} $$(".micbtn").forEach(b=>b.classList.remove("on")); recUI(); }
-function recCancel(){ if(!REC)return; recClear(); toast("Áudio cancelado"); }
+function recClear(){ if(!REC)return; clearInterval(REC.tick); clearTimeout(REC.guard); clearTimeout(REC.sil); const r=REC.r; REC=null; try{r.onend=null;r.abort();}catch(e){} $$(".micbtn").forEach(b=>b.classList.remove("on")); recUI(); }
+function recCancel(){ if(!REC)return; const c=REC.conv; recClear(); if(c||CONV){CONV=false;convUI();toast("Conversa encerrada");} else toast("Áudio cancelado"); }
 function recStop(){ if(!REC||REC.stopping)return; REC.stopping=true; REC.hold=false; recUI();
   const me=REC; me.guard=setTimeout(()=>{if(REC===me)recFinish();},2500); try{me.r.stop();}catch(e){recFinish();} }
 function recFinish(){ if(!REC||REC.done)return; const me=REC; me.done=true;
   const text=(me.final+" "+me.seg+" "+(me.seg?"":me.interim)).replace(/\s+/g," ").trim(); const dur=Math.max(1,Math.round((Date.now()-me.t0)/1000));
   recClear();
-  if(!text){toast("Não entendi o áudio. Fale perto do microfone e tente de novo 🎤",3500);return;}
+  if(!text){ if(CONV){setTimeout(convListen,300);return;} toast("Não entendi o áudio. Fale perto do microfone e tente de novo 🎤",3500);return;}
   ask(text.charAt(0).toUpperCase()+text.slice(1),{voice:true,dur}); }
 function bindMic(){
   const b=$("#micbtn"); if(!b) return;
@@ -989,12 +995,20 @@ function speakMsg(i){
   if(!TTS){toast("Seu navegador não fala respostas. Use o Google Chrome 🔊",3500);return;}
   const m=S.chat[i]; if(!m) return; const parts=chunks(speechText(msgText(m))); ttsStop(); if(!parts.length) return;
   if(!TTS_VOICE) pickVoice(); const gen=TTS_GEN; SPEAK_IDX=i; TTS_Q=parts; sayBtns();
-  const next=()=>{ if(gen!==TTS_GEN) return; const s=TTS_Q.shift(); if(!s){SPEAK_IDX=-1;sayBtns();return;}
-    const u=new SpeechSynthesisUtterance(s); u.lang="pt-BR"; if(TTS_VOICE) u.voice=TTS_VOICE; u.rate=1.05; u.pitch=1;
+  const next=()=>{ if(gen!==TTS_GEN) return; const s=TTS_Q.shift(); if(!s){SPEAK_IDX=-1;sayBtns();if(CONV)setTimeout(convListen,450);return;}
+    const u=new SpeechSynthesisUtterance(s); u.lang="pt-BR"; if(TTS_VOICE) u.voice=TTS_VOICE; u.rate=bravoOn()?1.12:1.05; u.pitch=bravoOn()?0.8:1;
     u.onend=()=>next(); u.onerror=()=>next(); TTS.speak(u); };
   try{TTS.cancel();}catch(e){} setTimeout(next,60);
 }
 function sayBtns(){ $$("#chat .say").forEach(b=>{const on=+b.dataset.say===SPEAK_IDX;b.textContent=on?"⏹️":"▶️";b.classList.toggle("on",on);b.title=on?"Parar":"Ouvir";}); }
+let CONV=false;
+function bravoOn(){return !!(S.settings&&S.settings.bravo);}
+function bravoToggle(){ S.settings=Object.assign({},S.settings,{bravo:!bravoOn()}); save(); const b=$("#bravot"); if(b) b.classList.toggle("on",bravoOn()); toast(bravoOn()?"😤 Modo bravo ligado. Sem moleza!":"Modo bravo desligado 🙂"); }
+function convUI(){ const b=$("#convt"); if(b){ b.classList.toggle("on",CONV); b.textContent=CONV?"🗣️ Conversando…":"🗣️ Conversar"; } }
+function convListen(){ if(!CONV||REC||AI_BUSY||SPEAK_IDX>=0) return; recStart(false,0,true); if(!REC){CONV=false;convUI();} }
+function convToggle(){ if(CONV){ CONV=false; if(REC) recClear(); ttsStop(); convUI(); toast("Conversa encerrada"); return; }
+  if(!SR){toast("Seu navegador não tem reconhecimento de voz. Use o Google Chrome 🎤",4200);return;}
+  CONV=true; convUI(); ttsUnlock(); toast("🗣️ Conversa ligada: é só falar. Eu respondo falando e volto a ouvir.",3500); convListen(); }
 function voiceToggle(){ S.settings=Object.assign({},S.settings,{voice:!voiceOn()}); save(); if(!voiceOn()) ttsStop(); else ttsUnlock();
   const b=$("#voicet"); if(b) b.textContent=voiceOn()?"🔊 Voz: ligada":"🔇 Voz: desligada"; toast(voiceOn()?"Vou falar todas as respostas 🔊":"Só falo quando você mandar áudio 🎤"); }
 function findExercise(q){
