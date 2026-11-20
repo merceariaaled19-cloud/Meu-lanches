@@ -30,10 +30,10 @@ input{font:inherit;width:100%;padding:12px;border:1px solid var(--ln);border-rad
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:10px;z-index:9}
 label.ck{display:flex;gap:10px;align-items:flex-start}label.ck input{width:22px;height:22px;margin-top:2px;accent-color:var(--g)}
 </style></head><body>
-<header><h1>🧾 Cotação Certa</h1><p>Jogue aqui os PDFs dos fornecedores. Os robôs acham o mais barato.</p></header>
+<header><h1>🧾 Cotação Certa</h1><p>Jogue aqui os orçamentos dos fornecedores (PDF, Excel ou Word). Os robôs acham o mais barato.</p></header>
 <main>
   <div class="card">
-    <div class="drop" role="button" onclick="document.getElementById('arq').click()"><span style="font-size:2.4rem">📂</span><span class="big">Selecionar PDFs</span><small class="muted">Escolha quantos quiser de uma vez: um PDF por fornecedor</small></div>
+    <div class="drop" role="button" onclick="document.getElementById('arq').click()"><span style="font-size:2.4rem">📂</span><span class="big">Selecionar orçamentos</span><small class="muted">Escolha quantos quiser de uma vez: PDF, Excel ou Word, um arquivo por fornecedor</small></div>
     <input id="arq" type="file" multiple style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
     <div id="avWv" class="esc" style="margin-top:10px;background:#fff6d6;border-radius:12px;padding:10px;font-size:.9rem">⚠️ Se a lista de arquivos não abrir aqui, toque em <b>⋮</b> e escolha <b>Abrir no Chrome</b>.</div>
     <div id="lfor" class="chips"></div>
@@ -50,10 +50,12 @@ label.ck{display:flex;gap:10px;align-items:flex-start}label.ck input{width:22px;
       <div class="row" style="margin-top:10px"><button onclick="zap()" style="flex:1;background:#25d366">📲 Mandar lista no WhatsApp</button></div>
     </div>
   </div>
-  <p class="muted" style="font-size:.8rem;text-align:center">Funciona com PDF de texto (tabela de preços). PDF escaneado/foto não dá pra ler. Confira sempre as unidades (fardo, caixa, kg) antes de comprar.</p>
+  <p class="muted" style="font-size:.8rem;text-align:center">Aceita PDF, Excel (.xlsx, .xls, .csv) e Word (.docx). PDF escaneado/foto e Word antigo (.doc) não dá pra ler. Confira sempre as unidades (fardo, caixa, kg) antes de comprar.</p>
 </main>
 <div id="toast" class="toast esc"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 var $=function(s){return document.querySelector(s)};
@@ -62,8 +64,8 @@ function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&
 function brl(v){return "R$ "+v.toFixed(2).replace(".",",").replace(/\B(?=(\d{3})+(?!\d))/g,".")}
 var F=[]; /* {nome, itens:[{n,p}]} */
 var GR=[],ABA="prod";
-try{F=JSON.parse(localStorage.getItem("cot_f3")||"[]")}catch(e){}
-function salva(){try{localStorage.setItem("cot_f3",JSON.stringify(F))}catch(e){toast("Memória cheia, não salvei.")}}
+try{F=JSON.parse(localStorage.getItem("cot_f4")||"[]")}catch(e){}
+function salva(){try{localStorage.setItem("cot_f4",JSON.stringify(F))}catch(e){toast("Memória cheia, não salvei.")}}
 function desenhaF(){$("#lfor").innerHTML=F.map(function(f,i){return '<div class="chip">🏪<input value="'+esc(f.nome)+'" onchange="F['+i+'].nome=this.value;salva();if(GR.length)desenha()"><small>'+f.itens.length+'</small><button onclick="F.splice('+i+',1);salva();desenhaF();if(F.length>1)analisa()">✖</button></div>'}).join("");$("#st").textContent=F.length?F.length+" fornecedor(es) carregado(s).":""}
 desenhaF();
 
@@ -78,7 +80,7 @@ var RP=/(?:R\$\s*)?(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2}|\d+\.\d{2})(?!\d)/g;
 function num(s){s=s.replace(/R\$\s*/,"");if(s.indexOf(",")>=0)s=s.replace(/\./g,"").replace(",",".");return parseFloat(s)}
 function extrai(linhas){var it=[],vis={};
   var ant="";
-  function limpaN(t){return t.replace(RP,"").replace(/R\$/g,"").replace(/\b\d{6,14}\b/g,"").replace(/^\s*\d{1,6}\s*[-–.]?\s+/,"").replace(/[|;]+/g," ").replace(/\s{2,}/g," ").trim()}
+  function limpaN(t){return t.replace(RP,"").replace(/R\$/g,"").replace(/\b\d{6,14}\b/g,"").replace(/^\s*\d{1,6}\s*[-–.]?\s+/,"").replace(/[|;]+/g," ").replace(/\s{2,}/g," ").trim().replace(/\s+\d{1,4}\s*(un|und|cx|fd|pct)?$/i,"").trim()}
   function letras(t){return t.replace(/[^a-zA-ZÀ-ú]/g,"").replace(/\b(un|und|cx|fd|pct|kg|r)\b/gi,"").length}
   linhas.forEach(function(l){var m=l.match(RP);if(!m){var t=limpaN(l);if(letras(t)>=4)ant=t;return}
     var nome=limpaN(l);
@@ -94,13 +96,29 @@ function extrai(linhas){var it=[],vis={};
     else{var q=l.replace(RP,"").match(/\b(\d{1,4})\s*(?:un|und|cx|fd|pct|x)?\s*$/i);}
     var k=nome.toLowerCase();if(vis[k])return;vis[k]=1;it.push({n:nome,p:p});});
   return it;}
+function TIPO(f){var n=f.name.toLowerCase();if(/\.pdf$/.test(n)||/pdf/.test(f.type))return "pdf";if(/\.(xlsx|xls|csv|ods)$/.test(n)||/sheet|excel|csv/.test(f.type))return "xls";if(/\.docx$/.test(n)||/wordprocessingml/.test(f.type))return "doc";return ""}
+function lePlanilha(buf){var wb=XLSX.read(buf,{type:"array"}),it=[],linhas=[];
+  wb.SheetNames.forEach(function(sn){var R=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:""});
+    var hi=-1,cn=-1,cp=-1;
+    for(var i=0;i<Math.min(R.length,30)&&hi<0;i++){var row=R[i].map(function(c){return String(c).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()});
+      var n=row.findIndex(function(c){return /produto|descri|item|mercadoria|nome/.test(c)});
+      var pu=row.findIndex(function(c){return /unit|unid\.?\s*$|vl\.?\s*un|pr\.?\s*un/.test(c)&&/pre|val|vl|r\$|unit/.test(c)});
+      var p=pu>=0?pu:row.findIndex(function(c){return /preco|valor|vlr|r\$/.test(c)&&!/total/.test(c)});
+      if(n>=0&&p>=0){hi=i;cn=n;cp=p}}
+    if(hi>=0){R.slice(hi+1).forEach(function(r){var nome=String(r[cn]||"").trim(),v=r[cp];if(typeof v==="string")v=num(v);if(nome&&v>0&&v<100000)it.push({n:nome,p:+(+v).toFixed(2)})})}
+    else R.forEach(function(r){var ul=-1;r.forEach(function(c,j){if(typeof c==="number")ul=j});linhas.push(r.map(function(c,j){return typeof c==="number"&&(c%1!==0||j===ul)?c.toFixed(2).replace(".",","):String(c)}).join(" "))});});
+  if(linhas.length)it=it.concat(extrai(linhas));
+  var vis={};return it.filter(function(x){var k=x.n.toLowerCase();if(vis[k])return false;vis[k]=1;return true});}
 function robo(n,st){for(var i=1;i<=4;i++){var e=$("#r"+i);if(!e)continue;e.classList.toggle("ok",i<n||(i===n&&st==="ok"));e.classList.toggle("vai",i===n&&st!=="ok")}}
 if(/; wv\)|Version\/[\d.]+ Chrome/.test(navigator.userAgent))setTimeout(function(){$("#avWv").classList.remove("esc")},0);
 function espera(ms){return new Promise(function(r){setTimeout(r,ms)})}
-$("#arq").addEventListener("change",async function(e){var fs=[].slice.call(e.target.files).filter(function(f){return /pdf/i.test(f.type)||/\.pdf$/i.test(f.name)});if(!fs.length){toast("Escolha arquivos PDF.");return}robo(1);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="📖 Lendo "+(i+1)+" de "+fs.length+": "+f.name;
-  try{var ls=await linhasPDF(await f.arrayBuffer()),its=extrai(ls);
-    if(!its.length){toast(f.name+": não achei preços. PDF pode ser escaneado.");continue}
-    F.push({nome:f.name.replace(/\.pdf$/i,"").replace(/[_-]+/g," ").slice(0,40),itens:its});}catch(err){toast("Erro lendo "+f.name)}}
+$("#arq").addEventListener("change",async function(e){var fs=[].slice.call(e.target.files).filter(function(f){return TIPO(f)});if(!fs.length){toast("Escolha PDF, Excel ou Word.");return}robo(1);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="📖 Lendo "+(i+1)+" de "+fs.length+": "+f.name;
+  try{var tp=TIPO(f),buf=await f.arrayBuffer(),its;
+    if(tp==="pdf")its=extrai(await linhasPDF(buf));
+    else if(tp==="xls")its=lePlanilha(buf);
+    else{var r=await mammoth.extractRawText({arrayBuffer:buf});its=extrai(r.value.split(/\n+/))}
+    if(!its.length){toast(f.name+": não achei preços. Pode ser escaneado.");continue}
+    F.push({nome:f.name.replace(/\.(pdf|xlsx|xls|csv|docx|ods)$/i,"").replace(/[_-]+/g," ").slice(0,40),itens:its});}catch(err){toast("Erro lendo "+f.name)}}
   salva();desenhaF();e.target.value="";robo(1,"ok");if(F.length>=2)analisa();else{$("#st").textContent="Agora selecione o PDF de mais um fornecedor pra comparar.";}});
 function limpa(){if(!confirm("Apagar todos os PDFs carregados?"))return;F=[];salva();desenhaF();$("#out").classList.add("esc")}
 
