@@ -24,7 +24,7 @@ input{font:inherit;width:100%;padding:12px;border:1px solid var(--ln);border-rad
 .it{padding:12px;border:1px solid var(--ln);border-radius:14px;margin-top:8px}.it b{display:block}
 .px{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.px span{background:#f1f4f2;border-radius:10px;padding:4px 8px;font-size:.82rem}.px span.best{background:#d9f5e7;color:#06603d;font-weight:700}
 .tag{display:inline-block;background:var(--y);color:#3a2b00;border-radius:8px;padding:2px 8px;font-size:.75rem;font-weight:800;margin-right:6px}
-.eco{color:var(--g);font-weight:800;font-size:.85rem}.muted{color:var(--mu)}.esc{display:none!important}
+.eco{color:var(--g);font-weight:800;font-size:.85rem}.muted{color:var(--mu)}.esc{display:none!important}a.lb{display:block;text-align:center;text-decoration:none;background:var(--g);color:#fff;font-weight:700;border-radius:14px;padding:12px}.clk{cursor:pointer}.clk:active{transform:scale(.98)}
 .res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.res div{background:linear-gradient(#f3fbf7,#e1f4ea);border-radius:14px;padding:12px 6px;font-size:.8rem;color:var(--mu)}.res b{display:block;font-size:1.35rem;color:var(--gd)}
 .grp h3{margin:14px 0 4px;color:var(--gd);font-size:1rem}.row{display:flex;gap:8px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:10px;z-index:9}
@@ -47,6 +47,7 @@ label.ck{display:flex;gap:10px;align-items:flex-start}label.ck input{width:22px;
     <input id="busca" type="search" placeholder="Ex.: cabo flexível 2,5" oninput="busca()" style="font-size:1.05rem">
     <div id="resB"></div>
   </div>
+<div id="lojaM" class="esc" style="position:fixed;inset:0;background:#0008;z-index:8;display:flex;align-items:flex-end;justify-content:center" onclick="if(event.target===this)this.classList.add('esc')"><div class="card" style="width:100%;max-width:560px;border-radius:20px 20px 0 0"></div></div>
 <div id="out" class="esc">
     <div class="card res"><div><b id="rP">0</b>produtos comparados</div><div><b id="rF">0</b>fornecedores</div><div><b id="rE">R$ 0</b>economia (1 un. de cada)</div></div>
     <div class="card">
@@ -122,13 +123,32 @@ if(/; wv\)|Version\/[\d.]+ Chrome/.test(navigator.userAgent))setTimeout(function
 function espera(ms){return new Promise(function(r){setTimeout(r,ms)})}
 $("#arq").addEventListener("change",function(e){var a=[].slice.call(e.target.files);e.target.value="";processa(a)});
 async function processa(fs){fs=fs.filter(function(f){return TIPO(f)});if(!fs.length){toast("Escolha PDF, Excel ou Word.");return}robo(1);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="📖 Lendo "+(i+1)+" de "+fs.length+": "+f.name;
-  try{var tp=TIPO(f),buf=await f.arrayBuffer(),its;
-    if(tp==="pdf")its=extrai(await linhasPDF(buf));
-    else if(tp==="xls")its=lePlanilha(buf);
-    else{var r=await mammoth.extractRawText({arrayBuffer:buf});its=extrai(r.value.split(/\n+/))}
+  try{var tp=TIPO(f),buf=await f.arrayBuffer(),its,ls=[];
+    if(tp==="pdf"){ls=await linhasPDF(buf);its=extrai(ls)}
+    else if(tp==="xls"){its=lePlanilha(buf);try{var wb=XLSX.read(buf,{type:"array"});ls=XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]).split(/\n/).slice(0,25).map(function(x){return x.replace(/,+/g," ")})}catch(e){}}
+    else{var r=await mammoth.extractRawText({arrayBuffer:buf});ls=r.value.split(/\n+/);its=extrai(ls)}
     if(!its.length){toast(f.name+": não achei preços. Pode ser escaneado.");continue}
-    F.push({nome:f.name.replace(/\.(pdf|xlsx|xls|csv|docx|ods)$/i,"").replace(/[_-]+/g," ").slice(0,40),itens:its});}catch(err){toast("Erro lendo "+f.name)}}
+    var inf=dadosForn(ls),nm=f.name.replace(/\.(pdf|xlsx|xls|csv|docx|ods)$/i,"").replace(/[_-]+/g," ").slice(0,40);
+    F.push({nome:inf.empresa||nm,arq:nm,info:inf,itens:its});}catch(err){toast("Erro lendo "+f.name)}}
   salva();desenhaF();robo(1,"ok");if(F.length>=2)analisa();else{$("#st").textContent="Agora selecione o orçamento de mais um fornecedor pra comparar.";}}
+function dadosForn(ls){var top=ls.slice(0,40).join("\n"),o={};
+  var em=ls.slice(0,15).find(function(l){return /\b(ltda|eireli|s\/a|s\.a\.|\bme\b|\bepp\b|com[eé]rcio|comercial|distribuidora|atacad|materiais|magazine|industria|ind[uú]stria)\b/i.test(l)&&!/cliente|destinat/i.test(l)});
+  if(em)o.empresa=em.replace(/cnpj.*$/i,"").replace(/\s{2,}/g," ").trim().slice(0,45);
+  var t=top.match(/\(?\b(\d{2})\)?\s?(9?\s?\d{4})[-\s.]?(\d{4})\b/);if(t)o.tel=(t[1]+t[2]+t[3]).replace(/\D/g,"");
+  var m=top.match(/[\w.+-]+@[\w-]+\.[\w.]+/);if(m)o.email=m[0];
+  var w=top.match(/\b(?:https?:\/\/)?(?:www\.)[\w-]+\.[\w.\/-]+/i);if(w)o.site=w[0];
+  return o}
+/* ===== LOJA ===== */
+function loja(fi,txt){var f=F[fi],i=f.info||{},el=$("#lojaM");
+  var msg=encodeURIComponent("Olá! Vi no orçamento de vocês e quero comprar: "+txt+". Ainda está nesse preço?");
+  var h='<h3 style="margin:0 0 4px">🏪 '+esc(f.nome)+'</h3>'+(f.arq&&f.arq!==f.nome?'<small class="muted">Arquivo: '+esc(f.arq)+'</small>':'')+'<p style="margin:10px 0">'+esc(txt)+'</p><div style="display:flex;flex-direction:column;gap:8px">';
+  if(i.tel)h+='<a class="lb" style="background:#25d366" href="https://wa.me/55'+i.tel+'?text='+msg+'" target="_blank">📲 Pedir no WhatsApp ('+esc(i.tel)+')</a><a class="lb" href="tel:'+i.tel+'">📞 Ligar</a>';
+  if(i.email)h+='<a class="lb" href="mailto:'+esc(i.email)+'?subject=Pedido&body='+msg+'">✉️ E-mail</a>';
+  if(i.site)h+='<a class="lb" href="'+(/^http/.test(i.site)?'':'https://')+esc(i.site)+'" target="_blank">🌐 Site da loja</a>';
+  if(!i.tel&&!i.email&&!i.site)h+='<p class="muted">Não achei telefone desse fornecedor no arquivo. Coloque o WhatsApp dele abaixo e eu guardo.</p>';
+  h+='<button class="sec" onclick="editaLoja('+fi+')">✏️ Nome e WhatsApp do fornecedor</button><button class="sec" onclick="$(\'#lojaM\').classList.add(\'esc\')">Fechar</button></div>';
+  el.querySelector("div").innerHTML=h;el.classList.remove("esc")}
+function editaLoja(fi){var f=F[fi];f.info=f.info||{};var n=prompt("Nome do fornecedor:",f.nome);if(n)f.nome=n.trim();var t=prompt("WhatsApp do fornecedor (com DDD):",f.info.tel||"");if(t!==null)f.info.tel=t.replace(/\D/g,"").replace(/^55(?=\d{10,11}$)/,"");salva();desenhaF();if(GR.length)desenha();$("#lojaM").classList.add("esc");toast("Fornecedor salvo.")}
 /* arquivos compartilhados de outro app (WhatsApp, Arquivos) */
 if(location.search.indexOf("compartilhado")>=0){caches.open("cot-share").then(async function(c){var ks=await c.keys(),fs=[];for(var k of ks){var r=await c.match(k),b=await r.blob();fs.push(new File([b],decodeURIComponent(r.headers.get("x-nome")||"arquivo.pdf"),{type:b.type}));await c.delete(k)}if(fs.length)processa(fs);history.replaceState(null,"",location.pathname)})}
 function limpa(){if(!confirm("Apagar todos os PDFs carregados?"))return;F=[];salva();desenhaF();$("#out").classList.add("esc")}
@@ -161,9 +181,10 @@ function busca(){var q=norm($("#busca").value||"").split(" ").filter(function(t)
     if(q.every(function(t){return tk.some(function(w){return /^\d/.test(t)?w===t||w.indexOf(t)===0&&/[a-z]/.test(w.slice(t.length,t.length+1)):w.indexOf(t)===0||(w.length>=3&&t.indexOf(w)===0)})}))R.push({n:x.n,p:x.p,f:fi})})});
   R.sort(function(a,b){return a.p-b.p});
   if(!R.length){el.innerHTML='<p class="muted">Nenhum produto com esse nome nos orçamentos.</p>';return}
-  var b=R[0],h='<div class="it" style="background:#d9f5e7;border-color:#9fd7bd;margin-top:10px"><span class="tag">MAIS EM CONTA</span><b>'+esc(b.n)+'</b>🏪 Compre em <b style="display:inline">'+esc(F[b.f].nome)+'</b> por <b style="display:inline;color:#06603d">'+brl(b.p)+'</b>'+(R.length>1&&R[R.length-1].p>b.p?' <span class="eco">economiza até '+brl(R[R.length-1].p-b.p)+'</span>':'')+'</div>';
-  h+=R.slice(1,40).map(function(r){return '<div class="it">'+esc(r.n)+'<div class="px"><span>'+esc(F[r.f].nome)+': '+brl(r.p)+'</span></div></div>'}).join("");
+  window._R=R;var b=R[0],h='<div class="it clk" onclick="abreR(0)" style="background:#d9f5e7;border-color:#9fd7bd;margin-top:10px"><span class="tag">MAIS EM CONTA</span><b>'+esc(b.n)+'</b>🏪 Compre em <b style="display:inline">'+esc(F[b.f].nome)+'</b> por <b style="display:inline;color:#06603d">'+brl(b.p)+'</b><div class="muted" style="font-size:.8rem;margin-top:4px">👉 Toque pra pedir nessa loja</div></div>';
+  h+=R.slice(1,40).map(function(r,k){return '<div class="it clk" onclick="abreR('+(k+1)+')">'+esc(r.n)+'<div class="px"><span>🏪 '+esc(F[r.f].nome)+': '+brl(r.p)+'</span></div></div>'}).join("");
   el.innerHTML=h+(R.length>40?'<p class="muted">+'+(R.length-40)+' resultados. Escreva mais detalhes.</p>':'');}
+function abreR(k){var r=window._R[k];loja(r.f,r.n+" — "+brl(r.p))}
 function filtrados(){var q=norm($("#filtro").value||"");return GR.filter(function(g){return (ABA==="unico"?g.o.length===1:g.o.length>1)&&(!q||norm(g.min.n).indexOf(q)>=0)})}
 function desenha(){var L=filtrados(),h="";
   if(ABA==="prod"){L.sort(function(a,b){return b.eco-a.eco});h=L.map(function(g,ix){var i=GR.indexOf(g);return '<div class="it"><label class="ck"><input type="checkbox" '+(g.ck?"checked":"")+' onchange="GR['+i+'].ck=this.checked"><span><b>'+(ix<10&&g.eco>0?'<span class="tag">TOP '+(ix+1)+'</span>':'')+esc(g.min.n)+'</b><span class="muted">Mais barato: <b style="display:inline;color:#06603d">'+esc(F[g.min.f].nome)+' '+brl(g.min.p)+'</b></span> <span class="eco">economiza '+brl(g.eco)+'</span></span></label><div class="px">'+g.o.map(function(o,k){return '<span class="'+(k===0?"best":"")+'">'+esc(F[o.f].nome)+': '+brl(o.p)+'</span>'}).join("")+'</div></div>'}).join("")}
