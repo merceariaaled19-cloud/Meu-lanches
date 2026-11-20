@@ -34,7 +34,8 @@ label.ck{display:flex;gap:10px;align-items:flex-start}label.ck input{width:22px;
 <main>
   <div class="card">
     <div class="drop" role="button" onclick="document.getElementById('arq').click()"><span style="font-size:2.4rem">📂</span><span class="big">Selecionar orçamentos</span><small class="muted">Escolha quantos quiser de uma vez: PDF, Excel ou Word, um arquivo por fornecedor</small></div>
-    <input id="arq" type="file" multiple style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
+    <input id="arq" type="file" multiple accept=".pdf,.xlsx,.xls,.csv,.docx,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
+    <div style="margin-top:10px;background:#eef8f3;border-radius:12px;padding:10px;font-size:.88rem">💡 Celular sem memória pra abrir os arquivos? Instale o app (⋮ › Adicionar à tela inicial). Depois, no WhatsApp ou em Arquivos, segure os orçamentos, toque em <b>Compartilhar</b> e escolha <b>Cotação</b>.</div>
     <div id="avWv" class="esc" style="margin-top:10px;background:#fff6d6;border-radius:12px;padding:10px;font-size:.9rem">⚠️ Se a lista de arquivos não abrir aqui, toque em <b>⋮</b> e escolha <b>Abrir no Chrome</b>.</div>
     <div id="lfor" class="chips"></div>
     <div class="robos" style="margin-top:14px"><div class="robo" id="r1"><i>📖</i>Robô Leitor</div><div class="robo" id="r2"><i>🧹</i>Robô Organizador</div><div class="robo" id="r3"><i>🔗</i>Robô Comparador</div><div class="robo" id="r4"><i>💰</i>Robô Economia</div></div>
@@ -114,14 +115,17 @@ function lePlanilha(buf){var wb=XLSX.read(buf,{type:"array"}),it=[],linhas=[];
 function robo(n,st){for(var i=1;i<=4;i++){var e=$("#r"+i);if(!e)continue;e.classList.toggle("ok",i<n||(i===n&&st==="ok"));e.classList.toggle("vai",i===n&&st!=="ok")}}
 if(/; wv\)|Version\/[\d.]+ Chrome/.test(navigator.userAgent))setTimeout(function(){$("#avWv").classList.remove("esc")},0);
 function espera(ms){return new Promise(function(r){setTimeout(r,ms)})}
-$("#arq").addEventListener("change",async function(e){var fs=[].slice.call(e.target.files).filter(function(f){return TIPO(f)});if(!fs.length){toast("Escolha PDF, Excel ou Word.");return}robo(1);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="📖 Lendo "+(i+1)+" de "+fs.length+": "+f.name;
+$("#arq").addEventListener("change",function(e){var a=[].slice.call(e.target.files);e.target.value="";processa(a)});
+async function processa(fs){fs=fs.filter(function(f){return TIPO(f)});if(!fs.length){toast("Escolha PDF, Excel ou Word.");return}robo(1);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="📖 Lendo "+(i+1)+" de "+fs.length+": "+f.name;
   try{var tp=TIPO(f),buf=await f.arrayBuffer(),its;
     if(tp==="pdf")its=extrai(await linhasPDF(buf));
     else if(tp==="xls")its=lePlanilha(buf);
     else{var r=await mammoth.extractRawText({arrayBuffer:buf});its=extrai(r.value.split(/\n+/))}
     if(!its.length){toast(f.name+": não achei preços. Pode ser escaneado.");continue}
     F.push({nome:f.name.replace(/\.(pdf|xlsx|xls|csv|docx|ods)$/i,"").replace(/[_-]+/g," ").slice(0,40),itens:its});}catch(err){toast("Erro lendo "+f.name)}}
-  salva();desenhaF();e.target.value="";robo(1,"ok");if(F.length>=2)analisa();else{$("#st").textContent="Agora selecione o PDF de mais um fornecedor pra comparar.";}});
+  salva();desenhaF();robo(1,"ok");if(F.length>=2)analisa();else{$("#st").textContent="Agora selecione o orçamento de mais um fornecedor pra comparar.";}}
+/* arquivos compartilhados de outro app (WhatsApp, Arquivos) */
+if(location.search.indexOf("compartilhado")>=0){caches.open("cot-share").then(async function(c){var ks=await c.keys(),fs=[];for(var k of ks){var r=await c.match(k),b=await r.blob();fs.push(new File([b],decodeURIComponent(r.headers.get("x-nome")||"arquivo.pdf"),{type:b.type}));await c.delete(k)}if(fs.length)processa(fs);history.replaceState(null,"",location.pathname)})}
 function limpa(){if(!confirm("Apagar todos os PDFs carregados?"))return;F=[];salva();desenhaF();$("#out").classList.add("esc")}
 
 /* ===== COMPARAR ===== */
