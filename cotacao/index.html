@@ -62,8 +62,8 @@ function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&
 function brl(v){return "R$ "+v.toFixed(2).replace(".",",").replace(/\B(?=(\d{3})+(?!\d))/g,".")}
 var F=[]; /* {nome, itens:[{n,p}]} */
 var GR=[],ABA="prod";
-try{F=JSON.parse(localStorage.getItem("cot_f2")||"[]")}catch(e){}
-function salva(){try{localStorage.setItem("cot_f2",JSON.stringify(F))}catch(e){toast("Memória cheia, não salvei.")}}
+try{F=JSON.parse(localStorage.getItem("cot_f3")||"[]")}catch(e){}
+function salva(){try{localStorage.setItem("cot_f3",JSON.stringify(F))}catch(e){toast("Memória cheia, não salvei.")}}
 function desenhaF(){$("#lfor").innerHTML=F.map(function(f,i){return '<div class="chip">🏪<input value="'+esc(f.nome)+'" onchange="F['+i+'].nome=this.value;salva();if(GR.length)desenha()"><small>'+f.itens.length+'</small><button onclick="F.splice('+i+',1);salva();desenhaF();if(F.length>1)analisa()">✖</button></div>'}).join("");$("#st").textContent=F.length?F.length+" fornecedor(es) carregado(s).":""}
 desenhaF();
 
@@ -87,7 +87,11 @@ function extrai(linhas){var it=[],vis={};
     if(nome.replace(/[^a-zA-ZÀ-ú]/g,"").length<4)return;
     /* preço: usa o primeiro valor monetário da linha que não for unitário muito pequeno de impostos; regra simples: o último valor */
     var vals=m.map(num).filter(function(v){return v>0&&v<100000});if(!vals.length)return;
-    var p=vals.length>1?vals[vals.length-1]:vals[0];
+    var p=vals[vals.length-1];
+    if(vals.length>1){var L=vals[vals.length-1],u=null;
+      for(var a=vals.length-2;a>=0;a--){var r=L/vals[a];if(vals[a]<=L&&Math.abs(r-Math.round(r))<0.02&&Math.round(r)>=1){u=vals[a];break}}
+      p=u!==null?u:Math.min(vals[vals.length-2],L);}
+    else{var q=l.replace(RP,"").match(/\b(\d{1,4})\s*(?:un|und|cx|fd|pct|x)?\s*$/i);}
     var k=nome.toLowerCase();if(vis[k])return;vis[k]=1;it.push({n:nome,p:p});});
   return it;}
 function robo(n,st){for(var i=1;i<=4;i++){var e=$("#r"+i);if(!e)continue;e.classList.toggle("ok",i<n||(i===n&&st==="ok"));e.classList.toggle("vai",i===n&&st!=="ok")}}
