@@ -433,14 +433,17 @@ async function entrarSala(){ var cod=codIn.value.trim().toUpperCase(); if(cod.le
 }
 async function ligaVoz(){ var st; try{ st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}); }catch(e1){ try{ await new Promise(function(r){setTimeout(r,500)}); st=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ return toast("🎤 O microfone ainda não abriu ("+(e&&e.name||"")+"). Feche outros apps que usam microfone e tente de novo.",4000); } } var t=st.getAudioTracks()[0]; try{ MIC.getAudioTracks().forEach(function(o){ MIC.removeTrack(o); try{o.stop();}catch(x){} }); MIC.addTrack(t); }catch(x){} try{ var s=call&&call.peerConnection&&call.peerConnection.getSenders().find(function(s){ return s.track&&s.track.kind==="audio"; }); if(s) await s.replaceTrack(t); }catch(x){} MICFALSO=false; btMic.innerText="🎤 Mic ligado"; toast("🎤 Voz ligada!"); }
 function toggleMic(){ if(MICFALSO) return ligaVoz(); if(!MIC||!MIC.getAudioTracks()[0]) return; var t=MIC.getAudioTracks()[0]; t.enabled=!t.enabled; btMic.innerText=t.enabled?"🎤 Mic ligado":"🔇 Mic mudo"; }
-function sairJogo(){ if(!confirm("Sair do duelo?")) return; location.reload(); }
-function abrirJogo(){ menu.classList.add("esc"); jogo.classList.remove("esc"); ptt.classList.add("esc"); chatBt.classList.toggle("esc",MODO==="cpu"); if(MODO==="cpu"){ opVid.classList.add("esc"); meVid.classList.add("esc"); opVid.parentNode.classList.remove("comvid"); meVid.parentNode.classList.remove("comvid"); } VISTO=S.evn-1; render(); if(MODO==="cpu") setTimeout(function(){ fala("inicio",1); },600); if(MODO==="cpu"&&S.turn===1) setTimeout(cpu,900); }
+function sairJogo(){ abre('<div style="font-size:48px">🚪</div><h3>Tem certeza que quer sair do jogo?</h3><p>Se sair, esse duelo será perdido.</p><div class="acoes"><button onclick="sairSim()">Sim, sair</button><button class="sec" onclick="fecha()">Não, continuar</button></div>'); }
+function sairSim(){ try{ localStorage.removeItem("duelo_salvo"); }catch(e){} location.reload(); }
+function abrirJogo(){ menu.classList.add("esc"); jogo.classList.remove("esc"); ptt.classList.add("esc"); chatBt.classList.toggle("esc",MODO==="cpu"); if(MODO==="cpu"){ opVid.classList.add("esc"); meVid.classList.add("esc"); opVid.parentNode.classList.remove("comvid"); meVid.parentNode.classList.remove("comvid"); } VISTO=S.evn-1; render(); if(MODO==="cpu"&&!RETOMA) setTimeout(function(){ fala("inicio",1); },600); if(MODO==="cpu"&&S.turn===1) setTimeout(cpu,900); }
 
 // ================= TELA =================
 var UI={modo:null};
 function artHTML(k,id){ if(k.im===0) return '<span class="emj">'+k.e+'</span>'; return '<img src="img/'+(k.im||id)+'.jpg" alt="">'; }
 function cartaHTML(c,opt){ opt=opt||{}; if(!c) return ""; var k=C[c.id]; if(opt.verso) return '<div class="carta verso'+(c.pos==="def"?" def":"")+'"></div>'; var cls=k.t==="S"?" mag":k.t==="T"?" arm":""; var st=k.t==="M"?'<span class="st2">'+atk(c)+' / '+k.d+'</span>':'<span class="st2">'+(k.t==="S"?"MAGIA":"ARMADILHA")+'</span>'; return '<div class="carta'+cls+(c.pos==="def"?" def":"")+(c.buff?" buff":"")+(c.at?" usado":"")+'">'+(k.t==="M"?'<span class="lv">'+"★".repeat(k.lv)+'</span>':'<span class="lv"></span>')+'<span class="em">'+artHTML(k,c.id)+'</span><span class="nm">'+k.n+'</span>'+st+'</div>'; }
-function render(){ if(!S) return; var P=S.p[ME],O=S.p[1-ME];
+function salva(){ try{ if(MODO!=="cpu"||!S) return; if(S.win!==null){ localStorage.removeItem("duelo_salvo"); return; } localStorage.setItem("duelo_salvo",JSON.stringify({S:S,UID:UID,CAMP:CAMP,CPUNIV:CPUNIV,LOG:LOG.slice(-60),t:Date.now()})); }catch(e){} }
+var RETOMA=false; function retoma(){ try{ var d=JSON.parse(localStorage.getItem("duelo_salvo")||"null"); if(!d||!d.S||d.S.win!==null||Date.now()-d.t>12*3600e3) return; MODO="cpu"; ME=0; S=d.S; UID=d.UID||UID; CAMP=d.CAMP||null; CPUNIV=d.CPUNIV; LOG=d.LOG||[]; FIMOK=false; UI={modo:null}; RETOMA=true; abrirJogo(); RETOMA=false; toast("Duelo retomado de onde parou."); }catch(e){} }
+function render(){ if(!S) return; salva(); var P=S.p[ME],O=S.p[1-ME];
  opNome.innerText=O.nome+(O.ch&&MODO!=="cpu"?" · "+PERS[O.ch].n:""); meNome.innerText=P.nome+(P.ch?" · "+PERS[P.ch].n:""); [[opAv,O],[meAv,P]].forEach(function(z){ if(z[1].ch&&PERS[z[1].ch]){ var src=persImg(z[1].ch); if(z[0].getAttribute("src")!==src) z[0].setAttribute("src",src); z[0].classList.remove("esc"); } else z[0].classList.add("esc"); }); var hlO=HL&&HL.p!==ME, hlM=HL&&HL.p===ME; opLp.classList.toggle("hlT",!!(hlM&&HL.tg===-1)); meLp.classList.toggle("hlT",!!(hlO&&HL.tg===-1)); opLp.innerText=O.lp; meLp.innerText=P.lp; opBar.style.width=Math.min(100,O.lp/80)+"%"; meBar.style.width=Math.min(100,P.lp/80)+"%"; opDeck.innerText="🂠 "+O.deck.length; meDeck.innerText="🂠 "+P.deck.length; opGy.innerText="🪦 "+O.gy.length; meGy.innerText="🪦 "+P.gy.length;
  maoOp.innerHTML=O.hand.map(function(){return "<div></div>"}).join("");
  opSt.innerHTML=O.st.map(function(c,i){ return '<div class="slot st">'+(c?cartaHTML(c,{verso:c.down}):"")+'</div>'; }).join("");
@@ -600,6 +603,8 @@ function recebeMsg(d){ var m=String(d.m||"").slice(0,140), q=String(d.nome||"Ami
 atualizaSomBt(); marcaNivel(); mostraTitulos();
 ptt.addEventListener("pointerdown",pttInicio); ptt.addEventListener("pointermove",pttMove); ptt.addEventListener("pointerup",pttFim); ptt.addEventListener("pointercancel",pttFim); ptt.addEventListener("contextmenu",function(e){ e.preventDefault(); });
 if("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js");
+document.addEventListener("visibilitychange",function(){ if(document.hidden) salva(); }); window.addEventListener("pagehide",salva);
+retoma();
 </script>
 </body>
 </html>
