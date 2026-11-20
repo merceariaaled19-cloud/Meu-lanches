@@ -91,7 +91,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
   <button class="sec" onclick="regras()">📖 Regras</button>
   <div id="lobby" class="esc" style="margin-top:10px"></div>
  </div>
- <div id="verTag" style="font-size:11px;opacity:.6">versão 28</div>
+ <div id="verTag" style="font-size:11px;opacity:.6">versão 29</div>
 </div>
 
 <div id="escolha" class="esc"><h2 style="color:#fbbf24">Escolha seu duelista</h2><div id="persGrid"></div><button class="sec" onclick="voltaMenu()">⬅ Voltar</button></div>
@@ -282,18 +282,18 @@ var C={
  sn10:{n:"Redemoinho",e:"🌀",t:"S",f:"alvo",im:0,x:"Destrói 1 monstro do adversário à sua escolha."},
  sn11:{n:"Arpão de Ferro",e:"🔱",t:"S",f:"forca",v:500,im:0,x:"Equipa um monstro seu: +500 de ataque."},
  sn12:{n:"Rede de Pesca",e:"🥅",t:"T",f:"laco",im:0,x:"Quando o adversário atacar: destrói o monstro que atacou."},
- ca1:{n:"Feiticeira da Lua Negra",e:"🌑",t:"M",lv:7,a:2500,d:2100,im:0,x:"Seu feitiço apaga até as estrelas."},
- ca2:{n:"Corvo Agourento",e:"🐦‍⬛",t:"M",lv:4,a:1500,d:1000,im:0,x:"Quando ele aparece, vem desgraça."},
- ca3:{n:"Gato Preto Místico",e:"🐈‍⬛",t:"M",lv:3,a:1200,d:900,im:0,x:"Sete vidas e nenhum medo."},
- ca4:{n:"Boneco Amaldiçoado",e:"🪆",t:"M",lv:4,a:1400,d:1500,im:0,x:"Dizem que ele se mexe à noite."},
- ca5:{n:"Cartomante Sombria",e:"🃏",t:"M",lv:4,a:1300,d:1700,im:0,x:"Já sabe a carta que você vai jogar."},
- ca6:{n:"Espírito da Mata",e:"🌿",t:"M",lv:5,a:2000,d:1600,im:0,x:"Assobia no escuro da floresta."},
- ca7:{n:"Caveira Falante",e:"💀",t:"M",lv:3,a:1000,d:1300,im:0,x:"Conta segredos dos mortos."},
- ca8:{n:"Máscara Maldita",e:"🎭",t:"M",lv:5,a:1900,d:1500,im:0,x:"Quem usa nunca mais tira."},
- ca9:{n:"Círculo de Velas",e:"🕯️",t:"S",f:"campo",im:0,x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
- ca10:{n:"Maldição Antiga",e:"🧿",t:"S",f:"descarte",im:0,x:"O adversário descarta 1 carta aleatória da mão."},
- ca11:{n:"Olho que Tudo Vê",e:"👁️",t:"S",f:"alvo",im:0,x:"Destrói 1 monstro do adversário à sua escolha."},
- ca12:{n:"Pacto Sombrio",e:"📜",t:"T",f:"laco",im:0,x:"Quando o adversário atacar: destrói o monstro que atacou."},
+ ca1:{n:"Campeão Pixelado",e:"👾",t:"M",lv:7,a:2500,d:2100,im:0,x:"Herói 8-bit que zerou todos os jogos."},
+ ca2:{n:"Ninja Speedrunner",e:"🥷",t:"M",lv:4,a:1700,d:900,im:0,x:"Termina a fase antes de você piscar."},
+ ca3:{n:"Slime Digital",e:"🟢",t:"M",lv:3,a:1200,d:1000,im:0,x:"Gosma verde que pula de fase em fase."},
+ ca4:{n:"Robô de Fliperama",e:"🕹️",t:"M",lv:4,a:1400,d:1600,im:0,x:"Saiu da máquina de ficha."},
+ ca5:{n:"Mago 8-Bit",e:"🧙",t:"M",lv:4,a:1500,d:1400,im:0,x:"Lança magias de pixel."},
+ ca6:{n:"Dragão de Pixel",e:"🐉",t:"M",lv:5,a:2000,d:1500,im:0,x:"O chefão da fase do castelo."},
+ ca7:{n:"Fantasma do Lag",e:"👻",t:"M",lv:3,a:1000,d:1300,im:0,x:"Aparece quando a internet cai."},
+ ca8:{n:"Chefão da Última Fase",e:"👹",t:"M",lv:5,a:1900,d:1700,im:0,x:"Barra de vida gigante."},
+ ca9:{n:"Modo Turbo",e:"🎮",t:"S",f:"campo",im:0,x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
+ ca10:{n:"Lag no Adversário",e:"📶",t:"S",f:"descarte",im:0,x:"O adversário descarta 1 carta aleatória da mão."},
+ ca11:{n:"Tiro na Cabeça",e:"🎯",t:"S",f:"alvo",im:0,x:"Destrói 1 monstro do adversário à sua escolha."},
+ ca12:{n:"Bug no Sistema",e:"🐞",t:"T",f:"laco",im:0,x:"Quando o adversário atacar: destrói o monstro que atacou."},
  b1:{n:"Quimera de Tinta Dourada",e:"🐉",t:"M",lv:8,a:2800,d:2300,dir:1,im:0,x:"Criação-prima do Conde. Pode atacar DIRETO mesmo com monstros no caminho."},
  b2:{n:"Espelho do Criador",e:"🪞",t:"T",f:"laco",im:0,x:"Quando o adversário atacar: destrói o monstro que atacou."},
  b3:{n:"Teatro das Ilusões",e:"🎪",t:"S",f:"campo",im:0,x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
@@ -315,7 +315,7 @@ var PERS={
  telo:{n:"Teló",img:"p_telo",x:"Aventureiro loiro que acordou os dinossauros.",d:["te1","te2","te3","te4","te5","te6","te7","te8","te9","te10","te11","te12","m18","m3","m8","m15","m13","m16","m9","m20","s1","s3","s4","s5","s8","s7","g6","g8","n24","m7","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
  dudu:{n:"Dudu",img:"p_dudu",x:"Playboy rico com máquinas de luxo e muito dinheiro.",d:["du1","du2","du3","du4","du5","du6","du7","du8","du9","du10","du11","du12","m12","n4","n5","o2","o3","o4","m13","m20","s3","s4","s5","s8","s9","s7","n7","g6","n11","s2","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
  snaf:{n:"Snaf",img:"p_snaf",x:"Pescador fortão que domina os bichos dos rios e mares.",d:["sn1","sn2","sn3","sn4","sn5","sn6","sn7","sn8","sn9","sn10","sn11","sn12","m21","m15","m13","m16","m20","m9","z3","h4","s3","s4","s5","s8","s7","s9","g6","g8","n24","s2","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
- cabeca:{n:"Cabeça",img:"p_cabeca",x:"Mística misteriosa que joga com maldições e espíritos.",d:["ca1","ca2","ca3","ca4","ca5","ca6","ca7","ca8","ca9","ca10","ca11","ca12","m4","m17","m14","m19","m6","n2","m13","m20","s3","s4","s5","s7","s2","n20","n22","g6","g8","n24","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
+ cabeca:{n:"Milão",img:"p_milao",x:"Gamer de fone que joga com monstros de videogame.",d:["ca1","ca2","ca3","ca4","ca5","ca6","ca7","ca8","ca9","ca10","ca11","ca12","m4","m17","m14","m19","m6","n2","m13","m20","s3","s4","s5","s7","s2","n20","n22","g6","g8","n24","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
  conde:{n:"Conde Vitório Lumière, o Criador",img:CONDEIMG,boss:1,x:"O misterioso criador do jogo. Seu olho de cristal enxerga ilusões.",d:["b1","b5","b6","b7","n13","n14","n15","n16","n17","z1","z2","z3","z4","z5","m14","m13","b3","b4","s1","s3","s4","s5","s7","s8","n3","n18","s9","s6","b2","t1","t2","t3","t4","g1","g2","g3","g4","g5","g6","g7"]}
 };
 function persImg(k){ var p=PERS[k]; return p.img.indexOf("data:")===0?p.img:"img/"+p.img+".jpg"; }
