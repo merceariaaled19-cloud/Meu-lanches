@@ -33,7 +33,7 @@ label.ck{display:flex;gap:10px;align-items:flex-start}label.ck input{width:22px;
 <header><h1>🧾 Cotação Certa</h1><p>Jogue aqui os PDFs dos fornecedores. Os robôs acham o mais barato.</p></header>
 <main>
   <div class="card">
-    <label class="drop" for="arq"><span style="font-size:2.4rem">📂</span><span class="big">Selecionar PDFs</span><small class="muted">Escolha quantos quiser de uma vez: um PDF por fornecedor</small></label>
+    <div class="drop" role="button" onclick="document.getElementById('arq').click()"><span style="font-size:2.4rem">📂</span><span class="big">Selecionar PDFs</span><small class="muted">Escolha quantos quiser de uma vez: um PDF por fornecedor</small></div>
     <input id="arq" type="file" accept="application/pdf,.pdf" multiple class="esc">
     <div id="lfor" class="chips"></div>
     <div class="robos" style="margin-top:14px"><div class="robo" id="r1"><i>📖</i>Robô Leitor</div><div class="robo" id="r2"><i>🧹</i>Robô Organizador</div><div class="robo" id="r3"><i>🔗</i>Robô Comparador</div><div class="robo" id="r4"><i>💰</i>Robô Economia</div></div>
@@ -123,5 +123,5 @@ function desenha(){var L=filtrados(),h="";
 function zap(){var by={};GR.filter(function(g){return g.ck&&g.o.length>1}).forEach(function(g){(by[g.min.f]=by[g.min.f]||[]).push(g)});
   var t="🧾 *Lista de compras (mais barato)*\n";Object.keys(by).forEach(function(fi){t+="\n🏪 *"+F[fi].nome+"*\n";by[fi].forEach(function(g){t+="• "+g.min.n+" — "+brl(g.min.p)+"\n"})});
   window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}
-if("serviceWorker" in navigator)navigator.serviceWorker.register("service-worker.js");
+if("serviceWorker" in navigator){var _r=!!navigator.serviceWorker.controller;navigator.serviceWorker.register("service-worker.js").then(function(g){g.update()});navigator.serviceWorker.addEventListener("controllerchange",function(){if(_r&&!window._rl){window._rl=1;location.reload()}})}
 </script></body></html>
