@@ -64,6 +64,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
 #persGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-width:440px;margin:10px auto}
 .pers{background:rgba(255,255,255,.08);border:2px solid #a78bfa;border-radius:12px;padding:7px;cursor:pointer}.pers.sel{border-color:#fbbf24}
 .pers img{width:100%;aspect-ratio:1;border-radius:8px;object-fit:cover;display:block}.pers b{display:block;color:#fbbf24;margin-top:4px;font-size:14px}.pers span{font-size:11px;color:#ddd;line-height:1.2;display:block}
+.vid{width:120px;height:90px;border-radius:12px;object-fit:cover;border:2px solid #fbbf24;background:#000;flex:0 0 120px;transform:scaleX(-1);transition:all .2s}.vid.big{width:200px;height:150px;flex-basis:200px}.barra.comvid .av{display:none}#opVid{transform:none}
 .av{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #fbbf24;flex:0 0 30px}
 .hlA{outline:3px solid #f59e0b;outline-offset:2px;border-radius:8px;transform:scale(1.07);z-index:2}
 .hlT{outline:3px solid #ef4444;outline-offset:2px;border-radius:8px;animation:pis .35s infinite}
@@ -93,7 +94,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
 <div id="escolha" class="esc"><h2 style="color:#fbbf24">Escolha seu duelista</h2><div id="persGrid"></div><button class="sec" onclick="voltaMenu()">⬅ Voltar</button></div>
 <div id="jogo" class="esc">
  <div id="topo"><button class="sec esc" id="btMic" onclick="toggleMic()">🎤 Mic ligado</button><button class="esc" id="vozBt" onclick="liberaVoz()">🔈 Ouvir amigo</button><span id="vozSt" style="font-size:12px;align-self:center"></span><button class="sec" onclick="verLog()">📜</button><button class="sec" id="btSom" onclick="trocaSom()">🔊</button><button class="sec" onclick="sairJogo()">Sair</button></div>
- <div class="barra"><img class="av esc" id="opAv" alt=""><span class="nome" id="opNome">Computador</span><span class="mini" id="opDeck">🂠 0</span><span class="mini" id="opGy" onclick="verCemiterio(1-ME)">🪦 0</span><span class="lp" id="opLp">8000</span></div>
+ <div class="barra"><img class="av esc" id="opAv" alt=""><video id="opVid" class="vid esc" autoplay playsinline muted onclick="this.classList.toggle('big')"></video><span class="nome" id="opNome">Computador</span><span class="mini" id="opDeck">🂠 0</span><span class="mini" id="opGy" onclick="verCemiterio(1-ME)">🪦 0</span><span class="lp" id="opLp">8000</span></div>
  <div class="lpbar"><div id="opBar" style="width:100%"></div></div>
  <div id="maoOp"></div>
  <div class="linha" id="opSt"></div>
@@ -102,7 +103,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
  <div class="linha" id="meMz"></div>
  <div class="linha" id="meSt"></div>
  <div class="lpbar"><div id="meBar" style="width:100%"></div></div>
- <div class="barra"><img class="av esc" id="meAv" alt=""><span class="nome" id="meNome">Você</span><span class="mini" id="meDeck">🂠 0</span><span class="mini" id="meGy" onclick="verCemiterio(ME)">🪦 0</span><span class="lp" id="meLp">8000</span></div>
+ <div class="barra"><img class="av esc" id="meAv" alt=""><video id="meVid" class="vid esc" autoplay playsinline muted onclick="this.classList.toggle('big')"></video><span class="nome" id="meNome">Você</span><span class="mini" id="meDeck">🂠 0</span><span class="mini" id="meGy" onclick="verCemiterio(ME)">🪦 0</span><span class="lp" id="meLp">8000</span></div>
  <div id="mao"></div>
 </div>
 <button id="ptt" class="esc" aria-label="Segure pra gravar áudio">🎤</button><div id="gravInd" class="esc"><span id="gravTxt"></span></div><div id="bolhas"></div><input id="audArq" type="file" accept="audio/*" capture style="display:none"><div id="audAlt" class="esc" style="position:fixed;left:50%;bottom:120px;transform:translateX(-50%);z-index:60;background:#111;border:3px solid #ffc800;border-radius:18px;padding:14px;text-align:center;color:#fff;font-weight:700;max-width:88vw">O Chrome não abriu o microfone aqui.<br><button onclick="gravaNativo()" style="margin-top:10px;padding:12px 16px;border-radius:14px;border:0;background:#1db954;color:#fff;font-weight:800;font-size:16px">🎙️ Gravar com o gravador do celular</button><br><button onclick="audAlt.classList.add('esc')" style="margin-top:8px;background:none;border:0;color:#aaa">fechar</button></div>
@@ -399,10 +400,11 @@ function jogarCPU(){ MODO="cpu"; ME=0; CAMP=null; CPUNIV=NIVEL; if(!MEUCH) MEUCH
 function enviar(){ if(MODO==="host"&&conn&&conn.open) conn.send({t:"st",s:S}); }
 function fazer(a){ var e; if(MODO==="guest"){ if(S.turn!==ME) return toast("Não é sua vez."); conn.send({t:"act",a:a}); return; } e=act(ME,a); if(e) toast(e); enviar(); render(); if(MODO==="cpu") setTimeout(cpu,600); }
 var ICE={iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.relay.metered.ca:80"},{urls:"turn:global.relay.metered.ca:80",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:80?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:443",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turns:global.relay.metered.ca:443?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"}]};
-async function pegaMic(){ try{ MIC=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false}); }catch(e){ MIC=null; setTimeout(function(){ toast("Microfone bloqueado. Libere o microfone pro site nas configurações do Chrome."); },800); } }
+async function pegaMic(){ var V={facingMode:"user",width:{ideal:320},height:{ideal:240},frameRate:{ideal:15}}, A={echoCancellation:true,noiseSuppression:true,autoGainControl:true}; try{ MIC=await navigator.mediaDevices.getUserMedia({audio:A,video:V}); }catch(e0){ try{ MIC=await navigator.mediaDevices.getUserMedia({video:V,audio:false}); toast("📷 Câmera ligada, mas o microfone não abriu.",3000); }catch(e1){ try{ MIC=await navigator.mediaDevices.getUserMedia({audio:A,video:false}); }catch(e){ MIC=null; setTimeout(function(){ toast("Câmera e microfone bloqueados. Libere pro site nas configurações do Chrome."); },800); } } } mostraVid(meVid,MIC); }
+function mostraVid(el,st){ var tem=!!(st&&st.getVideoTracks&&st.getVideoTracks().length); el.classList.toggle("esc",!tem); el.parentNode.classList.toggle("comvid",tem); if(tem){ el.srcObject=st; el.play().catch(function(){}); } }
 var VOZOK=false;
 function vozStatus(t){ var b=document.getElementById("vozSt"); if(b) b.innerText=t; }
-function tocaAudio(st){ VOZOK=true; somAmigo.srcObject=st; somAmigo.muted=false; somAmigo.volume=1; vozStatus("🎙️ Voz conectada"); somAmigo.play().then(function(){ vozBt.classList.add("esc"); }).catch(function(){ vozBt.classList.remove("esc"); toast("Toque em 🔈 Ouvir amigo pra liberar a voz."); }); }
+function tocaAudio(st){ VOZOK=true; mostraVid(opVid,st); somAmigo.srcObject=st; somAmigo.muted=false; somAmigo.volume=1; vozStatus("🎙️ Voz conectada"); somAmigo.play().then(function(){ vozBt.classList.add("esc"); }).catch(function(){ vozBt.classList.remove("esc"); toast("Toque em 🔈 Ouvir amigo pra liberar a voz."); }); }
 function liberaVoz(){ somAmigo.play().then(function(){ vozBt.classList.add("esc"); vozStatus("🎙️ Voz conectada"); }).catch(function(){}); }
 document.addEventListener("click",function(){ if(VOZOK&&somAmigo.paused) liberaVoz(); },true);
 async function criarSala(){ var nome=nomeMeu(); var cod=""; var ab="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; for(var i=0;i<5;i++) cod+=ab[Math.floor(Math.random()*ab.length)];
@@ -423,9 +425,9 @@ async function entrarSala(){ var cod=codIn.value.trim().toUpperCase(); if(cod.le
  peer.on("error",function(e){ lobby.innerHTML=e.type==="peer-unavailable"?"Sala não encontrada. Confira o código.":"Erro: "+e.type; });
  peer.on("open",function(){ conn=peer.connect("duelomonstros-"+cod,{reliable:true}); conn.on("open",function(){ conn.send({t:"hello",nome:nome,ch:MEUCH}); MODO="guest"; ME=1; }); conn.on("data",function(d){ if(d.t==="st"){ var primeiro=!S; S=d.s; if(primeiro||jogo.classList.contains("esc")) abrirJogo(); render(); } if(d.t==="err") toast(d.m); if(d.t==="aud") recebeAudio(d); }); conn.on("close",function(){ toast("A conexão caiu."); }); });
 }
-function toggleMic(){ if(!MIC) return; var t=MIC.getAudioTracks()[0]; t.enabled=!t.enabled; btMic.innerText=t.enabled?"🎤 Mic ligado":"🔇 Mic mudo"; }
+function toggleMic(){ if(!MIC||!MIC.getAudioTracks()[0]) return; var t=MIC.getAudioTracks()[0]; t.enabled=!t.enabled; btMic.innerText=t.enabled?"🎤 Mic ligado":"🔇 Mic mudo"; }
 function sairJogo(){ if(!confirm("Sair do duelo?")) return; location.reload(); }
-function abrirJogo(){ menu.classList.add("esc"); jogo.classList.remove("esc"); ptt.classList.toggle("esc",MODO==="cpu"); VISTO=S.evn-1; render(); if(MODO==="cpu"&&S.turn===1) setTimeout(cpu,900); }
+function abrirJogo(){ menu.classList.add("esc"); jogo.classList.remove("esc"); ptt.classList.add("esc"); if(MODO==="cpu"){ opVid.classList.add("esc"); meVid.classList.add("esc"); opVid.parentNode.classList.remove("comvid"); meVid.parentNode.classList.remove("comvid"); } VISTO=S.evn-1; render(); if(MODO==="cpu"&&S.turn===1) setTimeout(cpu,900); }
 
 // ================= TELA =================
 var UI={modo:null};
