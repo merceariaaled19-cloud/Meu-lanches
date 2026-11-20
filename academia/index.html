@@ -387,7 +387,8 @@ function vid(id,cls="vid"){const e=EXM[id];if(e&&e.novid)return `<div class="${c
 function weekStart(){const d=new Date();d.setHours(0,0,0,0);const wd=(d.getDay()+6)%7;d.setDate(d.getDate()-wd);return d;}
 
 // ===== GERADOR DE TREINO =====
-const GOAL_TXT = {hipertrofia:"Ganhar massa magra (hipertrofia)", perder:"Perder gordura", recomp:"Recomposição corporal"};
+const GOAL_TXT = {perder:"🔥 Perder peso (queimar gordura)", hipertrofia:"💪 Ganhar massa magra (músculo)", recomp:"⚖️ Os dois: perder gordura e ganhar massa"};
+const ACT_DAYS = {sedentario:3,leve:3,moderado:4,alto:6,muitoalto:5};
 const FOCUS_TXT = {gluteos:"Glúteos e pernas", bracos:"Braços e peitoral", peitocostas:"Peito e costas", equilibrado:"Equilibrado"};
 const LEVEL_TXT = {iniciante:"Iniciante", intermediario:"Intermediário", avancado:"Avançado"};
 const ACT = {sedentario:[1.2,"Sedentário (pouco ou nenhum exercício)"],leve:[1.375,"Leve (1–3x por semana)"],moderado:[1.55,"Moderado (3–5x por semana)"],alto:[1.725,"Alto (6–7x por semana)"],muitoalto:[1.9,"Muito alto (trabalho físico + treino)"]};
@@ -567,23 +568,22 @@ function profileForm(p={}){
   </div>
   <label>Nível de atividade no dia a dia<select name="activity">${Object.entries(ACT).map(([k,v])=>o(k,v[1],p.activity||"moderado")).join("")}</select></label>
   <label>Experiência na academia<select name="level">${Object.entries(LEVEL_TXT).map(([k,v])=>o(k,v,p.level||"iniciante")).join("")}</select></label>
-  <label>Objetivo</label>
+  <label>Qual é o seu objetivo?</label>
   <div class="chips-sel" data-name="goal">${Object.entries(GOAL_TXT).map(([k,v])=>`<button type="button" class="opt ${ (p.goal||"hipertrofia")===k?"on":""}" data-v="${k}">${v}</button>`).join("")}</div>
   <label>Foco principal</label>
   <div class="chips-sel" data-name="focus" id="f-focus">${Object.entries(FOCUS_TXT).map(([k,v])=>`<button type="button" class="opt ${ (p.focus||"bracos")===k?"on":""}" data-v="${k}">${v}</button>`).join("")}</div>
-  <label>Quantos treinos por semana? <b id="f-dv">${p.days||4}</b><input name="days" id="f-days" type="range" min="3" max="6" value="${p.days||4}"></label>`;
+`;
 }
 function readProfileForm(form){
   const fd=Object.fromEntries(new FormData(form).entries());
   $$(".chips-sel",form).forEach(c=>{fd[c.dataset.name]=$(".opt.on",c)?.dataset.v;});
-  fd.age=+fd.age;fd.weight=+fd.weight;fd.height=+fd.height;fd.days=+fd.days;
+  fd.age=+fd.age;fd.weight=+fd.weight;fd.height=+fd.height;fd.days=ACT_DAYS[fd.activity]||4;
   return fd;
 }
 function bindProfileForm(form){
   $$(".chips-sel",form).forEach(c=>c.addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b)return;$$(".opt",c).forEach(x=>x.classList.toggle("on",x===b));c._touched=true;}));
   const sex=$("#f-sex",form), fc=$("#f-focus",form);
   sex.addEventListener("change",()=>{ if(fc._touched) return; const v=sex.value==="F"?"gluteos":"bracos"; $$(".opt",fc).forEach(x=>x.classList.toggle("on",x.dataset.v===v)); });
-  $("#f-days",form).addEventListener("input",e=>$("#f-dv",form).textContent=e.target.value);
 }
 function viewOnboarding(){
   return `<div class="hero"><img class="herologo" src="logo.jpg" alt="Projeto Z"><p>Seu treino ABC, sua dieta e seu treinador no bolso. Tudo fica salvo só neste celular.</p></div>
@@ -1085,7 +1085,7 @@ function viewPerfil(){
   <div class="card"><b>Peso</b><canvas id="wchart" width="640" height="260"></canvas>
    <div class="addfood"><input id="wkg" type="number" step="0.1" inputmode="decimal" placeholder="Peso de hoje (kg)"><button class="btn" id="wadd">Registrar</button></div>
    <small class="muted block">${S.weights.length} registro(s) · IMC ${n.imc.toFixed(1).replace(".",",")}</small></div>
-  <form id="pf" class="card"><b>Meus dados</b>${profileForm(p)}<button class="btn" type="submit">Salvar dados</button><small class="muted block">Mudou objetivo, foco, nível ou dias? Depois de salvar, gere uma nova tabela.</small><button class="btn ghost" type="button" id="regen2">🔁 Salvar e gerar nova tabela</button></form>
+  <form id="pf" class="card"><b>Meus dados</b>${profileForm(p)}<button class="btn" type="submit">Salvar dados</button><small class="muted block">Mudou objetivo, foco, nível ou atividade? Depois de salvar, gere uma nova tabela.</small><button class="btn ghost" type="button" id="regen2">🔁 Salvar e gerar nova tabela</button></form>
   <div class="card"><b>Histórico de treinos (${S.history.length})</b>${S.history.length?S.history.slice().reverse().map((h,ri)=>{const i=S.history.length-1-ri;return `<details class="hist2"><summary><span class="lt">${h.letter}</span> ${fmtDate(h.date)} ${h.short?"· curta":""} ${h.dur?"· "+h.dur+" min":""}</summary><ul>${(h.ex||[]).filter(x=>x.sets.length).map(x=>`<li>${esc(EXM[x.id]?.n||x.id)}: ${x.sets.map(s=>`${s.kg?s.kg+"kg":""}${s.kg&&s.reps?"x":""}${s.reps||""}`).join(", ")}</li>`).join("")}</ul><button class="btn ghost small hdel" data-i="${i}">Apagar este treino</button></details>`;}).join(""):`<p class="muted">Vazio.</p>`}</div>
   <div class="card"><b>Backup</b><small class="muted block">Seus dados ficam só neste celular. Exporte para guardar ou passar para outro aparelho.</small>
    <div class="row2"><button class="btn" id="exp">⬇️ Exportar</button><label class="btn ghost filebtn">⬆️ Importar<input type="file" id="imp" accept="application/json,.json" hidden></label></div>

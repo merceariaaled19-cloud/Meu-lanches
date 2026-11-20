@@ -1,5 +1,5 @@
 // Projeto Z — service worker (cache-first, só mesma origem)
-const CACHE = "projetoz-v8";
+const CACHE = "projetoz-v9";
 const FILES = [
 "./",
 "./index.html",
