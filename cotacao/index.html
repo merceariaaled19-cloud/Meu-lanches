@@ -34,7 +34,8 @@ label.ck{display:flex;gap:10px;align-items:flex-start}label.ck input{width:22px;
 <main>
   <div class="card">
     <div class="drop" role="button" onclick="document.getElementById('arq').click()"><span style="font-size:2.4rem">📂</span><span class="big">Selecionar PDFs</span><small class="muted">Escolha quantos quiser de uma vez: um PDF por fornecedor</small></div>
-    <input id="arq" type="file" accept="application/pdf,.pdf" multiple class="esc">
+    <input id="arq" type="file" multiple style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
+    <div id="avWv" class="esc" style="margin-top:10px;background:#fff6d6;border-radius:12px;padding:10px;font-size:.9rem">⚠️ Se a lista de arquivos não abrir aqui, toque em <b>⋮</b> e escolha <b>Abrir no Chrome</b>.</div>
     <div id="lfor" class="chips"></div>
     <div class="robos" style="margin-top:14px"><div class="robo" id="r1"><i>📖</i>Robô Leitor</div><div class="robo" id="r2"><i>🧹</i>Robô Organizador</div><div class="robo" id="r3"><i>🔗</i>Robô Comparador</div><div class="robo" id="r4"><i>💰</i>Robô Economia</div></div>
     <div class="row" style="margin-top:12px"><button id="btAn" onclick="analisa()" style="flex:1">🔎 Analisar de novo</button><button class="sec" onclick="limpa()">🗑️ Limpar</button></div>
@@ -85,8 +86,9 @@ function extrai(linhas){var it=[],vis={};
     var k=nome.toLowerCase();if(vis[k])return;vis[k]=1;it.push({n:nome,p:p});});
   return it;}
 function robo(n,st){for(var i=1;i<=4;i++){var e=$("#r"+i);if(!e)continue;e.classList.toggle("ok",i<n||(i===n&&st==="ok"));e.classList.toggle("vai",i===n&&st!=="ok")}}
+if(/; wv\)|Version\/[\d.]+ Chrome/.test(navigator.userAgent))setTimeout(function(){$("#avWv").classList.remove("esc")},0);
 function espera(ms){return new Promise(function(r){setTimeout(r,ms)})}
-$("#arq").addEventListener("change",async function(e){var fs=[].slice.call(e.target.files);if(!fs.length)return;robo(1);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="📖 Lendo "+(i+1)+" de "+fs.length+": "+f.name;
+$("#arq").addEventListener("change",async function(e){var fs=[].slice.call(e.target.files).filter(function(f){return /pdf/i.test(f.type)||/\.pdf$/i.test(f.name)});if(!fs.length){toast("Escolha arquivos PDF.");return}robo(1);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="📖 Lendo "+(i+1)+" de "+fs.length+": "+f.name;
   try{var ls=await linhasPDF(await f.arrayBuffer()),its=extrai(ls);
     if(!its.length){toast(f.name+": não achei preços. PDF pode ser escaneado.");continue}
     F.push({nome:f.name.replace(/\.pdf$/i,"").replace(/[_-]+/g," ").slice(0,40),itens:its});}catch(err){toast("Erro lendo "+f.name)}}
