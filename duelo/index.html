@@ -58,8 +58,9 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
 #modal p{font-size:14px;margin:6px 0;color:#ddd}
 #modal .acoes{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 #aviso{font-size:12px;text-align:center;color:#a5b4fc;min-height:16px}
-#topo{display:flex;gap:6px;justify-content:flex-end}
-#topo button{padding:5px 9px;font-size:12px}
+#topo{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;align-items:center;position:fixed;left:0;right:0;bottom:0;z-index:40;padding:8px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(17,24,39,.94);border-top:2px solid #fbbf24}
+#topo button{padding:8px 11px;font-size:14px}
+#jogo{padding-bottom:64px}
 #escolha{position:fixed;inset:0;overflow:auto;padding:14px;background:radial-gradient(circle at 50% 30%,#312e81,#0f0a2e);z-index:40;text-align:center}
 #persGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-width:440px;margin:10px auto}
 .pers{background:rgba(255,255,255,.08);border:2px solid #a78bfa;border-radius:12px;padding:7px;cursor:pointer}.pers.sel{border-color:#fbbf24}
