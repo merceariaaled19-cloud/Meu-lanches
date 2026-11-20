@@ -405,9 +405,11 @@ async function pegaMic(){ var V={facingMode:"user",width:{ideal:320},height:{ide
 function mostraVid(el,st){ var tem=!!(st&&st.getVideoTracks&&st.getVideoTracks().length); el.classList.toggle("esc",!tem); el.parentNode.classList.toggle("comvid",tem); if(tem){ el.srcObject=st; el.play().catch(function(){}); } }
 var VOZOK=false, MICFALSO=false;
 function vozStatus(t){ var b=document.getElementById("vozSt"); if(b) b.innerText=t; }
-function tocaAudio(st){ VOZOK=true; mostraVid(opVid,st); somAmigo.srcObject=st; somAmigo.muted=false; somAmigo.volume=1; vozStatus("🎙️ Voz conectada"); somAmigo.play().then(function(){ vozBt.classList.add("esc"); }).catch(function(){ vozBt.classList.remove("esc"); toast("Toque em 🔈 Ouvir amigo pra liberar a voz."); }); }
-function liberaVoz(){ somAmigo.play().then(function(){ vozBt.classList.add("esc"); vozStatus("🎙️ Voz conectada"); }).catch(function(){}); }
-document.addEventListener("click",function(){ if(VOZOK&&somAmigo.paused) liberaVoz(); },true);
+function diagVoz(){ var eu=MIC&&MIC.getAudioTracks()[0], am=somAmigo.srcObject||opVid.srcObject, ta=am&&am.getAudioTracks?am.getAudioTracks()[0]:null; var a=(eu&&!MICFALSO&&eu.readyState==="live"&&eu.enabled)?"✔":"✖", b=(ta&&ta.readyState==="live")?"✔":"✖"; vozStatus("🎙️ eu "+a+" · amigo "+b); }
+setInterval(function(){ if(VOZOK) diagVoz(); },3000);
+function tocaAudio(st){ VOZOK=true; mostraVid(opVid,st); if(st.getVideoTracks().length){ somAmigo.srcObject=null; opVid.muted=false; opVid.volume=1; opVid.play().then(function(){ vozBt.classList.add("esc"); diagVoz(); }).catch(function(){ opVid.muted=true; opVid.play().catch(function(){}); vozBt.classList.remove("esc"); toast("Toque em 🔈 Ouvir amigo pra liberar a voz."); }); return; } somAmigo.srcObject=st; somAmigo.muted=false; somAmigo.volume=1; vozStatus("🎙️ Voz conectada"); somAmigo.play().then(function(){ vozBt.classList.add("esc"); }).catch(function(){ vozBt.classList.remove("esc"); toast("Toque em 🔈 Ouvir amigo pra liberar a voz."); }); }
+function liberaVoz(){ if(opVid.srcObject&&opVid.srcObject.getVideoTracks().length){ opVid.muted=false; opVid.volume=1; opVid.play().then(function(){ vozBt.classList.add("esc"); diagVoz(); }).catch(function(){}); return; } somAmigo.play().then(function(){ vozBt.classList.add("esc"); vozStatus("🎙️ Voz conectada"); }).catch(function(){}); }
+document.addEventListener("click",function(){ if(VOZOK&&(somAmigo.paused&&!opVid.srcObject||opVid.srcObject&&opVid.muted)) liberaVoz(); },true);
 async function criarSala(){ var nome=nomeMeu(); var cod=""; var ab="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; for(var i=0;i<5;i++) cod+=ab[Math.floor(Math.random()*ab.length)];
  lobby.classList.remove("esc"); lobby.innerHTML="Criando sala..."; await pegaMic();
  peer=new Peer("duelomonstros-"+cod,{config:ICE});
