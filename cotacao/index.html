@@ -4,35 +4,43 @@
 <title>Cotação Certa</title><meta name="theme-color" content="#0b3d2e">
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png">
 <style>
-:root{--bg:#f3f6f4;--c:#fff;--g:#0b8457;--gd:#0b3d2e;--y:#f5b700;--r:#d64545;--tx:#16241f;--mu:#6b7c75;--ln:#dfe7e3}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,Roboto,sans-serif}
-header{background:var(--gd);color:#fff;padding:16px;position:sticky;top:0;z-index:5}header h1{margin:0;font-size:1.4rem}header small{opacity:.8}
-main{padding:12px;max-width:900px;margin:auto;display:flex;flex-direction:column;gap:12px}
-.card{background:var(--c);border-radius:16px;padding:14px;box-shadow:0 1px 4px #0001}
-button{font:inherit;border:0;border-radius:12px;padding:12px 14px;font-weight:700;background:var(--g);color:#fff;cursor:pointer}
+:root{--g:#0b8457;--gd:#073b2b;--y:#f5b700;--tx:#13221c;--mu:#6b7c75;--ln:#e3ebe7}
+*{box-sizing:border-box}body{margin:0;background:#eef3f0;color:var(--tx);font-family:system-ui,Roboto,sans-serif}
+header{background:linear-gradient(135deg,#073b2b,#0b8457 70%,#13a86e);color:#fff;padding:26px 18px 60px;text-align:center}
+header h1{margin:0;font-size:1.8rem}header p{margin:6px 0 0;opacity:.9}
+main{padding:0 12px 20px;max-width:900px;margin:-44px auto 0;display:flex;flex-direction:column;gap:14px}
+.card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 18px #0b3d2e18}
+button{font:inherit;border:0;border-radius:14px;padding:12px 14px;font-weight:700;background:var(--g);color:#fff;cursor:pointer}
 button.sec{background:#e7efeb;color:var(--gd)}button.mini{padding:6px 10px;font-size:.85rem}
-input{font:inherit;width:100%;padding:12px;border:1px solid var(--ln);border-radius:12px}
-.drop{border:2px dashed var(--g);border-radius:16px;padding:22px;text-align:center;color:var(--gd);cursor:pointer;background:#eef8f3}
-.forn{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--ln)}.forn input{padding:8px}.forn small{color:var(--mu);white-space:nowrap}
-.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button{flex:1}.tabs button.on{background:var(--gd)}
-.it{padding:10px 0;border-bottom:1px solid var(--ln)}.it b{display:block}.it .px{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.px span{background:#f1f4f2;border-radius:10px;padding:4px 8px;font-size:.85rem}.px span.best{background:#d9f5e7;color:#06603d;font-weight:700}
-.eco{color:var(--g);font-weight:700;font-size:.85rem}.muted{color:var(--mu)}.esc{display:none!important}
-.res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.res div{background:#eef8f3;border-radius:12px;padding:10px}.res b{display:block;font-size:1.3rem;color:var(--gd)}
-.grp h3{margin:12px 0 4px;color:var(--gd)}.row{display:flex;gap:8px}
+input{font:inherit;width:100%;padding:12px;border:1px solid var(--ln);border-radius:12px;background:#f8faf9}
+.drop{display:flex;flex-direction:column;align-items:center;gap:6px;border:2px dashed #9fd7bd;border-radius:18px;padding:26px 14px;text-align:center;color:var(--gd);cursor:pointer;background:linear-gradient(#f3fbf7,#e6f6ee)}
+.drop .big{background:var(--g);color:#fff;border-radius:14px;padding:14px 22px;font-weight:800;font-size:1.1rem;box-shadow:0 4px 12px #0b845755}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.chip{display:flex;align-items:center;gap:6px;background:#eef8f3;border:1px solid #cfe9dc;border-radius:999px;padding:4px 6px 4px 12px}
+.chip input{border:0;background:transparent;padding:4px;width:auto;min-width:60px;max-width:150px;font-weight:600}.chip small{color:var(--mu)}.chip button{background:transparent;color:#a33;padding:4px 8px}
+.robos{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.robo{background:#f4f8f6;border-radius:14px;padding:10px 6px;text-align:center;font-size:.8rem;color:var(--mu);transition:.3s}
+.robo i{display:block;font-style:normal;font-size:1.8rem}.robo.vai{background:#fff6d6;color:#7a5b00;animation:pul 0.8s infinite alternate}.robo.ok{background:#d9f5e7;color:#06603d;font-weight:700}
+@keyframes pul{to{transform:scale(1.06)}}
+.tabs{display:flex;gap:6px}.tabs button{flex:1;background:#eef3f0;color:var(--gd);font-size:.85rem;padding:10px 6px}.tabs button.on{background:var(--gd);color:#fff}
+.it{padding:12px;border:1px solid var(--ln);border-radius:14px;margin-top:8px}.it b{display:block}
+.px{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.px span{background:#f1f4f2;border-radius:10px;padding:4px 8px;font-size:.82rem}.px span.best{background:#d9f5e7;color:#06603d;font-weight:700}
+.tag{display:inline-block;background:var(--y);color:#3a2b00;border-radius:8px;padding:2px 8px;font-size:.75rem;font-weight:800;margin-right:6px}
+.eco{color:var(--g);font-weight:800;font-size:.85rem}.muted{color:var(--mu)}.esc{display:none!important}
+.res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.res div{background:linear-gradient(#f3fbf7,#e1f4ea);border-radius:14px;padding:12px 6px;font-size:.8rem;color:var(--mu)}.res b{display:block;font-size:1.35rem;color:var(--gd)}
+.grp h3{margin:14px 0 4px;color:var(--gd);font-size:1rem}.row{display:flex;gap:8px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:10px;z-index:9}
-label.ck{display:flex;gap:8px;align-items:flex-start}label.ck input{width:auto;margin-top:4px}
+label.ck{display:flex;gap:10px;align-items:flex-start}label.ck input{width:22px;height:22px;margin-top:2px;accent-color:var(--g)}
 </style></head><body>
-<header><h1>🧾 Cotação Certa</h1><small>Carregue os PDFs dos fornecedores e veja onde cada produto sai mais barato.</small></header>
+<header><h1>🧾 Cotação Certa</h1><p>Jogue aqui os PDFs dos fornecedores. Os robôs acham o mais barato.</p></header>
 <main>
   <div class="card">
-    <label class="drop" for="arq">📄 Toque para escolher os PDFs (pode escolher vários)<br><small class="muted">Um PDF por fornecedor</small></label>
-    <input id="arq" type="file" accept="application/pdf" multiple class="esc">
-    <div id="lfor"></div>
-    <div class="row" style="margin-top:10px"><button id="btAn" onclick="analisa()" style="flex:1">🔎 Analisar e achar os mais baratos</button><button class="sec" onclick="limpa()">🗑️</button></div>
+    <label class="drop" for="arq"><span style="font-size:2.4rem">📂</span><span class="big">Selecionar PDFs</span><small class="muted">Escolha quantos quiser de uma vez: um PDF por fornecedor</small></label>
+    <input id="arq" type="file" accept="application/pdf,.pdf" multiple class="esc">
+    <div id="lfor" class="chips"></div>
+    <div class="robos" style="margin-top:14px"><div class="robo" id="r1"><i>📖</i>Robô Leitor</div><div class="robo" id="r2"><i>🧹</i>Robô Organizador</div><div class="robo" id="r3"><i>🔗</i>Robô Comparador</div><div class="robo" id="r4"><i>💰</i>Robô Economia</div></div>
+    <div class="row" style="margin-top:12px"><button id="btAn" onclick="analisa()" style="flex:1">🔎 Analisar de novo</button><button class="sec" onclick="limpa()">🗑️ Limpar</button></div>
     <small class="muted" id="st"></small>
   </div>
-  <div id="out" class="esc">
+<div id="out" class="esc">
     <div class="card res"><div><b id="rP">0</b>produtos comparados</div><div><b id="rF">0</b>fornecedores</div><div><b id="rE">R$ 0</b>economia (1 un. de cada)</div></div>
     <div class="card">
       <div class="tabs"><button class="on" data-t="prod" onclick="aba(this)">📦 Por produto</button><button data-t="onde" onclick="aba(this)">🛒 Onde comprar</button><button data-t="unico" onclick="aba(this)">📋 Só em 1 fornecedor</button></div>
@@ -55,7 +63,7 @@ var F=[]; /* {nome, itens:[{n,p}]} */
 var GR=[],ABA="prod";
 try{F=JSON.parse(localStorage.getItem("cot_f")||"[]")}catch(e){}
 function salva(){try{localStorage.setItem("cot_f",JSON.stringify(F))}catch(e){toast("Memória cheia, não salvei.")}}
-function desenhaF(){$("#lfor").innerHTML=F.map(function(f,i){return '<div class="forn">🏪<input value="'+esc(f.nome)+'" onchange="F['+i+'].nome=this.value;salva()"><small>'+f.itens.length+' itens</small><button class="sec mini" onclick="F.splice('+i+',1);salva();desenhaF()">✖</button></div>'}).join("");$("#st").textContent=F.length?F.length+" fornecedor(es) carregado(s).":""}
+function desenhaF(){$("#lfor").innerHTML=F.map(function(f,i){return '<div class="chip">🏪<input value="'+esc(f.nome)+'" onchange="F['+i+'].nome=this.value;salva();if(GR.length)desenha()"><small>'+f.itens.length+'</small><button onclick="F.splice('+i+',1);salva();desenhaF();if(F.length>1)analisa()">✖</button></div>'}).join("");$("#st").textContent=F.length?F.length+" fornecedor(es) carregado(s).":""}
 desenhaF();
 
 /* ===== LER PDF ===== */
@@ -76,11 +84,13 @@ function extrai(linhas){var it=[],vis={};
     var p=vals.length>1?vals[vals.length-1]:vals[0];
     var k=nome.toLowerCase();if(vis[k])return;vis[k]=1;it.push({n:nome,p:p});});
   return it;}
-$("#arq").addEventListener("change",async function(e){var fs=[].slice.call(e.target.files);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="Lendo "+f.name+"...";
+function robo(n,st){for(var i=1;i<=4;i++){var e=$("#r"+i);if(!e)continue;e.classList.toggle("ok",i<n||(i===n&&st==="ok"));e.classList.toggle("vai",i===n&&st!=="ok")}}
+function espera(ms){return new Promise(function(r){setTimeout(r,ms)})}
+$("#arq").addEventListener("change",async function(e){var fs=[].slice.call(e.target.files);if(!fs.length)return;robo(1);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="📖 Lendo "+(i+1)+" de "+fs.length+": "+f.name;
   try{var ls=await linhasPDF(await f.arrayBuffer()),its=extrai(ls);
     if(!its.length){toast(f.name+": não achei preços. PDF pode ser escaneado.");continue}
     F.push({nome:f.name.replace(/\.pdf$/i,"").replace(/[_-]+/g," ").slice(0,40),itens:its});}catch(err){toast("Erro lendo "+f.name)}}
-  salva();desenhaF();e.target.value="";});
+  salva();desenhaF();e.target.value="";robo(1,"ok");if(F.length>=2)analisa();else{$("#st").textContent="Agora selecione o PDF de mais um fornecedor pra comparar.";}});
 function limpa(){if(!confirm("Apagar todos os PDFs carregados?"))return;F=[];salva();desenhaF();$("#out").classList.add("esc")}
 
 /* ===== COMPARAR ===== */
@@ -92,19 +102,20 @@ var STOP={de:1,da:1,do:1,com:1,e:1,c:1,em:1,para:1,fd:1,cx:1,un:1,pct:1,und:1,x:
 function toks(s){return norm(s).split(" ").filter(function(t){return t&&!STOP[t]&&!/^\d+$/.test(t)})}
 function medidas(t){return t.filter(function(x){return /^\d+(\.\d+)?(kg|g|ml|l)$/.test(x)}).sort().join("|")}
 function sim(a,b){if(a.m!==b.m)return 0;var A=a.t,B=b.t,i=0;A.forEach(function(x){if(B.indexOf(x)>=0)i++});return i/(A.length+B.length-i)}
-function analisa(){if(F.length<2)return toast("Carregue pelo menos 2 PDFs de fornecedores.");
+async function analisa(){if(F.length<2)return toast("Carregue pelo menos 2 PDFs de fornecedores.");robo(2);$("#st").textContent="🧹 Organizando os nomes dos produtos...";await espera(500);
   var all=[];F.forEach(function(f,fi){f.itens.forEach(function(it){var t=toks(it.n);all.push({f:fi,n:it.n,p:it.p,t:t,m:medidas(t)})})});
+  robo(3);$("#st").textContent="🔗 Comparando "+all.length+" itens entre "+F.length+" fornecedores...";await espera(400);
   GR=[];all.forEach(function(x){var best=null,bs=0;GR.forEach(function(g){var s=sim(x,g.ref);if(s>bs){bs=s;best=g}});
     if(best&&bs>=0.6){var ja=best.o.filter(function(o){return o.f===x.f})[0];if(ja){if(x.p<ja.p){ja.p=x.p;ja.n=x.n}}else best.o.push(x)}else GR.push({ref:x,o:[x]})});
   GR.forEach(function(g){g.o.sort(function(a,b){return a.p-b.p});g.min=g.o[0];g.max=g.o[g.o.length-1];g.eco=g.max.p-g.min.p;g.ck=true});
-  var comp=GR.filter(function(g){return g.o.length>1}),eco=comp.reduce(function(s,g){return s+g.eco},0);
+  robo(4);await espera(400);var comp=GR.filter(function(g){return g.o.length>1}),eco=comp.reduce(function(s,g){return s+g.eco},0);
   $("#rP").textContent=comp.length;$("#rF").textContent=F.length;$("#rE").textContent=brl(eco);
-  $("#out").classList.remove("esc");desenha();setTimeout(function(){$("#out").scrollIntoView({behavior:"smooth"})},100);
+  robo(4,"ok");$("#st").textContent="✅ Pronto! "+comp.length+" produtos encontrados em mais de um fornecedor.";$("#out").classList.remove("esc");desenha();setTimeout(function(){$("#out").scrollIntoView({behavior:"smooth"})},100);
   if(!comp.length)toast("Não achei o mesmo produto em 2 fornecedores. Os nomes podem estar muito diferentes.");}
 function aba(b){ABA=b.dataset.t;[].forEach.call(document.querySelectorAll(".tabs button"),function(x){x.classList.toggle("on",x===b)});desenha()}
 function filtrados(){var q=norm($("#filtro").value||"");return GR.filter(function(g){return (ABA==="unico"?g.o.length===1:g.o.length>1)&&(!q||norm(g.min.n).indexOf(q)>=0)})}
 function desenha(){var L=filtrados(),h="";
-  if(ABA==="prod"){L.sort(function(a,b){return b.eco-a.eco});h=L.map(function(g){var i=GR.indexOf(g);return '<div class="it"><label class="ck"><input type="checkbox" '+(g.ck?"checked":"")+' onchange="GR['+i+'].ck=this.checked"><span><b>'+esc(g.min.n)+'</b><span class="muted">Mais barato: <b style="display:inline;color:#06603d">'+esc(F[g.min.f].nome)+' '+brl(g.min.p)+'</b></span> <span class="eco">economiza '+brl(g.eco)+'</span></span></label><div class="px">'+g.o.map(function(o,k){return '<span class="'+(k===0?"best":"")+'">'+esc(F[o.f].nome)+': '+brl(o.p)+'</span>'}).join("")+'</div></div>'}).join("")}
+  if(ABA==="prod"){L.sort(function(a,b){return b.eco-a.eco});h=L.map(function(g,ix){var i=GR.indexOf(g);return '<div class="it"><label class="ck"><input type="checkbox" '+(g.ck?"checked":"")+' onchange="GR['+i+'].ck=this.checked"><span><b>'+(ix<10&&g.eco>0?'<span class="tag">TOP '+(ix+1)+'</span>':'')+esc(g.min.n)+'</b><span class="muted">Mais barato: <b style="display:inline;color:#06603d">'+esc(F[g.min.f].nome)+' '+brl(g.min.p)+'</b></span> <span class="eco">economiza '+brl(g.eco)+'</span></span></label><div class="px">'+g.o.map(function(o,k){return '<span class="'+(k===0?"best":"")+'">'+esc(F[o.f].nome)+': '+brl(o.p)+'</span>'}).join("")+'</div></div>'}).join("")}
   else if(ABA==="onde"){var by={};L.filter(function(g){return g.ck}).forEach(function(g){(by[g.min.f]=by[g.min.f]||[]).push(g)});
     h=Object.keys(by).map(function(fi){var t=by[fi].reduce(function(s,g){return s+g.min.p},0);return '<div class="grp"><h3>🏪 '+esc(F[fi].nome)+' — '+by[fi].length+' itens · '+brl(t)+'</h3>'+by[fi].map(function(g){return '<div class="it">'+esc(g.min.n)+' — <b style="display:inline">'+brl(g.min.p)+'</b></div>'}).join("")+'</div>'}).join("")}
   else{L.sort(function(a,b){return a.min.n.localeCompare(b.min.n)});h=L.map(function(g){return '<div class="it">'+esc(g.min.n)+' <span class="muted">— só em '+esc(F[g.min.f].nome)+': '+brl(g.min.p)+'</span></div>'}).join("")}
