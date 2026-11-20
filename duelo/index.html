@@ -116,7 +116,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
   <button class="sec" onclick="regras()">📖 Regras</button>
   <div id="lobby" class="esc" style="margin-top:10px"></div>
  </div>
- <div id="verTag" style="font-size:11px;opacity:.6">versão 41</div>
+ <div id="verTag" style="font-size:11px;opacity:.6">versão 42</div>
 </div>
 
 <div id="escolha" class="esc"><h2 style="color:#fbbf24">Escolha seu duelista</h2><div id="persGrid"></div><button class="sec" onclick="voltaMenu()">⬅ Voltar</button></div>
@@ -521,10 +521,14 @@ setInterval(function(){ if(VOZOK) diagVoz(); },3000);
 function tocaAudio(st){ VOZOK=true; mostraVid(opVid,st); if(st.getVideoTracks().length){ somAmigo.srcObject=null; opVid.muted=false; opVid.volume=1; opVid.play().then(function(){ vozBt.classList.add("esc"); diagVoz(); }).catch(function(){ opVid.muted=true; opVid.play().catch(function(){}); vozBt.classList.remove("esc"); toast("Toque em 🔈 Ouvir amigo pra liberar a voz."); }); return; } somAmigo.srcObject=st; somAmigo.muted=false; somAmigo.volume=1; vozStatus("🎙️ Voz conectada"); somAmigo.play().then(function(){ vozBt.classList.add("esc"); }).catch(function(){ vozBt.classList.remove("esc"); toast("Toque em 🔈 Ouvir amigo pra liberar a voz."); }); }
 function liberaVoz(){ if(opVid.srcObject&&opVid.srcObject.getVideoTracks().length){ opVid.muted=false; opVid.volume=1; opVid.play().then(function(){ vozBt.classList.add("esc"); diagVoz(); }).catch(function(){}); return; } somAmigo.play().then(function(){ vozBt.classList.add("esc"); vozStatus("🎙️ Voz conectada"); }).catch(function(){}); }
 document.addEventListener("click",function(){ if(VOZOK&&(somAmigo.paused&&!opVid.srcObject||opVid.srcObject&&opVid.muted)) liberaVoz(); },true);
+function linkSala(c){ return location.origin+location.pathname+"?sala="+c; }
+function copiaCod(c){ var t=c; try{ navigator.clipboard.writeText(t).then(function(){toast("Código "+c+" copiado!");},function(){prompt("Copie o código:",t);}); }catch(e){ prompt("Copie o código:",t); } }
+function zapCod(c){ var t="⚔️ Bora duelar no Duelo dos Monstros! Código da sala: *"+c+"*\nToque no link pra entrar direto: "+linkSala(c); window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank"); }
+(function(){ try{ var q=new URLSearchParams(location.search).get("sala"); if(q&&q.length===5){ var go=function(){ var el=document.getElementById("codIn"); if(!el) return setTimeout(go,300); el.value=q.toUpperCase(); toast("Código "+q.toUpperCase()+" colado! Toque em Entrar."); }; setTimeout(go,800); } }catch(e){} })();
 async function criarSala(){ var nome=nomeMeu(); var cod=""; var ab="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; for(var i=0;i<5;i++) cod+=ab[Math.floor(Math.random()*ab.length)];
  lobby.classList.remove("esc"); lobby.innerHTML="Criando sala..."; await pegaMic();
  peer=new Peer("duelomonstros-"+cod,{config:ICE});
- peer.on("open",function(){ lobby.innerHTML='<p>Passe esse código pro seu amigo:</p><div class="cod">'+cod+'</div><p>Esperando ele entrar... 🎤 '+(MIC?"Microfone pronto":"sem microfone")+'</p>'; });
+ peer.on("open",function(){ lobby.innerHTML='<p>Passe esse código pro seu amigo:</p><div class="cod">'+cod+'</div><div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0"><button class="sec" onclick="copiaCod(\''+cod+'\')">📋 Copiar código</button><button onclick="zapCod(\''+cod+'\')" style="background:#25d366;color:#fff">📲 Enviar no WhatsApp</button></div><p>Esperando ele entrar... 🎤 '+(MIC?"Microfone pronto":"sem microfone")+'</p>'; });
  peer.on("error",function(e){ if(e.type==="unavailable-id") return criarSala(); lobby.innerHTML="Erro de conexão: "+e.type+". Tente de novo."; });
  peer.on("connection",function(c){ if(conn&&conn.open){ c.close(); return; } conn=c; c.on("open",function(){ c.on("data",function(d){ if(d.t==="hello"){ MODO="host"; ME=0; novoJogo(nome,d.nome||"Amigo",MEUCH,PERS[d.ch]&&!PERS[d.ch].boss?d.ch:chAleatorio()); abrirJogo(); enviar(); if(MIC||true){ var cl=peer.call(c.peer,MIC||vazio()); ligaCall(cl); } } if(d.t==="act"){ var e=act(1,d.a); if(e) c.send({t:"err",m:e}); enviar(); render(); } if(d.t==="again"){ novoJogo(S.p[0].nome,S.p[1].nome,S.p[0].ch,S.p[1].ch); enviar(); render(); } if(d.t==="aud") recebeAudio(d); if(d.t==="msg") recebeMsg(d); }); }); c.on("close",function(){ toast("Seu amigo saiu da sala."); }); });
 }
