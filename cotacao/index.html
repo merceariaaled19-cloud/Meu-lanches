@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cotação Certa</title><meta name="theme-color" content="#0b3d2e">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png">
+<style>
+:root{--bg:#f3f6f4;--c:#fff;--g:#0b8457;--gd:#0b3d2e;--y:#f5b700;--r:#d64545;--tx:#16241f;--mu:#6b7c75;--ln:#dfe7e3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,Roboto,sans-serif}
+header{background:var(--gd);color:#fff;padding:16px;position:sticky;top:0;z-index:5}header h1{margin:0;font-size:1.4rem}header small{opacity:.8}
+main{padding:12px;max-width:900px;margin:auto;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--c);border-radius:16px;padding:14px;box-shadow:0 1px 4px #0001}
+button{font:inherit;border:0;border-radius:12px;padding:12px 14px;font-weight:700;background:var(--g);color:#fff;cursor:pointer}
+button.sec{background:#e7efeb;color:var(--gd)}button.mini{padding:6px 10px;font-size:.85rem}
+input{font:inherit;width:100%;padding:12px;border:1px solid var(--ln);border-radius:12px}
+.drop{border:2px dashed var(--g);border-radius:16px;padding:22px;text-align:center;color:var(--gd);cursor:pointer;background:#eef8f3}
+.forn{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--ln)}.forn input{padding:8px}.forn small{color:var(--mu);white-space:nowrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button{flex:1}.tabs button.on{background:var(--gd)}
+.it{padding:10px 0;border-bottom:1px solid var(--ln)}.it b{display:block}.it .px{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.px span{background:#f1f4f2;border-radius:10px;padding:4px 8px;font-size:.85rem}.px span.best{background:#d9f5e7;color:#06603d;font-weight:700}
+.eco{color:var(--g);font-weight:700;font-size:.85rem}.muted{color:var(--mu)}.esc{display:none!important}
+.res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.res div{background:#eef8f3;border-radius:12px;padding:10px}.res b{display:block;font-size:1.3rem;color:var(--gd)}
+.grp h3{margin:12px 0 4px;color:var(--gd)}.row{display:flex;gap:8px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#000c;color:#fff;padding:10px 16px;border-radius:10px;z-index:9}
+label.ck{display:flex;gap:8px;align-items:flex-start}label.ck input{width:auto;margin-top:4px}
+</style></head><body>
+<header><h1>🧾 Cotação Certa</h1><small>Carregue os PDFs dos fornecedores e veja onde cada produto sai mais barato.</small></header>
+<main>
+  <div class="card">
+    <label class="drop" for="arq">📄 Toque para escolher os PDFs (pode escolher vários)<br><small class="muted">Um PDF por fornecedor</small></label>
+    <input id="arq" type="file" accept="application/pdf" multiple class="esc">
+    <div id="lfor"></div>
+    <div class="row" style="margin-top:10px"><button id="btAn" onclick="analisa()" style="flex:1">🔎 Analisar e achar os mais baratos</button><button class="sec" onclick="limpa()">🗑️</button></div>
+    <small class="muted" id="st"></small>
+  </div>
+  <div id="out" class="esc">
+    <div class="card res"><div><b id="rP">0</b>produtos comparados</div><div><b id="rF">0</b>fornecedores</div><div><b id="rE">R$ 0</b>economia (1 un. de cada)</div></div>
+    <div class="card">
+      <div class="tabs"><button class="on" data-t="prod" onclick="aba(this)">📦 Por produto</button><button data-t="onde" onclick="aba(this)">🛒 Onde comprar</button><button data-t="unico" onclick="aba(this)">📋 Só em 1 fornecedor</button></div>
+      <div style="margin-top:10px"><input id="filtro" placeholder="Filtrar produto (ex.: arroz)" oninput="desenha()"></div>
+      <div id="lista"></div>
+      <div class="row" style="margin-top:10px"><button onclick="zap()" style="flex:1;background:#25d366">📲 Mandar lista no WhatsApp</button></div>
+    </div>
+  </div>
+  <p class="muted" style="font-size:.8rem;text-align:center">Funciona com PDF de texto (tabela de preços). PDF escaneado/foto não dá pra ler. Confira sempre as unidades (fardo, caixa, kg) antes de comprar.</p>
+</main>
+<div id="toast" class="toast esc"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+var $=function(s){return document.querySelector(s)};
+function toast(t){var e=$("#toast");e.textContent=t;e.classList.remove("esc");clearTimeout(e._t);e._t=setTimeout(function(){e.classList.add("esc")},3000)}
+function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function brl(v){return "R$ "+v.toFixed(2).replace(".",",").replace(/\B(?=(\d{3})+(?!\d))/g,".")}
+var F=[]; /* {nome, itens:[{n,p}]} */
+var GR=[],ABA="prod";
+try{F=JSON.parse(localStorage.getItem("cot_f")||"[]")}catch(e){}
+function salva(){try{localStorage.setItem("cot_f",JSON.stringify(F))}catch(e){toast("Memória cheia, não salvei.")}}
+function desenhaF(){$("#lfor").innerHTML=F.map(function(f,i){return '<div class="forn">🏪<input value="'+esc(f.nome)+'" onchange="F['+i+'].nome=this.value;salva()"><small>'+f.itens.length+' itens</small><button class="sec mini" onclick="F.splice('+i+',1);salva();desenhaF()">✖</button></div>'}).join("");$("#st").textContent=F.length?F.length+" fornecedor(es) carregado(s).":""}
+desenhaF();
+
+/* ===== LER PDF ===== */
+async function linhasPDF(buf){var pdf=await pdfjsLib.getDocument({data:buf}).promise,out=[];
+  for(var p=1;p<=pdf.numPages;p++){var pg=await pdf.getPage(p),tc=await pg.getTextContent(),rows={};
+    tc.items.forEach(function(it){if(!it.str||!it.str.trim())return;var y=Math.round(it.transform[5]/3);(rows[y]=rows[y]||[]).push({x:it.transform[4],s:it.str})});
+    Object.keys(rows).sort(function(a,b){return b-a}).forEach(function(y){out.push(rows[y].sort(function(a,b){return a.x-b.x}).map(function(o){return o.s}).join(" ").replace(/\s+/g," ").trim())});}
+  return out;}
+var RP=/(?:R\$\s*)?(\d{1,3}(?:\.\d{3})*,\d{2}|\d+,\d{2}|\d+\.\d{2})(?!\d)/g;
+function num(s){s=s.replace(/R\$\s*/,"");if(s.indexOf(",")>=0)s=s.replace(/\./g,"").replace(",",".");return parseFloat(s)}
+function extrai(linhas){var it=[],vis={};
+  linhas.forEach(function(l){var m=l.match(RP);if(!m)return;
+    var nome=l.replace(RP,"").replace(/R\$/g,"");
+    nome=nome.replace(/\b\d{6,14}\b/g,"").replace(/^\s*\d{1,6}\s*[-–.]?\s+/,"").replace(/\s{2,}/g," ").replace(/[|;]+/g," ").trim();
+    if(nome.replace(/[^a-zA-ZÀ-ú]/g,"").length<4)return;
+    /* preço: usa o primeiro valor monetário da linha que não for unitário muito pequeno de impostos; regra simples: o último valor */
+    var vals=m.map(num).filter(function(v){return v>0&&v<100000});if(!vals.length)return;
+    var p=vals.length>1?vals[vals.length-1]:vals[0];
+    var k=nome.toLowerCase();if(vis[k])return;vis[k]=1;it.push({n:nome,p:p});});
+  return it;}
+$("#arq").addEventListener("change",async function(e){var fs=[].slice.call(e.target.files);for(var i=0;i<fs.length;i++){var f=fs[i];$("#st").textContent="Lendo "+f.name+"...";
+  try{var ls=await linhasPDF(await f.arrayBuffer()),its=extrai(ls);
+    if(!its.length){toast(f.name+": não achei preços. PDF pode ser escaneado.");continue}
+    F.push({nome:f.name.replace(/\.pdf$/i,"").replace(/[_-]+/g," ").slice(0,40),itens:its});}catch(err){toast("Erro lendo "+f.name)}}
+  salva();desenhaF();e.target.value="";});
+function limpa(){if(!confirm("Apagar todos os PDFs carregados?"))return;F=[];salva();desenhaF();$("#out").classList.add("esc")}
+
+/* ===== COMPARAR ===== */
+function norm(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
+  .replace(/(\d+)[,.](\d+)/g,"$1.$2").replace(/(\d)\s+(kg|g|gr|ml|l|lt|un|und|cx|fd|pct|x)\b/g,"$1$2")
+  .replace(/\b(\d+(?:\.\d+)?)(lt|ltr|litros?)\b/g,"$1l").replace(/\b(\d+(?:\.\d+)?)(gr|grs|gramas?)\b/g,"$1g").replace(/\b(\d+)(und|unid|unidades?)\b/g,"$1un")
+  .replace(/\b(\d+)000g\b/g,"$1kg").replace(/\b([a-z]{3,})(\d+)\b/g,"$1 $2").replace(/[^a-z0-9.\s]/g," ").replace(/\s+/g," ").trim()}
+var STOP={de:1,da:1,do:1,com:1,e:1,c:1,em:1,para:1,fd:1,cx:1,un:1,pct:1,und:1,x:1};
+function toks(s){return norm(s).split(" ").filter(function(t){return t&&!STOP[t]&&!/^\d+$/.test(t)})}
+function medidas(t){return t.filter(function(x){return /^\d+(\.\d+)?(kg|g|ml|l)$/.test(x)}).sort().join("|")}
+function sim(a,b){if(a.m!==b.m)return 0;var A=a.t,B=b.t,i=0;A.forEach(function(x){if(B.indexOf(x)>=0)i++});return i/(A.length+B.length-i)}
+function analisa(){if(F.length<2)return toast("Carregue pelo menos 2 PDFs de fornecedores.");
+  var all=[];F.forEach(function(f,fi){f.itens.forEach(function(it){var t=toks(it.n);all.push({f:fi,n:it.n,p:it.p,t:t,m:medidas(t)})})});
+  GR=[];all.forEach(function(x){var best=null,bs=0;GR.forEach(function(g){var s=sim(x,g.ref);if(s>bs){bs=s;best=g}});
+    if(best&&bs>=0.6){var ja=best.o.filter(function(o){return o.f===x.f})[0];if(ja){if(x.p<ja.p){ja.p=x.p;ja.n=x.n}}else best.o.push(x)}else GR.push({ref:x,o:[x]})});
+  GR.forEach(function(g){g.o.sort(function(a,b){return a.p-b.p});g.min=g.o[0];g.max=g.o[g.o.length-1];g.eco=g.max.p-g.min.p;g.ck=true});
+  var comp=GR.filter(function(g){return g.o.length>1}),eco=comp.reduce(function(s,g){return s+g.eco},0);
+  $("#rP").textContent=comp.length;$("#rF").textContent=F.length;$("#rE").textContent=brl(eco);
+  $("#out").classList.remove("esc");desenha();setTimeout(function(){$("#out").scrollIntoView({behavior:"smooth"})},100);
+  if(!comp.length)toast("Não achei o mesmo produto em 2 fornecedores. Os nomes podem estar muito diferentes.");}
+function aba(b){ABA=b.dataset.t;[].forEach.call(document.querySelectorAll(".tabs button"),function(x){x.classList.toggle("on",x===b)});desenha()}
+function filtrados(){var q=norm($("#filtro").value||"");return GR.filter(function(g){return (ABA==="unico"?g.o.length===1:g.o.length>1)&&(!q||norm(g.min.n).indexOf(q)>=0)})}
+function desenha(){var L=filtrados(),h="";
+  if(ABA==="prod"){L.sort(function(a,b){return b.eco-a.eco});h=L.map(function(g){var i=GR.indexOf(g);return '<div class="it"><label class="ck"><input type="checkbox" '+(g.ck?"checked":"")+' onchange="GR['+i+'].ck=this.checked"><span><b>'+esc(g.min.n)+'</b><span class="muted">Mais barato: <b style="display:inline;color:#06603d">'+esc(F[g.min.f].nome)+' '+brl(g.min.p)+'</b></span> <span class="eco">economiza '+brl(g.eco)+'</span></span></label><div class="px">'+g.o.map(function(o,k){return '<span class="'+(k===0?"best":"")+'">'+esc(F[o.f].nome)+': '+brl(o.p)+'</span>'}).join("")+'</div></div>'}).join("")}
+  else if(ABA==="onde"){var by={};L.filter(function(g){return g.ck}).forEach(function(g){(by[g.min.f]=by[g.min.f]||[]).push(g)});
+    h=Object.keys(by).map(function(fi){var t=by[fi].reduce(function(s,g){return s+g.min.p},0);return '<div class="grp"><h3>🏪 '+esc(F[fi].nome)+' — '+by[fi].length+' itens · '+brl(t)+'</h3>'+by[fi].map(function(g){return '<div class="it">'+esc(g.min.n)+' — <b style="display:inline">'+brl(g.min.p)+'</b></div>'}).join("")+'</div>'}).join("")}
+  else{L.sort(function(a,b){return a.min.n.localeCompare(b.min.n)});h=L.map(function(g){return '<div class="it">'+esc(g.min.n)+' <span class="muted">— só em '+esc(F[g.min.f].nome)+': '+brl(g.min.p)+'</span></div>'}).join("")}
+  $("#lista").innerHTML=h||'<p class="muted">Nada aqui.</p>';}
+function zap(){var by={};GR.filter(function(g){return g.ck&&g.o.length>1}).forEach(function(g){(by[g.min.f]=by[g.min.f]||[]).push(g)});
+  var t="🧾 *Lista de compras (mais barato)*\n";Object.keys(by).forEach(function(fi){t+="\n🏪 *"+F[fi].nome+"*\n";by[fi].forEach(function(g){t+="• "+g.min.n+" — "+brl(g.min.p)+"\n"})});
+  window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}
+if("serviceWorker" in navigator)navigator.serviceWorker.register("service-worker.js");
+</script></body></html>
