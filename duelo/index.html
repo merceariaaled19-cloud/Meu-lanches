@@ -91,6 +91,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
   <button class="sec" onclick="regras()">📖 Regras</button>
   <div id="lobby" class="esc" style="margin-top:10px"></div>
  </div>
+ <div id="verTag" style="font-size:11px;opacity:.6">versão 22</div>
 </div>
 
 <div id="escolha" class="esc"><h2 style="color:#fbbf24">Escolha seu duelista</h2><div id="persGrid"></div><button class="sec" onclick="voltaMenu()">⬅ Voltar</button></div>
@@ -382,7 +383,7 @@ var SONS={
 };
 function som(n){ if(SOM&&SONS[n]) try{ SONS[n](); }catch(e){} }
 function somEvento(m){ if(/COLOSSO SELADO/.test(m)) return som("colosso"); if(/🪞|🎩|🪤|➰|🛡️ .* ativou/.test(m)) return som("armadilha"); if(/Poção/.test(m)) return som("cura"); if(/Bola de Fogo/.test(m)) return som("fogo"); if(/🪙|🎲/.test(m)) { som("compra"); return setTimeout(function(){ som("dano"); },300); } if(/🎯/.test(m)) return som("vira"); if(/Jarro dos Desejos|Livro dos Segredos/.test(m)) { som("magia"); return setTimeout(function(){ som("compra"); },350); } if(/✨|voltou do cemitério/.test(m)) return som("magia"); if(/⚔️/.test(m)) return som("ataque"); if(/destruído|Empate/.test(m)) return som("explosao"); if(/💥/.test(m)) return som("dano"); if(/🛡️|Ninguém/.test(m)) return som("defesa"); if(/invocou/.test(m)) return som("invoca"); if(/baixou/.test(m)) return som("baixa"); if(/virou|foi pra/.test(m)) return som("vira"); if(/Vez de|começou/.test(m)) return som("turno"); }
-var VOZCONT={inicio:1,inv:3,atk:3,magia:2,pass:2,dano:4,reage:3,ganhei:1,perdi:2}, FALA=null, FALAT=0;
+var VOZCONT={inicio:1,inv:3,atk:3,magia:2,pass:2,dano:4,reage:3,ganhei:1,perdi:2,susto:3}, FALA=null, FALAT=0;
 function fala(cat,forca){ try{ if(MODO!=="cpu"||!SOM||!S) return; var ch=S.p[1].ch; if(!ch||!VOZCONT[cat]) return; var ag=Date.now(); if(!forca&&FALA&&!FALA.paused&&!FALA.ended) return; if(!forca&&ag-FALAT<1200) return; if(FALA&&forca){ try{FALA.pause();}catch(e){} } FALAT=ag; FALA=new Audio("voz/"+ch+"/"+cat+Math.floor(Math.random()*VOZCONT[cat])+".mp3"); var p=FALA.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
 function trocaSom(){ SOM=!SOM; try{ localStorage.setItem("duelo_som",SOM?"1":"0"); }catch(e){} atualizaSomBt(); if(SOM) som("toque"); }
 function atualizaSomBt(){ var a=document.getElementById("btSom"), b=document.getElementById("btSomMenu"); if(a) a.innerText=SOM?"🔊":"🔇"; if(b) b.innerText=SOM?"🔊 Som ligado":"🔇 Som desligado"; }
@@ -402,7 +403,7 @@ function voltaMenu(){ escolha.classList.add("esc"); menu.classList.remove("esc")
 function pegaPers(k){ MEUCH=k; try{ localStorage.setItem("duelo_pers",k); }catch(e){} escolha.classList.add("esc"); menu.classList.remove("esc"); if(PEND==="cpu") jogarCPU(); else if(PEND==="camp") iniciaCamp(); else if(PEND==="host") criarSala(); else entrarSala(); }
 function jogarCPU(){ MODO="cpu"; ME=0; CAMP=null; CPUNIV=NIVEL; if(!MEUCH) MEUCH=chAleatorio(); var cc=chAleatorio(MEUCH); novoJogo(nomeMeu(),PERS[cc].n+" ("+NOMENV[NIVEL]+")",MEUCH,cc); abrirJogo(); }
 function enviar(){ if(MODO==="host"&&conn&&conn.open) conn.send({t:"st",s:S}); }
-function fazer(a){ var e; if(MODO==="guest"){ if(S.turn!==ME) return toast("Não é sua vez."); conn.send({t:"act",a:a}); return; } var lp1=S.p[1].lp, nm1=S.p[1].mz.filter(function(x){return x}).length; e=act(ME,a); if(e) toast(e); if(MODO==="cpu"&&!e&&S.win===null){ if(S.p[1].lp<lp1||S.p[1].mz.filter(function(x){return x}).length<nm1) fala("dano",1); else if((a.t==="summon"||a.t==="attack")&&Math.random()<.6) setTimeout(function(){ fala("reage"); },400); } enviar(); render(); if(MODO==="cpu") setTimeout(cpu,600); }
+function fazer(a){ var e; if(MODO==="guest"){ if(S.turn!==ME) return toast("Não é sua vez."); conn.send({t:"act",a:a}); return; } var lp1=S.p[1].lp, nm1=S.p[1].mz.filter(function(x){return x}).length; e=act(ME,a); if(e) toast(e); if(MODO==="cpu"&&!e&&S.win===null){ if(S.p[1].lp<lp1||S.p[1].mz.filter(function(x){return x}).length<nm1) fala("dano",1); else if(a.t==="spell"||a.t==="attack") fala("susto",1); else if(a.t==="summon"&&Math.random()<.6) setTimeout(function(){ fala("reage"); },400); } enviar(); render(); if(MODO==="cpu") setTimeout(cpu,600); }
 var ICE={iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.relay.metered.ca:80"},{urls:"turn:global.relay.metered.ca:80",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:80?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:443",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turns:global.relay.metered.ca:443?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"}]};
 async function pegaMic(){ var V={facingMode:"user",width:{ideal:320},height:{ideal:240},frameRate:{ideal:15}}, A={echoCancellation:true,noiseSuppression:true,autoGainControl:true}; try{ MIC=await navigator.mediaDevices.getUserMedia({audio:A,video:V}); }catch(e0){ try{ MIC=await navigator.mediaDevices.getUserMedia({video:V,audio:false}); try{ MIC.addTrack(vazio().getAudioTracks()[0]); MICFALSO=true; }catch(ez){} toast("📷 Câmera ligada. Toque em 🎤 Ligar voz lá em cima.",3500); }catch(e1){ try{ MIC=await navigator.mediaDevices.getUserMedia({audio:A,video:false}); }catch(e){ MIC=null; setTimeout(function(){ toast("Câmera e microfone bloqueados. Libere pro site nas configurações do Chrome."); },800); } } } mostraVid(meVid,MIC); }
 function mostraVid(el,st){ var tem=!!(st&&st.getVideoTracks&&st.getVideoTracks().length); el.classList.toggle("esc",!tem); el.parentNode.classList.toggle("comvid",tem); if(tem){ el.srcObject=st; el.play().catch(function(){}); } }
@@ -604,6 +605,7 @@ atualizaSomBt(); marcaNivel(); mostraTitulos();
 ptt.addEventListener("pointerdown",pttInicio); ptt.addEventListener("pointermove",pttMove); ptt.addEventListener("pointerup",pttFim); ptt.addEventListener("pointercancel",pttFim); ptt.addEventListener("contextmenu",function(e){ e.preventDefault(); });
 if("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js");
 document.addEventListener("visibilitychange",function(){ if(document.hidden) salva(); }); window.addEventListener("pagehide",salva);
+try{ localStorage.setItem("duelo_t","1"); if(localStorage.getItem("duelo_t")!=="1") throw 0; verTag.textContent+=" · salvar ✔"; }catch(e){ verTag.textContent+=" · salvar ✖"; }
 retoma();
 </script>
 </body>
