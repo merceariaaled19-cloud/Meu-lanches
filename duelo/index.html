@@ -116,7 +116,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
   <button class="sec" onclick="regras()">📖 Regras</button>
   <div id="lobby" class="esc" style="margin-top:10px"></div>
  </div>
- <div id="verTag" style="font-size:11px;opacity:.6">versão 42</div>
+ <div id="verTag" style="font-size:11px;opacity:.6">versão 43</div>
 </div>
 
 <div id="escolha" class="esc"><h2 style="color:#fbbf24">Escolha seu duelista</h2><div id="persGrid"></div><button class="sec" onclick="voltaMenu()">⬅ Voltar</button></div>
@@ -524,7 +524,7 @@ document.addEventListener("click",function(){ if(VOZOK&&(somAmigo.paused&&!opVid
 function linkSala(c){ return location.origin+location.pathname+"?sala="+c; }
 function copiaCod(c){ var t=c; try{ navigator.clipboard.writeText(t).then(function(){toast("Código "+c+" copiado!");},function(){prompt("Copie o código:",t);}); }catch(e){ prompt("Copie o código:",t); } }
 function zapCod(c){ var t="⚔️ Bora duelar no Duelo dos Monstros! Código da sala: *"+c+"*\nToque no link pra entrar direto: "+linkSala(c); window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank"); }
-(function(){ try{ var q=new URLSearchParams(location.search).get("sala"); if(q&&q.length===5){ var go=function(){ var el=document.getElementById("codIn"); if(!el) return setTimeout(go,300); el.value=q.toUpperCase(); toast("Código "+q.toUpperCase()+" colado! Toque em Entrar."); }; setTimeout(go,800); } }catch(e){} })();
+(function(){ try{ var q=new URLSearchParams(location.search).get("sala"); if(q&&q.length===5){ var go=function(){ var el=document.getElementById("codIn"); if(!el) return setTimeout(go,300); el.value=q.toUpperCase(); try{ introFim(); }catch(e){} try{ history.replaceState(null,"",location.pathname); }catch(e){} toast("Entrando na sala "+q.toUpperCase()+"..."); if(MEUCH&&PERS[MEUCH]&&!PERS[MEUCH].boss){ PEND="guest"; entrarSala(); } else { toast("Escolha seu personagem para entrar na batalha"); escolher("guest"); } }; setTimeout(go,600); } }catch(e){} })();
 async function criarSala(){ var nome=nomeMeu(); var cod=""; var ab="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; for(var i=0;i<5;i++) cod+=ab[Math.floor(Math.random()*ab.length)];
  lobby.classList.remove("esc"); lobby.innerHTML="Criando sala..."; await pegaMic();
  peer=new Peer("duelomonstros-"+cod,{config:ICE});
