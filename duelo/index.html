@@ -80,6 +80,9 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
 .cod{font-size:42px;font-weight:900;letter-spacing:8px;color:#fbbf24}
 #intro{position:fixed;inset:0;z-index:9999;background:#07020f;overflow:hidden;transition:opacity .9s}
 #intro.sai{opacity:0;pointer-events:none}
+#intro.espera *{animation-play-state:paused!important}
+#introToque{position:absolute;left:0;right:0;top:50%;text-align:center;color:#fde68a;font-size:22px;font-weight:800;text-shadow:0 0 12px #f97316;animation:iPisca 1.1s ease-in-out infinite alternate!important;animation-play-state:running!important}
+@keyframes iPisca{from{opacity:.35}to{opacity:1}}
 #introStage{position:absolute;left:50%;top:44%;width:min(100vw,100vh*0.8,620px);aspect-ratio:1;transform:translate(-50%,-50%)}
 #introDrag{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.25);animation:iDrag 6s ease-out forwards;-webkit-mask-image:radial-gradient(circle,#000 60%,transparent 72%);mask-image:radial-gradient(circle,#000 60%,transparent 72%)}
 @keyframes iDrag{0%{opacity:0;transform:scale(1.3)}18%{opacity:1}100%{opacity:1;transform:scale(1.02)}}
@@ -101,7 +104,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
 </style>
 </head>
 <body>
-<div id="intro" onclick="introFim()"><div id="introStage"><img id="introDrag" src="img/intro_dragao.jpg" alt=""><canvas id="introFogo" width="600" height="600"></canvas><img class="iCarta" id="iC1" src="img/intro_carta.png" alt=""><img class="iCarta" id="iC2" src="img/intro_carta.png" alt=""></div><div id="introFlash"></div><div id="introTit">⚔️ Duelo dos Monstros</div><button id="introPula">Pular ⏭</button></div>
+<div id="intro" onclick="introToque()"><div id="introStage"><img id="introDrag" src="img/intro_dragao.jpg" alt=""><canvas id="introFogo" width="600" height="600"></canvas><img class="iCarta" id="iC1" src="img/intro_carta.png" alt=""><img class="iCarta" id="iC2" src="img/intro_carta.png" alt=""></div><div id="introFlash"></div><div id="introTit">⚔️ Duelo dos Monstros</div><button id="introPula" onclick="event.stopPropagation();introFim()">Pular ⏭</button></div>
 
 <div id="menu">
  <h1>⚔️ Duelo dos Monstros</h1>
@@ -113,7 +116,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
   <button class="sec" onclick="regras()">📖 Regras</button>
   <div id="lobby" class="esc" style="margin-top:10px"></div>
  </div>
- <div id="verTag" style="font-size:11px;opacity:.6">versão 35</div>
+ <div id="verTag" style="font-size:11px;opacity:.6">versão 36</div>
 </div>
 
 <div id="escolha" class="esc"><h2 style="color:#fbbf24">Escolha seu duelista</h2><div id="persGrid"></div><button class="sec" onclick="voltaMenu()">⬅ Voltar</button></div>
@@ -713,11 +716,14 @@ document.addEventListener("visibilitychange",function(){ if(document.hidden) sal
 try{ localStorage.setItem("duelo_t","1"); if(localStorage.getItem("duelo_t")!=="1") throw 0; verTag.textContent+=" · salvar ✔"; }catch(e){ verTag.textContent+=" · salvar ✖"; }
 // ===== ABERTURA (dragão em câmera lenta) =====
 var INTRO=null;
-function introFim(){ var el=document.getElementById("intro"); if(!el||el.classList.contains("sai")) return; el.classList.add("sai"); clearTimeout(INTRO&&INTRO.to); setTimeout(function(){ if(INTRO) INTRO.vivo=false; el.remove(); },950); }
-function introIni(){ var el=document.getElementById("intro"); if(!el) return; var cv=document.getElementById("introFogo"), cx=cv.getContext("2d"), P=[], t0=performance.now(), MX=270, MY=318, foi=false; INTRO={vivo:true};
+function introSom(n){ try{ var a=new Audio("img/intro_"+n+".mp3"); a.volume=1; var pr=a.play(); if(pr&&pr.catch) pr.catch(function(){}); return a; }catch(e){ return null; } }
+function introPara(){ try{ if(INTRO){ (INTRO.sons||[]).forEach(function(a){ if(a){ a.pause(); } }); } }catch(e){} }
+function introToque(){ var el=document.getElementById("intro"); if(!el) return; if(el.classList.contains("espera")){ el.classList.remove("espera"); var tq=document.getElementById("introToque"); if(tq) tq.remove(); introIni(); } else introFim(); }
+function introFim(){ var el=document.getElementById("intro"); if(!el||el.classList.contains("sai")) return; el.classList.add("sai"); introPara(); clearTimeout(INTRO&&INTRO.to); clearTimeout(INTRO&&INTRO.tv); setTimeout(function(){ if(INTRO) INTRO.vivo=false; el.remove(); },950); }
+function introIni(){ var el=document.getElementById("intro"); if(!el) return; var cv=document.getElementById("introFogo"), cx=cv.getContext("2d"), P=[], t0=performance.now(), MX=270, MY=318, foi=false; INTRO={vivo:true,sons:[]};
  function emit(n,forte){ for(var i=0;i<n;i++){ var a=Math.PI*0.62+(Math.random()-.5)*0.55, v=(forte?1.5:0.9)+Math.random()*1.2; P.push({x:MX+(Math.random()-.5)*14,y:MY+(Math.random()-.5)*10,vx:Math.cos(a)*v*0.55-0.25,vy:Math.sin(a)*v*0.9+0.15,r:6+Math.random()*10,g:0,vida:110+Math.random()*70}); } }
  function passo(ag){ if(!INTRO.vivo) return; var t=(ag-t0)/1000; cx.clearRect(0,0,600,600);
-  if(t>1.3&&t<4.8){ if(!foi){ foi=true; document.getElementById("introFlash").classList.add("on"); document.getElementById("introStage").classList.add("treme"); try{ if(navigator.vibrate) navigator.vibrate([60,40,90]); }catch(e){} } emit(t<1.8?9:6,t<1.8); }
+  if(t>1.3&&t<4.8){ if(!foi){ foi=true; INTRO.sons.push(introSom("fogo")); document.getElementById("introFlash").classList.add("on"); document.getElementById("introStage").classList.add("treme"); try{ if(navigator.vibrate) navigator.vibrate([60,40,90]); }catch(e){} } emit(t<1.8?9:6,t<1.8); }
   else if(t>=4.8&&t<5.6) emit(2);
   cx.globalCompositeOperation="lighter";
   for(var i=P.length-1;i>=0;i--){ var p=P[i]; p.x+=p.vx; p.y+=p.vy; p.vx*=0.995; p.r+=0.55; p.g++; var k=p.g/p.vida; if(k>=1){ P.splice(i,1); continue; }
@@ -725,8 +731,11 @@ function introIni(){ var el=document.getElementById("intro"); if(!el) return; va
   cx.globalCompositeOperation="source-over"; requestAnimationFrame(passo); }
  requestAnimationFrame(passo);
  setTimeout(function(){ ["iC1","iC2"].forEach(function(id,j){ var c=document.getElementById(id); if(c){ var tr=getComputedStyle(c).transform; c.style.transform=tr; c.style.opacity=1; c.style.animation="none"; c.animate([{transform:tr},{transform:tr+" translateY(-10px)"}],{duration:1600+j*300,direction:"alternate",iterations:Infinity,easing:"ease-in-out"}); } }); },6300);
- INTRO.to=setTimeout(introFim,7400); }
-introIni();
+ INTRO.tv=setTimeout(function(){ if(INTRO.vivo) INTRO.sons.push(introSom("hora")); },5000);
+ INTRO.to=setTimeout(introFim,8400); }
+(function(){ var ok=false; try{ var AC=window.AudioContext||window.webkitAudioContext; if(AC){ var c=new AC(); ok=c.state==="running"; c.close&&c.close(); } }catch(e){}
+ var el=document.getElementById("intro"); if(!el) return;
+ if(ok) introIni(); else { el.classList.add("espera"); var d=document.createElement("div"); d.id="introToque"; d.textContent="👆 Toque para começar"; el.appendChild(d); } })();
 
 retoma();
 </script>
