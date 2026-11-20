@@ -42,6 +42,11 @@ label.ck{display:flex;gap:10px;align-items:flex-start}label.ck input{width:22px;
     <div class="row" style="margin-top:12px"><button id="btAn" onclick="analisa()" style="flex:1">🔎 Analisar de novo</button><button class="sec" onclick="limpa()">🗑️ Limpar</button></div>
     <small class="muted" id="st"></small>
   </div>
+<div id="bxB" class="card esc">
+    <div style="font-weight:800;color:var(--gd);margin-bottom:8px">🔍 Procurar produto em todos os orçamentos</div>
+    <input id="busca" type="search" placeholder="Ex.: cabo flexível 2,5" oninput="busca()" style="font-size:1.05rem">
+    <div id="resB"></div>
+  </div>
 <div id="out" class="esc">
     <div class="card res"><div><b id="rP">0</b>produtos comparados</div><div><b id="rF">0</b>fornecedores</div><div><b id="rE">R$ 0</b>economia (1 un. de cada)</div></div>
     <div class="card">
@@ -69,7 +74,7 @@ try{localStorage.removeItem("cot_f");localStorage.removeItem("cot_f2");localStor
 function idb(){return new Promise(function(ok,no){var r=indexedDB.open("cotacao",1);r.onupgradeneeded=function(){r.result.createObjectStore("kv")};r.onsuccess=function(){ok(r.result)};r.onerror=no})}
 idb().then(function(db){var q=db.transaction("kv").objectStore("kv").get("F");q.onsuccess=function(){if(q.result&&!F.length){F=q.result;desenhaF()}}}).catch(function(){});
 function salva(){idb().then(function(db){db.transaction("kv","readwrite").objectStore("kv").put(F,"F")}).catch(function(){})}
-function desenhaF(){$("#lfor").innerHTML=F.map(function(f,i){return '<div class="chip">🏪<input value="'+esc(f.nome)+'" onchange="F['+i+'].nome=this.value;salva();if(GR.length)desenha()"><small>'+f.itens.length+'</small><button onclick="F.splice('+i+',1);salva();desenhaF();if(F.length>1)analisa()">✖</button></div>'}).join("");$("#st").textContent=F.length?F.length+" fornecedor(es) carregado(s).":""}
+function desenhaF(){$("#lfor").innerHTML=F.map(function(f,i){return '<div class="chip">🏪<input value="'+esc(f.nome)+'" onchange="F['+i+'].nome=this.value;salva();if(GR.length)desenha()"><small>'+f.itens.length+'</small><button onclick="F.splice('+i+',1);salva();desenhaF();if(F.length>1)analisa()">✖</button></div>'}).join("");$("#st").textContent=F.length?F.length+" fornecedor(es) carregado(s).":"";var bx=$("#bxB");if(bx){bx.classList.toggle("esc",!F.length);if($("#busca").value)busca()}}
 desenhaF();
 
 /* ===== LER PDF ===== */
@@ -148,6 +153,17 @@ async function analisa(){if(F.length<2)return toast("Carregue pelo menos 2 PDFs 
   robo(4,"ok");$("#st").textContent="✅ Pronto! "+comp.length+" produtos encontrados em mais de um fornecedor.";$("#out").classList.remove("esc");desenha();setTimeout(function(){$("#out").scrollIntoView({behavior:"smooth"})},100);
   if(!comp.length)toast("Não achei o mesmo produto em 2 fornecedores. Os nomes podem estar muito diferentes.");}
 function aba(b){ABA=b.dataset.t;[].forEach.call(document.querySelectorAll(".tabs button"),function(x){x.classList.toggle("on",x===b)});desenha()}
+
+/* ===== BUSCA ===== */
+function busca(){var q=norm($("#busca").value||"").split(" ").filter(function(t){return t&&!STOP[t]});var el=$("#resB");
+  if(!q.length){el.innerHTML="";return}
+  var R=[];F.forEach(function(f,fi){f.itens.forEach(function(x){var tk=norm(x.n).split(" ");
+    if(q.every(function(t){return tk.some(function(w){return /^\d/.test(t)?w===t||w.indexOf(t)===0&&/[a-z]/.test(w.slice(t.length,t.length+1)):w.indexOf(t)===0||(w.length>=3&&t.indexOf(w)===0)})}))R.push({n:x.n,p:x.p,f:fi})})});
+  R.sort(function(a,b){return a.p-b.p});
+  if(!R.length){el.innerHTML='<p class="muted">Nenhum produto com esse nome nos orçamentos.</p>';return}
+  var b=R[0],h='<div class="it" style="background:#d9f5e7;border-color:#9fd7bd;margin-top:10px"><span class="tag">MAIS EM CONTA</span><b>'+esc(b.n)+'</b>🏪 Compre em <b style="display:inline">'+esc(F[b.f].nome)+'</b> por <b style="display:inline;color:#06603d">'+brl(b.p)+'</b>'+(R.length>1&&R[R.length-1].p>b.p?' <span class="eco">economiza até '+brl(R[R.length-1].p-b.p)+'</span>':'')+'</div>';
+  h+=R.slice(1,40).map(function(r){return '<div class="it">'+esc(r.n)+'<div class="px"><span>'+esc(F[r.f].nome)+': '+brl(r.p)+'</span></div></div>'}).join("");
+  el.innerHTML=h+(R.length>40?'<p class="muted">+'+(R.length-40)+' resultados. Escreva mais detalhes.</p>':'');}
 function filtrados(){var q=norm($("#filtro").value||"");return GR.filter(function(g){return (ABA==="unico"?g.o.length===1:g.o.length>1)&&(!q||norm(g.min.n).indexOf(q)>=0)})}
 function desenha(){var L=filtrados(),h="";
   if(ABA==="prod"){L.sort(function(a,b){return b.eco-a.eco});h=L.map(function(g,ix){var i=GR.indexOf(g);return '<div class="it"><label class="ck"><input type="checkbox" '+(g.ck?"checked":"")+' onchange="GR['+i+'].ck=this.checked"><span><b>'+(ix<10&&g.eco>0?'<span class="tag">TOP '+(ix+1)+'</span>':'')+esc(g.min.n)+'</b><span class="muted">Mais barato: <b style="display:inline;color:#06603d">'+esc(F[g.min.f].nome)+' '+brl(g.min.p)+'</b></span> <span class="eco">economiza '+brl(g.eco)+'</span></span></label><div class="px">'+g.o.map(function(o,k){return '<span class="'+(k===0?"best":"")+'">'+esc(F[o.f].nome)+': '+brl(o.p)+'</span>'}).join("")+'</div></div>'}).join("")}
