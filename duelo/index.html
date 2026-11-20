@@ -91,7 +91,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
   <button class="sec" onclick="regras()">📖 Regras</button>
   <div id="lobby" class="esc" style="margin-top:10px"></div>
  </div>
- <div id="verTag" style="font-size:11px;opacity:.6">versão 22</div>
+ <div id="verTag" style="font-size:11px;opacity:.6">versão 23</div>
 </div>
 
 <div id="escolha" class="esc"><h2 style="color:#fbbf24">Escolha seu duelista</h2><div id="persGrid"></div><button class="sec" onclick="voltaMenu()">⬅ Voltar</button></div>
@@ -383,7 +383,7 @@ var SONS={
 };
 function som(n){ if(SOM&&SONS[n]) try{ SONS[n](); }catch(e){} }
 function somEvento(m){ if(/COLOSSO SELADO/.test(m)) return som("colosso"); if(/🪞|🎩|🪤|➰|🛡️ .* ativou/.test(m)) return som("armadilha"); if(/Poção/.test(m)) return som("cura"); if(/Bola de Fogo/.test(m)) return som("fogo"); if(/🪙|🎲/.test(m)) { som("compra"); return setTimeout(function(){ som("dano"); },300); } if(/🎯/.test(m)) return som("vira"); if(/Jarro dos Desejos|Livro dos Segredos/.test(m)) { som("magia"); return setTimeout(function(){ som("compra"); },350); } if(/✨|voltou do cemitério/.test(m)) return som("magia"); if(/⚔️/.test(m)) return som("ataque"); if(/destruído|Empate/.test(m)) return som("explosao"); if(/💥/.test(m)) return som("dano"); if(/🛡️|Ninguém/.test(m)) return som("defesa"); if(/invocou/.test(m)) return som("invoca"); if(/baixou/.test(m)) return som("baixa"); if(/virou|foi pra/.test(m)) return som("vira"); if(/Vez de|começou/.test(m)) return som("turno"); }
-var VOZCONT={inicio:1,inv:3,atk:3,magia:2,pass:2,dano:4,reage:3,ganhei:1,perdi:2,susto:3}, FALA=null, FALAT=0;
+var VOZCONT={inicio:1,inv:3,atk:3,magia:2,pass:2,dano:6,reage:5,ganhei:1,perdi:2,susto:4}, FALA=null, FALAT=0;
 function fala(cat,forca){ try{ if(MODO!=="cpu"||!SOM||!S) return; var ch=S.p[1].ch; if(!ch||!VOZCONT[cat]) return; var ag=Date.now(); if(!forca&&FALA&&!FALA.paused&&!FALA.ended) return; if(!forca&&ag-FALAT<1200) return; if(FALA&&forca){ try{FALA.pause();}catch(e){} } FALAT=ag; FALA=new Audio("voz/"+ch+"/"+cat+Math.floor(Math.random()*VOZCONT[cat])+".mp3"); var p=FALA.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
 function trocaSom(){ SOM=!SOM; try{ localStorage.setItem("duelo_som",SOM?"1":"0"); }catch(e){} atualizaSomBt(); if(SOM) som("toque"); }
 function atualizaSomBt(){ var a=document.getElementById("btSom"), b=document.getElementById("btSomMenu"); if(a) a.innerText=SOM?"🔊":"🔇"; if(b) b.innerText=SOM?"🔊 Som ligado":"🔇 Som desligado"; }
