@@ -567,7 +567,7 @@ async function pttInicio(e){ e.preventDefault(); if(GRAV||!conn||!conn.open) { i
  try{ ptt.setPointerCapture(e.pointerId); }catch(x){}
  var g=GRAV, st;
  try{ if(MIC&&MIC.getAudioTracks()[0]&&MIC.getAudioTracks()[0].readyState==="live"){ g.trk=MIC.getAudioTracks()[0]; g.estava=g.trk.enabled; g.trk.enabled=true; st=new MediaStream([g.trk]); } else { st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}); g.proprio=true; } }
- catch(x){ GRAV=null; return toast("🎤 Não consegui usar o microfone. Libere o microfone pro site nas configurações do navegador."); }
+ catch(x){ GRAV=null; var nm=(x&&x.name)||""; return toast(nm==="NotAllowedError"?"🎤 Microfone bloqueado pro jogo. Toque no cadeado ao lado do endereço > Permissões > Microfone > Permitir. Se não aparecer, vá em Configurações do celular > Apps > Chrome > Permissões > Microfone.":nm==="NotReadableError"||nm==="AbortError"?"🎤 Outro app está usando o microfone (ligação, gravador, WhatsApp). Feche e tente de novo.":nm==="NotFoundError"?"🎤 O celular não achou microfone.":"🎤 Não consegui usar o microfone ("+nm+"). Libere o microfone pro site."); }
  g.st=st; if(!g.ativo){ pttLimpa(g); GRAV=null; return; }
  try{ g.rec=mime?new MediaRecorder(st,{mimeType:mime}):new MediaRecorder(st); }catch(x){ pttLimpa(g); GRAV=null; return toast("Não deu pra gravar áudio neste aparelho."); }
  g.rec.ondataavailable=function(ev){ if(ev.data&&ev.data.size) g.chunks.push(ev.data); };
