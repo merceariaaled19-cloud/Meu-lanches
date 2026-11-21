@@ -1,0 +1,18 @@
+name: Atualiza Loto Palpite
+on:
+  schedule:
+    - cron: '30 1,12 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  dados:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 loto/build_data.py net
+      - run: |
+          git config user.name "merceariaaled19-cloud"
+          git config user.email "merceariaaled19@gmail.com"
+          git add loto/dados.json
+          git diff --cached --quiet || (git commit -m "Loto: resultados atualizados" && git push)

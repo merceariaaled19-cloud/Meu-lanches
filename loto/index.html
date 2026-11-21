@@ -1,0 +1,109 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Loto Palpite</title><meta name="theme-color" content="#0f5132"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;font-family:system-ui,Arial,sans-serif;background:#f2f4f3;color:#1d2a24}
+header{background:var(--c);color:#fff;padding:14px 16px 10px;transition:background .3s}header h1{margin:0;font-size:20px}header small{opacity:.85}
+.jogos{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:#fff;position:sticky;top:0;z-index:5;box-shadow:0 2px 6px #0001;scrollbar-width:none}
+.jogos button{flex:none;border:2px solid var(--b);background:#fff;color:var(--b);padding:8px 12px;border-radius:20px;font-weight:bold;font-size:14px}
+.jogos button.on{background:var(--b);color:#fff}
+main{padding:12px;max-width:640px;margin:auto}.card{background:#fff;border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px #0001}
+h2{font-size:16px;margin:0 0 8px;color:var(--c)}.mut{color:#66756e;font-size:13px}
+.bolas{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.bola{width:38px;height:38px;border-radius:50%;background:var(--c);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:15px}
+.bola.p{width:30px;height:30px;font-size:12px}.bola.h{background:#e8ecea;color:#1d2a24}.bola.ok{background:#16a34a;box-shadow:0 0 0 3px #bbf7d0}
+.bola.tr{background:#d4a017}.extra{display:inline-block;background:#fff3cd;color:#7a5b00;border-radius:10px;padding:4px 10px;font-weight:bold;margin:4px 0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}label{font-size:14px}select,input{font-size:16px;padding:9px;border-radius:10px;border:1px solid #cfd8d3;background:#fff}
+.btn{background:var(--c);color:#fff;border:0;border-radius:12px;padding:14px;font-size:17px;font-weight:bold;width:100%;margin-top:10px}
+.sbtn{background:#e8ecea;border:0;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:bold;color:#1d2a24}
+.jg{border-top:1px dashed #d5ddd9;padding:10px 0}.jg:first-child{border-top:0}.cod{font-family:monospace;font-size:12px;color:#66756e}
+.selo{display:inline-block;background:#dcfce7;color:#166534;font-size:11px;border-radius:8px;padding:2px 7px;font-weight:bold}
+.pre{font-size:22px;font-weight:900;color:var(--c)}.aviso{font-size:12px;color:#66756e;text-align:center;margin:14px 0 30px}
+.tabs{display:flex;gap:6px;margin-bottom:8px}.tabs button{flex:1;border:0;padding:8px;border-radius:10px;background:#e8ecea;font-weight:bold}.tabs button.on{background:var(--c);color:#fff}
+#load{text-align:center;padding:40px;color:#66756e}
+</style></head><body>
+<header><h1>🍀 Loto Palpite</h1><small id="sub">Jogos inéditos com os números que mais saem</small></header>
+<div class="jogos" id="jogos"></div>
+<main id="main"><div id="load">Carregando resultados...</div></main>
+<script>
+var G={
+ megasena:{n:'Mega-Sena',c:'#209869',min:1,max:60,draw:6,pick:[6,15]},
+ lotofacil:{n:'Lotofácil',c:'#930089',min:1,max:25,draw:15,pick:[15,20]},
+ quina:{n:'Quina',c:'#260085',min:1,max:80,draw:5,pick:[5,15]},
+ duplasena:{n:'Dupla Sena',c:'#a61324',min:1,max:50,draw:6,pick:[6,15]},
+ lotomania:{n:'Lotomania',c:'#f78100',min:0,max:99,draw:20,pick:[50,50]},
+ timemania:{n:'Timemania',c:'#049645',min:1,max:80,draw:7,pick:[10,10]},
+ diadesorte:{n:'Dia de Sorte',c:'#cb852b',min:1,max:31,draw:7,pick:[7,15]},
+ maismilionaria:{n:'+Milionária',c:'#2e3078',min:1,max:50,draw:6,pick:[6,12]},
+ supersete:{n:'Super Sete',c:'#8bb32b',min:0,max:9,draw:7,pick:[7,7]}
+};
+var D=null,J=localStorage.lpJogo||'megasena',$=function(i){return document.getElementById(i)},ABA='gerar';
+function z(n){return (n<10?'0':'')+n}
+function brl(v){return v?v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}):''}
+function cor(){var g=G[J];document.documentElement.style.setProperty('--c',g.c);document.documentElement.style.setProperty('--b',g.c);document.querySelector('meta[name=theme-color]').content=g.c}
+function chips(){var h=$('jogos');h.innerHTML='';Object.keys(G).forEach(function(k){var b=document.createElement('button');b.textContent=G[k].n;b.style.setProperty('--b',G[k].c);if(k==J)b.className='on';b.onclick=function(){J=k;localStorage.lpJogo=k;cor();chips();tela();window.scrollTo(0,0)};h.appendChild(b)});var on=h.querySelector('.on');if(on)on.scrollIntoView({inline:'center',block:'nearest'})}
+/* estatística */
+var ST={};
+function stats(j){if(ST[j])return ST[j];var d=D[j],g=G[j],s={};
+ if(j=='supersete'){var col=[];for(var c=0;c<7;c++){var f={};for(var n=0;n<=9;n++)f[n]=0;d.sorteios.forEach(function(x){f[+x[c]]++});col.push(f)}s.col=col;s.set={};d.sorteios.forEach(function(x){s.set[x]=1});return ST[j]=s}
+ var f={},at={},tot=d.sorteios.length;for(var n=g.min;n<=g.max;n++){f[n]=0;at[n]=tot}
+ s.set={};d.sorteios.forEach(function(x,i){s.set[x]=1;x.split(' ').forEach(function(v){v=+v;f[v]++;at[v]=tot-1-i})});
+ if(j=='duplasena'){for(n in at)at[n]=Math.ceil(at[n]/2)}
+ s.f=f;s.at=at;s.top=Object.keys(f).map(Number).sort(function(a,b){return f[b]-f[a]});s.atr=Object.keys(at).map(Number).sort(function(a,b){return at[b]-at[a]});return ST[j]=s}
+function rnd(){var a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296}
+function sorteiaPeso(pool,peso,k){var out=[],p=pool.slice();while(out.length<k&&p.length){var t=0;p.forEach(function(n){t+=peso(n)});var r=rnd()*t,i=0;for(;i<p.length;i++){r-=peso(p[i]);if(r<=0)break}if(i>=p.length)i=p.length-1;out.push(p[i]);p.splice(i,1)}return out.sort(function(a,b){return a-b})}
+function pesoF(s,modo){var mx=0,mn=1e9;for(var n in s.f){mx=Math.max(mx,s.f[n]);mn=Math.min(mn,s.f[n])}
+ return function(n){var q=(s.f[n]-mn)/((mx-mn)||1);if(modo=='quente')return 0.15+Math.pow(q,2)*3;if(modo=='atrasado')return 0.2+Math.min(s.at[n],60)/10;return 0.6+q}}
+function hist(){try{return JSON.parse(localStorage.lpHist||'{}')}catch(e){return{}}}
+function codigo(j,str){var h=2166136261;for(var i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',c='',x=h>>>0;for(i=0;i<5;i++){c+=a[x%31];x=Math.floor(x/31)}return {megasena:'MS',lotofacil:'LF',quina:'QN',duplasena:'DS',lotomania:'LM',timemania:'TM',diadesorte:'DD',maismilionaria:'+M',supersete:'S7'}[j]+'-'+(D[j].ultimo+1)+'-'+c}
+function gerar(qtd,modo,nq){var g=G[J],s=stats(J),H=hist(),res=[],tent=0;
+ while(res.length<nq&&tent<5000){tent++;var jg={j:J};
+  if(J=='supersete'){var t='';for(var c=0;c<7;c++){var f=s.col[c],ks=[0,1,2,3,4,5,6,7,8,9],mx=Math.max.apply(null,ks.map(function(k){return f[k]})),mn=Math.min.apply(null,ks.map(function(k){return f[k]}));t+=sorteiaPeso(ks,function(k){var q=(f[k]-mn)/((mx-mn)||1);return modo=='quente'?0.2+q*q*3:modo=='atrasado'?1.2-q:0.6+q},1)[0]}jg.str=t;jg.nums=t.split('').map(Number)}
+  else{var pool=[];for(var n=g.min;n<=g.max;n++)pool.push(n);jg.nums=sorteiaPeso(pool,pesoF(s,modo),qtd);jg.str=jg.nums.map(z).join(' ')}
+  if(s.set[jg.str])continue;var key=J+':'+jg.str;if(H[key]||res.some(function(r){return r.str==jg.str}))continue;
+  if(J=='maismilionaria'){var tf=D[J].trevosFreq;jg.trevos=sorteiaPeso([1,2,3,4,5,6],function(t){return modo=='atrasado'?1:tf[t]||1},2)}
+  if(J=='diadesorte'){var mf=D[J].mesFreq,ms=Object.keys(mf);jg.mes=sorteiaPeso(ms,function(m){return modo=='atrasado'?200-mf[m]:mf[m]},1)[0]}
+  if(J=='timemania'){var tf2=D[J].timeFreq,tt=Object.keys(tf2);jg.time=sorteiaPeso(tt,function(m){return tf2[m]},1)[0]}
+  jg.cod=codigo(J,jg.str+(jg.trevos||'')+(jg.mes||'')+Date.now());res.push(jg)}
+ return res}
+function salvar(list){var H=hist();list.forEach(function(r){H[r.j+':'+r.str]={c:r.cod,t:Date.now(),x:r.trevos||r.mes||r.time||'',con:D[r.j].ultimo+1}});localStorage.lpHist=JSON.stringify(H)}
+function bolas(nums,cls,acertos){return '<div class="bolas">'+nums.map(function(n){var k=cls||'';if(acertos&&acertos.indexOf(n)>=0)k+=' ok';return '<div class="bola '+k+'">'+(J=='supersete'?n:z(n))+'</div>'}).join('')+'</div>'}
+function extra(o){var e='';if(o.trevos)e+='<span class="extra">🍀 Trevos '+o.trevos.join(' e ')+'</span> ';if(o.mes)e+='<span class="extra">📅 Mês da Sorte: '+o.mes+'</span> ';if(o.time)e+='<span class="extra">⚽ Time: '+o.time+'</span>';return e}
+function texto(r){return '🍀 '+G[r.j].n+' (concurso '+(D[r.j].ultimo+1)+')\n'+(r.j=='supersete'?r.nums.join(' | '):r.str)+(r.trevos?'\nTrevos: '+r.trevos.join(' e '):'')+(r.mes?'\nMês: '+r.mes:'')+(r.time?'\nTime: '+r.time:'')+'\nCódigo: '+r.cod}
+function zap(t){location.href=/Android/i.test(navigator.userAgent)?'intent://send?text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;end':'https://wa.me/?text='+encodeURIComponent(t)}
+function copia(t,b){function ok(){var o=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=o},1400)}if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,function(){prompt('Copie:',t)});else prompt('Copie:',t)}
+var ULT=[];
+function tela(){var g=G[J],d=D[J],s=stats(J),m=$('main');$('sub').textContent=g.n+' • '+d.n+' concursos analisados';
+ var h='<div class="card"><h2>Último resultado • concurso '+d.ultimo+' ('+d.data+')</h2>'+(J=='duplasena'?bolas(d.dezenas.slice(0,6),'p')+bolas(d.dezenas.slice(6),'p'):bolas(d.dezenas,'p'))+extra({trevos:d.trevos,mes:d.mes,time:d.time})+
+ (d.prox?'<div class="mut" style="margin-top:6px">Próximo sorteio: <b>'+d.prox+'</b>'+(d.acumulou?' • acumulou!':'')+'</div>':'')+(d.premio?'<div class="pre">'+brl(d.premio)+'</div>':'')+'</div>';
+ h+='<div class="tabs"><button id="tG">🎲 Gerar</button><button id="tE">📊 Mais saem</button><button id="tM">📋 Meus jogos</button></div><div id="aba"></div><p class="aviso">Os jogos gerados nunca saíram em nenhum concurso e não se repetem. O sorteio da Caixa é aleatório: a estatística ajuda a escolher, mas não garante prêmio.</p>';
+ m.innerHTML=h;$('tG').onclick=function(){ABA='gerar';aba()};$('tE').onclick=function(){ABA='est';aba()};$('tM').onclick=function(){ABA='meus';aba()};aba()}
+function aba(){['tG','tE','tM'].forEach(function(i){$(i).className=''});$({gerar:'tG',est:'tE',meus:'tM'}[ABA]).className='on';var a=$('aba'),g=G[J],s=stats(J);
+ if(ABA=='gerar'){var op='';for(var q=g.pick[0];q<=g.pick[1];q++)op+='<option>'+q+'</option>';
+  a.innerHTML='<div class="card"><div class="row"><label>Números por jogo <select id="qtd" '+(g.pick[0]==g.pick[1]?'disabled':'')+'>'+op+'</select></label><label>Quantos jogos <select id="nq"><option>1</option><option selected>3</option><option>5</option><option>10</option></select></label></div>'+
+  '<div class="row" style="margin-top:8px"><label>Estratégia <select id="modo"><option value="quente">🔥 Os que mais saem</option><option value="equil">⚖️ Equilibrado</option><option value="atrasado">⏳ Atrasados (não saem há tempo)</option></select></label></div>'+
+  '<button class="btn" id="gera">Gerar jogos inéditos</button></div><div id="res"></div>';
+  $('gera').onclick=function(){ULT=gerar(+$('qtd').value,$('modo').value,+$('nq').value);salvar(ULT);mostra()};if(ULT.length&&ULT[0].j==J)mostra()}
+ else if(ABA=='est'){if(J=='supersete'){var h='<div class="card"><h2>Número que mais sai em cada coluna</h2>';s.col.forEach(function(f,c){var o=Object.keys(f).sort(function(a,b){return f[b]-f[a]});h+='<div class="row"><b style="width:70px">Coluna '+(c+1)+'</b>'+bolas(o.slice(0,3).map(Number),'p')+'</div>'});a.innerHTML=h+'</div>';return}
+  var t=s.top.slice(0,15),r=s.atr.slice(0,10);
+  a.innerHTML='<div class="card"><h2>🔥 Os 15 que mais saem</h2><div class="bolas">'+t.map(function(n){return '<div style="text-align:center"><div class="bola p">'+z(n)+'</div><div class="mut">'+s.f[n]+'x</div></div>'}).join('')+'</div></div>'+
+  '<div class="card"><h2>⏳ Os mais atrasados</h2><div class="bolas">'+r.map(function(n){return '<div style="text-align:center"><div class="bola p h">'+z(n)+'</div><div class="mut">'+s.at[n]+' conc.</div></div>'}).join('')+'</div></div>'+
+  '<div class="card"><h2>🧊 Os 10 que menos saem</h2>'+bolas(s.top.slice(-10),'p h')+'</div>'}
+ else{var H=hist(),ks=Object.keys(H).filter(function(k){return k.indexOf(J+':')==0}).sort(function(a,b){return H[b].t-H[a].t});var d=D[J];
+  if(!ks.length){a.innerHTML='<div class="card mut">Nenhum jogo gerado ainda.</div>';return}
+  var h='<div class="card"><h2>Seus jogos ('+ks.length+')</h2><div class="mut">Acertos conferidos com o concurso '+d.ultimo+'</div>';
+  ks.slice(0,40).forEach(function(k){var str=k.slice(J.length+1),nums=J=='supersete'?str.split('').map(Number):str.split(' ').map(Number),ac;
+   if(J=='supersete'){ac=nums.filter(function(n,i){return d.dezenas[i]==n}).length}else{var dz=J=='duplasena'?d.dezenas:d.dezenas;ac=nums.filter(function(n){return dz.indexOf(n)>=0})}
+   h+='<div class="jg">'+(J=='supersete'?bolas(nums,'p'):bolas(nums,'p',ac))+'<div class="cod">'+H[k].c+(H[k].x?' • '+H[k].x:'')+' • '+(J=='supersete'?ac:ac.length)+' acerto(s)</div></div>'});
+  a.innerHTML=h+'<button class="sbtn" id="lim" style="margin-top:8px">Apagar histórico deste jogo</button></div>';$('lim').onclick=function(){if(!confirm('Apagar seus jogos da '+G[J].n+'? Eles poderão ser gerados de novo.'))return;ks.forEach(function(k){delete H[k]});localStorage.lpHist=JSON.stringify(H);aba()}}}
+function mostra(){var r=$('res');if(!r)return;r.innerHTML='<div class="card"><h2>Seus jogos inéditos</h2>'+ULT.map(function(x,i){return '<div class="jg">'+bolas(x.nums)+extra(x)+'<div class="row" style="justify-content:space-between"><span class="cod">'+x.cod+' <span class="selo">nunca sorteado</span></span><span><button class="sbtn" data-c="'+i+'">Copiar</button> <button class="sbtn" data-z="'+i+'" style="background:#25d366;color:#fff">WhatsApp</button></span></div></div>'}).join('')+
+ (ULT.length>1?'<button class="btn" id="zt" style="background:#25d366">Mandar todos no WhatsApp</button>':'')+'</div>';
+ r.querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){copia(texto(ULT[+b.dataset.c]),b)}});r.querySelectorAll('[data-z]').forEach(function(b){b.onclick=function(){zap(texto(ULT[+b.dataset.z]))}});
+ if($('zt'))$('zt').onclick=function(){zap(ULT.map(texto).join('\n\n'))};r.scrollIntoView({behavior:'smooth'})}
+/* atualização ao vivo do último concurso */
+function atualiza(){Object.keys(G).forEach(function(j){fetch('https://loteriascaixa-api.herokuapp.com/api/'+j+'/latest').then(function(r){return r.json()}).then(function(x){var d=D[j];if(!x||!x.concurso||x.concurso<=d.ultimo||!x.dezenas)return;
+  var dz=x.dezenas.map(Number);d.ultimo=x.concurso;d.data=x.data;d.prox=x.dataProximoConcurso;d.premio=x.valorEstimadoProximoConcurso;d.acumulou=x.acumulou;d.dezenas=dz;d.n++;
+  if(j=='supersete')d.sorteios.push(dz.join(''));else if(j=='duplasena'){d.sorteios.push(dz.slice(0,6).sort(function(a,b){return a-b}).map(z).join(' '));d.sorteios.push(dz.slice(6).sort(function(a,b){return a-b}).map(z).join(' '))}else d.sorteios.push(dz.slice().sort(function(a,b){return a-b}).map(z).join(' '));
+  if(x.trevos)d.trevos=x.trevos.map(Number);if(x.mesSorte)d.mes=x.mesSorte;if(x.timeCoracao)d.time=x.timeCoracao;delete ST[j];if(j==J)tela()}).catch(function(){})})}
+fetch('dados.json?v='+Math.floor(Date.now()/36e5)).then(function(r){return r.json()}).then(function(d){D=d;cor();chips();tela();atualiza()}).catch(function(){$('load').textContent='Sem internet. Abra de novo com internet uma vez.'});
+cor();chips();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+</script></body></html>
