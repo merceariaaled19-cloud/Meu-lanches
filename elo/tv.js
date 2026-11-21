@@ -18,8 +18,14 @@
  function trava(msg,podeCod){ov.innerHTML='';ov.style.display='flex';ov.appendChild(el('h1','','🎤 TudoOkê TV'));ov.appendChild(el('p','',msg));var er=el('p','e','');
   if(podeCod){var i=el('input');i.id='tkLicCod';i.maxLength=11;i.placeholder='CÓDIGO';var b=el('button','','Ativar');
    function vai(){var c=i.value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length<6){er.textContent='Digite o código completo';return;}er.textContent='Ativando...';ativa(c,er);}
-   b.onclick=vai;i.onkeydown=function(e){e.stopPropagation();if(e.keyCode==13){e.preventDefault();vai();}};ov.appendChild(i);ov.appendChild(b);setTimeout(function(){i.focus()},300);}
-  ov.appendChild(er);ov.appendChild(el('div','id',IDC?'ID do aparelho: '+IDC:''));pausa();clearInterval(pt);pt=setInterval(pausa,1500);}
+   b.onclick=vai;b.tabIndex=0;i.tabIndex=0;i.onclick=function(){i.focus()};i.onkeydown=function(e){e.stopPropagation();if(e.keyCode==13){e.preventDefault();vai();}};ov.appendChild(i);ov.appendChild(b);setTimeout(function(){i.focus()},300);}
+  ov.appendChild(er);ov.appendChild(el('div','id',IDC?'ID do aparelho: '+IDC:''));
+  if(podeCod){var dica=el('p','','Use as setas do controle ou o mouse. OK abre o teclado.');dica.style.fontSize='2.4vmin';dica.style.opacity='.7';ov.appendChild(dica);
+   if(!window.__tkLk){window.__tkLk=1;document.addEventListener('keydown',function(e){if(ov.style.display=='none')return;var I=document.getElementById('tkLicCod'),B=ov.querySelector('button');if(!I)return;var k=e.keyCode,a=document.activeElement;
+    if(!ov.contains(a)){e.preventDefault();e.stopPropagation();I.focus();return;}
+    if(k==40||(k==39&&a!==I)){e.preventDefault();e.stopPropagation();B.focus();}else if(k==38||(k==37&&a===B)){e.preventDefault();e.stopPropagation();I.focus();}
+    else if((k==13||k==23)&&a===B){e.preventDefault();e.stopPropagation();B.click();}},true);
+    setInterval(function(){if(ov.style.display=='none')return;var I=document.getElementById('tkLicCod');if(I&&!ov.contains(document.activeElement))I.focus();},1000);}}pausa();clearInterval(pt);pt=setInterval(pausa,1500);}
  function libera(exp){ov.style.display='none';clearInterval(pt);try{localStorage.tkExp=String(exp);}catch(e){}
   var d=Math.ceil((exp-Date.now())/864e5);if(d<=5){var a=el('div','',null);a.id='tkAviso';a.textContent='Licença vence em '+d+(d==1?' dia':' dias');document.body.appendChild(a);setTimeout(function(){a.remove()},15000);}}
  function campos(j){var f=j.fields||{};return{dev:(f.device&&f.device.stringValue)||'',dias:+((f.dias&&(f.dias.integerValue||f.dias.doubleValue))||0),at:f.ativadoEm&&f.ativadoEm.timestampValue?Date.parse(f.ativadoEm.timestampValue):0};}
