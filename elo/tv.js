@@ -27,7 +27,7 @@
     else if((k==13||k==23)&&a===B){e.preventDefault();e.stopPropagation();B.click();}},true);
     setInterval(function(){if(ov.style.display=='none')return;var I=document.getElementById('tkLicCod');if(I&&!ov.contains(document.activeElement))I.focus();},1000);}}pausa();clearInterval(pt);pt=setInterval(pausa,1500);}
  function libera(exp){ov.style.display='none';clearInterval(pt);try{localStorage.tkExp=String(exp);}catch(e){}
-  var d=Math.ceil((exp-Date.now())/864e5);if(d<=5){var a=el('div','',null);a.id='tkAviso';a.textContent='Licença vence em '+d+(d==1?' dia':' dias');document.body.appendChild(a);setTimeout(function(){a.remove()},15000);}}
+  var d=Math.ceil((exp-Date.now())/864e5),dt=new Date(exp),z=function(n){return(n<10?'0':'')+n},ds=z(dt.getDate())+'/'+z(dt.getMonth()+1)+'/'+dt.getFullYear();var a=el('div','',null);a.id='tkAviso';a.textContent='✅ Licença ativa até '+ds+' • falta'+(d==1?' 1 dia':'m '+d+' dias');if(d>5)a.style.background='#16a34a';document.body.appendChild(a);setTimeout(function(){a.style.transition='opacity 1s';a.style.opacity=0;setTimeout(function(){a.remove()},1000)},d<=5?20000:10000);}
  function campos(j){var f=j.fields||{};return{dev:(f.device&&f.device.stringValue)||'',dias:+((f.dias&&(f.dias.integerValue||f.dias.doubleValue))||0),at:f.ativadoEm&&f.ativadoEm.timestampValue?Date.parse(f.ativadoEm.timestampValue):0};}
  function pega(c){return fetch(BASE+'/licencas/'+c+'?key='+K,{cache:'no-store'}).then(function(r){if(r.status==404)return null;if(!r.ok)throw new Error('rede');return r.json().then(campos);});}
  function confere(l,c,er){if(!l){if(er)er.textContent='Código não existe';else{try{localStorage.removeItem('tkLic')}catch(e){}trava('Licença não encontrada. Digite um código novo.',true);}return;}
