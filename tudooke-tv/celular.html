@@ -13,10 +13,12 @@ input{width:100%;padding:13px;border-radius:10px;border:2px solid #7c3aed;backgr
 .btn{width:100%;margin-top:8px;padding:13px;border:none;border-radius:10px;background:#ff3fa4;color:#fff;font-weight:bold;font-size:16px}
 .est{display:flex;justify-content:space-between}.est button{font-size:34px;background:none;border:none;filter:grayscale(1);opacity:.6}.est button.on{filter:none;opacity:1}
 #ok{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#ff3fa4;padding:10px 18px;border-radius:20px;display:none;font-weight:bold}
+.r{display:flex;gap:8px;align-items:center;background:#1e0b3d;border:1px solid #3b1a6e;border-radius:10px;padding:6px;margin-top:8px}.r img{width:84px;height:48px;object-fit:cover;border-radius:6px;flex-shrink:0}.r b{font-size:13px;display:block}.r small{opacity:.7;font-size:11px}.r button{margin-left:auto;background:#ff3fa4;border:none;color:#fff;border-radius:8px;padding:8px 10px;font-weight:bold}#fila{margin-top:8px;font-size:13px;color:#ffd54a}
 #nota{display:none;text-align:center;font-size:20px}#nota b{font-size:48px;color:#ffd54a;display:block}
 </style></head><body>
 <h1>🎤 Tudo<span>Okê</span></h1>
 <div id="st">Conectando na TV...</div>
+<div class="card"><h2>🎵 Pedir música</h2><input id="bq" placeholder="Ex.: Evidências"><button class="btn" id="bB">🔍 Buscar</button><div id="res"></div><div id="fila"></div></div>
 <div class="card"><h2>Seu nome</h2><input id="nome" maxlength="14" placeholder="Ex.: Ana"></div>
 <div class="card"><h2>Reações na tela</h2><div class="figs" id="figs"></div></div>
 <div class="card"><h2>Recado na tela</h2><input id="msg" maxlength="70" placeholder="Manda ver! 🔥"><button class="btn" id="bMsg">Enviar recado</button></div>
@@ -32,12 +34,19 @@ for(var i=1;i<=5;i++)(function(n){var b=document.createElement('button');b.textC
 function ok(t){$('ok').textContent=t||'Enviado! ✅';$('ok').style.display='block';clearTimeout(ok.t);ok.t=setTimeout(function(){$('ok').style.display='none'},900)}
 function manda(o,rapido){if(!sala){ok('Escaneie o QR da TV');return}var a=Date.now();if(a-ultimo<(rapido?150:800))return;ultimo=a;o.n=$('nome').value||'Alguém';
  fetch('https://ntfy.sh/'+TOP,{method:'POST',body:JSON.stringify(o)}).then(function(r){ok(r.ok?(rapido?o.v:'Enviado! ✅'):'Erro ao enviar, tenta de novo')},function(){ok('Sem internet no celular')});}
+var eu=localStorage.tkEu||(localStorage.tkEu=Math.random().toString(36).slice(2,10));
+$('bB').onclick=function(){var q=$('bq').value.trim();if(!q)return;$('res').innerHTML='<p>Buscando na TV...</p>';manda({t:'busca',q:q,u:eu});};
+$('bq').onkeydown=function(e){if(e.key==='Enter')$('bB').onclick()};
+function lista(d){var r=$('res');r.innerHTML='';if(d.erro||!d.l.length){r.innerHTML='<p>Nada encontrado. Tenta outro nome.</p>';return;}
+ d.l.forEach(function(v){var x=document.createElement('div');x.className='r';var im=document.createElement('img');im.src='https://i.ytimg.com/vi/'+v.i+'/mqdefault.jpg';var t=document.createElement('div');var b=document.createElement('b');b.textContent=v.t;var sm=document.createElement('small');sm.textContent=[v.c,v.d].filter(Boolean).join(' • ');t.appendChild(b);t.appendChild(sm);var bt=document.createElement('button');bt.textContent='Cantar';bt.onclick=function(){manda({t:'pedir',i:v.i,tt:v.t});r.innerHTML='<p>✅ Pedido! Fica de olho na TV.</p>';};x.appendChild(im);x.appendChild(t);x.appendChild(bt);r.appendChild(x);});}
 $('bMsg').onclick=function(){var v=$('msg').value.trim();if(!v)return;manda({t:'msg',v:v});$('msg').value=''};
 $('bVoto').onclick=function(){if(!estrela){ok('Escolha as estrelas');return}manda({t:'voto',v:estrela})};
 if(!sala){$('st').textContent='Escaneie o QR code da TV pra entrar.'}else{
  $('st').textContent='✅ Pronto! Tudo que mandar aparece na TV';
  try{var es=new EventSource('https://ntfy.sh/'+TOP+'/sse');var vis={};
   es.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(m.event!=='message'||vis[m.id])return;vis[m.id]=1;var d=JSON.parse(m.message);if(d.de!=='tv')return;
+   if(d.t==='lista'&&d.para===eu)lista(d);
+   if(d.t==='fila')$('fila').textContent=d.l.length?('Na fila: '+d.l.slice(0,5).join(' • ')):'';
    if(d.t==='ok'&&d.musica)$('st').textContent='✅ Na TV • Tocando: '+d.musica;
    if(d.t==='nota'){$('nota').style.display='block';$('nN').textContent=d.v;estrela=0;[].forEach.call($('est').children,function(x){x.className=''})}}catch(x){}};
   es.onopen=function(){fetch('https://ntfy.sh/'+TOP,{method:'POST',body:JSON.stringify({t:'oi'})})};

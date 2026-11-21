@@ -34,6 +34,7 @@
  '.tkMsg{background:rgba(20,6,40,.88);border:2px solid #ff3fa4;color:#fff;padding:6px 12px;border-radius:16px;font-size:20px;font-weight:bold;transition:opacity .8s}',
  '.tkMsg b{color:#ffd54a}',
  '.tkFig{position:absolute;z-index:22;font-size:64px;pointer-events:none;transition:transform 3s linear,opacity 3s}',
+ '#tkFila{position:absolute;top:190px;right:6px;width:120px;z-index:20;background:rgba(20,6,40,.9);border:1px solid #ff3fa4;border-radius:10px;padding:5px;color:#fff;font:11px Arial;display:none}#tkFila b{color:#ffd54a;display:block;margin-bottom:3px}#tkFila div{margin-bottom:3px;line-height:1.2}',
  '#tkVoto{position:absolute;top:150px;right:6px;width:120px;text-align:center;z-index:20;background:rgba(20,6,40,.88);color:#ffd54a;border-radius:10px;padding:4px 8px;font:bold 14px Arial;display:none}',
  /* nota final */
  '#tkFinal{position:fixed;inset:0;z-index:9000;background:rgba(11,4,24,.92);display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}',
@@ -108,6 +109,7 @@
   try{player.addEventListener('onStateChange',function(e){
    var d=e&&e.data!==undefined?e.data:e;
    if(d===0){tocadas++;notaFinal(function(){
+     if(fila.length){tocaVideo(fila.shift());mostraFila();envia({t:'fila',l:fila.map(function(x){return x.titulo})});return;}
      if(tocadas<QTD&&typeof atual==='number'&&typeof resultados!=='undefined'&&atual+1<resultados.length){auto=true;window.tocar(atual+1);}
    });}
   });}catch(x){}
@@ -121,6 +123,10 @@
  var vt=document.createElement('div');vt.id='tkVoto';
  if(pa){pa.appendChild(feed);pa.appendChild(vt);}
  function mostraVoto(){if(!votos.length){vt.style.display='none';return;}var s=0;votos.forEach(function(v){s+=v});vt.style.display='block';vt.textContent='⭐ '+(s/votos.length).toFixed(1)+' ('+votos.length+')';}
+ var fila=[];
+ function tocaVideo(v){resultados.push(v);auto=true;window.tocar(resultados.length-1);if(v.quem)recado('🎤 '+v.quem,'vai cantar agora!');}
+ var fl=document.createElement('div');fl.id='tkFila';if(pa)pa.appendChild(fl);
+ function mostraFila(){if(!fila.length){fl.style.display='none';return;}fl.style.display='block';fl.innerHTML='';var h=document.createElement('b');h.textContent='Próximas ('+fila.length+')';fl.appendChild(h);fila.slice(0,4).forEach(function(v,i){var x=document.createElement('div');x.textContent=(i+1)+'. '+v.titulo.slice(0,38)+(v.quem?' • '+v.quem:'');fl.appendChild(x);});}
  function limpa(t,n){return String(t||'').replace(/\s+/g,' ').slice(0,n)}
  function recado(nome,txt){var m=document.createElement('div');m.className='tkMsg';var b=document.createElement('b');b.textContent=limpa(nome,14)+': ';m.appendChild(b);m.appendChild(document.createTextNode(limpa(txt,70)));feed.appendChild(m);while(feed.children.length>3)feed.firstChild.remove();setTimeout(function(){m.style.opacity=0;setTimeout(function(){m.remove()},900)},8000);}
  var FIGS=['🔥','👏','🎉','🥳','😍','😂','🤮','💩','👍','👎','🎤','⭐','💃','🍻','❤️','👑','🤘','😱'];
@@ -132,6 +138,12 @@
   if(d.t==='fig')figura(d.v);
   else if(d.t==='msg')recado(d.n||'Alguém',d.v);
   else if(d.t==='voto'){var v=parseInt(d.v,10);if(v>=1&&v<=5){votos.push(v);mostraVoto();figura('⭐');}}
+  else if(d.t==='busca'){var q=limpa(d.q,60);if(!q)return;if(!/karaok/i.test(q))q+=' karaoke';
+   fetch('/api/buscar?q='+encodeURIComponent(q)).then(function(r){return r.json()}).then(function(j){var l=(j.videos||[]).slice(0,10).map(function(v){return {i:v.id,t:String(v.titulo).slice(0,70),c:String(v.canal||'').slice(0,20),d:v.duracao||''}});envia({t:'lista',para:d.u,l:l});},function(){envia({t:'lista',para:d.u,l:[],erro:1});});}
+  else if(d.t==='pedir'){if(!/^[\w-]{6,15}$/.test(d.i||''))return;var v={id:d.i,titulo:limpa(d.tt,90),canal:'',duracao:'',thumb:'https://i.ytimg.com/vi/'+d.i+'/mqdefault.jpg',quem:limpa(d.n,14)};
+   var tocando=typeof player!=='undefined'&&player&&player.getPlayerState&&[1,3].indexOf(player.getPlayerState())>=0;
+   if(!tocando&&!fila.length){tocaVideo(v);}else{fila.push(v);mostraFila();recado(v.quem||'Alguém','pediu 🎵 '+v.titulo);}
+   envia({t:'fila',l:fila.map(function(x){return x.titulo})});}
   else if(d.t==='oi'){envia({t:'ok',musica:(typeof atual==='number'&&typeof resultados!=='undefined'&&resultados[atual])?resultados[atual].titulo:''});}
  }
  var vistos={};
@@ -146,7 +158,7 @@
   if(!pa||$('tkQR'))return;
   var url=PHONE+'?s='+cod2();
   var q=document.createElement('div');q.id='tkQR';
-  q.innerHTML='<img alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=216x216&margin=4&data='+encodeURIComponent(url)+'"><div>📱 Mande reações!</div>';
+  q.innerHTML='<img alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=216x216&margin=4&data='+encodeURIComponent(url)+'"><div>📱 Peça música e mande reações!</div>';
   pa.appendChild(q);
  }
  montaQR();
