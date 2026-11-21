@@ -1,5 +1,5 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel TudoOkê TV</title>
-<meta name="theme-color" content="#2b0a4f">
+<meta name="theme-color" content="#2b0a4f"><link rel="manifest" href="painel.webmanifest"><link rel="icon" href="painel-192.png"><link rel="apple-touch-icon" href="painel-192.png">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -85,4 +85,5 @@ function pinta(){var q=$('bus').value.trim().toUpperCase().replace('-',''),n=0,a
   bt('Apagar',function(){if(confirm('Apagar '+fmt(x.id)+'? O box para de funcionar.'))db.collection('licencas').doc(x.id).delete()},'#7f1d1d');
   d.appendChild(r);L.appendChild(d)});
  $('tN').textContent=n;$('tA').textContent=a;$('tV').textContent=v}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('painel-sw.js',{scope:'./'}).catch(function(){});
 </script></body></html>
