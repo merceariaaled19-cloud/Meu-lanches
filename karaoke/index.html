@@ -39,7 +39,20 @@ input{background:#0d001c;color:#fff;border:2px solid var(--c2);border-radius:14p
 #mic{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:640px;margin:auto}
 #micBig{font-size:5rem;text-align:center;filter:grayscale(1);transition:.1s}#micBig.on{filter:none}
 .row{display:flex;gap:8px}
+#intro{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 45%,#5b1aa8,#14002b 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .6s}
+#intro.sai{opacity:0;pointer-events:none}
+#iMic{font-size:min(34vmin,220px);animation:iMic 1.2s ease-in-out infinite alternate;filter:drop-shadow(0 0 30px #ff3fa4)}
+@keyframes iMic{0%{transform:rotate(-14deg) translateY(0) scale(1)}100%{transform:rotate(14deg) translateY(-18px) scale(1.08)}}
+#iTit{font-size:min(14vmin,110px);font-weight:900;color:#fff;letter-spacing:2px;text-shadow:0 0 18px #ff3fa4,0 0 40px #7c3aed;transform:scale(0);animation:iTit .8s 1s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes iTit{to{transform:scale(1)}}
+#iSub{color:#ffd54a;font-size:min(5vmin,32px);opacity:0;animation:iSub .6s 1.8s forwards}@keyframes iSub{to{opacity:1}}
+.iNota{position:absolute;bottom:-60px;font-size:min(9vmin,60px);animation:iSobe linear forwards;opacity:.9}
+@keyframes iSobe{to{transform:translateY(-120vh) rotate(360deg);opacity:0}}
+.iLuz{position:absolute;top:-10%;width:30vw;height:130%;background:linear-gradient(transparent,rgba(255,63,164,.25),transparent);transform-origin:top;animation:iLuz 2.4s ease-in-out infinite alternate}
+@keyframes iLuz{from{transform:rotate(-25deg)}to{transform:rotate(25deg)}}
+#iPula{position:absolute;bottom:4vh;color:#ccc;font-size:16px;background:transparent;border:1px solid #888}
 </style></head><body>
+<div id="intro" onclick="fimIntro()"><div class="iLuz" style="left:5%"></div><div class="iLuz" style="right:5%;animation-delay:1.2s"></div><div id="iMic">🎤</div><div id="iTit">TudoOkê</div><div id="iSub">Karaokê com nota</div><button id="iPula" onclick="fimIntro()">Pular ⏭</button></div>
 
 <section id="home">
   <h1>Tudo<span>Okê</span> 🎤</h1>
@@ -198,11 +211,17 @@ function pularMic(){mconn&&mconn.open&&mconn.send({t:"pular"})}
 async function buscaMic(){var q=$("#buscaMic").value.trim();if(!q)return;$("#resMic").innerHTML='<p class="muted">Buscando...</p>';var r=await busca(q);
   lista($("#resMic"),r,function(v){if(mconn&&mconn.open){mconn.send({t:"add",v:v});toast("➕ Na fila da TV: "+v.t)}else toast("Ainda não conectado na TV.")})}
 
+/* Abertura animada */
+var INTRO_OK=false,POS_INTRO=null;
+function fimIntro(){if(INTRO_OK)return;INTRO_OK=true;var i=document.getElementById("intro");i.classList.add("sai");setTimeout(function(){i.remove()},700);if(POS_INTRO){var f=POS_INTRO;POS_INTRO=null;f()}}
+(function(){var i=document.getElementById("intro"),n=["🎵","🎶","🎤","⭐","🎵","🎶"];var t=setInterval(function(){if(INTRO_OK){clearInterval(t);return}var e=document.createElement("div");e.className="iNota";e.textContent=n[Math.random()*n.length|0];e.style.left=(Math.random()*92)+"%";e.style.animationDuration=(2+Math.random()*2)+"s";i.appendChild(e);setTimeout(function(){e.remove()},4200)},180);
+ try{var A=new (window.AudioContext||window.webkitAudioContext)();var nt=[523,659,784,1047];nt.forEach(function(f,k){var o=A.createOscillator(),g=A.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(0,A.currentTime+k*.18);g.gain.linearRampToValueAtTime(.15,A.currentTime+k*.18+.02);g.gain.exponentialRampToValueAtTime(.001,A.currentTime+k*.18+.5);o.connect(g);g.connect(A.destination);o.start(A.currentTime+k*.18);o.stop(A.currentTime+k*.18+.6)})}catch(e){}
+ setTimeout(fimIntro,4000)})();
 /* link ?mic=COD */
 (function(){var q=new URLSearchParams(location.search).get("mic");if(q&&q.length===4){$("#codIn").value=q.toUpperCase();try{history.replaceState(null,"",location.pathname)}catch(e){}abreMic()}})();
 /* App TV Box: ?tv=1 abre direto no modo TV */
 (function(){var tv=new URLSearchParams(location.search).get("tv");if(tv==="1")localStorage.setItem("tudooke_tv","1");if(tv==="0")localStorage.removeItem("tudooke_tv");
- if(localStorage.getItem("tudooke_tv")==="1"&&!new URLSearchParams(location.search).get("mic")){try{abreTV(false)}catch(e){console.log(e)}}})();
+ if(localStorage.getItem("tudooke_tv")==="1"&&!new URLSearchParams(location.search).get("mic")){POS_INTRO=function(){try{abreTV(false)}catch(e){console.log(e)}};if(INTRO_OK)fimIntro()}})();
 /* TV Box: tela grande deitada já sugere modo TV */
 if(window.innerWidth>window.innerHeight&&window.innerWidth>=900&&!/Mobi/i.test(navigator.userAgent)){var b=document.querySelector("#home .bts button");b&&b.focus()}
 if("serviceWorker" in navigator)navigator.serviceWorker.register("service-worker.js");
