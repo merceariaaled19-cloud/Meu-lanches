@@ -1,3 +1,7 @@
+/* Busca só karaokê: acrescenta 'karaoke' e tira vídeo normal */
+(function(){if(window.__tkKF)return;window.__tkKF=1;var of=window.fetch;if(!of)return;var KR=/karaok|videok|playback|sing ?along|cante junto|com letra/i;
+ window.fetch=function(u,o){try{var s=typeof u==='string'?u:(u&&u.url)||'';if(s.indexOf('/api/buscar')>=0){var m=s.match(/[?&]q=([^&]*)/);if(m){var q=decodeURIComponent(m[1].replace(/\+/g,' '));if(!/karaok/i.test(q)){q+=' karaoke';s=s.replace(m[0],m[0].charAt(0)+'q='+encodeURIComponent(q));}}
+  return of.call(window,s,o).then(function(r){if(!r.ok)return r;return r.clone().json().then(function(j){if(j&&j.videos)j.videos=j.videos.filter(function(v){return KR.test((v.titulo||'')+' '+(v.canal||''))});return new Response(JSON.stringify(j),{status:200,headers:{'Content-Type':'application/json'}});}).catch(function(){return r});});}}catch(e){}return of.apply(window,arguments);};})();
 /* Licença TudoOkê TV: código do painel, preso ao ID do box */
 (function(){
  if(window.__tkLic)return;window.__tkLic=1;
