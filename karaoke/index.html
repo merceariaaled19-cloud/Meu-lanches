@@ -1,44 +1,34 @@
-<!doctype html>
-<html lang="pt-BR"><head>
+<!DOCTYPE html>
+<html lang="pt-br"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TudoOkê</title><meta name="theme-color" content="#14002b">
+<meta name="theme-color" content="#0a0a14"><title>TudoOkê</title>
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
-:root{--bg:#14002b;--c:#22063f;--c2:#33105a;--r:#ff2e88;--y:#ffd23f;--tx:#fff;--mu:#c9b6e8}
-*{box-sizing:border-box}html,body{margin:0;height:100%;background:radial-gradient(circle at 20% 0,#3a0b6b,var(--bg) 60%);color:var(--tx);font-family:system-ui,Roboto,sans-serif}
-button,input{font:inherit}button:focus,input:focus,[tabindex]:focus{outline:4px solid #ffd54a;outline-offset:3px}button{background:var(--r);color:#fff;border:0;border-radius:14px;padding:14px 18px;font-weight:700;cursor:pointer}
-button.sec{background:var(--c2)}button:focus,.res:focus,input:focus{outline:4px solid var(--y);outline-offset:2px}
-input{background:#0d001c;color:#fff;border:2px solid var(--c2);border-radius:14px;padding:14px;width:100%}
-.esc{display:none!important}h1{margin:0;font-size:2.4rem;letter-spacing:1px}h1 span{color:var(--y)}
-.muted{color:var(--mu)}.center{text-align:center}
-#home{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px}
-#home .bts{display:grid;gap:12px;width:min(520px,100%)}#home .bts button{font-size:1.15rem;padding:18px}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#000c;padding:12px 18px;border-radius:12px;z-index:99;max-width:90%}
-/* TV */
-#tv{height:100%;display:grid;grid-template-columns:1fr 34%;gap:12px;padding:12px}
-#tvL{display:flex;flex-direction:column;gap:10px;min-width:0}
-#plw{position:relative;flex:1;background:#000;border-radius:16px;overflow:hidden;min-height:200px}
-#plw iframe,#player{position:absolute;inset:0;width:100%;height:100%}
-#idle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px}
-#idle .cod{font-size:3.4rem;font-weight:900;color:var(--y);letter-spacing:6px}
-#barra{display:flex;gap:10px;align-items:center}
-#medidor{flex:1;height:18px;background:#0d001c;border-radius:9px;overflow:hidden}#medidor i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3cf,#7f7,var(--y),var(--r));transition:width .08s}
-#notaV{font-size:1.6rem;font-weight:900;color:var(--y);min-width:110px;text-align:right}
-#tvR{display:flex;flex-direction:column;gap:10px;min-height:0}
-.box{background:var(--c);border-radius:16px;padding:12px}
-#resTV,#fila,#resMic{overflow:auto;display:flex;flex-direction:column;gap:8px}
-#resTV{flex:1;min-height:0}
-.res{display:flex;gap:10px;align-items:center;background:var(--c2);border-radius:12px;padding:6px;cursor:pointer;border:0;color:#fff;text-align:left;width:100%}
-.res img{width:96px;height:54px;object-fit:cover;border-radius:8px;flex:none}.res b{font-size:.92rem;font-weight:600;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.res small{color:var(--mu)}
-.st{display:flex;gap:8px;flex-wrap:wrap;font-size:.9rem}.st span{background:var(--c2);padding:6px 10px;border-radius:10px}
-#fim{position:fixed;inset:0;background:#000d;display:flex;align-items:center;justify-content:center;z-index:50}
-#fim .card{background:var(--c);border-radius:22px;padding:28px 40px;text-align:center;min-width:300px}#fim .n{font-size:6rem;font-weight:900;color:var(--y);line-height:1}
-@media (max-width:760px) and (orientation:portrait){#tv{grid-template-columns:1fr;grid-template-rows:auto 1fr;height:auto}#plw{min-height:56vw;flex:none}}
-/* MIC */
-#mic{padding:16px;display:flex;flex-direction:column;gap:12px;max-width:640px;margin:auto}
-#micBig{font-size:5rem;text-align:center;filter:grayscale(1);transition:.1s}#micBig.on{filter:none}
-.row{display:flex;gap:8px}
+*{box-sizing:border-box} body{margin:0;background:#0a0a14;color:#fff;font-family:Arial;overflow:hidden}
+#topo{padding:12px;background:#111;display:flex;gap:8px;align-items:center;border-bottom:2px solid #ff0040;flex-wrap:wrap}
+#topo form{flex:1;display:flex;gap:8px;min-width:240px}
+#topo input{flex:1;padding:14px;border-radius:10px;border:2px solid #ff0040;background:#000;color:#fff;font-size:16px}
+.btn{background:#ff0040;color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:bold;cursor:pointer;font-size:15px}
+.btn:focus-visible,.btn:focus,.item:focus-visible,.item:focus,#topo input:focus{outline:4px solid #ffaa00;outline-offset:2px}
+#layout{display:flex;height:calc(100vh - 70px)}
+#lista{width:35%;background:#111;overflow:auto;padding:8px;border-right:2px solid #222}
+.aviso{padding:20px;opacity:0.6}
+.item{padding:12px;background:#1a1a2a;border-radius:10px;margin-bottom:8px;cursor:pointer;display:flex;gap:10px;align-items:center}
+.item:hover,.item:focus,.item.ativo{background:#2a2a4a} .item img{width:80px;height:50px;border-radius:6px;object-fit:cover;flex-shrink:0}
+.item .meta{font-size:11px;opacity:0.6}
+#player-area{flex:1;display:flex;flex-direction:column;background:#000;position:relative}
+#player{width:100%;height:65%;background:#000}
+#letra-box{height:20%;background:linear-gradient(#000,#1a0010);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;text-align:center;padding:10px;text-shadow:0 0 10px #ff0040}
+#placar{height:15%;background:#111;display:flex;justify-content:space-around;align-items:center;border-top:2px solid #ff0040}
+.score{font-size:32px;color:#ff0040;font-weight:bold}
+.barra-voz{width:60%;height:20px;background:#333;border-radius:10px;overflow:hidden}
+#voz-fill{height:100%;width:0%;background:linear-gradient(90deg,#ff0040,#ffaa00);transition:0.1s}
+#tv-aviso{position:absolute;top:10px;left:10px;background:#ff0040;padding:6px 10px;border-radius:20px;font-size:12px;display:none}
+#btCast{position:absolute;top:10px;right:10px;z-index:5;background:rgba(0,0,0,.7);border:2px solid #fff;display:none}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;border:2px solid #ff0040;padding:10px 16px;border-radius:12px;display:none;z-index:50}
+@media(max-width:800px){#layout{flex-direction:column}#lista{width:100%;height:35%}#player{height:55%}#letra-box{font-size:20px}.score{font-size:24px}}
 #intro{position:fixed;inset:0;z-index:9999;background:radial-gradient(circle at 50% 45%,#5b1aa8,#14002b 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .6s}
 #intro.sai{opacity:0;pointer-events:none}
 #iMic{font-size:min(34vmin,220px);animation:iMic 1.2s ease-in-out infinite alternate;filter:drop-shadow(0 0 30px #ff3fa4)}
@@ -51,207 +41,153 @@ input{background:#0d001c;color:#fff;border:2px solid var(--c2);border-radius:14p
 .iLuz{position:absolute;top:-10%;width:30vw;height:130%;background:linear-gradient(transparent,rgba(255,63,164,.25),transparent);transform-origin:top;animation:iLuz 2.4s ease-in-out infinite alternate}
 @keyframes iLuz{from{transform:rotate(-25deg)}to{transform:rotate(25deg)}}
 #iPula{position:absolute;bottom:4vh;color:#ccc;font-size:16px;background:transparent;border:1px solid #888}
-.catg{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.catg button{padding:10px 12px;font-size:1rem}.catl{display:grid;gap:6px;margin-top:8px;max-height:40vh;overflow:auto}.catl button{text-align:left;background:#2a0a52;font-weight:600}#plw{position:relative}#btCast{position:absolute;top:10px;right:10px;z-index:5;background:rgba(0,0,0,.65);border:2px solid #fff;padding:8px 12px;font-size:1rem}</style></head><body>
+</style></head><body>
 <div id="intro" onclick="fimIntro()"><div class="iLuz" style="left:5%"></div><div class="iLuz" style="right:5%;animation-delay:1.2s"></div><div id="iMic">🎤</div><div id="iTit">TudoOkê</div><div id="iSub">Karaokê com nota</div><button id="iPula" onclick="fimIntro()">Pular ⏭</button></div>
 
-<section id="home">
-  <h1>Tudo<span>Okê</span> 🎤</h1>
-  <p class="muted center">Karaokê com nota. Escolha o que este aparelho vai ser:</p>
-  <div class="bts">
-    <button onclick="abreTV(true)">🎤 Só a TV Box: escolher música na tela e cantar (microfone na TV Box)</button>
-    <button class="sec" onclick="abreTV(false)">📺 Esta é a TV (celular vira microfone)</button>
-        <div class="row"><input id="codIn" placeholder="CÓDIGO DA TV" maxlength="4" style="text-transform:uppercase" inputmode="text"><button onclick="abreMic()">📱 Virar microfone</button></div>
-  </div>
-  <small class="muted center">Na TV Box, abra este app no navegador. No celular, digite o código que aparece na TV.</small>
-</section>
 
-<section id="tv" class="esc">
-  <div id="tvL">
-    <div id="plw"><div id="player"></div><button id="btCast" class="esc" onclick="espelhar()">📡 Espelhar</button>
-      <div id="idle"><div class="muted">Código da TV</div><div class="cod" id="codTV">····</div>
-        <div id="statTV" class="muted">No celular: abra o TudoOkê, toque em "Virar microfone" e digite o código.</div>
-        <div class="row"><button class="sec" onclick="zap()">📲 Mandar link no WhatsApp</button><button class="sec" onclick="telaCheia()">⛶ Tela cheia</button></div></div>
-    </div>
-    <div id="barra"><span id="micSt">🎤 sem microfone</span><div id="medidor"><i></i></div><div id="notaV">— pts</div></div>
-  </div>
-  <div id="tvR">
-    <div class="box row"><input id="buscaTV" placeholder="Buscar música (ex.: Evidências)" onkeydown="if(event.key==='Enter')buscaTV()"><button onclick="buscaTV()">🔍</button></div>
-    <div class="box" id="catBox"><b>🎵 Categorias</b> <small class="muted">escolha com o controle</small><div id="cats" class="catg"></div><div id="catM" class="catl"></div></div>
-<div class="box" id="filaBox"><b>Fila</b> <small class="muted" id="filaN"></small><div id="fila"></div>
-      <div class="row" style="margin-top:8px"><button class="sec" onclick="pular()">⏭ Pular</button><button class="sec" onclick="volVoz(-1)">🔉 Voz</button><button class="sec" onclick="volVoz(1)">🔊 Voz</button></div></div>
-    <div class="box" style="flex:1;min-height:0;display:flex;flex-direction:column"><b>Resultados</b><div id="resTV"></div></div>
-  </div>
-</section>
-
-<section id="mic" class="esc">
-  <h1>Tudo<span>Okê</span></h1>
-  <div id="micEst" class="muted center">Conectando...</div>
-  <div id="micBig">🎤</div>
-  <div id="medidor2" style="height:16px;background:#0d001c;border-radius:8px;overflow:hidden"><i style="display:block;height:100%;width:0;background:linear-gradient(90deg,#3cf,#7f7,#ffd23f,#ff2e88)"></i></div>
-  <div class="row"><button id="btMudo" class="sec" onclick="mudo()" style="flex:1">🔇 Mutar</button><button class="sec" onclick="pularMic()" style="flex:1">⏭ Pular</button></div>
-  <div class="row"><input id="buscaMic" placeholder="Buscar música para a fila" onkeydown="if(event.key==='Enter')buscaMic()"><button onclick="buscaMic()">🔍</button></div>
-  <div id="resMic"></div>
-</section>
-
-<div id="fim" class="esc" onclick="fechaFim()"><div class="card"><div id="fimE" style="font-size:3rem">🎉</div><div class="n" id="fimN">0</div><div id="fimT" style="font-size:1.4rem;margin:8px 0"></div><div class="st" id="fimS" style="justify-content:center"></div><p class="muted">Toque para continuar</p></div></div>
-<div id="toast" class="toast esc"></div>
-
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<div id="topo">
+ <form id="form-busca"><input id="busca" placeholder="Digite: Zezé - É o amor karaoke" value="karaoke sertanejo" aria-label="Buscar música"><button class="btn" type="submit">🔍 BUSCAR</button></form>
+ <button class="btn" style="background:#00d4ff" onclick="iniciarMic()">🎤 ATIVAR MICROFONE</button>
+ <span id="statusMic" style="font-size:12px">Mic off</span>
+</div>
+<div id="layout">
+ <div id="lista"><div class="aviso">Digite uma música e clique em BUSCAR. O app vai buscar só versões KARAOKE do YouTube.</div></div>
+ <div id="player-area">
+  <div id="player"></div>
+  <button id="btCast" class="btn" onclick="espelhar()">📡 Espelhar na TV</button>
+  <div id="letra-box">TudoOkê - Aguardando música...</div>
+  <div id="placar"><div>PONTUAÇÃO: <span class="score" id="pontos">0</span></div><div class="barra-voz"><div id="voz-fill"></div></div><div>NOTA: <span class="score" id="nota">--</span></div></div>
+  <div id="tv-aviso">MODO TV BOX - Use o controle remoto</div>
+ </div>
+</div>
+<div id="toast"></div>
 <script>
-var $=function(s){return document.querySelector(s)};
-function toast(t){var e=$("#toast");e.textContent=t;e.classList.remove("esc");clearTimeout(e._t);e._t=setTimeout(function(){e.classList.add("esc")},3500)}
+let player, playerPronto=false, videoPendente=null, micAtivo=false, audioCtx, analyser, pontos=0, vozLevel=0, ultimoPonto=0;
+let resultados=[], atual=-1;
+const TV = new URLSearchParams(location.search).get("tv")==="1" || localStorage.getItem("tudooke_tv")==="1";
+if(new URLSearchParams(location.search).get("tv")==="1") localStorage.setItem("tudooke_tv","1");
+const PIPED=["https://api.piped.private.coffee","https://pipedapi.kavin.rocks","https://pipedapi.adminforge.de"];
+function toast(t){let e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>e.style.display='none',3500)}
+function onYouTubeIframeAPIReady(){
+ player = new YT.Player('player',{height:'100%',width:'100%',playerVars:{playsinline:1, origin: window.location.origin},
+  events:{onReady: ()=>{ playerPronto=true; if(videoPendente!==null) tocar(videoPendente); }, onStateChange: onPlayerState, onError: onPlayerError}});
+}
+function onPlayerState(e){ if(e.data==1) iniciarPontuacao(); }
+function onPlayerError(e){
+ if((e.data==101||e.data==150) && atual+1<resultados.length){ log("Esse vídeo não permite tocar aqui. Pulando pro próximo..."); setTimeout(()=>tocar(atual+1),1500); }
+ else log("Não foi possível tocar esse vídeo. Escolha outro da lista.");
+}
+document.getElementById('form-busca').addEventListener('submit', e=>{ e.preventDefault(); buscar(); });
+function dur(s){return s?Math.floor(s/60)+":"+String(s%60).padStart(2,"0"):""}
+async function buscaVideos(termo){
+ for(let i=0;i<PIPED.length;i++){
+  try{let ctl=new AbortController();let tm=setTimeout(()=>ctl.abort(),9000);
+   let r=await fetch(PIPED[i]+"/search?q="+encodeURIComponent(termo)+"&filter=videos",{signal:ctl.signal});clearTimeout(tm);
+   if(!r.ok) continue; let j=await r.json();
+   let out=(j.items||[]).filter(x=>x.url&&x.type==="stream"&&x.duration>60).slice(0,20).map(x=>{let id=(x.url.match(/v=([\w-]{11})/)||[])[1];return {id,titulo:x.title,canal:x.uploaderName||"",duracao:dur(x.duration),thumb:"https://i.ytimg.com/vi/"+id+"/mqdefault.jpg"}}).filter(v=>v.id);
+   if(out.length){PIPED.unshift(PIPED.splice(i,1)[0]);return out}
+  }catch(e){}
+ }
+ throw new Error("busca fora");
+}
+async function buscar(){
+ let termo = document.getElementById('busca').value.trim();
+ if(!termo) return;
+ if(!/karaok/i.test(termo)) termo += " karaoke";
+ let listaDiv = document.getElementById('lista');
+ listaDiv.innerHTML = '<div class="aviso">Buscando karaokes reais do YouTube...</div>';
+ try{ resultados = await buscaVideos(termo); }
+ catch(e){ listaDiv.innerHTML = '<div class="aviso">Não foi possível buscar agora. Tente de novo em instantes.</div>'; return; }
+ listaDiv.innerHTML = "";
+ if(!resultados.length){ listaDiv.innerHTML = '<div class="aviso">Nenhum karaoke encontrado. Tente outro nome.</div>'; return; }
+ resultados.forEach((v,i)=>{
+  let div = document.createElement('div');
+  div.className='item'; div.tabIndex=0; div.setAttribute('role','button');
+  let img = document.createElement('img'); img.src=v.thumb; img.alt=""; img.loading="lazy";
+  let txt = document.createElement('div');
+  let b = document.createElement('b'); b.textContent = v.titulo;
+  let meta = document.createElement('div'); meta.className='meta';
+  meta.textContent = [v.canal, v.duracao].filter(Boolean).join(' • ');
+  txt.append(b, meta); div.append(img, txt);
+  div.onclick=()=>tocar(i);
+  div.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tocar(i); } };
+  listaDiv.appendChild(div);
+ });
+}
+function tocar(i){
+ if(!playerPronto){ videoPendente=i; log("Carregando player..."); return; }
+ videoPendente=null; atual=i;
+ let v = resultados[i];
+ document.querySelectorAll('.item').forEach((el,j)=>el.classList.toggle('ativo', j===i));
+ player.loadVideoById(v.id);
+ log("🎤 Cantando: " + v.titulo);
+ pontos=0; document.getElementById('pontos').innerText="0"; document.getElementById('nota').innerText="--";
+ if(!TV) document.getElementById('btCast').style.display='block';
+}
+function log(t){ document.getElementById('letra-box').innerText = t; }
+// --- PONTUAÇÃO COM MICROFONE ---
+async function iniciarMic(){
+ if(micAtivo) return;
+ try{
+  let stream = await navigator.mediaDevices.getUserMedia({audio:true});
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  let source = audioCtx.createMediaStreamSource(stream);
+  analyser = audioCtx.createAnalyser(); analyser.fftSize=256;
+  source.connect(analyser);
+  micAtivo=true; document.getElementById('statusMic').innerText="Mic ON - Cantando!";
+  analisarVoz();
+ } catch(e){ alert("Precisa permitir microfone. Na TV Box, conecte um microfone USB."); }
+}
+function analisarVoz(agora=0){
+ if(!micAtivo) return;
+ let data = new Uint8Array(analyser.frequencyBinCount);
+ analyser.getByteFrequencyData(data);
+ let media = data.reduce((a,b)=>a+b,0)/data.length;
+ vozLevel = media;
+ document.getElementById('voz-fill').style.width = Math.min(100, vozLevel) + "%";
+ if(vozLevel>20 && agora-ultimoPonto>100 && player && player.getPlayerState && player.getPlayerState()==1){
+  ultimoPonto = agora;
+  pontos += Math.floor(vozLevel/10);
+  document.getElementById('pontos').innerText = pontos;
+  let nota = vozLevel>70?"A+ - SHOW!":vozLevel>40?"B - Boa!":"C - Canta mais alto!";
+  document.getElementById('nota').innerText=nota;
+ }
+ requestAnimationFrame(analisarVoz);
+}
+function iniciarPontuacao(){ if(!micAtivo) document.getElementById('statusMic').innerText="Dica: Ative o microfone pra pontuar!"; }
+
+// --- ESPELHAR: celular manda a música pra TV Box no mesmo Wi-Fi ---
 var ICE={iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.relay.metered.ca:80"},{urls:"turn:global.relay.metered.ca:80",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:80?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:443",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turns:global.relay.metered.ca:443?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"}]};
-var PFX="tudooke-";
-function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 
-/* ===== BUSCA (Piped, sem chave) ===== */
-var PIPED=["https://api.piped.private.coffee","https://pipedapi.kavin.rocks","https://pipedapi.adminforge.de","https://pipedapi.r4fo.com"];
-function idDe(t){var m=String(t).match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);return m?m[1]:(/^[\w-]{11}$/.test(t)?t:null)}
-async function busca(q){
-  var id=idDe(q.trim()); if(id) return [{id:id,t:"Vídeo do link",c:"",th:"https://i.ytimg.com/vi/"+id+"/mqdefault.jpg",d:""}];
-  var qq=/karaok|karaoke/i.test(q)?q:q+" karaokê";
-  for(var i=0;i<PIPED.length;i++){
-    try{var ctl=new AbortController();var tm=setTimeout(function(){ctl.abort()},8000);
-      var r=await fetch(PIPED[i]+"/search?q="+encodeURIComponent(qq)+"&filter=videos",{signal:ctl.signal});clearTimeout(tm);
-      if(!r.ok) continue; var j=await r.json();
-      var out=(j.items||[]).filter(function(x){return x.url&&x.type==="stream"&&x.duration>60}).slice(0,15).map(function(x){var vid=idDe(x.url);return{id:vid,t:x.title,c:x.uploaderName||"",th:"https://i.ytimg.com/vi/"+vid+"/mqdefault.jpg",d:x.duration?Math.floor(x.duration/60)+":"+String(x.duration%60).padStart(2,"0"):""}});
-      if(out.length){PIPED.unshift(PIPED.splice(i,1)[0]);return out;}
-    }catch(e){}
-  }
-  return null;
+const PFX="tudooke-";
+async function idRede(){try{let r=await fetch("https://api.ipify.org?format=json");let j=await r.json();let h=0,t=j.ip;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return PFX+"net-"+h.toString(36)}catch(e){return null}}
+async function salaTV(){let id=await idRede();if(!id)return;let p=new Peer(id,{config:ICE});
+ p.on("connection",c=>{c.on("data",d=>{if(d.t==="cast"&&d.v){toast("📡 Música chegando do celular!");resultados=d.lista&&d.lista.length?d.lista:[d.v];let i=Math.max(0,resultados.findIndex(x=>x.id===d.v.id));desenhaLista();tocar(i);
+   if(d.s>3){let k=0,iv=setInterval(()=>{k++;try{if(player.getPlayerState()==1){player.seekTo(d.s,true);clearInterval(iv)}}catch(e){}if(k>40)clearInterval(iv)},250)}
+   c.send({t:"ok"})}})});
+ p.on("error",()=>{});p.on("disconnected",()=>{try{p.reconnect()}catch(e){}})}
+function desenhaLista(){let q=document.getElementById('busca');let r=resultados;document.getElementById('lista').innerHTML="";resultados=r;
+ r.forEach((v,i)=>{let div=document.createElement('div');div.className='item';div.tabIndex=0;div.innerHTML='<img alt=""><div><b></b><div class="meta"></div></div>';div.querySelector('img').src=v.thumb;div.querySelector('b').textContent=v.titulo;div.querySelector('.meta').textContent=[v.canal,v.duracao].filter(Boolean).join(' • ');div.onclick=()=>tocar(i);div.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tocar(i)}};document.getElementById('lista').appendChild(div)})}
+async function espelhar(){let b=document.getElementById('btCast');b.textContent="📡 Procurando a TV...";let id=await idRede();
+ if(!id){b.textContent="📡 Espelhar na TV";return toast("Sem internet pra procurar a TV.")}
+ let p=new Peer({config:ICE}),ok=false;
+ let fim=setTimeout(()=>{if(!ok){b.textContent="📡 Espelhar na TV";toast("Não achei a TV. Abra o TudoOkê TV na TV Box, no mesmo Wi-Fi.");try{p.destroy()}catch(e){}}},12000);
+ p.on("error",()=>{});
+ p.on("open",()=>{let c=p.connect(id,{reliable:true});
+  c.on("open",()=>{let s=0;try{s=player.getCurrentTime()}catch(e){}c.send({t:"cast",v:resultados[atual],s:s,lista:resultados})});
+  c.on("data",d=>{if(d.t!=="ok")return;ok=true;clearTimeout(fim);try{player.pauseVideo()}catch(e){}b.textContent="📺 Tocando na TV";toast("✅ Tocando na TV!");setTimeout(()=>{try{p.destroy()}catch(e){}},1500)})})}
+
+if(TV || navigator.userAgent.includes('TV') || window.innerWidth>1200){
+ let a=document.getElementById('tv-aviso');a.style.display='block';setTimeout(()=>a.style.display='none',5000);
 }
-function lista(el,arr,fn){
-  if(!arr){el.innerHTML='<p class="muted">Busca fora do ar agora. Cole o link do YouTube da música na busca.</p>';return}
-  el.innerHTML=arr.map(function(x,i){return '<button class="res" data-i="'+i+'"><img src="'+x.th+'" alt=""><div><b>'+esc(x.t)+'</b><small>'+esc(x.c)+(x.d?" · "+x.d:"")+'</small></div></button>'}).join("");
-  Array.prototype.forEach.call(el.querySelectorAll(".res"),function(b){b.onclick=function(){fn(arr[+b.dataset.i])}});
-}
-
-/* ===== TV ===== */
-var MICL=null,peer,COD,LOCAL=false,FILA=[],ATUAL=null,PL=null,YTOK=false,conns=[],AC,AN,GAIN,VOZV=1;
-function codNovo(){var a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",c="";for(var i=0;i<4;i++)c+=a[Math.floor(Math.random()*a.length)];return c}
-function telaCheia(){try{var d=document.documentElement;(d.requestFullscreen||d.webkitRequestFullscreen).call(d).then(function(){try{screen.orientation.lock("landscape")}catch(e){}}).catch(function(){})}catch(e){}}
-function abreTV(local){LOCAL=local;$("#home").classList.add("esc");$("#tv").classList.remove("esc");telaCheia();iniAudio();carregaYT();
-  if(local){navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:true,autoGainControl:true}}).then(function(s){MICL=s;ligaVoz(s,"🎙️ Microfone deste aparelho")}).catch(function(){toast("Não consegui abrir o microfone. Ligue um microfone e permita o acesso.")})}
-  criaSala(); setTimeout(function(){$("#buscaTV").focus()},400);
-}
-function criaSala(){COD=codNovo();peer=new Peer(PFX+COD,{config:ICE});
-  peer.on("open",function(){$("#codTV").textContent=COD});
-  peer.on("error",function(e){if(e.type==="unavailable-id")return criaSala();$("#statTV").textContent="Erro de conexão ("+e.type+"). Recarregue a página."});
-  peer.on("disconnected",function(){try{peer.reconnect()}catch(e){}});
-  peer.on("connection",trataConn);
-  if(!LOCAL||localStorage.getItem("tudooke_tv")==="1")salaRede();
-  peer.on("call",function(cl){cl.answer();cl.on("stream",function(s){ligaVoz(s,"🎤 Celular conectado")})});
-}
-function trataConn(c){conns.push(c);c.on("open",function(){c.send({t:"ok",fila:FILA.length,cod:COD});});
-    c.on("data",function(d){if(d.t==="add")addFila(d.v);if(d.t==="pular")pular();if(d.t==="cast"&&d.v){recebeCast(d)}else if(d.t==="mic")toast("📱 Microfone conectado!")});
-    c.on("close",function(){conns=conns.filter(function(x){return x!==c})})}
-/* Espelhar: a TV fica achável por quem está no mesmo Wi-Fi (mesmo IP de internet) */
-async function idRede(){try{var r=await fetch("https://api.ipify.org?format=json");var j=await r.json();var h=0,t=j.ip;for(var i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return PFX+"net-"+h.toString(36)}catch(e){return null}}
-var peerNet;async function salaRede(){var id=await idRede();if(!id)return;peerNet=new Peer(id,{config:ICE});peerNet.on("connection",trataConn);peerNet.on("call",function(cl){cl.answer();cl.on("stream",function(s){ligaVoz(s,"🎤 Celular conectado")})});peerNet.on("error",function(){});peerNet.on("disconnected",function(){try{peerNet.reconnect()}catch(e){}})}
-function recebeCast(d){toast("📡 Música chegando do celular!");FILA=(d.fila||[]).concat(FILA.filter(function(x){return !d.fila||!d.fila.some(function(y){return y.id===x.id})}));ATUAL=d.v;desenhaFila();toca(d.v);
-  if(d.s>3){var k=0,iv=setInterval(function(){k++;try{if(PL&&PL.getPlayerState&&PL.getPlayerState()===1){PL.seekTo(d.s,true);clearInterval(iv)}}catch(e){}if(k>40)clearInterval(iv)},250)}}
-async function espelhar(){var b=$("#btCast");b.textContent="📡 Procurando a TV...";var id=await idRede();
-  if(!id){b.textContent="📡 Espelhar";return toast("Sem internet pra procurar a TV.")}
-  var p=new Peer({config:ICE}),ok=false;
-  var fim=setTimeout(function(){if(!ok){b.textContent="📡 Espelhar";toast("Não achei a TV. Abra o TudoOkê TV na TV Box, no mesmo Wi-Fi.");try{p.destroy()}catch(e){}}},12000);
-  p.on("error",function(){});
-  p.on("open",function(){var c=p.connect(id,{reliable:true});
-    c.on("open",function(){var s=0;try{s=PL&&PL.getCurrentTime?PL.getCurrentTime():0}catch(e){}c.send({t:"cast",v:ATUAL,s:s,fila:FILA})});
-    c.on("data",function(d){if(d.t!=="ok"||!d.cod)return;ok=true;clearTimeout(fim);try{PL&&PL.pauseVideo()}catch(e){}
-      toast("✅ Tocando na TV! Agora o celular é o microfone.");setTimeout(function(){try{p.destroy()}catch(e){}try{if(MICL)MICL.getTracks().forEach(function(t){t.stop()})}catch(e){}
-      $("#tv").classList.add("esc");$("#codIn").value=d.cod;abreMic()},800)})})}
-function zap(){var l=location.origin+location.pathname+"?mic="+COD;window.open("https://wa.me/?text="+encodeURIComponent("🎤 Bora cantar no TudoOkê! Toque no link pra virar microfone: "+l),"_blank")}
-function iniAudio(){if(AC)return;AC=new (window.AudioContext||window.webkitAudioContext)();GAIN=AC.createGain();GAIN.gain.value=VOZV;
-  var dl=AC.createDelay(0.5);dl.delayTime.value=0.09;var fb=AC.createGain();fb.gain.value=0.18;var wet=AC.createGain();wet.gain.value=0.25;
-  GAIN.connect(AC.destination);GAIN.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(wet);wet.connect(AC.destination);
-  document.addEventListener("click",function(){if(AC.state!=="running")AC.resume()});}
-var SRC=null,AUDEL=null;
-function ligaVoz(stream,txt){iniAudio();if(AC.state!=="running")AC.resume();
-  if(!LOCAL){if(!AUDEL){AUDEL=new Audio();AUDEL.muted=true}AUDEL.srcObject=stream;AUDEL.play().catch(function(){})} /* Chrome precisa disso pra stream WebRTC tocar no AudioContext */
-  try{if(SRC)SRC.disconnect()}catch(e){}
-  SRC=AC.createMediaStreamSource(stream);AN=AC.createAnalyser();AN.fftSize=2048;SRC.connect(AN);SRC.connect(GAIN);
-  $("#micSt").textContent=txt;$("#statTV").textContent="Microfone pronto! Busque uma música e coloque na fila.";loopVoz();}
-function volVoz(d){VOZV=Math.max(0,Math.min(3,VOZV+d*0.25));if(GAIN)GAIN.gain.value=VOZV;toast("Volume da voz: "+Math.round(VOZV*100)+"%")}
-async function buscaTV(){var q=$("#buscaTV").value.trim();if(!q)return;$("#resTV").innerHTML='<p class="muted">Buscando...</p>';var r=await busca(q);lista($("#resTV"),r,function(v){addFila(v)});var f=$("#resTV .res");if(f)f.focus()}
-function addFila(v){FILA.push(v);toast("➕ "+v.t);desenhaFila();conns.forEach(function(c){try{c.send({t:"fila",n:FILA.length})}catch(e){}});if(!ATUAL)proxima()}
-function desenhaFila(){$("#filaN").textContent=FILA.length?FILA.length+" na fila":"vazia";$("#fila").innerHTML=(ATUAL?'<div class="res" style="background:#5a1a7a"><img src="'+ATUAL.th+'"><div><b>▶ '+esc(ATUAL.t)+'</b></div></div>':"")+FILA.map(function(x){return '<div class="res"><img src="'+x.th+'"><div><b>'+esc(x.t)+'</b></div></div>'}).join("")}
-function carregaYT(){if(window.YT&&window.YT.Player){YTOK=true;return}if(document.getElementById("ytapi"))return;var s=document.createElement("script");s.id="ytapi";s.src="https://www.youtube.com/iframe_api";document.head.appendChild(s)}
-window.onYouTubeIframeAPIReady=function(){YTOK=true;if(ATUAL)toca(ATUAL)};
-function proxima(){ATUAL=FILA.shift()||null;desenhaFila();if(!ATUAL){$("#idle").classList.remove("esc");if(PL&&PL.stopVideo)PL.stopVideo();return}toca(ATUAL)}
-function toca(v){if(!YTOK){toast("Carregando o player...");return}$("#idle").classList.add("esc");if(localStorage.getItem("tudooke_tv")!=="1")$("#btCast").classList.remove("esc");zeraNota();
-  if(!PL){PL=new window.YT.Player("player",{videoId:v.id,playerVars:{autoplay:1,rel:0,modestbranding:1,playsinline:1},events:{onReady:function(e){e.target.unMute();e.target.setVolume(100);e.target.playVideo()},onStateChange:estado,onError:function(e){toast("Esse vídeo não deixa tocar fora do YouTube. Pulando pro próximo...");setTimeout(proxima,1500)}}})}
-  else PL.loadVideoById(v.id);
-  clearTimeout(toca._t);toca._t=setTimeout(function(){try{if(PL&&PL.getPlayerState&&PL.getPlayerState()!==1&&PL.getPlayerState()!==3)toast("Se não começou, toque no vídeo ▶")}catch(e){}},4000);}
-function estado(e){if(e.data===0){mostraNota();}}
-function pular(){if(ATUAL&&N.cantou>8)mostraNota();else proxima()}
-
-/* ===== NOTA ===== */
-var N;function zeraNota(){N={fr:0,cantou:0,afin:0,afinN:0,estav:0,estN:0,last:0,pico:0};$("#notaV").textContent="0 pts"}
-function pitch(buf,sr){var n=buf.length,rms=0;for(var i=0;i<n;i++)rms+=buf[i]*buf[i];rms=Math.sqrt(rms/n);if(rms<0.015)return{f:0,rms:rms};
-  var mn=Math.floor(sr/1000),mx=Math.floor(sr/70),best=0,bo=-1;
-  for(var o=mn;o<mx;o++){var c=0;for(var j=0;j<n-o;j+=2)c+=buf[j]*buf[j+o];if(c>best){best=c;bo=o}}
-  var c0=0;for(var k=0;k<n;k+=2)c0+=buf[k]*buf[k];if(bo<0||best/c0<0.45)return{f:0,rms:rms};return{f:sr/bo,rms:rms}}
-var BUF=new Float32Array(2048),tick=0;
-function loopVoz(){requestAnimationFrame(loopVoz);if(!AN)return;AN.getFloatTimeDomainData(BUF);var r=Math.sqrt(BUF.reduce(function(a,b){return a+b*b},0)/BUF.length);
-  $("#medidor i").style.width=Math.min(100,r*600)+"%";if(++tick%3)return;
-  var tocando=PL&&PL.getPlayerState&&PL.getPlayerState()===1;if(!tocando||!N)return;
-  N.fr++;var p=pitch(BUF,AC.sampleRate);
-  if(p.f>70&&p.f<1000){N.cantou++;var midi=69+12*Math.log2(p.f/440),dev=Math.abs(midi-Math.round(midi));N.afin+=1-dev*2;N.afinN++;
-    if(N.last){var d=Math.abs(midi-N.last);N.estav+=d<1?1:(d<3?0.5:0);N.estN++}N.last=midi;N.pico=Math.max(N.pico,p.rms)}else N.last=0;
-  $("#notaV").textContent=calcNota()+" pts";}
-function calcNota(){if(!N||N.fr<20)return 0;var pres=Math.min(1,N.cantou/(N.fr*0.55)),af=N.afinN?N.afin/N.afinN:0,es=N.estN?N.estav/N.estN:0;
-  return Math.round(Math.max(0,Math.min(100,20+pres*35+Math.max(0,af-0.4)/0.6*30+es*15))*(pres<0.1?0.3:1))}
-function mostraNota(){var n=calcNota(),pres=N.fr?Math.round(Math.min(1,N.cantou/(N.fr*0.55))*100):0,af=N.afinN?Math.round(N.afin/N.afinN*100):0,es=N.estN?Math.round(N.estav/N.estN*100):0;
-  var t=n>=90?["🏆","Arrasou! Cantor profissional!"]:n>=75?["🌟","Mandou muito bem!"]:n>=55?["👏","Bom! Dá pra melhorar!"]:n>=35?["😅","Treina mais um pouquinho!"]:["🙉","Cadê a voz? Canta no microfone!"];
-  $("#fimE").textContent=t[0];$("#fimN").textContent=n;$("#fimT").textContent=t[1];
-  $("#fimS").innerHTML="<span>🎤 Cantou: "+pres+"%</span><span>🎯 Afinação: "+af+"%</span><span>📈 Firmeza: "+es+"%</span>";
-  $("#fim").classList.remove("esc");conns.forEach(function(c){try{c.send({t:"nota",n:n,m:t[1]})}catch(e){}});
-  try{var o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);[523,659,784,1047].forEach(function(f,i){o.frequency.setValueAtTime(f,AC.currentTime+i*.15)});g.gain.setValueAtTime(.15,AC.currentTime);g.gain.linearRampToValueAtTime(0,AC.currentTime+.8);o.start();o.stop(AC.currentTime+.8)}catch(e){}
-  setTimeout(function(){if(!$("#fim").classList.contains("esc"))fechaFim()},9000);ATUAL&&(ATUAL.feito=1);}
-function fechaFim(){$("#fim").classList.add("esc");proxima()}
-
-/* ===== CELULAR MICROFONE ===== */
-var mconn,mcall,MST,MUDO=false;
-async function abreMic(){var cod=$("#codIn").value.trim().toUpperCase();if(cod.length!==4)return toast("Digite o código de 4 letras que aparece na TV.");
-  $("#home").classList.add("esc");$("#mic").classList.remove("esc");$("#micEst").textContent="Pedindo o microfone...";
-  try{MST=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}catch(e){$("#micEst").textContent="Sem permissão de microfone. Libere nas configurações do navegador.";return}
-  try{var ac=new (window.AudioContext||window.webkitAudioContext)(),an=ac.createAnalyser(),b=new Float32Array(1024);an.fftSize=1024;ac.createMediaStreamSource(MST).connect(an);
-    (function lp(){requestAnimationFrame(lp);an.getFloatTimeDomainData(b);var r=0;for(var i=0;i<b.length;i++)r+=b[i]*b[i];r=Math.sqrt(r/b.length);$("#medidor2 i").style.width=Math.min(100,r*600)+"%";$("#micBig").classList.toggle("on",r>0.02&&!MUDO)})()}catch(e){}
-  try{navigator.wakeLock&&navigator.wakeLock.request("screen")}catch(e){}
-  $("#micEst").textContent="Conectando na TV "+cod+"...";var p=new Peer({config:ICE});
-  p.on("open",function(){mconn=p.connect(PFX+cod,{reliable:true});
-    mconn.on("open",function(){mconn.send({t:"mic"});$("#micEst").textContent="✅ Conectado na TV "+cod+". Pode cantar!";mcall=p.call(PFX+cod,MST)});
-    mconn.on("data",function(d){if(d.t==="nota")toast("Nota: "+d.n+" — "+d.m);if(d.t==="fila")toast("Fila: "+d.n+" música(s)")});
-    mconn.on("close",function(){$("#micEst").textContent="Conexão com a TV caiu. Recarregue."})});
-  p.on("error",function(e){$("#micEst").textContent=e.type==="peer-unavailable"?"TV não encontrada. Confira o código.":"Erro: "+e.type});}
-function mudo(){MUDO=!MUDO;MST&&MST.getAudioTracks().forEach(function(t){t.enabled=!MUDO});$("#btMudo").textContent=MUDO?"🎤 Desmutar":"🔇 Mutar"}
-function pularMic(){mconn&&mconn.open&&mconn.send({t:"pular"})}
-async function buscaMic(){var q=$("#buscaMic").value.trim();if(!q)return;$("#resMic").innerHTML='<p class="muted">Buscando...</p>';var r=await busca(q);
-  lista($("#resMic"),r,function(v){if(mconn&&mconn.open){mconn.send({t:"add",v:v});toast("➕ Na fila da TV: "+v.t)}else toast("Ainda não conectado na TV.")})}
-
-/* Categorias (TV sem celular) */
-var CATS={"🤠 Sertanejo": ["Evidências - Chitãozinho e Xororó", "Fio de Cabelo - Chitãozinho e Xororó", "Página de Amigos - Chitãozinho e Xororó", "Cuida Bem Dela - Henrique e Juliano", "Infiel - Marília Mendonça", "Todo Mundo Vai Sofrer - Marília Mendonça", "Leão - Marília Mendonça", "Esqueci de Te Esquecer - Gusttavo Lima", "Balada - Gusttavo Lima", "Camaro Amarelo - Munhoz e Mariano", "Ai Se Eu Te Pego - Michel Teló", "Saudade da Minha Terra - Goiá"], "🥁 Pagode": ["Deixa Acontecer - Grupo Revelação", "Tá Escrito - Grupo Revelação", "Cheia de Manias - Raça Negra", "É Tarde Demais - Raça Negra", "Ligando os Fatos - Sorriso Maroto", "Me Apaixonei Pela Pessoa Errada - Exaltasamba", "Faixa Amarela - Zeca Pagodinho"], "💔 Brega e Romântica": ["Fuscão Preto - Almir Rogério", "Eu Não Sou Cachorro Não - Waldick Soriano", "Garçom - Reginaldo Rossi", "Mon Amour Meu Bem Ma Femme - Reginaldo Rossi", "Você é Doida Demais - Lindomar Castilho", "Ainda Ontem Chorei de Saudade - João Mineiro e Marciano", "Cama e Mesa - Roberto Carlos", "Detalhes - Roberto Carlos", "Como É Grande o Meu Amor Por Você - Roberto Carlos"], "🪗 Forró": ["Xote das Meninas - Luiz Gonzaga", "Asa Branca - Luiz Gonzaga", "Anunciação - Alceu Valença", "Esperando na Janela - Gilberto Gil", "Frevo Mulher - Zé Ramalho", "Xote da Alegria - Falamansa", "Rindo à Toa - Falamansa"], "🎸 Rock Nacional": ["Pais e Filhos - Legião Urbana", "Tempo Perdido - Legião Urbana", "Exagerado - Cazuza", "Por Enquanto - Cássia Eller", "Anna Júlia - Los Hermanos", "Primeiros Erros - Capital Inicial", "Lanterna dos Afogados - Paralamas do Sucesso", "Pro Dia Nascer Feliz - Barão Vermelho", "Vamos Fugir - Skank", "Tocando em Frente - Almir Sater"], "🎤 MPB": ["Garota de Ipanema - Tom Jobim", "Aquarela - Toquinho", "O Que É O Que É - Gonzaguinha", "Velha Infância - Tribalistas", "Trem Bala - Ana Vilela", "Amor I Love You - Marisa Monte", "Sozinho - Caetano Veloso", "Como Nossos Pais - Elis Regina"], "🙏 Gospel": ["Raridade - Anderson Freire", "Ressuscita-me - Aline Barros", "Faz Um Milagre Em Mim - Regis Danese", "Sou Humano - Bruna Karla", "Deus Me Ama - Thalles Roberto", "Aquieta Minh'alma - Ministério Zoe"], "🌎 Internacional": ["My Heart Will Go On - Celine Dion", "I Will Always Love You - Whitney Houston", "Let It Be - The Beatles", "Bohemian Rhapsody - Queen", "Livin' On A Prayer - Bon Jovi", "Hotel California - Eagles", "Perfect - Ed Sheeran", "Shallow - Lady Gaga"], "🧒 Infantil": ["Galinha Pintadinha", "O Sapo Não Lava o Pé", "Atirei o Pau no Gato", "Borboletinha", "Ciranda Cirandinha", "Parabéns Pra Você"]};
-function desenhaCats(){var el=$("#cats");if(!el)return;el.innerHTML=Object.keys(CATS).map(function(k,i){return '<button class="sec" data-k="'+i+'">'+esc(k)+'</button>'}).join("");
- Array.prototype.forEach.call(el.querySelectorAll("button"),function(b){b.onclick=function(){abreCat(Object.keys(CATS)[+b.dataset.k])}})}
-function abreCat(k){var m=$("#catM");m.innerHTML='<button class="sec" id="catV">⬅ Voltar</button>'+CATS[k].map(function(x,i){return '<button data-i="'+i+'">🎵 '+esc(x)+'</button>'}).join("");
- $("#catV").onclick=function(){m.innerHTML="";var f=$("#cats button");f&&f.focus()};
- Array.prototype.forEach.call(m.querySelectorAll("button[data-i]"),function(b){b.onclick=function(){escolheCat(CATS[k][+b.dataset.i],b)}});
- var f=m.querySelector("button[data-i]");f&&f.focus()}
-async function escolheCat(nome,b){var o=b.textContent;b.textContent="⏳ Procurando...";var r=await busca(nome+" karaokê");b.textContent=o;
- if(r&&r.length)addFila(r[0]);else toast("Busca fora do ar agora. Tente de novo daqui a pouco.")}
-desenhaCats();
+if(TV) salaTV();
 /* Abertura animada */
 var INTRO_OK=false,POS_INTRO=null;
 function fimIntro(){if(INTRO_OK)return;INTRO_OK=true;var i=document.getElementById("intro");i.classList.add("sai");setTimeout(function(){i.remove()},700);if(POS_INTRO){var f=POS_INTRO;POS_INTRO=null;f()}}
 (function(){var i=document.getElementById("intro"),n=["🎵","🎶","🎤","⭐","🎵","🎶"];var t=setInterval(function(){if(INTRO_OK){clearInterval(t);return}var e=document.createElement("div");e.className="iNota";e.textContent=n[Math.random()*n.length|0];e.style.left=(Math.random()*92)+"%";e.style.animationDuration=(2+Math.random()*2)+"s";i.appendChild(e);setTimeout(function(){e.remove()},4200)},180);
  try{var A=new (window.AudioContext||window.webkitAudioContext)();var nt=[523,659,784,1047];nt.forEach(function(f,k){var o=A.createOscillator(),g=A.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(0,A.currentTime+k*.18);g.gain.linearRampToValueAtTime(.15,A.currentTime+k*.18+.02);g.gain.exponentialRampToValueAtTime(.001,A.currentTime+k*.18+.5);o.connect(g);g.connect(A.destination);o.start(A.currentTime+k*.18);o.stop(A.currentTime+k*.18+.6)})}catch(e){}
  setTimeout(fimIntro,4000)})();
-/* link ?mic=COD */
-(function(){var q=new URLSearchParams(location.search).get("mic");if(q&&q.length===4){$("#codIn").value=q.toUpperCase();try{history.replaceState(null,"",location.pathname)}catch(e){}abreMic()}})();
-/* App TV Box: ?tv=1 abre direto no modo TV */
-(function(){var tv=new URLSearchParams(location.search).get("tv");if(tv==="1")localStorage.setItem("tudooke_tv","1");if(tv==="0")localStorage.removeItem("tudooke_tv");
- if(localStorage.getItem("tudooke_tv")==="1"&&!new URLSearchParams(location.search).get("mic")){POS_INTRO=function(){var b=document.querySelector("#home .bts button");b&&b.focus()}}})();
-/* TV Box: tela grande deitada já sugere modo TV */
-if(window.innerWidth>window.innerHeight&&window.innerWidth>=900&&!/Mobi/i.test(navigator.userAgent)){var b=document.querySelector("#home .bts button");b&&b.focus()}
+
+buscar();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("service-worker.js");
 </script></body></html>
