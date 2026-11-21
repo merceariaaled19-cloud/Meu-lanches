@@ -6,7 +6,7 @@
 <style>
 :root{--bg:#14002b;--c:#22063f;--c2:#33105a;--r:#ff2e88;--y:#ffd23f;--tx:#fff;--mu:#c9b6e8}
 *{box-sizing:border-box}html,body{margin:0;height:100%;background:radial-gradient(circle at 20% 0,#3a0b6b,var(--bg) 60%);color:var(--tx);font-family:system-ui,Roboto,sans-serif}
-button,input{font:inherit}button{background:var(--r);color:#fff;border:0;border-radius:14px;padding:14px 18px;font-weight:700;cursor:pointer}
+button,input{font:inherit}button:focus,input:focus,[tabindex]:focus{outline:4px solid #ffd54a;outline-offset:3px}button{background:var(--r);color:#fff;border:0;border-radius:14px;padding:14px 18px;font-weight:700;cursor:pointer}
 button.sec{background:var(--c2)}button:focus,.res:focus,input:focus{outline:4px solid var(--y);outline-offset:2px}
 input{background:#0d001c;color:#fff;border:2px solid var(--c2);border-radius:14px;padding:14px;width:100%}
 .esc{display:none!important}h1{margin:0;font-size:2.4rem;letter-spacing:1px}h1 span{color:var(--y)}
@@ -200,6 +200,9 @@ async function buscaMic(){var q=$("#buscaMic").value.trim();if(!q)return;$("#res
 
 /* link ?mic=COD */
 (function(){var q=new URLSearchParams(location.search).get("mic");if(q&&q.length===4){$("#codIn").value=q.toUpperCase();try{history.replaceState(null,"",location.pathname)}catch(e){}abreMic()}})();
+/* App TV Box: ?tv=1 abre direto no modo TV */
+(function(){var tv=new URLSearchParams(location.search).get("tv");if(tv==="1")localStorage.setItem("tudooke_tv","1");if(tv==="0")localStorage.removeItem("tudooke_tv");
+ if(localStorage.getItem("tudooke_tv")==="1"&&!new URLSearchParams(location.search).get("mic")){try{abreTV(false)}catch(e){console.log(e)}}})();
 /* TV Box: tela grande deitada já sugere modo TV */
 if(window.innerWidth>window.innerHeight&&window.innerWidth>=900&&!/Mobi/i.test(navigator.userAgent)){var b=document.querySelector("#home .bts button");b&&b.focus()}
 if("serviceWorker" in navigator)navigator.serviceWorker.register("service-worker.js");
