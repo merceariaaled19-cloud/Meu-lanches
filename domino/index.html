@@ -36,12 +36,12 @@ body.festa #luzes i{animation-duration:.9s!important;opacity:.6}
 @keyframes led{0%{background:#ff0040;box-shadow:0 0 8px #ff0040}33%{background:#fbbf24;box-shadow:0 0 8px #fbbf24}66%{background:#22d3ee;box-shadow:0 0 8px #22d3ee}100%{background:#ff0040;box-shadow:0 0 8px #ff0040}}
 body.festa .leds b{animation-duration:.25s}
 /* pedra */
-.p{display:inline-flex;flex-direction:column;background:linear-gradient(145deg,#fffdf5,#e4dcc4);border-radius:calc(var(--s)*.22);border:1px solid #1a1a1a;box-shadow:0 2px 3px rgba(0,0,0,.55);flex:none;position:relative}
+.p{display:inline-flex;flex-direction:column;background:linear-gradient(145deg,#ffffff,#f1ead6);border-radius:calc(var(--s)*.22);border:2px solid #111;box-shadow:0 3px 4px rgba(0,0,0,.6);flex:none;position:relative}
 .p.h{flex-direction:row}
 .p .m{width:var(--s);height:var(--s);display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:14%}
-.p .m:first-child{border-bottom:1.5px solid #333}.p.h .m:first-child{border-bottom:0;border-right:1.5px solid #333}
-.p .m i{border-radius:50%;margin:12%}.p .m i.d{background:radial-gradient(circle at 35% 35%,#555,#000)}
-.p.carroca .m i.d{background:radial-gradient(circle at 35% 35%,#f87171,#991b1b)}
+.p .m:first-child{border-bottom:2px solid #111}.p.h .m:first-child{border-bottom:0;border-right:2px solid #111}
+.p .m i{border-radius:50%;margin:12%}.p .m i.d{background:#000;box-shadow:inset 0 -1px 0 #444}
+.p.carroca .m i.d{background:#c81e1e}
 .p.verso{background:repeating-linear-gradient(45deg,#4c1d95,#4c1d95 4px,#3b0764 4px,#3b0764 8px);border-color:#a78bfa}
 .p.verso .m{border:0!important}
 /* capa */
@@ -74,7 +74,9 @@ body.festa .leds b{animation-duration:.25s}
 #maoOp{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;padding:4px 0;min-height:30px}
 #maoOp .p{--s:11px}
 #mesaBox{flex:1;min-height:0;margin:4px 0;border-radius:16px;background:radial-gradient(circle,#166534,#052e16);border:4px solid #78350f;box-shadow:inset 0 0 30px #000,0 0 18px rgba(251,191,36,.35);display:flex;flex-direction:column;overflow:hidden;position:relative}
-#mesa{flex:1;overflow:auto;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;align-items:center;gap:3px;padding:8px}
+#mesa{flex:1;overflow:auto;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;align-items:center;gap:4px;padding:8px}
+#mesa .p{border-width:2px;box-shadow:0 3px 6px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.35)}
+#mesa .p .m{padding:12%}
 #mesa .p.ponta{box-shadow:0 0 0 2px #fbbf24,0 0 12px #fbbf24}
 #mesa .p.nova{animation:nova .45s}
 @keyframes nova{from{transform:scale(1.8) rotate(25deg);opacity:0}}
@@ -100,6 +102,11 @@ body.festa .leds b{animation-duration:.25s}
 #ov h2{color:#fbbf24;font-size:28px}
 #ov p{font-size:16px;line-height:1.4}
 #ov .regras{text-align:left;font-size:14px;max-height:55vh;overflow:auto}
+.vid{width:58px;height:44px;object-fit:cover;border-radius:8px;border:2px solid #fbbf24;background:#000;flex:none;transform:scaleX(-1)}
+.vid.big{position:fixed;z-index:27;left:50%;top:50%;width:80vw;height:60vw;max-width:480px;max-height:360px;transform:translate(-50%,-50%) scaleX(-1)}
+#opVid{transform:none}#opVid.big{transform:translate(-50%,-50%)}
+.mini{background:rgba(0,0,0,.4);color:#fff;box-shadow:none;padding:6px 8px;font-size:15px;border-radius:9px}
+.lnk{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 #som{position:fixed;top:8px;right:8px;z-index:21;background:rgba(0,0,0,.4);color:#fff;box-shadow:none;padding:6px 9px;font-size:18px}
 </style>
 </head>
@@ -132,14 +139,15 @@ body.festa .leds b{animation-duration:.25s}
     <button class="sec" onclick="volta()">Voltar</button>
   </div>
   <div class="bx esc" id="m2">
-    <p>Digite o código da sala do seu amigo:</p>
-    <input id="codIn" maxlength="4" placeholder="ABCD" style="text-transform:uppercase;font-size:30px;letter-spacing:6px">
+    <p>Digite o código da sala do seu amigo (entra sozinho ao completar):</p>
+    <input id="codIn" maxlength="4" placeholder="ABCD" autocomplete="off" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z]/g,'');if(this.value.length==4)entrarSala()" style="text-transform:uppercase;font-size:30px;letter-spacing:6px">
     <button onclick="entrarSala()">Entrar</button>
     <button class="sec" onclick="volta()">Voltar</button>
   </div>
   <div class="bx esc" id="m3">
     <p>Passe este código pro seu amigo:</p>
     <div class="cod" id="codTxt">----</div>
+    <div class="lnk"><button class="sec" onclick="copiaCod()">📋 Copiar</button><button onclick="zapCod()" style="background:#25d366;color:#fff;box-shadow:0 4px 0 #166534">📲 WhatsApp</button><button class="sec" onclick="compCod()">📤 Enviar</button></div>
     <p id="stSala">Esperando o amigo entrar...</p>
     <button class="sec" onclick="volta()">Cancelar</button>
   </div>
@@ -147,7 +155,7 @@ body.festa .leds b{animation-duration:.25s}
 
 <div id="jogo" class="tela esc">
   <div class="leds" id="leds1"></div>
-  <div class="barra" id="bOp"><span class="nome" id="nOp">Robô</span><span id="cOp" style="font-size:12px"></span><span class="pt" id="pOp">0</span></div>
+  <div class="barra" id="bOp"><video id="opVid" class="vid esc" autoplay playsinline onclick="this.classList.toggle('big')"></video><span class="nome" id="nOp">Robô</span><span id="cOp" style="font-size:12px"></span><span class="pt" id="pOp">0</span></div>
   <div class="pbar"><div id="gOp" style="width:0"></div></div>
   <div id="maoOp"></div>
   <div id="mesaBox">
@@ -157,12 +165,13 @@ body.festa .leds b{animation-duration:.25s}
   <div id="msg"></div>
   <div id="lados" class="esc"><button class="vd" id="btL" onclick="joga('L')">◀ Esquerda</button><button class="vd" id="btR" onclick="joga('R')">Direita ▶</button></div>
   <div id="mao"></div>
-  <div class="barra" id="bEu"><span class="nome" id="nEu">Você</span><span class="pt" id="pEu">0</span></div>
+  <div class="barra" id="bEu"><video id="meVid" class="vid esc" autoplay playsinline muted onclick="this.classList.toggle('big')"></video><span class="nome" id="nEu">Você</span><span class="pt" id="pEu">0</span></div>
   <div class="pbar"><div id="gEu" style="width:0"></div></div>
   <div class="acoes">
     <button class="vd esc" id="btCompra" onclick="pede({t:'c'})">🂠 Comprar</button>
     <button class="ver esc" id="btPassa" onclick="pede({t:'p'})">Passar a vez</button>
-    <button class="sec" onclick="sair()">Sair</button>
+    <button class="mini esc" id="btMic" onclick="tMic()">🎤</button><button class="mini esc" id="btCam" onclick="tCam()">📷</button><button class="mini esc" id="btOuvir" onclick="ouvir()">🔈 Ouvir amigo</button>
+    <button class="sec" onclick="pedeSair()">Sair</button>
   </div>
   <div class="leds" id="leds2"></div>
 </div>
@@ -301,7 +310,7 @@ function render(){if(!S)return;const op=1-me,N=S.nomes;
  $('cOp').textContent=S.h[op].length+' pedras';
  $('bOp').classList.toggle('vez',!S.fim&&S.vez==op);$('bEu').classList.toggle('vez',!S.fim&&S.vez==me);
  $('maoOp').innerHTML=S.h[op].map(verso).join('');
- const n=S.ch.length,sz=n<=8?19:n<=14?15:n<=20?12:10;
+ const n=S.ch.length,sz=n<=6?27:n<=10?23:n<=14?20:n<=20?17:14;
  $('mesa').innerHTML=S.ch.map((t,i)=>pedra(t[0],t[1],t[0]!=t[1],(i==0||i==n-1?'ponta':'')+(i==S.nova?' nova':''))).join('');
  $('mesa').style.setProperty('--s',sz+'px');
  $('dorme').textContent='Dorme: '+S.pile.length;$('rod').textContent='Rodada '+S.rd;
@@ -321,31 +330,51 @@ function render(){if(!S)return;const op=1-me,N=S.nomes;
     '<p>Placar: '+N[me]+' '+S.sc[me]+' x '+S.sc[op]+' '+N[op]+'<br><small>Pedras de '+N[op]+': '+S.h[op].map(t=>t[0]+'-'+t[1]).join(', ')+'</small></p>'+
     (modo=='guest'?'<p>Esperando o dono da sala...</p>':'<button onclick="pede({t:\'prox\'})">▶ Próxima rodada</button>')}
   ov(h)}else fechaOv()}
-function abreJogo(){$('menu').classList.add('esc');$('jogo').classList.remove('esc');fechaOv()}
-function sair(){clearTimeout(cpuT);fechaRede();S=null;sel=-1;fechaOv();$('jogo').classList.add('esc');$('menu').classList.remove('esc');mostra('m1')}
+function abreJogo(){try{history.pushState({j:1},'')}catch(e){}['btMic','btCam'].forEach(b=>$(b).classList.toggle('esc',modo=='cpu'||!MIC));$('menu').classList.add('esc');$('jogo').classList.remove('esc');fechaOv()}
+function pedeSair(){ov('<h2>🚪 Sair?</h2><p>Você quer realmente sair da partida?</p><div class="lnk"><button class="ver" onclick="sair()">SIM, sair</button><button class="vd" onclick="fechaOv()">NÃO</button></div>')}
+function sair(){clearTimeout(cpuT);fechaRede();S=null;sel=-1;fechaOv();$('jogo').classList.add('esc');$('menu').classList.remove('esc');mostra('m1');paraMidia()}
 
 /* ---------- MODOS ---------- */
 const NIV=['Iniciante','Intermediário','Profissional','Expert'];
 function offline(n){ac();modo='cpu';me=0;nivel=n;localStorage.dom_niv=n;novoJogo(meuNome(),'Robô '+NIV[n]);abreJogo();render();agendaCPU()}
-function fechaRede(){try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}conn=null;peer=null}
+let MIC=null,call=null,codAtual='';
+function linkSala(){return location.origin+location.pathname+'?sala='+codAtual}
+function txtSala(){return '🎲 Bora jogar Duelo do Dominó! Código da sala: '+codAtual+'\nToque pra entrar direto: '+linkSala()}
+function copiaCod(){try{navigator.clipboard.writeText(codAtual).then(()=>popMsg('Código copiado!'),()=>prompt('Copie:',codAtual))}catch(e){prompt('Copie:',codAtual)}}
+function zapCod(){window.open('https://wa.me/?text='+encodeURIComponent(txtSala()),'_blank')}
+function compCod(){if(navigator.share)navigator.share({title:'Duelo do Dominó',text:txtSala()}).catch(()=>{});else zapCod()}
+function popMsg(t){$('stSala').textContent=t;setTimeout(()=>{if(!S)$('stSala').textContent='Esperando o amigo entrar...'},1800)}
+async function pegaMidia(){if(MIC)return;const V={facingMode:'user',width:{ideal:320},height:{ideal:240},frameRate:{ideal:15}},A={echoCancellation:true,noiseSuppression:true,autoGainControl:true};
+ try{MIC=await navigator.mediaDevices.getUserMedia({audio:A,video:V})}catch(e){try{MIC=await navigator.mediaDevices.getUserMedia({audio:A})}catch(e2){MIC=null}}
+ if(MIC&&MIC.getVideoTracks().length){$('meVid').srcObject=MIC;$('meVid').classList.remove('esc')}}
+function vazio(){const d=ac().createMediaStreamDestination();return d.stream}
+function ligaCall(c){call=c;c.on('stream',st=>{const v=$('opVid');v.srcObject=st;v.classList.toggle('esc',!st.getVideoTracks().length);v.muted=false;v.play().then(()=>$('btOuvir').classList.add('esc')).catch(()=>{v.muted=true;v.play().catch(()=>{});$('btOuvir').classList.remove('esc')})})}
+function ouvir(){const v=$('opVid');v.muted=false;v.volume=1;v.play().catch(()=>{});$('btOuvir').classList.add('esc')}
+function tMic(){if(!MIC)return;const t=MIC.getAudioTracks()[0];if(!t)return;t.enabled=!t.enabled;$('btMic').textContent=t.enabled?'🎤':'🔇'}
+function tCam(){if(!MIC)return;const t=MIC.getVideoTracks()[0];if(!t)return;t.enabled=!t.enabled;$('btCam').textContent=t.enabled?'📷':'🚫'}
+function paraMidia(){try{call&&call.close()}catch(e){}call=null;if(MIC)MIC.getTracks().forEach(t=>t.stop());MIC=null;['meVid','opVid'].forEach(v=>{$(v).srcObject=null;$(v).classList.add('esc');$(v).classList.remove('big')});['btMic','btCam','btOuvir'].forEach(b=>$(b).classList.add('esc'))}
+window.addEventListener('popstate',()=>{if(S&&!$('jogo').classList.contains('esc')){try{history.pushState({j:1},'')}catch(e){}pedeSair()}});
+function fechaRede(){try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}conn=null;peer=null;paraMidia()}
 function codigo(){const L='ABCDEFGHJKLMNPQRSTUVWXYZ';let c='';for(let i=0;i<4;i++)c+=L[Math.floor(Math.random()*L.length)];return c}
-function criarSala(){ac();if(!window.Peer){alert('Precisa de internet pra jogar com o amigo.');return}
- fechaRede();const cod=codigo(),nm=meuNome();modo='host';me=0;$('codTxt').textContent=cod;$('stSala').textContent='Esperando o amigo entrar...';mostra('m3');
+async function criarSala(){ac();if(!window.Peer){alert('Precisa de internet pra jogar com o amigo.');return}
+ fechaRede();const cod=codigo(),nm=meuNome();codAtual=cod;modo='host';me=0;$('codTxt').textContent=cod;$('stSala').textContent='Esperando o amigo entrar...';mostra('m3');pegaMidia();
  peer=new Peer('domduelo-'+cod,{config:ICE});
  peer.on('error',e=>{if(e.type=='unavailable-id'){fechaRede();criarSala()}else $('stSala').textContent='Erro de conexão: '+e.type});
  peer.on('connection',c=>{if(conn&&conn.open){c.close();return}conn=c;
-  c.on('data',d=>{if(d.t=='ola'){novoJogo(nm,d.nome||'Amigo');abreJogo();depois()}else if(d.t=='act')act(1,d.a)});
+  c.on('data',d=>{if(d.t=='ola'){novoJogo(nm,d.nome||'Amigo');abreJogo();depois();setTimeout(()=>ligaCall(peer.call(c.peer,MIC||vazio())),400)}else if(d.t=='act')act(1,d.a)});
   c.on('close',()=>{if(S){alert('Seu amigo saiu da sala.');sair()}})})}
-function entrarSala(){ac();if(!window.Peer){alert('Precisa de internet pra jogar com o amigo.');return}
- const cod=($('codIn').value||'').trim().toUpperCase();if(cod.length!=4){alert('O código tem 4 letras.');return}
- fechaRede();modo='guest';me=1;const nm=meuNome();
+let entrando=false;async function entrarSala(){if(entrando)return;entrando=true;setTimeout(()=>entrando=false,3000);ac();if(!window.Peer){alert('Precisa de internet pra jogar com o amigo.');return}
+ const cod=($('codIn').value||'').trim().toUpperCase();if(cod.length!=4){entrando=false;alert('O código tem 4 letras.');return}
+ fechaRede();modo='guest';me=1;const nm=meuNome();codAtual=cod;await pegaMidia();
  peer=new Peer({config:ICE});
+ peer.on('call',c=>{c.answer(MIC||vazio());ligaCall(c)});
  peer.on('error',e=>{alert(e.type=='peer-unavailable'?'Sala não encontrada. Confira o código.':'Erro de conexão: '+e.type);volta()});
  peer.on('open',()=>{conn=peer.connect('domduelo-'+cod,{reliable:true});
   conn.on('open',()=>conn.send({t:'ola',nome:nm}));
   conn.on('data',d=>{if(d.t=='st'){S=d.S;if($('jogo').classList.contains('esc'))abreJogo();sel=-1;render()}});
   conn.on('close',()=>{if(S){alert('O dono da sala saiu.');sair()}})})}
 
+(function(){const q=new URLSearchParams(location.search).get('sala');if(q&&q.length==4){try{history.replaceState(null,'',location.pathname)}catch(e){}$('capa').classList.add('sai');$('menu').classList.remove('esc');mostra('m2');$('codIn').value=q.toUpperCase();setTimeout(entrarSala,500)}})();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('service-worker.js');
 </script>
 </body>
