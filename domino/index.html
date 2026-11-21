@@ -75,6 +75,9 @@ body.festa .leds b{animation-duration:.25s}
 #maoOp .p{--s:11px}
 #mesaBox{flex:1;min-height:0;margin:4px 0;border-radius:16px;background:radial-gradient(circle,#166534,#052e16);border:4px solid #78350f;box-shadow:inset 0 0 30px #000,0 0 18px rgba(251,191,36,.35);display:flex;flex-direction:column;overflow:hidden;position:relative}
 #mesa{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:8px}
+#mesa{touch-action:none}
+#zb{transform-origin:50% 50%;display:flex;flex-direction:column;gap:6px;will-change:transform}
+#zoomOk{position:absolute;right:8px;bottom:8px;z-index:3;padding:6px 10px;font-size:13px}
 #mesa .lin{display:flex;align-items:center;gap:calc(var(--s)*.15);justify-content:flex-start}
 #mesa .lin.inv{flex-direction:row-reverse}
 #mesa .lin.so{justify-content:center}
@@ -163,7 +166,7 @@ body.festa .leds b{animation-duration:.25s}
   <div id="maoOp"></div>
   <div id="mesaBox">
     <div class="info"><span id="dorme">Dorme: 14</span><span class="soma" id="soma">Pontas: -</span><span id="rod">Rodada 1</span></div>
-    <div id="mesa"></div>
+    <div id="mesa"></div><button class="sec esc" id="zoomOk" onclick="zeraZoom()">🔍 Tamanho normal</button>
   </div>
   <div id="msg"></div>
   <div id="lados" class="esc"><button class="vd" id="btL" onclick="joga('L')">◀ Esquerda</button><button class="vd" id="btR" onclick="joga('R')">Direita ▶</button></div>
@@ -235,7 +238,7 @@ function lados(t){if(!S.ch.length)return['L'];const[L,R]=pontas(),o=[];if(t[0]==
 function podeJogar(s){return S.h[s].some(t=>lados(t).length)}
 function ev(k,s,pts){S.ev={id:(S.ev?S.ev.id:0)+1,k,s,pts:pts||0}}
 function novoJogo(n0,n1){S={nomes:[n0,n1],sc:[0,0],rd:0,win:-1,ev:null};novaRodada()}
-function novaRodada(){const p=[];for(let a=0;a<=6;a++)for(let b=a;b<=6;b++)p.push([a,b]);embaralha(p);
+function novaRodada(){try{zeraZoom()}catch(e){}const p=[];for(let a=0;a<=6;a++)for(let b=a;b<=6;b++)p.push([a,b]);embaralha(p);
  S.h=[p.splice(0,7),p.splice(0,7)];S.pile=p;S.ch=[];S.pass=0;S.rd++;S.falta=[[],[]];S.fim=null;S.acabou=-1;S.nova=-1;
  if(S.win<0){let best=-1,bs=0,bi=0;for(const s of[0,1])S.h[s].forEach((t,i)=>{const v=t[0]==t[1]?100+t[0]:t[0]+t[1];if(v>best){best=v;bs=s;bi=i}});
    const t=S.h[bs][bi];S.vez=bs;jogar(bs,bi,'L');S.msg=S.nomes[bs]+' saiu com '+(t[0]==t[1]?'a carroça de '+t[0]:t[0]+'-'+t[1]);}
@@ -312,7 +315,17 @@ function desenhaMesa(n){const m=$('mesa'),W=m.clientWidth-18,H=m.clientHeight-18
   const rh=rows.map(r=>r.some(i=>S.ch[i][0]==S.ch[i][1])?2*s+6:s+6),tot=rh.reduce((a,b)=>a+b,0)+6*(rows.length-1);
   best={s,rows};if(tot<=H)break}
  m.style.setProperty('--s',best.s+'px');
- m.innerHTML=best.rows.map((r,k)=>'<div class="lin'+(k%2?' inv':'')+(best.rows.length==1?' so':'')+'">'+r.map(i=>{const t=S.ch[i],a=k%2?t[1]:t[0],b=k%2?t[0]:t[1];return pedra(a,b,t[0]!=t[1],(i==0||i==n-1?'ponta':'')+(i==S.nova?' nova':''))}).join('')+'</div>').join('')}
+ m.innerHTML='<div id="zb">'+best.rows.map((r,k)=>'<div class="lin'+(k%2?' inv':'')+(best.rows.length==1?' so':'')+'">'+r.map(i=>{const t=S.ch[i],a=k%2?t[1]:t[0],b=k%2?t[0]:t[1];return pedra(a,b,t[0]!=t[1],(i==0||i==n-1?'ponta':'')+(i==S.nova?' nova':''))}).join('')+'</div>').join('')+'</div>';aplicaZoom()}
+let Z=1,TX=0,TY=0;
+function aplicaZoom(){const b=$('zb');if(b)b.style.transform='translate('+TX+'px,'+TY+'px) scale('+Z+')';const k=$('zoomOk');if(k)k.classList.toggle('esc',Z<=1.01)}
+function zeraZoom(){Z=1;TX=TY=0;aplicaZoom()}
+(function(){const m=$('mesa');let d0=0,z0=1,p0=null,t0x=0,t0y=0,ult=0;
+ const dist=e=>Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+ m.addEventListener('touchstart',e=>{if(e.touches.length==2){d0=dist(e);z0=Z}else if(e.touches.length==1){p0=[e.touches[0].clientX,e.touches[0].clientY];t0x=TX;t0y=TY;const a=Date.now();if(a-ult<300)zeraZoom();ult=a}},{passive:true});
+ m.addEventListener('touchmove',e=>{if(e.touches.length==2&&d0){Z=Math.max(1,Math.min(5,z0*dist(e)/d0));if(Z<=1){TX=TY=0}aplicaZoom()}else if(e.touches.length==1&&p0&&Z>1){TX=t0x+e.touches[0].clientX-p0[0];TY=t0y+e.touches[0].clientY-p0[1];aplicaZoom()}},{passive:true});
+ m.addEventListener('touchend',e=>{if(e.touches.length<2)d0=0;if(!e.touches.length)p0=null},{passive:true});
+ m.addEventListener('wheel',e=>{e.preventDefault();Z=Math.max(1,Math.min(5,Z*(e.deltaY<0?1.1:.9)));if(Z<=1)TX=TY=0;aplicaZoom()},{passive:false});
+})();
 function ajustaMesa(sz){const m=$('mesa');let s=sz;m.style.setProperty('--s',s+'px');
  while(s>6&&(m.scrollHeight>m.clientHeight+1||m.scrollWidth>m.clientWidth+1)){s-=1;m.style.setProperty('--s',s+'px')}}
 window.addEventListener('resize',()=>{if(S)render()});

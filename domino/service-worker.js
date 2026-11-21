@@ -1,4 +1,4 @@
-const CACHE="domino-v6";
+const CACHE="domino-v7";
 const FILES=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","icon-mask.png"];
 self.addEventListener("install",e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
