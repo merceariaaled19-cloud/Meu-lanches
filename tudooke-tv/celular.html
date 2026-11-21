@@ -18,7 +18,7 @@ input{width:100%;padding:13px;border-radius:10px;border:2px solid #7c3aed;backgr
 <h1>🎤 Tudo<span>Okê</span></h1>
 <div id="st">Conectando na TV...</div>
 <div class="card"><h2>Seu nome</h2><input id="nome" maxlength="14" placeholder="Ex.: Ana"></div>
-<div class="card"><h2>Figurinhas na tela</h2><div class="figs" id="figs"></div></div>
+<div class="card"><h2>Reações na tela</h2><div class="figs" id="figs"></div></div>
 <div class="card"><h2>Recado na tela</h2><input id="msg" maxlength="70" placeholder="Manda ver! 🔥"><button class="btn" id="bMsg">Enviar recado</button></div>
 <div class="card"><h2>Vote em quem tá cantando</h2><div class="est" id="est"></div><button class="btn" id="bVoto">Votar</button></div>
 <div class="card" id="nota">Nota final<b id="nN">--</b></div>
@@ -28,7 +28,7 @@ input{width:100%;padding:13px;border-radius:10px;border:2px solid #7c3aed;backgr
 var tv=new URLSearchParams(location.search).get('tv')||'';
 var $=function(i){return document.getElementById(i)},conn=null,estrela=0,ultimo=0;
 $('nome').value=localStorage.tkNome||'';$('nome').oninput=function(){localStorage.tkNome=this.value};
-['🔥','👏','😍','😂','🎤','⭐','💃','🍻','❤️','👑','🤘','😱'].forEach(function(f){var b=document.createElement('button');b.textContent=f;b.onclick=function(){manda({t:'fig',v:f})};$('figs').appendChild(b)});
+['🔥','👏','🎉','🥳','😍','😂','🤮','💩','👍','👎','🎤','⭐','💃','🍻','❤️','👑','🤘','😱'].forEach(function(f){var b=document.createElement('button');b.textContent=f;b.onclick=function(){manda({t:'fig',v:f})};$('figs').appendChild(b)});
 for(var i=1;i<=5;i++)(function(n){var b=document.createElement('button');b.textContent='⭐';b.onclick=function(){estrela=n;[].forEach.call($('est').children,function(x,j){x.className=j<n?'on':''})};$('est').appendChild(b)})(i);
 function ok(t){$('ok').textContent=t||'Enviado! ✅';$('ok').style.display='block';setTimeout(function(){$('ok').style.display='none'},1200)}
 function manda(o){if(!conn||!conn.open){ok('Sem conexão com a TV');return}var a=Date.now();if(a-ultimo<700)return;ultimo=a;o.n=$('nome').value||'Alguém';conn.send(o);ok()}

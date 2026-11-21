@@ -30,7 +30,7 @@
  /* QR e recados */
  '#tkQR{position:absolute;top:8px;right:8px;z-index:20;background:#fff;border-radius:10px;padding:5px;text-align:center;color:#2a0a55;font:bold 11px Arial;width:118px}',
  '#tkQR img{width:108px;height:108px;display:block}',
- '#tkFeed{position:absolute;left:10px;bottom:38%;z-index:21;display:flex;flex-direction:column;gap:6px;max-width:60%;pointer-events:none}',
+ '#tkFeed{position:absolute;left:10px;top:10px;right:140px;z-index:21;display:flex;flex-direction:column;gap:6px;max-width:60%;pointer-events:none}',
  '.tkMsg{background:rgba(20,6,40,.88);border:2px solid #ff3fa4;color:#fff;padding:6px 12px;border-radius:16px;font-size:20px;font-weight:bold;transition:opacity .8s}',
  '.tkMsg b{color:#ffd54a}',
  '.tkFig{position:absolute;z-index:22;font-size:64px;pointer-events:none;transition:transform 3s linear,opacity 3s}',
@@ -123,7 +123,7 @@
  function mostraVoto(){if(!votos.length){vt.style.display='none';return;}var s=0;votos.forEach(function(v){s+=v});vt.style.display='block';vt.textContent='⭐ '+(s/votos.length).toFixed(1)+' ('+votos.length+')';}
  function limpa(t,n){return String(t||'').replace(/\s+/g,' ').slice(0,n)}
  function recado(nome,txt){var m=document.createElement('div');m.className='tkMsg';var b=document.createElement('b');b.textContent=limpa(nome,14)+': ';m.appendChild(b);m.appendChild(document.createTextNode(limpa(txt,70)));feed.appendChild(m);while(feed.children.length>3)feed.firstChild.remove();setTimeout(function(){m.style.opacity=0;setTimeout(function(){m.remove()},900)},8000);}
- var FIGS=['🔥','👏','😍','😂','🎤','⭐','💃','🍻','❤️','👑','🤘','😱'];
+ var FIGS=['🔥','👏','🎉','🥳','😍','😂','🤮','💩','👍','👎','🎤','⭐','💃','🍻','❤️','👑','🤘','😱'];
  function figura(f){if(FIGS.indexOf(f)<0||!pa)return;var e=document.createElement('div');e.className='tkFig';e.textContent=f;e.style.left=(10+Math.random()*70)+'%';e.style.top='70%';pa.appendChild(e);setTimeout(function(){e.style.transform='translateY(-260px) scale(1.4)';e.style.opacity=0;},50);setTimeout(function(){e.remove()},3200);}
  var conns=[];function envia(o){conns.forEach(function(c){try{c.send(o)}catch(x){}})}
  function montaQR(){
@@ -135,9 +135,10 @@
  }
  function peer(){
   var s=document.createElement('script');s.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
+  var tent=0;s.onerror=function(){if(tent++)return;var s2=document.createElement('script');s2.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';s2.onload=s.onload;document.head.appendChild(s2);};
   s.onload=function(){
    var p;try{p=new Peer('tudookeTV-'+cod);}catch(x){return;}
-   p.on('open',montaQR);
+   p.on('open',function(){var q=$('tkQR');if(q)q.style.outline='3px solid #2ee59d';});
    p.on('connection',function(c){conns.push(c);
     c.on('data',function(d){if(!d||typeof d!=='object')return;
      if(d.t==='fig')figura(d.v);
@@ -152,5 +153,6 @@
   };
   document.head.appendChild(s);
  }
+ montaQR();
  peer();
 })();
