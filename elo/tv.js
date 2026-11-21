@@ -17,10 +17,10 @@
  var orig=window.tocar;
  if(orig){window.tocar=function(i){if(!auto)tocadas=0;auto=false;return orig(i);};}
  function liga(){
-  if(!window.player||!player.addEventListener){return setTimeout(liga,1000);}
+  if(typeof player==='undefined'||!player||!player.addEventListener){return setTimeout(liga,1000);}
   try{player.addEventListener('onStateChange',function(e){
    var d=e&&e.data!==undefined?e.data:e;
-   if(d===0){tocadas++;if(tocadas<QTD&&typeof atual==='number'&&window.resultados&&atual+1<resultados.length){auto=true;setTimeout(function(){window.tocar(atual+1);},1500);}}
+   if(d===0){tocadas++;if(tocadas<QTD&&typeof atual==='number'&&typeof resultados!=='undefined'&&atual+1<resultados.length){auto=true;setTimeout(function(){window.tocar(atual+1);},1500);}}
   });}catch(x){}
   try{player.setPlaybackQuality&&player.setPlaybackQuality('medium');}catch(x){}
  }
