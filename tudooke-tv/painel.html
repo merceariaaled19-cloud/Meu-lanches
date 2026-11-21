@@ -1,0 +1,85 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel TudoOkê TV</title>
+<meta name="theme-color" content="#2b0a4f">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0b0418;color:#fff}
+header{background:linear-gradient(90deg,#1a0636,#2b0a4f);border-bottom:3px solid #ff3fa4;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:19px;margin:0}main{padding:14px;max-width:720px;margin:auto}
+.card{background:#1a0636;border-radius:14px;padding:14px;margin-bottom:14px}
+input,select{width:100%;padding:12px;font-size:16px;border-radius:10px;border:2px solid #4a2380;background:#0f0322;color:#fff;margin:6px 0}
+button{padding:12px 16px;font-size:15px;border:0;border-radius:10px;background:#ff3fa4;color:#fff;font-weight:bold}
+button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap}
+.planos{display:flex;gap:8px}.planos label{flex:1;background:#0f0322;border:2px solid #4a2380;border-radius:10px;padding:10px;text-align:center;cursor:pointer}
+.planos input{display:none}.planos input:checked+span{color:#ffd54a;font-weight:bold}
+.cod{font-size:30px;letter-spacing:4px;color:#ffd54a;text-align:center;margin:10px 0;font-weight:bold}
+.it{border-top:1px solid #33175c;padding:10px 0}.it b{color:#ffd54a;letter-spacing:2px}.tag{font-size:12px;padding:2px 8px;border-radius:9px;margin-left:6px}
+.novo{background:#2563eb}.ok{background:#16a34a}.venc{background:#b91c1c}.mut{opacity:.75;font-size:13px;margin:4px 0}
+#msg{color:#ff8a8a;min-height:18px}.tot{display:flex;gap:8px;text-align:center}.tot div{flex:1;background:#0f0322;border-radius:10px;padding:8px}.tot b{display:block;font-size:22px}
+</style></head><body>
+<header><h1>🎤 Painel TudoOkê TV</h1><button class="s" id="sair" style="display:none">Sair</button></header>
+<main>
+<div class="card" id="login">
+ <p>Entre com sua conta de dono.</p>
+ <button id="bG" style="width:100%;background:#fff;color:#222">Entrar com Google</button>
+ <p class="mut" style="text-align:center">ou</p>
+ <input id="em" type="email" placeholder="E-mail"><input id="se" type="password" placeholder="Senha">
+ <button id="bE" style="width:100%">Entrar</button><p id="msg"></p>
+</div>
+<div id="app" style="display:none">
+ <div class="card">
+  <div class="planos">
+   <label><input type="radio" name="pl" value="30" checked><span>Mensal<br>30 dias</span></label>
+   <label><input type="radio" name="pl" value="180"><span>Semestral<br>180 dias</span></label>
+   <label><input type="radio" name="pl" value="365"><span>Anual<br>365 dias</span></label>
+  </div>
+  <input id="cli" placeholder="Nome do cliente (opcional)" maxlength="40">
+  <button id="gera" style="width:100%">Gerar código</button>
+  <div id="novo" style="display:none"><div class="cod" id="cod"></div>
+   <div class="row"><button class="s" id="cp" style="flex:1">Copiar</button><button class="s" id="wa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
+ </div>
+ <div class="card"><div class="tot"><div><b id="tN">0</b>Sem usar</div><div><b id="tA">0</b>Ativos</div><div><b id="tV">0</b>Vencidos</div></div>
+  <input id="bus" placeholder="Buscar cliente ou código"><div id="lista"></div></div>
+</div>
+</main>
+<script>
+var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)};
+var NOME={30:'Mensal',180:'Semestral',365:'Anual'},TODOS=[],ULT='';
+function msg(t){$('msg').textContent=t}
+$('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});au.signInWithPopup(p).catch(function(e){if(e.code=='auth/popup-blocked'||e.code=='auth/operation-not-supported-in-this-environment')au.signInWithRedirect(p);else msg('Não entrou: '+e.code)})};
+$('bE').onclick=function(){au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){msg('Não entrou: '+e.code)})};
+$('sair').onclick=function(){au.signOut()};au.getRedirectResult().catch(function(){});
+au.onAuthStateChanged(function(u){$('login').style.display=u?'none':'block';$('app').style.display=u?'block':'none';$('sair').style.display=u?'block':'none';if(u)escuta();});
+function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(8);crypto.getRandomValues(r);for(var i=0;i<8;i++)s+=a[r[i]%a.length];return s}
+function fmt(c){return c.slice(0,4)+'-'+c.slice(4)}
+$('gera').onclick=function(){var d=+document.querySelector('input[name=pl]:checked').value,c=gcod(),b=$('gera');b.disabled=true;
+ db.collection('licencas').doc(c).set({dias:d,plano:NOME[d],cliente:$('cli').value.trim(),device:'',ativadoEm:null,criadoEm:firebase.firestore.FieldValue.serverTimestamp()})
+ .then(function(){ULT=c;$('cod').textContent=fmt(c);$('novo').style.display='block';$('cli').value='';}).catch(function(e){alert('Erro: '+e.code)}).finally(function(){b.disabled=false})};
+function texto(c,d){return 'Seu código do TudoOkê TV ('+NOME[d]+'): '+fmt(c)+'\nAbra o app na TV Box e digite o código. Ele fica preso a esse aparelho.'}
+$('cp').onclick=function(){var t=fmt(ULT);(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){$('cp').textContent='Copiado!';setTimeout(function(){$('cp').textContent='Copiar'},1500)}).catch(function(){prompt('Copie:',t)})};
+$('wa').onclick=function(){var l=TODOS.filter(function(x){return x.id==ULT})[0];location.href='https://wa.me/?text='+encodeURIComponent(texto(ULT,l?l.dias:30))};
+function vence(x){return x.ativadoEm?x.ativadoEm.toDate().getTime()+x.dias*864e5:0}
+function dt(ms){var d=new Date(ms);return d.toLocaleDateString('pt-BR')}
+var un;function escuta(){if(un)return;un=db.collection('licencas').orderBy('criadoEm','desc').onSnapshot(function(s){TODOS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});pinta()},function(e){alert('Erro ao listar: '+e.code)})}
+$('bus').oninput=pinta;
+function pinta(){var q=$('bus').value.trim().toUpperCase().replace('-',''),n=0,a=0,v=0,L=$('lista');L.innerHTML='';var agora=Date.now();
+ TODOS.forEach(function(x){var ve=vence(x),stt=!x.device?'novo':(ve>agora?'ok':'venc');if(stt=='novo')n++;else if(stt=='ok')a++;else v++;
+  if(q&&x.id.indexOf(q)<0&&(x.cliente||'').toUpperCase().indexOf(q)<0)return;
+  var d=document.createElement('div');d.className='it';
+  var h=document.createElement('div');var b=document.createElement('b');b.textContent=fmt(x.id);h.appendChild(b);var t=document.createElement('span');t.className='tag '+stt;t.textContent=stt=='novo'?'Sem usar':stt=='ok'?'Ativo':'Vencido';h.appendChild(t);d.appendChild(h);
+  var m=document.createElement('div');m.className='mut';m.textContent=(x.cliente||'Sem nome')+' • '+(x.plano||NOME[x.dias]||x.dias+' dias')+(x.device?' • até '+dt(ve)+' • box '+x.device.slice(-8).toUpperCase():'');d.appendChild(m);
+  var r=document.createElement('div');r.className='row';
+  function bt(tx,f,c){var e=document.createElement('button');e.className='s';e.textContent=tx;if(c)e.style.background=c;e.onclick=f;r.appendChild(e)}
+  bt('Copiar',function(){ULT=x.id;$('cp').onclick()});
+  bt('WhatsApp',function(){location.href='https://wa.me/?text='+encodeURIComponent(texto(x.id,x.dias))},'#16a34a');
+  if(x.device){
+   bt('Renovar',function(){var p=prompt('Renovar por quantos dias? 30 = mensal, 180 = semestral, 365 = anual','30');p=+p;if(!p)return;
+    var up=stt=='ok'?{dias:x.dias+p}:{dias:p,ativadoEm:firebase.firestore.FieldValue.serverTimestamp()};db.collection('licencas').doc(x.id).update(up)});
+   bt('Trocar box',function(){if(confirm('Soltar esse código do box atual? O cliente digita de novo no box novo e continua com os dias que faltam.'))db.collection('licencas').doc(x.id).update({device:'',ativadoEm:null,dias:Math.max(1,Math.ceil((ve-Date.now())/864e5))})});
+  }
+  bt('Apagar',function(){if(confirm('Apagar '+fmt(x.id)+'? O box para de funcionar.'))db.collection('licencas').doc(x.id).delete()},'#7f1d1d');
+  d.appendChild(r);L.appendChild(d)});
+ $('tN').textContent=n;$('tA').textContent=a;$('tV').textContent=v}
+</script></body></html>

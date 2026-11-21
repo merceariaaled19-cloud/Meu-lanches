@@ -1,3 +1,38 @@
+/* Licença TudoOkê TV: código do painel, preso ao ID do box */
+(function(){
+ if(window.__tkLic)return;window.__tkLic=1;
+ var P='pdv-mercadinho-1c882',K='AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM';
+ var BASE='https://firestore.googleapis.com/v1/projects/'+P+'/databases/(default)/documents';
+ var ID='';try{if(window.TKApp&&TKApp.id)ID=String(TKApp.id()||'');}catch(e){}
+ var IDC=ID?ID.slice(-8).toUpperCase():'';
+ var ov=document.createElement('div');ov.id='tkLic';
+ var st=document.createElement('style');st.textContent='#tkLic{position:fixed;inset:0;z-index:2147483000;background:radial-gradient(circle at 50% 40%,#3a0f73,#0b0418 75%);color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,sans-serif;text-align:center}#tkLic h1{font-size:6vmin;margin:0 0 1vmin;color:#ffd54a}#tkLic p{font-size:3vmin;margin:1vmin;opacity:.9;max-width:80%}#tkLic input{font-size:5vmin;width:50vmin;text-align:center;letter-spacing:1vmin;padding:1.5vmin;border-radius:2vmin;border:3px solid #ff3fa4;background:#1a0636;color:#fff;text-transform:uppercase;margin:2vmin}#tkLic button{font-size:3.6vmin;padding:1.5vmin 5vmin;border-radius:2vmin;border:0;background:#ff3fa4;color:#fff;font-weight:bold}#tkLic button:focus,#tkLic input:focus{outline:4px solid #ffd54a}#tkLic .e{color:#ff8a8a;min-height:4vmin}#tkLic .id{position:absolute;bottom:3vmin;font-size:2.6vmin;opacity:.7}#tkAviso{position:fixed;left:2vmin;bottom:2vmin;z-index:9400;background:#ff3fa4;color:#fff;padding:1vmin 2vmin;border-radius:1.5vmin;font:bold 2.4vmin Arial}';
+ document.head.appendChild(st);document.body.appendChild(ov);
+ function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+ function pausa(){try{document.querySelectorAll('video,audio').forEach(function(v){v.pause()});}catch(e){}try{if(window.player&&player.pauseVideo)player.pauseVideo();}catch(e){}try{document.querySelectorAll('iframe').forEach(function(f){f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*')});}catch(e){}}
+ var pt;
+ function trava(msg,podeCod){ov.innerHTML='';ov.style.display='flex';ov.appendChild(el('h1','','🎤 TudoOkê TV'));ov.appendChild(el('p','',msg));var er=el('p','e','');
+  if(podeCod){var i=el('input');i.id='tkLicCod';i.maxLength=11;i.placeholder='CÓDIGO';var b=el('button','','Ativar');
+   function vai(){var c=i.value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length<6){er.textContent='Digite o código completo';return;}er.textContent='Ativando...';ativa(c,er);}
+   b.onclick=vai;i.onkeydown=function(e){e.stopPropagation();if(e.keyCode==13){e.preventDefault();vai();}};ov.appendChild(i);ov.appendChild(b);setTimeout(function(){i.focus()},300);}
+  ov.appendChild(er);ov.appendChild(el('div','id',IDC?'ID do aparelho: '+IDC:''));pausa();clearInterval(pt);pt=setInterval(pausa,1500);}
+ function libera(exp){ov.style.display='none';clearInterval(pt);try{localStorage.tkExp=String(exp);}catch(e){}
+  var d=Math.ceil((exp-Date.now())/864e5);if(d<=5){var a=el('div','',null);a.id='tkAviso';a.textContent='Licença vence em '+d+(d==1?' dia':' dias');document.body.appendChild(a);setTimeout(function(){a.remove()},15000);}}
+ function campos(j){var f=j.fields||{};return{dev:(f.device&&f.device.stringValue)||'',dias:+((f.dias&&(f.dias.integerValue||f.dias.doubleValue))||0),at:f.ativadoEm&&f.ativadoEm.timestampValue?Date.parse(f.ativadoEm.timestampValue):0};}
+ function pega(c){return fetch(BASE+'/licencas/'+c+'?key='+K,{cache:'no-store'}).then(function(r){if(r.status==404)return null;if(!r.ok)throw new Error('rede');return r.json().then(campos);});}
+ function confere(l,c,er){if(!l){if(er)er.textContent='Código não existe';else{try{localStorage.removeItem('tkLic')}catch(e){}trava('Licença não encontrada. Digite um código novo.',true);}return;}
+  if(l.dev&&l.dev!==ID){if(er)er.textContent='Esse código já está em uso em outro aparelho';else{try{localStorage.removeItem('tkLic')}catch(e){}trava('Esse código está ligado a outro aparelho. Digite um código novo.',true);}return;}
+  var exp=l.at+l.dias*864e5;if(l.at&&Date.now()>exp){trava('Sua licença venceu. Fale com quem te vendeu e digite o código novo.',true);return;}
+  try{localStorage.tkLic=c;}catch(e){}libera(exp);}
+ function ativa(c,er){pega(c).then(function(l){if(!l||l.dev){confere(l,c,er);return;}
+   return fetch(BASE+':commit?key='+K,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({writes:[{update:{name:'projects/'+P+'/databases/(default)/documents/licencas/'+c,fields:{device:{stringValue:ID}}},updateMask:{fieldPaths:['device']},updateTransforms:[{fieldPath:'ativadoEm',setToServerValue:'REQUEST_TIME'}],currentDocument:{exists:true}}]})})
+   .then(function(r){if(!r.ok)throw new Error('neg');return pega(c);}).then(function(l2){confere(l2,c,er);});
+  }).catch(function(){er.textContent='Não deu pra ativar. Confira a internet e o código.';});}
+ if(!ID){trava('Atualize o TudoOkê TV para a versão nova para continuar.',false);return;}
+ var cod='';try{cod=localStorage.tkLic||'';}catch(e){}
+ if(!cod){trava('Digite o código de ativação que você recebeu.',true);return;}
+ pega(cod).then(function(l){confere(l,cod,null);}).catch(function(){var e=+(localStorage.tkExp||0);if(e>Date.now())libera(e);else trava('Sem internet para conferir a licença. Conecte e abra de novo.',false);});
+})();
 /* TudoOkê TV - visual, abertura, QR da galera e nota final (injetado pelo app, atualiza sozinho) */
 (function(){
  if(window.__tkTV)return;window.__tkTV=1;
