@@ -51,7 +51,7 @@ input{background:#0d001c;color:#fff;border:2px solid var(--c2);border-radius:14p
 .iLuz{position:absolute;top:-10%;width:30vw;height:130%;background:linear-gradient(transparent,rgba(255,63,164,.25),transparent);transform-origin:top;animation:iLuz 2.4s ease-in-out infinite alternate}
 @keyframes iLuz{from{transform:rotate(-25deg)}to{transform:rotate(25deg)}}
 #iPula{position:absolute;bottom:4vh;color:#ccc;font-size:16px;background:transparent;border:1px solid #888}
-.catg{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.catg button{padding:10px 12px;font-size:1rem}.catl{display:grid;gap:6px;margin-top:8px;max-height:40vh;overflow:auto}.catl button{text-align:left;background:#2a0a52;font-weight:600}</style></head><body>
+.catg{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.catg button{padding:10px 12px;font-size:1rem}.catl{display:grid;gap:6px;margin-top:8px;max-height:40vh;overflow:auto}.catl button{text-align:left;background:#2a0a52;font-weight:600}#plw{position:relative}#btCast{position:absolute;top:10px;right:10px;z-index:5;background:rgba(0,0,0,.65);border:2px solid #fff;padding:8px 12px;font-size:1rem}</style></head><body>
 <div id="intro" onclick="fimIntro()"><div class="iLuz" style="left:5%"></div><div class="iLuz" style="right:5%;animation-delay:1.2s"></div><div id="iMic">🎤</div><div id="iTit">TudoOkê</div><div id="iSub">Karaokê com nota</div><button id="iPula" onclick="fimIntro()">Pular ⏭</button></div>
 
 <section id="home">
@@ -67,7 +67,7 @@ input{background:#0d001c;color:#fff;border:2px solid var(--c2);border-radius:14p
 
 <section id="tv" class="esc">
   <div id="tvL">
-    <div id="plw"><div id="player"></div>
+    <div id="plw"><div id="player"></div><button id="btCast" class="esc" onclick="espelhar()">📡 Espelhar</button>
       <div id="idle"><div class="muted">Código da TV</div><div class="cod" id="codTV">····</div>
         <div id="statTV" class="muted">No celular: abra o TudoOkê, toque em "Virar microfone" e digite o código.</div>
         <div class="row"><button class="sec" onclick="zap()">📲 Mandar link no WhatsApp</button><button class="sec" onclick="telaCheia()">⛶ Tela cheia</button></div></div>
@@ -127,22 +127,39 @@ function lista(el,arr,fn){
 }
 
 /* ===== TV ===== */
-var peer,COD,LOCAL=false,FILA=[],ATUAL=null,PL=null,YTOK=false,conns=[],AC,AN,GAIN,VOZV=1;
+var MICL=null,peer,COD,LOCAL=false,FILA=[],ATUAL=null,PL=null,YTOK=false,conns=[],AC,AN,GAIN,VOZV=1;
 function codNovo(){var a="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",c="";for(var i=0;i<4;i++)c+=a[Math.floor(Math.random()*a.length)];return c}
 function telaCheia(){try{var d=document.documentElement;(d.requestFullscreen||d.webkitRequestFullscreen).call(d).then(function(){try{screen.orientation.lock("landscape")}catch(e){}}).catch(function(){})}catch(e){}}
 function abreTV(local){LOCAL=local;$("#home").classList.add("esc");$("#tv").classList.remove("esc");telaCheia();iniAudio();carregaYT();
-  if(local){navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:true,autoGainControl:true}}).then(function(s){ligaVoz(s,"🎙️ Microfone deste aparelho")}).catch(function(){toast("Não consegui abrir o microfone. Ligue um microfone e permita o acesso.")})}
+  if(local){navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:true,autoGainControl:true}}).then(function(s){MICL=s;ligaVoz(s,"🎙️ Microfone deste aparelho")}).catch(function(){toast("Não consegui abrir o microfone. Ligue um microfone e permita o acesso.")})}
   criaSala(); setTimeout(function(){$("#buscaTV").focus()},400);
 }
 function criaSala(){COD=codNovo();peer=new Peer(PFX+COD,{config:ICE});
   peer.on("open",function(){$("#codTV").textContent=COD});
   peer.on("error",function(e){if(e.type==="unavailable-id")return criaSala();$("#statTV").textContent="Erro de conexão ("+e.type+"). Recarregue a página."});
   peer.on("disconnected",function(){try{peer.reconnect()}catch(e){}});
-  peer.on("connection",function(c){conns.push(c);c.on("open",function(){c.send({t:"ok",fila:FILA.length});toast("📱 Microfone conectado!")});
-    c.on("data",function(d){if(d.t==="add")addFila(d.v);if(d.t==="pular")pular()});
-    c.on("close",function(){conns=conns.filter(function(x){return x!==c})})});
+  peer.on("connection",trataConn);
+  if(!LOCAL||localStorage.getItem("tudooke_tv")==="1")salaRede();
   peer.on("call",function(cl){cl.answer();cl.on("stream",function(s){ligaVoz(s,"🎤 Celular conectado")})});
 }
+function trataConn(c){conns.push(c);c.on("open",function(){c.send({t:"ok",fila:FILA.length,cod:COD});});
+    c.on("data",function(d){if(d.t==="add")addFila(d.v);if(d.t==="pular")pular();if(d.t==="cast"&&d.v){recebeCast(d)}else if(d.t==="mic")toast("📱 Microfone conectado!")});
+    c.on("close",function(){conns=conns.filter(function(x){return x!==c})})}
+/* Espelhar: a TV fica achável por quem está no mesmo Wi-Fi (mesmo IP de internet) */
+async function idRede(){try{var r=await fetch("https://api.ipify.org?format=json");var j=await r.json();var h=0,t=j.ip;for(var i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))>>>0;return PFX+"net-"+h.toString(36)}catch(e){return null}}
+var peerNet;async function salaRede(){var id=await idRede();if(!id)return;peerNet=new Peer(id,{config:ICE});peerNet.on("connection",trataConn);peerNet.on("call",function(cl){cl.answer();cl.on("stream",function(s){ligaVoz(s,"🎤 Celular conectado")})});peerNet.on("error",function(){});peerNet.on("disconnected",function(){try{peerNet.reconnect()}catch(e){}})}
+function recebeCast(d){toast("📡 Música chegando do celular!");FILA=(d.fila||[]).concat(FILA.filter(function(x){return !d.fila||!d.fila.some(function(y){return y.id===x.id})}));ATUAL=d.v;desenhaFila();toca(d.v);
+  if(d.s>3){var k=0,iv=setInterval(function(){k++;try{if(PL&&PL.getPlayerState&&PL.getPlayerState()===1){PL.seekTo(d.s,true);clearInterval(iv)}}catch(e){}if(k>40)clearInterval(iv)},250)}}
+async function espelhar(){var b=$("#btCast");b.textContent="📡 Procurando a TV...";var id=await idRede();
+  if(!id){b.textContent="📡 Espelhar";return toast("Sem internet pra procurar a TV.")}
+  var p=new Peer({config:ICE}),ok=false;
+  var fim=setTimeout(function(){if(!ok){b.textContent="📡 Espelhar";toast("Não achei a TV. Abra o TudoOkê TV na TV Box, no mesmo Wi-Fi.");try{p.destroy()}catch(e){}}},12000);
+  p.on("error",function(){});
+  p.on("open",function(){var c=p.connect(id,{reliable:true});
+    c.on("open",function(){var s=0;try{s=PL&&PL.getCurrentTime?PL.getCurrentTime():0}catch(e){}c.send({t:"cast",v:ATUAL,s:s,fila:FILA})});
+    c.on("data",function(d){if(d.t!=="ok"||!d.cod)return;ok=true;clearTimeout(fim);try{PL&&PL.pauseVideo()}catch(e){}
+      toast("✅ Tocando na TV! Agora o celular é o microfone.");setTimeout(function(){try{p.destroy()}catch(e){}try{if(MICL)MICL.getTracks().forEach(function(t){t.stop()})}catch(e){}
+      $("#tv").classList.add("esc");$("#codIn").value=d.cod;abreMic()},800)})})}
 function zap(){var l=location.origin+location.pathname+"?mic="+COD;window.open("https://wa.me/?text="+encodeURIComponent("🎤 Bora cantar no TudoOkê! Toque no link pra virar microfone: "+l),"_blank")}
 function iniAudio(){if(AC)return;AC=new (window.AudioContext||window.webkitAudioContext)();GAIN=AC.createGain();GAIN.gain.value=VOZV;
   var dl=AC.createDelay(0.5);dl.delayTime.value=0.09;var fb=AC.createGain();fb.gain.value=0.18;var wet=AC.createGain();wet.gain.value=0.25;
@@ -161,7 +178,7 @@ function desenhaFila(){$("#filaN").textContent=FILA.length?FILA.length+" na fila
 function carregaYT(){if(window.YT&&window.YT.Player){YTOK=true;return}if(document.getElementById("ytapi"))return;var s=document.createElement("script");s.id="ytapi";s.src="https://www.youtube.com/iframe_api";document.head.appendChild(s)}
 window.onYouTubeIframeAPIReady=function(){YTOK=true;if(ATUAL)toca(ATUAL)};
 function proxima(){ATUAL=FILA.shift()||null;desenhaFila();if(!ATUAL){$("#idle").classList.remove("esc");if(PL&&PL.stopVideo)PL.stopVideo();return}toca(ATUAL)}
-function toca(v){if(!YTOK){toast("Carregando o player...");return}$("#idle").classList.add("esc");zeraNota();
+function toca(v){if(!YTOK){toast("Carregando o player...");return}$("#idle").classList.add("esc");if(localStorage.getItem("tudooke_tv")!=="1")$("#btCast").classList.remove("esc");zeraNota();
   if(!PL){PL=new window.YT.Player("player",{videoId:v.id,playerVars:{autoplay:1,rel:0,modestbranding:1,playsinline:1},events:{onReady:function(e){e.target.unMute();e.target.setVolume(100);e.target.playVideo()},onStateChange:estado,onError:function(e){toast("Esse vídeo não deixa tocar fora do YouTube. Pulando pro próximo...");setTimeout(proxima,1500)}}})}
   else PL.loadVideoById(v.id);
   clearTimeout(toca._t);toca._t=setTimeout(function(){try{if(PL&&PL.getPlayerState&&PL.getPlayerState()!==1&&PL.getPlayerState()!==3)toast("Se não começou, toque no vídeo ▶")}catch(e){}},4000);}
@@ -203,7 +220,7 @@ async function abreMic(){var cod=$("#codIn").value.trim().toUpperCase();if(cod.l
   try{navigator.wakeLock&&navigator.wakeLock.request("screen")}catch(e){}
   $("#micEst").textContent="Conectando na TV "+cod+"...";var p=new Peer({config:ICE});
   p.on("open",function(){mconn=p.connect(PFX+cod,{reliable:true});
-    mconn.on("open",function(){$("#micEst").textContent="✅ Conectado na TV "+cod+". Pode cantar!";mcall=p.call(PFX+cod,MST)});
+    mconn.on("open",function(){mconn.send({t:"mic"});$("#micEst").textContent="✅ Conectado na TV "+cod+". Pode cantar!";mcall=p.call(PFX+cod,MST)});
     mconn.on("data",function(d){if(d.t==="nota")toast("Nota: "+d.n+" — "+d.m);if(d.t==="fila")toast("Fila: "+d.n+" música(s)")});
     mconn.on("close",function(){$("#micEst").textContent="Conexão com a TV caiu. Recarregue."})});
   p.on("error",function(e){$("#micEst").textContent=e.type==="peer-unavailable"?"TV não encontrada. Confira o código.":"Erro: "+e.type});}
