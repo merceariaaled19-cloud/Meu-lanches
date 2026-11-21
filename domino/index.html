@@ -381,11 +381,15 @@ function copiaCod(){try{navigator.clipboard.writeText(codAtual).then(()=>popMsg(
 function zapCod(){window.open('https://wa.me/?text='+encodeURIComponent(txtSala()),'_blank')}
 function compCod(){if(navigator.share)navigator.share({title:'Duelo do Dominó',text:txtSala()}).catch(()=>{});else zapCod()}
 function popMsg(t){$('stSala').textContent=t;setTimeout(()=>{if(!S)$('stSala').textContent='Esperando o amigo entrar...'},1800)}
-async function pegaMidia(){if(MIC)return;const V={facingMode:'user',width:{ideal:320},height:{ideal:240},frameRate:{ideal:15}},A={echoCancellation:true,noiseSuppression:true,autoGainControl:true};
+let MP=null;function pegaMidia(){if(!MP)MP=pegaMidia0();return MP}
+async function pegaMidia0(){if(MIC)return;const V={facingMode:'user',width:{ideal:320},height:{ideal:240},frameRate:{ideal:15}},A={echoCancellation:true,noiseSuppression:true,autoGainControl:true};
  try{MIC=await navigator.mediaDevices.getUserMedia({audio:A,video:V})}catch(e){try{MIC=await navigator.mediaDevices.getUserMedia({audio:A})}catch(e2){MIC=null}}
  if(MIC&&MIC.getVideoTracks().length){$('meVid').srcObject=MIC;$('meVid').classList.remove('esc')}}
 function vazio(){const d=ac().createMediaStreamDestination();return d.stream}
-function ligaCall(c){call=c;c.on('stream',st=>{const v=$('opVid');v.muted=true;v.srcObject=st;v.classList.toggle('esc',!st.getVideoTracks().length);v.play().catch(()=>{});
+let RECEB=false;
+async function chama(pid){await pegaMidia();if(!peer||!conn)return;RECEB=false;try{call&&call.close()}catch(e){}ligaCall(peer.call(pid,MIC||vazio()));
+ setTimeout(()=>{if(!RECEB&&conn&&conn.open&&modo=='host')chama(pid)},10000)}
+function ligaCall(c){call=c;c.on('stream',st=>{RECEB=true;if(!st.getAudioTracks().length&&modo=='guest'&&conn&&conn.open)conn.send({t:'semvoz'});const v=$('opVid');v.muted=true;v.srcObject=st;v.classList.toggle('esc',!st.getVideoTracks().length);v.play().catch(()=>{});
  const a=$('somAmigo');a.srcObject=new MediaStream(st.getAudioTracks());a.volume=1;ouvir()})}
 function ouvir(){const a=$('somAmigo');if(!a.srcObject)return;try{ac()}catch(e){}a.muted=false;a.play().then(()=>$('btOuvir').classList.add('esc')).catch(()=>$('btOuvir').classList.remove('esc'))}
 document.addEventListener('touchend',()=>{const a=$('somAmigo');if(a.srcObject&&a.paused)ouvir()},{passive:true});
@@ -414,7 +418,7 @@ function enviaAud(url){if(!emRede())return;const id=Date.now()+''+Math.random(),
 (function(){const b=$('btGrava');b.addEventListener('touchstart',gravaIni,{passive:false});b.addEventListener('touchend',e=>{e.preventDefault();gravaFim()});b.addEventListener('touchcancel',gravaFim);b.addEventListener('mousedown',gravaIni);b.addEventListener('mouseup',gravaFim);b.addEventListener('mouseleave',()=>{if(GRV)gravaFim()})})();
 function tMic(){if(!MIC)return;const t=MIC.getAudioTracks()[0];if(!t)return;t.enabled=!t.enabled;$('btMic').textContent=t.enabled?'🎤':'🔇'}
 function tCam(){if(!MIC)return;const t=MIC.getVideoTracks()[0];if(!t)return;t.enabled=!t.enabled;$('btCam').textContent=t.enabled?'📷':'🚫'}
-function paraMidia(){try{call&&call.close()}catch(e){}call=null;if(MIC)MIC.getTracks().forEach(t=>t.stop());MIC=null;['meVid','opVid'].forEach(v=>{$(v).srcObject=null;$(v).classList.add('esc');$(v).classList.remove('big')});['btMic','btCam','btOuvir','btChat'].forEach(b=>$(b).classList.add('esc'));const sa=$('somAmigo');sa.srcObject=null;fechaChat();$('chatLista').innerHTML='';$('avisoMsg').classList.add('esc')}
+function paraMidia(){MP=null;try{call&&call.close()}catch(e){}call=null;if(MIC)MIC.getTracks().forEach(t=>t.stop());MIC=null;['meVid','opVid'].forEach(v=>{$(v).srcObject=null;$(v).classList.add('esc');$(v).classList.remove('big')});['btMic','btCam','btOuvir','btChat'].forEach(b=>$(b).classList.add('esc'));const sa=$('somAmigo');sa.srcObject=null;fechaChat();$('chatLista').innerHTML='';$('avisoMsg').classList.add('esc')}
 window.addEventListener('popstate',()=>{if(S&&!$('jogo').classList.contains('esc')){try{history.pushState({j:1},'')}catch(e){}pedeSair()}});
 function fechaRede(){try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}conn=null;peer=null;paraMidia()}
 function codigo(){const L='ABCDEFGHJKLMNPQRSTUVWXYZ';let c='';for(let i=0;i<4;i++)c+=L[Math.floor(Math.random()*L.length)];return c}
@@ -423,13 +427,13 @@ async function criarSala(){ac();if(!window.Peer){alert('Precisa de internet pra 
  peer=new Peer('domduelo-'+cod,{config:ICE});
  peer.on('error',e=>{if(e.type=='unavailable-id'){fechaRede();criarSala()}else $('stSala').textContent='Erro de conexão: '+e.type});
  peer.on('connection',c=>{if(conn&&conn.open){c.close();return}conn=c;
-  c.on('data',d=>{if(d.t=='ola'){novoJogo(nm,d.nome||'Amigo');abreJogo();depois();setTimeout(()=>ligaCall(peer.call(c.peer,MIC||vazio())),400)}else if(d.t=='act')act(1,d.a);else if(d.t=='msg')recebeMsg(d);else if(d.t=='aud')recebeAud(d)});
+  c.on('data',d=>{if(d.t=='ola'){novoJogo(nm,d.nome||'Amigo');abreJogo();depois();chama(c.peer)}else if(d.t=='act')act(1,d.a);else if(d.t=='msg')recebeMsg(d);else if(d.t=='aud')recebeAud(d);else if(d.t=='semvoz')chama(c.peer)});
   c.on('close',()=>{if(S){alert('Seu amigo saiu da sala.');sair()}})})}
 let entrando=false;async function entrarSala(){if(entrando)return;entrando=true;setTimeout(()=>entrando=false,3000);ac();if(!window.Peer){alert('Precisa de internet pra jogar com o amigo.');return}
  const cod=($('codIn').value||'').trim().toUpperCase();if(cod.length!=4){entrando=false;alert('O código tem 4 letras.');return}
  fechaRede();modo='guest';me=1;const nm=meuNome();codAtual=cod;await pegaMidia();
  peer=new Peer({config:ICE});
- peer.on('call',c=>{c.answer(MIC||vazio());ligaCall(c)});
+ peer.on('call',async c=>{await pegaMidia();c.answer(MIC||vazio());ligaCall(c)});
  peer.on('error',e=>{alert(e.type=='peer-unavailable'?'Sala não encontrada. Confira o código.':'Erro de conexão: '+e.type);volta()});
  peer.on('open',()=>{conn=peer.connect('domduelo-'+cod,{reliable:true});
   conn.on('open',()=>conn.send({t:'ola',nome:nm}));
