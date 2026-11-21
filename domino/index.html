@@ -118,10 +118,18 @@ body.festa .leds b{animation-duration:.25s}
   <h1>🎲 Duelo do Dominó</h1>
   <div class="bx" id="m1">
     <input id="nome" maxlength="14" placeholder="Seu nome">
-    <button onclick="offline()">🤖 Jogar offline (contra o robô)</button>
+    <button onclick="mostra('m4')">🤖 Jogar offline (contra o robô)</button>
     <button class="sec" onclick="criarSala()">👥 Criar sala</button>
     <button class="sec" onclick="mostra('m2')">🔑 Entrar na sala do amigo</button>
     <button class="ver" onclick="regras()">📜 Regras</button>
+  </div>
+  <div class="bx esc" id="m4">
+    <p style="font-weight:900;font-size:18px;color:#fbbf24">Escolha o nível do robô</p>
+    <button class="vd" onclick="offline(0)">🐣 Iniciante</button>
+    <button onclick="offline(1)">🙂 Intermediário</button>
+    <button class="sec" onclick="offline(2)">😎 Profissional</button>
+    <button class="ver" onclick="offline(3)">👹 Expert</button>
+    <button class="sec" onclick="volta()">Voltar</button>
   </div>
   <div class="bx esc" id="m2">
     <p>Digite o código da sala do seu amigo:</p>
@@ -166,7 +174,7 @@ body.festa .leds b{animation-duration:.25s}
 const $=id=>document.getElementById(id);
 var ICE={iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun.relay.metered.ca:80"},{urls:"turn:global.relay.metered.ca:80",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:80?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turn:global.relay.metered.ca:443",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"},{urls:"turns:global.relay.metered.ca:443?transport=tcp",username:"6dff73deecf7b62d9ae1759e",credential:"7J1gl21x+BQziEO1"}]};
 const META=100;
-let S=null,me=0,modo='cpu',peer=null,conn=null,sel=-1,ultEv=0,mudo=false,cpuT=null;
+let nivel=1,S=null,me=0,modo='cpu',peer=null,conn=null,sel=-1,ultEv=0,mudo=false,cpuT=null;
 
 /* ---------- SOM ---------- */
 let AC=null;
@@ -199,7 +207,7 @@ function verso(){return '<div class="p verso"><div class="m"></div><div class="m
  $('nome').value=localStorage.dom_nome||'';
 })();
 function entrar(){SFX.intro();document.body.classList.add('festa');setTimeout(()=>{$('capa').classList.add('sai');$('menu').classList.remove('esc');document.body.classList.remove('festa')},1700)}
-function mostra(id){['m1','m2','m3'].forEach(x=>$(x).classList.toggle('esc',x!=id))}
+function mostra(id){['m1','m2','m3','m4'].forEach(x=>$(x).classList.toggle('esc',x!=id))}
 function meuNome(){let n=($('nome').value||'').trim()||'Jogador';localStorage.dom_nome=n;return n}
 function volta(){fechaRede();mostra('m1')}
 function regras(){ov('<h2>📜 Regras</h2><div class="regras"><p>• Cada um começa com 7 pedras. O resto fica no <b>dorme</b>.</p><p>• Na 1ª rodada sai quem tem a maior carroça (pedra dupla). Depois, sai quem ganhou a rodada anterior.</p><p>• Jogue uma pedra que combine com uma das pontas. Se não tiver, <b>compra</b> do dorme. Se o dorme acabar, <b>passa</b>.</p><p>• <b>Pontos:</b> depois de jogar, some as pontas da mesa. Se der 5, 10, 15, 20... você ganha esses pontos! Carroça na ponta vale dobrado.</p><p>• Quem <b>bater</b> (acabar as pedras) ganha os pontos que sobraram na mão do outro (arredondado pra baixo de 5 em 5).</p><p>• Se o jogo <b>trancar</b>, ganha quem tiver menos pontos na mão.</p><p>• Quem fizer <b>100 pontos</b> primeiro vence o duelo! 🏆</p></div><button onclick="fechaOv()">Entendi</button>')}
@@ -216,7 +224,7 @@ function podeJogar(s){return S.h[s].some(t=>lados(t).length)}
 function ev(k,s,pts){S.ev={id:(S.ev?S.ev.id:0)+1,k,s,pts:pts||0}}
 function novoJogo(n0,n1){S={nomes:[n0,n1],sc:[0,0],rd:0,win:-1,ev:null};novaRodada()}
 function novaRodada(){const p=[];for(let a=0;a<=6;a++)for(let b=a;b<=6;b++)p.push([a,b]);embaralha(p);
- S.h=[p.splice(0,7),p.splice(0,7)];S.pile=p;S.ch=[];S.pass=0;S.rd++;S.fim=null;S.acabou=-1;S.nova=-1;
+ S.h=[p.splice(0,7),p.splice(0,7)];S.pile=p;S.ch=[];S.pass=0;S.rd++;S.falta=[[],[]];S.fim=null;S.acabou=-1;S.nova=-1;
  if(S.win<0){let best=-1,bs=0,bi=0;for(const s of[0,1])S.h[s].forEach((t,i)=>{const v=t[0]==t[1]?100+t[0]:t[0]+t[1];if(v>best){best=v;bs=s;bi=i}});
    const t=S.h[bs][bi];S.vez=bs;jogar(bs,bi,'L');S.msg=S.nomes[bs]+' saiu com '+(t[0]==t[1]?'a carroça de '+t[0]:t[0]+'-'+t[1]);}
  else{S.vez=S.win;S.msg=S.nomes[S.win]+' começa a rodada';ev('rodada',S.win)}}
@@ -236,24 +244,37 @@ function fimRodada(w,tipo){
  S.fim={w,ganho,tipo};S.win=w>=0?w:S.vez;
  if(w>=0&&S.sc[w]>=META)S.acabou=w;
  ev('fim',w,ganho)}
+function marcaFalta(s){const p=pontas();if(!p||!S.falta)return;p.forEach(v=>{if(!S.falta[s].includes(v))S.falta[s].push(v)})}
 function act(s,a){if(!S)return;
  if(a.t=='prox'){if(!S.fim||S.acabou>=0)return;novaRodada();return depois()}
  if(a.t=='novo'){if(S.acabou<0)return;const n=S.nomes;novoJogo(n[0],n[1]);return depois()}
  if(S.fim||S.vez!=s)return;
  if(a.t=='j'){const t=S.h[s][a.i];if(!t)return;const ls=lados(t);if(!ls.includes(a.l))return;jogar(s,a.i,a.l)}
- else if(a.t=='c'){if(podeJogar(s)||!S.pile.length)return;S.h[s].push(S.pile.pop());ev('compra',s);S.msg=S.nomes[s]+' comprou do dorme'}
- else if(a.t=='p'){if(podeJogar(s)||S.pile.length)return;S.pass++;ev('passa',s);S.msg=S.nomes[s]+' passou';if(S.pass>=2){fimRodada(-1,'trancou')}else S.vez=1-s}
+ else if(a.t=='c'){if(podeJogar(s)||!S.pile.length)return;marcaFalta(s);S.h[s].push(S.pile.pop());ev('compra',s);S.msg=S.nomes[s]+' comprou do dorme'}
+ else if(a.t=='p'){if(podeJogar(s)||S.pile.length)return;marcaFalta(s);S.pass++;ev('passa',s);S.msg=S.nomes[s]+' passou';if(S.pass>=2){fimRodada(-1,'trancou')}else S.vez=1-s}
  depois()}
 function depois(){if(modo=='host'&&conn&&conn.open)conn.send({t:'st',S});render();if(modo=='cpu')agendaCPU()}
 
 /* ---------- ROBÔ ---------- */
 function agendaCPU(){clearTimeout(cpuT);if(!S||S.fim||S.vez!=1)return;cpuT=setTimeout(cpuJoga,S.pile.length&&!podeJogar(1)?650:1100)}
-function cpuJoga(){if(!S||S.fim||S.vez!=1)return;const h=S.h[1];let best=null;
- h.forEach((t,i)=>lados(t).forEach(l=>{const bk=JSON.stringify(S.ch);const ch=S.ch.slice();
-  if(!ch.length)ch.push(t);else if(l=='L'){const L=ch[0][0];ch.unshift(t[1]==L?t:[t[1],t[0]])}else{const R=ch[ch.length-1][1];ch.push(t[0]==R?t:[t[1],t[0]])}
-  const o=S.ch;S.ch=ch;const p=somaPontas();S.ch=o;let sc=(p%5==0&&p>0?p*10:0)+t[0]+t[1]+(t[0]==t[1]?4:0)+Math.random();
-  if(!best||sc>best.sc)best={i,l,sc}}));
- if(best)act(1,{t:'j',i:best.i,l:best.l});else if(S.pile.length)act(1,{t:'c'});else act(1,{t:'p'})}
+function simula(ch,t,l){ch=ch.slice();if(!ch.length)ch.push(t);else if(l=='L'){const L=ch[0][0];ch.unshift(t[1]==L?t:[t[1],t[0]])}else{const R=ch[ch.length-1][1];ch.push(t[0]==R?t:[t[1],t[0]])}return ch}
+function ptsCh(ch){const o=S.ch;S.ch=ch;const p=somaPontas();S.ch=o;return p%5==0&&p>0?p:0}
+function risco(ch,mao,filtra){const vis={};ch.concat(mao).forEach(t=>vis[Math.min(t[0],t[1])+'-'+Math.max(t[0],t[1])]=1);
+ const L=ch[0][0],R=ch[ch.length-1][1],fal=(S.falta&&S.falta[0])||[];let mx=0;
+ for(let a=0;a<=6;a++)for(let b=a;b<=6;b++){if(vis[a+'-'+b])continue;if(filtra&&(fal.includes(a)||fal.includes(b)))continue;const t=[a,b];
+  if(a==L||b==L)mx=Math.max(mx,ptsCh(simula(ch,t,'L')));if(a==R||b==R)mx=Math.max(mx,ptsCh(simula(ch,t,'R')))}return mx}
+function cpuJoga(){if(!S||S.fim||S.vez!=1)return;const h=S.h[1],mv=[];
+ h.forEach((t,i)=>lados(t).forEach(l=>{const ch=simula(S.ch,t,l);mv.push({i,l,t,ch,p:ptsCh(ch)})}));
+ if(!mv.length){if(S.pile.length)act(1,{t:'c'});else act(1,{t:'p'});return}
+ let best=null;
+ mv.forEach(m=>{const t=m.t,dbl=t[0]==t[1],resto=h.filter((x,k)=>k!=m.i),L=m.ch[0][0],R=m.ch[m.ch.length-1][1];let sc;
+  if(nivel==0)sc=Math.random()*10+(m.p&&Math.random()<.35?m.p:0);
+  else if(nivel==1)sc=m.p*10+t[0]+t[1]+(dbl?4:0)+Math.random();
+  else{const filtra=nivel==3,rk=risco(m.ch,resto,filtra),ctrl=resto.filter(x=>x[0]==L||x[1]==L||x[0]==R||x[1]==R).length;
+   sc=m.p*10-rk*(nivel==3?8:5)+t[0]+t[1]+(dbl?5:0)+ctrl*(nivel==3?3:1.5)+Math.random();
+   if(nivel==3){const fal=(S.falta&&S.falta[0])||[];if(fal.includes(L))sc+=6;if(fal.includes(R))sc+=6;if(resto.length<=2)sc+=(14-resto.reduce((a,x)=>a+x[0]+x[1],0))}}
+  if(!best||sc>best.sc)best={i:m.i,l:m.l,sc}});
+ act(1,{t:'j',i:best.i,l:best.l})}
 
 /* ---------- AÇÕES DO JOGADOR ---------- */
 function pede(a){ac();if(modo=='guest'){if(conn&&conn.open)conn.send({t:'act',a})}else act(me,a);sel=-1}
@@ -304,7 +325,8 @@ function abreJogo(){$('menu').classList.add('esc');$('jogo').classList.remove('e
 function sair(){clearTimeout(cpuT);fechaRede();S=null;sel=-1;fechaOv();$('jogo').classList.add('esc');$('menu').classList.remove('esc');mostra('m1')}
 
 /* ---------- MODOS ---------- */
-function offline(){ac();modo='cpu';me=0;novoJogo(meuNome(),'Robô');abreJogo();render();agendaCPU()}
+const NIV=['Iniciante','Intermediário','Profissional','Expert'];
+function offline(n){ac();modo='cpu';me=0;nivel=n;localStorage.dom_niv=n;novoJogo(meuNome(),'Robô '+NIV[n]);abreJogo();render();agendaCPU()}
 function fechaRede(){try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}conn=null;peer=null}
 function codigo(){const L='ABCDEFGHJKLMNPQRSTUVWXYZ';let c='';for(let i=0;i<4;i++)c+=L[Math.floor(Math.random()*L.length)];return c}
 function criarSala(){ac();if(!window.Peer){alert('Precisa de internet pra jogar com o amigo.');return}
