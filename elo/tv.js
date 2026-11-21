@@ -34,6 +34,7 @@
  '.tkMsg{background:rgba(20,6,40,.88);border:2px solid #ff3fa4;color:#fff;padding:6px 12px;border-radius:16px;font-size:20px;font-weight:bold;transition:opacity .8s}',
  '.tkMsg b{color:#ffd54a}',
  '.tkFig{position:absolute;z-index:22;font-size:64px;pointer-events:none;transition:transform 3s linear,opacity 3s}',
+ '#tkCont{position:fixed;inset:0;z-index:9500;background:radial-gradient(circle at 50% 45%,#5b1aa8,#14002b 72%);display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}#tkCont .t{font-size:4vmin;color:#ffd54a;font-weight:bold;letter-spacing:.4vmin}#tkCont .q{font-size:10vmin;font-weight:900;margin:1vmin 0}#tkCont .m{font-size:3.6vmin;opacity:.85;max-width:80%}#tkCont .n{font-size:22vmin;font-weight:900;color:#ff3fa4;line-height:1.1}',
  '#tkFila{position:absolute;top:190px;right:6px;width:120px;z-index:20;background:rgba(20,6,40,.9);border:1px solid #ff3fa4;border-radius:10px;padding:5px;color:#fff;font:11px Arial;display:none}#tkFila b{color:#ffd54a;display:block;margin-bottom:3px}#tkFila div{margin-bottom:3px;line-height:1.2}',
  '#tkVoto{position:absolute;top:150px;right:6px;width:120px;text-align:center;z-index:20;background:rgba(20,6,40,.88);color:#ffd54a;border-radius:10px;padding:4px 8px;font:bold 14px Arial;display:none}',
  /* nota final */
@@ -69,7 +70,7 @@
  var sel=document.createElement('select');sel.id='eloQtd';
  [['1','🎵 1 música'],['3','🎵 3 músicas'],['5','🎵 5 músicas'],['10','🎵 10 músicas'],['99','🎵 Todas']].forEach(function(o){var op=document.createElement('option');op.value=o[0];op.textContent=o[1];if(+o[0]===QTD)op.selected=true;sel.appendChild(op);});
  sel.onchange=function(){QTD=parseInt(sel.value,10);localStorage.eloQtd=QTD;tocadas=0;};
- var topo=$('topo');if(topo)topo.appendChild(sel);
+ /* seletor de quantidade removido a pedido (fila pelo celular) */QTD=1;
 
  /* medidor de voz proprio (nota 0-100) */
  var amostras=0,cantando=0,somaForca=0,votos=[];
@@ -109,7 +110,7 @@
   try{player.addEventListener('onStateChange',function(e){
    var d=e&&e.data!==undefined?e.data:e;
    if(d===0){tocadas++;notaFinal(function(){
-     if(fila.length){tocaVideo(fila.shift());mostraFila();envia({t:'fila',l:fila.map(function(x){return x.titulo})});return;}
+     if(fila.length){var prox=fila.shift();mostraFila();envia({t:'fila',l:fila.map(function(x){return x.titulo+(x.quem?' ('+x.quem+')':'')})});contagem(prox,function(){tocaVideo(prox);});return;}
      if(tocadas<QTD&&typeof atual==='number'&&typeof resultados!=='undefined'&&atual+1<resultados.length){auto=true;window.tocar(atual+1);}
    });}
   });}catch(x){}
@@ -124,9 +125,12 @@
  if(pa){pa.appendChild(feed);pa.appendChild(vt);}
  function mostraVoto(){if(!votos.length){vt.style.display='none';return;}var s=0;votos.forEach(function(v){s+=v});vt.style.display='block';vt.textContent='⭐ '+(s/votos.length).toFixed(1)+' ('+votos.length+')';}
  var fila=[];
- function tocaVideo(v){resultados.push(v);auto=true;window.tocar(resultados.length-1);if(v.quem)recado('🎤 '+v.quem,'vai cantar agora!');}
+ function tocaVideo(v){resultados.push(v);auto=true;window.tocar(resultados.length-1);}
  var fl=document.createElement('div');fl.id='tkFila';if(pa)pa.appendChild(fl);
- function mostraFila(){if(!fila.length){fl.style.display='none';return;}fl.style.display='block';fl.innerHTML='';var h=document.createElement('b');h.textContent='Próximas ('+fila.length+')';fl.appendChild(h);fila.slice(0,4).forEach(function(v,i){var x=document.createElement('div');x.textContent=(i+1)+'. '+v.titulo.slice(0,38)+(v.quem?' • '+v.quem:'');fl.appendChild(x);});}
+ function mostraFila(){if(!fila.length){fl.style.display='none';return;}fl.style.display='block';fl.innerHTML='';var h=document.createElement('b');h.textContent='Próximas ('+fila.length+')';fl.appendChild(h);fila.slice(0,4).forEach(function(v,i){var x=document.createElement('div');x.textContent=(i+1)+'. '+(v.quem?v.quem+': ':'')+v.titulo.slice(0,34);fl.appendChild(x);});}
+ var cd=document.createElement('div');cd.id='tkCont';document.body.appendChild(cd);
+ function contagem(v,cb){var n=10;function pinta(){cd.innerHTML='';var a=document.createElement('div');a.className='t';a.textContent='PRÓXIMO A CANTAR';var b=document.createElement('div');b.className='q';b.textContent='🎤 '+(v.quem||'Galera');var c=document.createElement('div');c.className='m';c.textContent=v.titulo;var e=document.createElement('div');e.className='n';e.textContent=n;cd.appendChild(a);cd.appendChild(b);cd.appendChild(c);cd.appendChild(e);}
+  cd.style.display='flex';pinta();var it=setInterval(function(){n--;if(n<=0){clearInterval(it);cd.style.display='none';cb();}else pinta();},1000);}
  function limpa(t,n){return String(t||'').replace(/\s+/g,' ').slice(0,n)}
  function recado(nome,txt){var m=document.createElement('div');m.className='tkMsg';var b=document.createElement('b');b.textContent=limpa(nome,14)+': ';m.appendChild(b);m.appendChild(document.createTextNode(limpa(txt,70)));feed.appendChild(m);while(feed.children.length>3)feed.firstChild.remove();setTimeout(function(){m.style.opacity=0;setTimeout(function(){m.remove()},900)},8000);}
  var FIGS=['🔥','👏','🎉','🥳','😍','😂','🤮','💩','👍','👎','🎤','⭐','💃','🍻','❤️','👑','🤘','😱'];
@@ -140,10 +144,10 @@
   else if(d.t==='voto'){var v=parseInt(d.v,10);if(v>=1&&v<=5){votos.push(v);mostraVoto();figura('⭐');}}
   else if(d.t==='busca'){var q=limpa(d.q,60);if(!q)return;if(!/karaok/i.test(q))q+=' karaoke';
    fetch('/api/buscar?q='+encodeURIComponent(q)).then(function(r){return r.json()}).then(function(j){var l=(j.videos||[]).slice(0,10).map(function(v){return {i:v.id,t:String(v.titulo).slice(0,70),c:String(v.canal||'').slice(0,20),d:v.duracao||''}});envia({t:'lista',para:d.u,l:l});},function(){envia({t:'lista',para:d.u,l:[],erro:1});});}
-  else if(d.t==='pedir'){if(!/^[\w-]{6,15}$/.test(d.i||''))return;var v={id:d.i,titulo:limpa(d.tt,90),canal:'',duracao:'',thumb:'https://i.ytimg.com/vi/'+d.i+'/mqdefault.jpg',quem:limpa(d.n,14)};
+  else if(d.t==='pedir'){if(!/^[\w-]{6,15}$/.test(d.i||''))return;var v={id:d.i,titulo:limpa(d.tt,90),canal:'',duracao:'',thumb:'https://i.ytimg.com/vi/'+d.i+'/mqdefault.jpg',quem:limpa(d.cantor||d.n,18)};
    var tocando=typeof player!=='undefined'&&player&&player.getPlayerState&&[1,3].indexOf(player.getPlayerState())>=0;
-   if(!tocando&&!fila.length){tocaVideo(v);}else{fila.push(v);mostraFila();recado(v.quem||'Alguém','pediu 🎵 '+v.titulo);}
-   envia({t:'fila',l:fila.map(function(x){return x.titulo})});}
+   if(!tocando&&!fila.length){tocaVideo(v);}else{fila.push(v);mostraFila();recado(v.quem||'Alguém','entrou na fila 🎵');}
+   envia({t:'fila',l:fila.map(function(x){return x.titulo+(x.quem?' ('+x.quem+')':'')})});}
   else if(d.t==='oi'){envia({t:'ok',musica:(typeof atual==='number'&&typeof resultados!=='undefined'&&resultados[atual])?resultados[atual].titulo:''});}
  }
  var vistos={};

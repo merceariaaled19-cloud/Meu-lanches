@@ -18,7 +18,7 @@ input{width:100%;padding:13px;border-radius:10px;border:2px solid #7c3aed;backgr
 </style></head><body>
 <h1>🎤 Tudo<span>Okê</span></h1>
 <div id="st">Conectando na TV...</div>
-<div class="card"><h2>🎵 Pedir música</h2><input id="bq" placeholder="Ex.: Evidências"><button class="btn" id="bB">🔍 Buscar</button><div id="res"></div><div id="fila"></div></div>
+<div class="card"><h2>🎵 Pedir música</h2><input id="cantor" maxlength="18" placeholder="Quem vai cantar? Ex.: Ana" style="margin-bottom:8px"><input id="bq" placeholder="Música. Ex.: Evidências"><button class="btn" id="bB">🔍 Buscar</button><div id="res"></div><div id="fila"></div></div>
 <div class="card"><h2>Seu nome</h2><input id="nome" maxlength="14" placeholder="Ex.: Ana"></div>
 <div class="card"><h2>Reações na tela</h2><div class="figs" id="figs"></div></div>
 <div class="card"><h2>Recado na tela</h2><input id="msg" maxlength="70" placeholder="Manda ver! 🔥"><button class="btn" id="bMsg">Enviar recado</button></div>
@@ -38,7 +38,7 @@ var eu=localStorage.tkEu||(localStorage.tkEu=Math.random().toString(36).slice(2,
 $('bB').onclick=function(){var q=$('bq').value.trim();if(!q)return;$('res').innerHTML='<p>Buscando na TV...</p>';manda({t:'busca',q:q,u:eu});};
 $('bq').onkeydown=function(e){if(e.key==='Enter')$('bB').onclick()};
 function lista(d){var r=$('res');r.innerHTML='';if(d.erro||!d.l.length){r.innerHTML='<p>Nada encontrado. Tenta outro nome.</p>';return;}
- d.l.forEach(function(v){var x=document.createElement('div');x.className='r';var im=document.createElement('img');im.src='https://i.ytimg.com/vi/'+v.i+'/mqdefault.jpg';var t=document.createElement('div');var b=document.createElement('b');b.textContent=v.t;var sm=document.createElement('small');sm.textContent=[v.c,v.d].filter(Boolean).join(' • ');t.appendChild(b);t.appendChild(sm);var bt=document.createElement('button');bt.textContent='Cantar';bt.onclick=function(){manda({t:'pedir',i:v.i,tt:v.t});r.innerHTML='<p>✅ Pedido! Fica de olho na TV.</p>';};x.appendChild(im);x.appendChild(t);x.appendChild(bt);r.appendChild(x);});}
+ d.l.forEach(function(v){var x=document.createElement('div');x.className='r';var im=document.createElement('img');im.src='https://i.ytimg.com/vi/'+v.i+'/mqdefault.jpg';var t=document.createElement('div');var b=document.createElement('b');b.textContent=v.t;var sm=document.createElement('small');sm.textContent=[v.c,v.d].filter(Boolean).join(' • ');t.appendChild(b);t.appendChild(sm);var bt=document.createElement('button');bt.textContent='Cantar';bt.onclick=function(){var ca=$('cantor').value.trim();if(!ca){ok('Escreve quem vai cantar');$('cantor').focus();return;}manda({t:'pedir',i:v.i,tt:v.t,cantor:ca});$('cantor').value='';$('bq').value='';r.innerHTML='<p>✅ Pedido! Fica de olho na TV.</p>';};x.appendChild(im);x.appendChild(t);x.appendChild(bt);r.appendChild(x);});}
 $('bMsg').onclick=function(){var v=$('msg').value.trim();if(!v)return;manda({t:'msg',v:v});$('msg').value=''};
 $('bVoto').onclick=function(){if(!estrela){ok('Escolha as estrelas');return}manda({t:'voto',v:estrela})};
 if(!sala){$('st').textContent='Escaneie o QR code da TV pra entrar.'}else{
