@@ -51,16 +51,16 @@ input{background:#0d001c;color:#fff;border:2px solid var(--c2);border-radius:14p
 .iLuz{position:absolute;top:-10%;width:30vw;height:130%;background:linear-gradient(transparent,rgba(255,63,164,.25),transparent);transform-origin:top;animation:iLuz 2.4s ease-in-out infinite alternate}
 @keyframes iLuz{from{transform:rotate(-25deg)}to{transform:rotate(25deg)}}
 #iPula{position:absolute;bottom:4vh;color:#ccc;font-size:16px;background:transparent;border:1px solid #888}
-</style></head><body>
+.catg{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.catg button{padding:10px 12px;font-size:1rem}.catl{display:grid;gap:6px;margin-top:8px;max-height:40vh;overflow:auto}.catl button{text-align:left;background:#2a0a52;font-weight:600}</style></head><body>
 <div id="intro" onclick="fimIntro()"><div class="iLuz" style="left:5%"></div><div class="iLuz" style="right:5%;animation-delay:1.2s"></div><div id="iMic">🎤</div><div id="iTit">TudoOkê</div><div id="iSub">Karaokê com nota</div><button id="iPula" onclick="fimIntro()">Pular ⏭</button></div>
 
 <section id="home">
   <h1>Tudo<span>Okê</span> 🎤</h1>
   <p class="muted center">Karaokê com nota. Escolha o que este aparelho vai ser:</p>
   <div class="bts">
-    <button onclick="abreTV(false)">📺 Esta é a TV (celular vira microfone)</button>
-    <button class="sec" onclick="abreTV(true)">🎙️ Cantar aqui com microfone ligado neste aparelho</button>
-    <div class="row"><input id="codIn" placeholder="CÓDIGO DA TV" maxlength="4" style="text-transform:uppercase" inputmode="text"><button onclick="abreMic()">📱 Virar microfone</button></div>
+    <button onclick="abreTV(true)">🎤 Só a TV Box: escolher música na tela e cantar (microfone na TV Box)</button>
+    <button class="sec" onclick="abreTV(false)">📺 Esta é a TV (celular vira microfone)</button>
+        <div class="row"><input id="codIn" placeholder="CÓDIGO DA TV" maxlength="4" style="text-transform:uppercase" inputmode="text"><button onclick="abreMic()">📱 Virar microfone</button></div>
   </div>
   <small class="muted center">Na TV Box, abra este app no navegador. No celular, digite o código que aparece na TV.</small>
 </section>
@@ -76,7 +76,8 @@ input{background:#0d001c;color:#fff;border:2px solid var(--c2);border-radius:14p
   </div>
   <div id="tvR">
     <div class="box row"><input id="buscaTV" placeholder="Buscar música (ex.: Evidências)" onkeydown="if(event.key==='Enter')buscaTV()"><button onclick="buscaTV()">🔍</button></div>
-    <div class="box" id="filaBox"><b>Fila</b> <small class="muted" id="filaN"></small><div id="fila"></div>
+    <div class="box" id="catBox"><b>🎵 Categorias</b> <small class="muted">escolha com o controle</small><div id="cats" class="catg"></div><div id="catM" class="catl"></div></div>
+<div class="box" id="filaBox"><b>Fila</b> <small class="muted" id="filaN"></small><div id="fila"></div>
       <div class="row" style="margin-top:8px"><button class="sec" onclick="pular()">⏭ Pular</button><button class="sec" onclick="volVoz(-1)">🔉 Voz</button><button class="sec" onclick="volVoz(1)">🔊 Voz</button></div></div>
     <div class="box" style="flex:1;min-height:0;display:flex;flex-direction:column"><b>Resultados</b><div id="resTV"></div></div>
   </div>
@@ -211,6 +212,17 @@ function pularMic(){mconn&&mconn.open&&mconn.send({t:"pular"})}
 async function buscaMic(){var q=$("#buscaMic").value.trim();if(!q)return;$("#resMic").innerHTML='<p class="muted">Buscando...</p>';var r=await busca(q);
   lista($("#resMic"),r,function(v){if(mconn&&mconn.open){mconn.send({t:"add",v:v});toast("➕ Na fila da TV: "+v.t)}else toast("Ainda não conectado na TV.")})}
 
+/* Categorias (TV sem celular) */
+var CATS={"🤠 Sertanejo": ["Evidências - Chitãozinho e Xororó", "Fio de Cabelo - Chitãozinho e Xororó", "Página de Amigos - Chitãozinho e Xororó", "Cuida Bem Dela - Henrique e Juliano", "Infiel - Marília Mendonça", "Todo Mundo Vai Sofrer - Marília Mendonça", "Leão - Marília Mendonça", "Esqueci de Te Esquecer - Gusttavo Lima", "Balada - Gusttavo Lima", "Camaro Amarelo - Munhoz e Mariano", "Ai Se Eu Te Pego - Michel Teló", "Saudade da Minha Terra - Goiá"], "🥁 Pagode": ["Deixa Acontecer - Grupo Revelação", "Tá Escrito - Grupo Revelação", "Cheia de Manias - Raça Negra", "É Tarde Demais - Raça Negra", "Ligando os Fatos - Sorriso Maroto", "Me Apaixonei Pela Pessoa Errada - Exaltasamba", "Faixa Amarela - Zeca Pagodinho"], "💔 Brega e Romântica": ["Fuscão Preto - Almir Rogério", "Eu Não Sou Cachorro Não - Waldick Soriano", "Garçom - Reginaldo Rossi", "Mon Amour Meu Bem Ma Femme - Reginaldo Rossi", "Você é Doida Demais - Lindomar Castilho", "Ainda Ontem Chorei de Saudade - João Mineiro e Marciano", "Cama e Mesa - Roberto Carlos", "Detalhes - Roberto Carlos", "Como É Grande o Meu Amor Por Você - Roberto Carlos"], "🪗 Forró": ["Xote das Meninas - Luiz Gonzaga", "Asa Branca - Luiz Gonzaga", "Anunciação - Alceu Valença", "Esperando na Janela - Gilberto Gil", "Frevo Mulher - Zé Ramalho", "Xote da Alegria - Falamansa", "Rindo à Toa - Falamansa"], "🎸 Rock Nacional": ["Pais e Filhos - Legião Urbana", "Tempo Perdido - Legião Urbana", "Exagerado - Cazuza", "Por Enquanto - Cássia Eller", "Anna Júlia - Los Hermanos", "Primeiros Erros - Capital Inicial", "Lanterna dos Afogados - Paralamas do Sucesso", "Pro Dia Nascer Feliz - Barão Vermelho", "Vamos Fugir - Skank", "Tocando em Frente - Almir Sater"], "🎤 MPB": ["Garota de Ipanema - Tom Jobim", "Aquarela - Toquinho", "O Que É O Que É - Gonzaguinha", "Velha Infância - Tribalistas", "Trem Bala - Ana Vilela", "Amor I Love You - Marisa Monte", "Sozinho - Caetano Veloso", "Como Nossos Pais - Elis Regina"], "🙏 Gospel": ["Raridade - Anderson Freire", "Ressuscita-me - Aline Barros", "Faz Um Milagre Em Mim - Regis Danese", "Sou Humano - Bruna Karla", "Deus Me Ama - Thalles Roberto", "Aquieta Minh'alma - Ministério Zoe"], "🌎 Internacional": ["My Heart Will Go On - Celine Dion", "I Will Always Love You - Whitney Houston", "Let It Be - The Beatles", "Bohemian Rhapsody - Queen", "Livin' On A Prayer - Bon Jovi", "Hotel California - Eagles", "Perfect - Ed Sheeran", "Shallow - Lady Gaga"], "🧒 Infantil": ["Galinha Pintadinha", "O Sapo Não Lava o Pé", "Atirei o Pau no Gato", "Borboletinha", "Ciranda Cirandinha", "Parabéns Pra Você"]};
+function desenhaCats(){var el=$("#cats");if(!el)return;el.innerHTML=Object.keys(CATS).map(function(k,i){return '<button class="sec" data-k="'+i+'">'+esc(k)+'</button>'}).join("");
+ Array.prototype.forEach.call(el.querySelectorAll("button"),function(b){b.onclick=function(){abreCat(Object.keys(CATS)[+b.dataset.k])}})}
+function abreCat(k){var m=$("#catM");m.innerHTML='<button class="sec" id="catV">⬅ Voltar</button>'+CATS[k].map(function(x,i){return '<button data-i="'+i+'">🎵 '+esc(x)+'</button>'}).join("");
+ $("#catV").onclick=function(){m.innerHTML="";var f=$("#cats button");f&&f.focus()};
+ Array.prototype.forEach.call(m.querySelectorAll("button[data-i]"),function(b){b.onclick=function(){escolheCat(CATS[k][+b.dataset.i],b)}});
+ var f=m.querySelector("button[data-i]");f&&f.focus()}
+async function escolheCat(nome,b){var o=b.textContent;b.textContent="⏳ Procurando...";var r=await busca(nome+" karaokê");b.textContent=o;
+ if(r&&r.length)addFila(r[0]);else toast("Busca fora do ar agora. Tente de novo daqui a pouco.")}
+desenhaCats();
 /* Abertura animada */
 var INTRO_OK=false,POS_INTRO=null;
 function fimIntro(){if(INTRO_OK)return;INTRO_OK=true;var i=document.getElementById("intro");i.classList.add("sai");setTimeout(function(){i.remove()},700);if(POS_INTRO){var f=POS_INTRO;POS_INTRO=null;f()}}
@@ -221,7 +233,7 @@ function fimIntro(){if(INTRO_OK)return;INTRO_OK=true;var i=document.getElementBy
 (function(){var q=new URLSearchParams(location.search).get("mic");if(q&&q.length===4){$("#codIn").value=q.toUpperCase();try{history.replaceState(null,"",location.pathname)}catch(e){}abreMic()}})();
 /* App TV Box: ?tv=1 abre direto no modo TV */
 (function(){var tv=new URLSearchParams(location.search).get("tv");if(tv==="1")localStorage.setItem("tudooke_tv","1");if(tv==="0")localStorage.removeItem("tudooke_tv");
- if(localStorage.getItem("tudooke_tv")==="1"&&!new URLSearchParams(location.search).get("mic")){POS_INTRO=function(){try{abreTV(false)}catch(e){console.log(e)}};if(INTRO_OK)fimIntro()}})();
+ if(localStorage.getItem("tudooke_tv")==="1"&&!new URLSearchParams(location.search).get("mic")){POS_INTRO=function(){var b=document.querySelector("#home .bts button");b&&b.focus()}}})();
 /* TV Box: tela grande deitada já sugere modo TV */
 if(window.innerWidth>window.innerHeight&&window.innerWidth>=900&&!/Mobi/i.test(navigator.userAgent)){var b=document.querySelector("#home .bts button");b&&b.focus()}
 if("serviceWorker" in navigator)navigator.serviceWorker.register("service-worker.js");
