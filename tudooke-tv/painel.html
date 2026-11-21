@@ -55,13 +55,17 @@ $('sair').onclick=function(){au.signOut()};au.getRedirectResult().catch(function
 au.onAuthStateChanged(function(u){$('login').style.display=u?'none':'block';$('app').style.display=u?'block':'none';$('sair').style.display=u?'block':'none';if(u)escuta();});
 function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(8);crypto.getRandomValues(r);for(var i=0;i<8;i++)s+=a[r[i]%a.length];return s}
 function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
-function link(x){return 'https://wa.me/'+(x&&x.zap?x.zap:'')+'?text='+encodeURIComponent(texto(x.id,x.dias,x.cliente))}
+function zapUrl(n,t){if(/Android/i.test(navigator.userAgent))return 'intent://send?'+(n?'phone='+n+'&':'')+'text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;end';return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(t)}
+function link(x){return zapUrl(x&&x.zap,texto(x.id,x.dias,x.cliente))}
+function copia(t,b){function ok(){if(b){var o=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=o},1500)}}
+ function velho(){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity=0;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand('copy')}catch(e){}a.remove();if(r)ok();else prompt('Copie:',t)}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,velho);else velho()}
 function fmt(c){return c.slice(0,4)+'-'+c.slice(4)}
 $('gera').onclick=function(){var d=+document.querySelector('input[name=pl]:checked').value,c=gcod(),b=$('gera');b.disabled=true;
  db.collection('licencas').doc(c).set({dias:d,plano:NOME[d],cliente:$('cli').value.trim(),zap:nz($('zap').value),device:'',ativadoEm:null,criadoEm:firebase.firestore.FieldValue.serverTimestamp()})
  .then(function(){ULT=c;$('cod').textContent=fmt(c);$('novo').style.display='block';$('cli').value='';$('zap').value='';}).catch(function(e){alert('Erro: '+e.code)}).finally(function(){b.disabled=false})};
 function texto(c,d,n){return (n?'Olá, '+n+'! ':'')+'Seu código do TudoOkê TV ('+NOME[d]+'): '+fmt(c)+'\nAbra o app na TV Box e digite o código. Ele fica preso a esse aparelho.'}
-$('cp').onclick=function(){var t=fmt(ULT);(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){$('cp').textContent='Copiado!';setTimeout(function(){$('cp').textContent='Copiar'},1500)}).catch(function(){prompt('Copie:',t)})};
+$('cp').onclick=function(){var l=TODOS.filter(function(x){return x.id==ULT})[0]||{id:ULT,dias:30};copia(texto(l.id,l.dias,l.cliente),$('cp'))};
 $('wa').onclick=function(){var l=TODOS.filter(function(x){return x.id==ULT})[0]||{id:ULT,dias:30};location.href=link(l)};
 function vence(x){return x.ativadoEm?x.ativadoEm.toDate().getTime()+x.dias*864e5:0}
 function dt(ms){var d=new Date(ms);return d.toLocaleDateString('pt-BR')}
@@ -75,11 +79,11 @@ function pinta(){var q=$('bus').value.trim().toUpperCase().replace('-',''),n=0,a
   var m=document.createElement('div');m.className='mut';m.textContent=(x.cliente||'Sem nome')+(x.zap?' • '+x.zap.slice(2):'')+' • '+(x.plano||NOME[x.dias]||x.dias+' dias')+(x.device?' • até '+dt(ve)+' • box '+x.device.slice(-8).toUpperCase():'');d.appendChild(m);
   var r=document.createElement('div');r.className='row';
   function bt(tx,f,c){var e=document.createElement('button');e.className='s';e.textContent=tx;if(c)e.style.background=c;e.onclick=f;r.appendChild(e)}
-  bt('Copiar',function(){ULT=x.id;$('cp').onclick()});
+  bt('Copiar',function(){copia(texto(x.id,x.dias,x.cliente),this)});
   bt('WhatsApp',function(){location.href=link(x)},'#16a34a');
   if(x.device){
    bt('Renovar',function(){var p=prompt('Renovar por quantos dias? 1 = teste, 30 = mensal, 180 = semestral, 365 = anual','30');p=+p;if(!p)return;
-    var up=stt=='ok'?{dias:x.dias+p}:{dias:p,ativadoEm:firebase.firestore.FieldValue.serverTimestamp()};db.collection('licencas').doc(x.id).update(up).then(function(){var nv=stt=='ok'?ve+p*864e5:Date.now()+p*864e5;if(x.zap||confirm('Mandar aviso da renovação no WhatsApp?'))location.href='https://wa.me/'+(x.zap||'')+'?text='+encodeURIComponent((x.cliente?'Olá, '+x.cliente+'! ':'')+'Sua licença do TudoOkê TV foi renovada até '+dt(nv)+'. Código: '+fmt(x.id)+'. É só fechar e abrir o app.')}).catch(function(e){alert('Erro: '+e.code)})});
+    var up=stt=='ok'?{dias:x.dias+p}:{dias:p,ativadoEm:firebase.firestore.FieldValue.serverTimestamp()};db.collection('licencas').doc(x.id).update(up).then(function(){var nv=stt=='ok'?ve+p*864e5:Date.now()+p*864e5;if(x.zap||confirm('Mandar aviso da renovação no WhatsApp?'))location.href=zapUrl(x.zap,(x.cliente?'Olá, '+x.cliente+'! ':'')+'Sua licença do TudoOkê TV foi renovada até '+dt(nv)+'. Código: '+fmt(x.id)+'. É só fechar e abrir o app.')}).catch(function(e){alert('Erro: '+e.code)})});
    bt('Trocar box',function(){if(confirm('Soltar esse código do box atual? O cliente digita de novo no box novo e continua com os dias que faltam.'))db.collection('licencas').doc(x.id).update({device:'',ativadoEm:null,dias:Math.max(1,Math.ceil((ve-Date.now())/864e5))})});
   }
   bt('Editar cliente',function(){var n=prompt('Nome do cliente',x.cliente||'');if(n===null)return;var z=prompt('WhatsApp com DDD',x.zap?x.zap.slice(2):'');if(z===null)return;db.collection('licencas').doc(x.id).update({cliente:n.trim(),zap:nz(z)})});
