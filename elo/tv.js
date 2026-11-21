@@ -28,13 +28,13 @@
  '#tkSub{color:#ffd54a;font-size:4.5vmin;opacity:0;animation:tkSub .6s 1.6s forwards}@keyframes tkSub{to{opacity:1}}',
  '.tkLuz{position:absolute;top:-10%;width:30vw;height:130%;background:linear-gradient(transparent,rgba(255,63,164,.25),transparent);transform-origin:top;animation:tkLuz 2.4s ease-in-out infinite alternate}@keyframes tkLuz{from{transform:rotate(-25deg)}to{transform:rotate(25deg)}}',
  /* QR e recados */
- '#tkQR{position:absolute;top:8px;right:8px;z-index:20;background:#fff;border-radius:10px;padding:5px;text-align:center;color:#2a0a55;font:bold 11px Arial;width:118px}',
+ '#player{width:calc(100% - 132px)!important}#player-area{background:#0b0418!important}#tkQR{position:absolute;top:8px;right:6px;z-index:20;background:#fff;border-radius:10px;padding:5px;text-align:center;color:#2a0a55;font:bold 11px Arial;width:118px}',
  '#tkQR img{width:108px;height:108px;display:block}',
  '#tkFeed{position:absolute;left:10px;top:10px;right:140px;z-index:21;display:flex;flex-direction:column;gap:6px;max-width:60%;pointer-events:none}',
  '.tkMsg{background:rgba(20,6,40,.88);border:2px solid #ff3fa4;color:#fff;padding:6px 12px;border-radius:16px;font-size:20px;font-weight:bold;transition:opacity .8s}',
  '.tkMsg b{color:#ffd54a}',
  '.tkFig{position:absolute;z-index:22;font-size:64px;pointer-events:none;transition:transform 3s linear,opacity 3s}',
- '#tkVoto{position:absolute;top:140px;right:8px;z-index:20;background:rgba(20,6,40,.88);color:#ffd54a;border-radius:10px;padding:4px 8px;font:bold 14px Arial;display:none}',
+ '#tkVoto{position:absolute;top:150px;right:6px;width:120px;text-align:center;z-index:20;background:rgba(20,6,40,.88);color:#ffd54a;border-radius:10px;padding:4px 8px;font:bold 14px Arial;display:none}',
  /* nota final */
  '#tkFinal{position:fixed;inset:0;z-index:9000;background:rgba(11,4,24,.92);display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}',
  '#tkFinal .n{font-size:22vmin;font-weight:900;color:#ffd54a;line-height:1}',
@@ -114,7 +114,7 @@
  }
  liga();
 
- /* QR da galera (PeerJS) */
+ /* QR da galera (ntfy.sh) */
  var pa=$('player-area');
  var cod=localStorage.tkCod||(localStorage.tkCod=String(Math.floor(1000+Math.random()*9000)));
  var feed=document.createElement('div');feed.id='tkFeed';
@@ -125,34 +125,30 @@
  function recado(nome,txt){var m=document.createElement('div');m.className='tkMsg';var b=document.createElement('b');b.textContent=limpa(nome,14)+': ';m.appendChild(b);m.appendChild(document.createTextNode(limpa(txt,70)));feed.appendChild(m);while(feed.children.length>3)feed.firstChild.remove();setTimeout(function(){m.style.opacity=0;setTimeout(function(){m.remove()},900)},8000);}
  var FIGS=['🔥','👏','🎉','🥳','😍','😂','🤮','💩','👍','👎','🎤','⭐','💃','🍻','❤️','👑','🤘','😱'];
  function figura(f){if(FIGS.indexOf(f)<0||!pa)return;var e=document.createElement('div');e.className='tkFig';e.textContent=f;e.style.left=(10+Math.random()*70)+'%';e.style.top='70%';pa.appendChild(e);setTimeout(function(){e.style.transform='translateY(-260px) scale(1.4)';e.style.opacity=0;},50);setTimeout(function(){e.remove()},3200);}
- var conns=[];function envia(o){conns.forEach(function(c){try{c.send(o)}catch(x){}})}
+ var TOP='tudooke-'+cod2();
+ function cod2(){var c=localStorage.tkSala;if(!c||c.length<6){var ab='abcdefghjkmnpqrstuvwxyz23456789';c='';for(var i=0;i<6;i++)c+=ab[Math.floor(Math.random()*ab.length)];localStorage.tkSala=c;}return c;}
+ function envia(o){try{o.de='tv';fetch('https://ntfy.sh/'+TOP,{method:'POST',body:JSON.stringify(o)});}catch(x){}}
+ function trata(d){if(!d||typeof d!=='object'||d.de==='tv')return;
+  if(d.t==='fig')figura(d.v);
+  else if(d.t==='msg')recado(d.n||'Alguém',d.v);
+  else if(d.t==='voto'){var v=parseInt(d.v,10);if(v>=1&&v<=5){votos.push(v);mostraVoto();figura('⭐');}}
+  else if(d.t==='oi'){envia({t:'ok',musica:(typeof atual==='number'&&typeof resultados!=='undefined'&&resultados[atual])?resultados[atual].titulo:''});}
+ }
+ var vistos={};
+ function ouvir(){
+  try{var es=new EventSource('https://ntfy.sh/'+TOP+'/sse');
+   es.onopen=function(){var q=$('tkQR');if(q)q.style.outline='4px solid #2ee59d';};
+   es.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(m.event!=='message'||vistos[m.id])return;vistos[m.id]=1;trata(JSON.parse(m.message));}catch(x){}};
+   es.onerror=function(){var q=$('tkQR');if(q)q.style.outline='4px solid #ff3fa4';};
+  }catch(x){}
+ }
  function montaQR(){
   if(!pa||$('tkQR'))return;
-  var url=PHONE+'?tv='+cod;
+  var url=PHONE+'?s='+cod2();
   var q=document.createElement('div');q.id='tkQR';
-  q.innerHTML='<img alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=216x216&margin=4&data='+encodeURIComponent(url)+'"><div>📱 Mande figurinha!</div><div>Sala '+cod+'</div>';
+  q.innerHTML='<img alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=216x216&margin=4&data='+encodeURIComponent(url)+'"><div>📱 Mande reações!</div>';
   pa.appendChild(q);
  }
- function peer(){
-  var s=document.createElement('script');s.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
-  var tent=0;s.onerror=function(){if(tent++)return;var s2=document.createElement('script');s2.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';s2.onload=s.onload;document.head.appendChild(s2);};
-  s.onload=function(){
-   var p;try{p=new Peer('tudookeTV-'+cod);}catch(x){return;}
-   p.on('open',function(){var q=$('tkQR');if(q)q.style.outline='3px solid #2ee59d';});
-   p.on('connection',function(c){conns.push(c);
-    c.on('data',function(d){if(!d||typeof d!=='object')return;
-     if(d.t==='fig')figura(d.v);
-     else if(d.t==='msg')recado(d.n||'Alguém',d.v);
-     else if(d.t==='voto'){var v=parseInt(d.v,10);if(v>=1&&v<=5){votos.push(v);mostraVoto();figura('⭐');}}
-    });
-    c.on('close',function(){conns=conns.filter(function(x){return x!==c})});
-    c.on('open',function(){try{c.send({t:'ok',musica:(typeof atual==='number'&&typeof resultados!=='undefined'&&resultados[atual])?resultados[atual].titulo:''})}catch(x){}});
-   });
-   p.on('error',function(e){if(e&&e.type==='unavailable-id'){/* outra TV com o mesmo codigo */localStorage.tkCod=String(Math.floor(1000+Math.random()*9000));setTimeout(function(){location.reload()},1500);}});
-   p.on('disconnected',function(){setTimeout(function(){try{p.reconnect()}catch(x){}},3000)});
-  };
-  document.head.appendChild(s);
- }
  montaQR();
- peer();
+ ouvir();
 })();

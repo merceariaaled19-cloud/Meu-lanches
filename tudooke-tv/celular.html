@@ -23,23 +23,24 @@ input{width:100%;padding:13px;border-radius:10px;border:2px solid #7c3aed;backgr
 <div class="card"><h2>Vote em quem tá cantando</h2><div class="est" id="est"></div><button class="btn" id="bVoto">Votar</button></div>
 <div class="card" id="nota">Nota final<b id="nN">--</b></div>
 <div id="ok">Enviado! ✅</div>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
-var tv=new URLSearchParams(location.search).get('tv')||'';
-var $=function(i){return document.getElementById(i)},conn=null,estrela=0,ultimo=0;
+var sala=(new URLSearchParams(location.search).get('s')||'').replace(/[^a-z0-9]/g,'');
+var TOP='tudooke-'+sala,$=function(i){return document.getElementById(i)},estrela=0,ultimo=0;
 $('nome').value=localStorage.tkNome||'';$('nome').oninput=function(){localStorage.tkNome=this.value};
-['🔥','👏','🎉','🥳','😍','😂','🤮','💩','👍','👎','🎤','⭐','💃','🍻','❤️','👑','🤘','😱'].forEach(function(f){var b=document.createElement('button');b.textContent=f;b.onclick=function(){manda({t:'fig',v:f})};$('figs').appendChild(b)});
+['🔥','👏','🎉','🥳','😍','😂','🤮','💩','👍','👎','🎤','⭐','💃','🍻','❤️','👑','🤘','😱'].forEach(function(f){var b=document.createElement('button');b.textContent=f;b.onclick=function(){manda({t:'fig',v:f},true)};$('figs').appendChild(b)});
 for(var i=1;i<=5;i++)(function(n){var b=document.createElement('button');b.textContent='⭐';b.onclick=function(){estrela=n;[].forEach.call($('est').children,function(x,j){x.className=j<n?'on':''})};$('est').appendChild(b)})(i);
-function ok(t){$('ok').textContent=t||'Enviado! ✅';$('ok').style.display='block';setTimeout(function(){$('ok').style.display='none'},1200)}
-function manda(o){if(!conn||!conn.open){ok('Sem conexão com a TV');return}var a=Date.now();if(a-ultimo<700)return;ultimo=a;o.n=$('nome').value||'Alguém';conn.send(o);ok()}
+function ok(t){$('ok').textContent=t||'Enviado! ✅';$('ok').style.display='block';clearTimeout(ok.t);ok.t=setTimeout(function(){$('ok').style.display='none'},900)}
+function manda(o,rapido){if(!sala){ok('Escaneie o QR da TV');return}var a=Date.now();if(a-ultimo<(rapido?150:800))return;ultimo=a;o.n=$('nome').value||'Alguém';
+ fetch('https://ntfy.sh/'+TOP,{method:'POST',body:JSON.stringify(o)}).then(function(r){ok(r.ok?(rapido?o.v:'Enviado! ✅'):'Erro ao enviar, tenta de novo')},function(){ok('Sem internet no celular')});}
 $('bMsg').onclick=function(){var v=$('msg').value.trim();if(!v)return;manda({t:'msg',v:v});$('msg').value=''};
 $('bVoto').onclick=function(){if(!estrela){ok('Escolha as estrelas');return}manda({t:'voto',v:estrela})};
-if(!tv){$('st').textContent='Escaneie o QR code da TV pra entrar.'}else{
- var p=new Peer();
- function liga(){conn=p.connect('tudookeTV-'+tv,{reliable:true});
-  conn.on('open',function(){$('st').textContent='✅ Conectado na TV (sala '+tv+')'});
-  conn.on('data',function(d){if(d&&d.t==='ok'&&d.musica)$('st').textContent='✅ Conectado • Tocando: '+d.musica;if(d&&d.t==='nota'){$('nota').style.display='block';$('nN').textContent=d.v;estrela=0;[].forEach.call($('est').children,function(x){x.className=''})}});
-  conn.on('close',function(){$('st').textContent='Reconectando...';setTimeout(liga,3000)});}
- p.on('open',liga);p.on('error',function(e){$('st').textContent='TV não encontrada. Confira se o app tá aberto na TV.';setTimeout(function(){try{liga()}catch(x){}},5000)});
+if(!sala){$('st').textContent='Escaneie o QR code da TV pra entrar.'}else{
+ $('st').textContent='✅ Pronto! Tudo que mandar aparece na TV';
+ try{var es=new EventSource('https://ntfy.sh/'+TOP+'/sse');var vis={};
+  es.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(m.event!=='message'||vis[m.id])return;vis[m.id]=1;var d=JSON.parse(m.message);if(d.de!=='tv')return;
+   if(d.t==='ok'&&d.musica)$('st').textContent='✅ Na TV • Tocando: '+d.musica;
+   if(d.t==='nota'){$('nota').style.display='block';$('nN').textContent=d.v;estrela=0;[].forEach.call($('est').children,function(x){x.className=''})}}catch(x){}};
+  es.onopen=function(){fetch('https://ntfy.sh/'+TOP,{method:'POST',body:JSON.stringify({t:'oi'})})};
+ }catch(x){}
 }
 </script></body></html>
