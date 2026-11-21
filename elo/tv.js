@@ -8,6 +8,16 @@
  document.head.appendChild(css);
  function tiraNetlify(){var a=document.querySelectorAll('body > *');for(var i=0;i<a.length;i++){var e=a[i];if(e.id==='topo'||e.id==='layout'||e.tagName==='SCRIPT'||e.tagName==='STYLE')continue;var t=(e.innerText||'')+(e.shadowRoot?'netlify':'');if(/netlify/i.test(t)||/netlify/i.test(e.outerHTML.slice(0,300)))e.style.display='none';}}
  setInterval(tiraNetlify,3000);tiraNetlify();
+
+ // botao do microfone so com o icone
+ var bm=document.querySelector('button[onclick*="iniciarMic"]');if(bm){bm.textContent='🎤';bm.title='Microfone';bm.style.minWidth='56px';}
+ var tv=document.getElementById('tv-aviso');if(tv)tv.style.setProperty('display','none','important');
+ // busca mais firme no controle remoto
+ var inp=document.getElementById('busca'),fb=document.getElementById('form-busca');
+ function faz(){try{if(inp)inp.blur();buscar();var l=document.getElementById('lista');if(l)l.scrollTop=0;}catch(x){}}
+ if(fb){var bb=fb.querySelector('button');if(bb){bb.type='button';bb.onclick=function(e){e.preventDefault();faz();};}}
+ if(inp){inp.setAttribute('enterkeyhint','search');inp.addEventListener('keydown',function(e){if(e.key==='Enter'||e.keyCode===13||e.keyCode===66){e.preventDefault();faz();}});
+  inp.addEventListener('focus',function(){try{inp.select();}catch(x){}});}
  // quantas musicas tocar em sequencia
  var QTD=parseInt(localStorage.eloQtd||'1',10),tocadas=0,auto=false;
  var sel=document.createElement('select');sel.id='eloQtd';sel.title='Quantas músicas tocar seguidas';
