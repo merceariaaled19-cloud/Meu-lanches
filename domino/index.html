@@ -74,7 +74,7 @@ body.festa .leds b{animation-duration:.25s}
 #maoOp{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;padding:4px 0;min-height:30px}
 #maoOp .p{--s:11px}
 #mesaBox{flex:1;min-height:0;margin:4px 0;border-radius:16px;background:radial-gradient(circle,#166534,#052e16);border:4px solid #78350f;box-shadow:inset 0 0 30px #000,0 0 18px rgba(251,191,36,.35);display:flex;flex-direction:column;overflow:hidden;position:relative}
-#mesa{flex:1;overflow:auto;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;align-items:center;gap:4px;padding:8px}
+#mesa{flex:1;overflow:hidden;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;align-items:center;gap:4px;padding:8px}
 #mesa .p{border-width:2px;box-shadow:0 3px 6px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.35)}
 #mesa .p .m{padding:12%}
 #mesa .p.ponta{box-shadow:0 0 0 2px #fbbf24,0 0 12px #fbbf24}
@@ -107,7 +107,7 @@ body.festa .leds b{animation-duration:.25s}
 #opVid{transform:none}#opVid.big{transform:translate(-50%,-50%)}
 .mini{background:rgba(0,0,0,.4);color:#fff;box-shadow:none;padding:6px 8px;font-size:15px;border-radius:9px}
 .lnk{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-#som{position:fixed;top:8px;right:8px;z-index:21;background:rgba(0,0,0,.4);color:#fff;box-shadow:none;padding:6px 9px;font-size:18px}
+#som{position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:21;background:rgba(0,0,0,.4);color:#fff;box-shadow:none;padding:6px 9px;font-size:18px}
 </style>
 </head>
 <body>
@@ -303,6 +303,9 @@ function efeitos(){if(!S.ev||S.ev.id==ultEv)return;ultEv=S.ev.id;const e=S.ev;
  else if(e.k=='fim'){if(S.acabou>=0){S.acabou==me?SFX.vitoria():SFX.derrota();festa(3000)}else{SFX.rodada();if(e.pts)popa('+'+e.pts)}}}
 function popa(t){const p=$('pop');p.textContent=t;p.classList.remove('vai');void p.offsetWidth;p.classList.add('vai');const f=$('flash');f.classList.remove('vai');void f.offsetWidth;f.classList.add('vai');festa(1200)}
 let festaT;function festa(ms){document.body.classList.add('festa');clearTimeout(festaT);festaT=setTimeout(()=>document.body.classList.remove('festa'),ms)}
+function ajustaMesa(sz){const m=$('mesa');let s=sz;m.style.setProperty('--s',s+'px');
+ while(s>6&&(m.scrollHeight>m.clientHeight+1||m.scrollWidth>m.clientWidth+1)){s-=1;m.style.setProperty('--s',s+'px')}}
+window.addEventListener('resize',()=>{if(S)render()});
 function render(){if(!S)return;const op=1-me,N=S.nomes;
  $('nOp').textContent=(modo=='cpu'?'🤖 ':'👤 ')+N[op];$('nEu').textContent='⭐ '+N[me];
  $('pOp').textContent=S.sc[op];$('pEu').textContent=S.sc[me];
@@ -312,7 +315,7 @@ function render(){if(!S)return;const op=1-me,N=S.nomes;
  $('maoOp').innerHTML=S.h[op].map(verso).join('');
  const n=S.ch.length,sz=n<=6?27:n<=10?23:n<=14?20:n<=20?17:14;
  $('mesa').innerHTML=S.ch.map((t,i)=>pedra(t[0],t[1],t[0]!=t[1],(i==0||i==n-1?'ponta':'')+(i==S.nova?' nova':''))).join('');
- $('mesa').style.setProperty('--s',sz+'px');
+ ajustaMesa(sz);
  $('dorme').textContent='Dorme: '+S.pile.length;$('rod').textContent='Rodada '+S.rd;
  const pp=pontas();$('soma').textContent=pp?('Pontas '+pp[0]+' • '+pp[1]+' = '+somaPontas()):'Mesa vazia';
  const minha=!S.fim&&S.vez==me,pode=podeJogar(me);
