@@ -236,12 +236,16 @@ function desenhaEdit(){
     '<label>Categoria</label><select id="eCat" onchange="if(this.value===\'__nova\'){var n=prompt(\'Nome da nova categoria:\');lerEdit();if(n&&n.trim())EDIT.cat=n.trim();desenhaEdit()}else{lerEdit();desenhaEdit()}">' +
     cs.map(function(c){ return '<option value="' + esc(c) + '"' + (c === e.cat ? ' selected' : '') + '>' + icoCat(c) + ' ' + esc(c) + '</option>'; }).join('') + '<option value="__nova">➕ Criar nova categoria…</option></select>';
   if (!e.tamanhos.length) h += '<label>Preço (R$)</label><input id="ePreco" inputmode="decimal" value="' + (e.preco !== '' && e.preco != null ? String(e.preco).replace('.', ',') : '') + '" placeholder="0,00">';
+  var mostraTam = ehPizza(e.cat) || e.tamanhos.length;
+  if (mostraTam){
   h += '<div class="card" style="margin-top:12px"><h3>📏 Tamanhos com preços diferentes</h3>';
-  if (!e.tamanhos.length) h += '<p class="sub">Opcional. Ex.: pizza P/M/G/Família, suco 300ml/500ml.</p>';
+  if (!e.tamanhos.length) h += '<p class="sub">Pizza: preço da P, M e G.</p>';
   e.tamanhos.forEach(function(t, k){ h += '<div class="faixa"><input id="eTn' + k + '" value="' + esc(t.nome) + '" placeholder="Tamanho" style="flex:2"><span>R$</span><input id="eTp' + k + '" inputmode="decimal" value="' + (t.preco !== '' && t.preco != null ? String(t.preco).replace('.', ',') : '') + '" placeholder="0,00"><button class="mini btr" style="flex:0 0 auto" onclick="lerEdit();EDIT.tamanhos.splice(' + k + ',1);desenhaEdit()">✕</button></div>'; });
-  h += '<div class="row"><button class="mini bt3" onclick="lerEdit();EDIT.tamanhos.push({nome:\'\',preco:\'\'});desenhaEdit()">➕ Tamanho</button><button class="mini bt3" onclick="tamPizza()">🍕 P / M / G / Família</button></div>';
-  if (e.tamanhos.length || ehPizza(e.cat)) h += '<div class="switch"><span>½ Aceita meio a meio (cliente escolhe outro sabor da mesma categoria; vale o mais caro)</span><input type="checkbox" id="eMeio"' + (e.meioMeio ? ' checked' : '') + '></div>';
-  h += '</div><div class="card"><h3>➕ Adicionais (opcional)</h3><p class="sub">O cliente pode marcar. Ex.: bacon R$ 3,00, borda de catupiry R$ 8,00.</p>';
+  h += '<div class="row"><button class="mini bt3" onclick="lerEdit();EDIT.tamanhos.push({nome:\'\',preco:\'\'});desenhaEdit()">➕ Tamanho</button><button class="mini bt3" onclick="tamPizza()">🍕 P / M / G</button></div>';
+  if (ehPizza(e.cat)) h += '<div class="switch"><span>½ Aceita meio a meio (cliente escolhe outro sabor da mesma categoria; vale o mais caro)</span><input type="checkbox" id="eMeio"' + (e.meioMeio ? ' checked' : '') + '></div>';
+  h += '</div>';
+  }
+  h += '<div class="card"><h3>➕ Adicionais (opcional)</h3><p class="sub">O cliente pode marcar. Ex.: bacon R$ 3,00, borda de catupiry R$ 8,00.</p>';
   e.adicionais.forEach(function(a, k){ h += '<div class="faixa"><input id="eAn' + k + '" value="' + esc(a.nome) + '" placeholder="Ex.: Bacon" style="flex:2"><span>R$</span><input id="eAp' + k + '" inputmode="decimal" value="' + (a.preco !== '' && a.preco != null ? String(a.preco).replace('.', ',') : '') + '" placeholder="0,00"><button class="mini btr" style="flex:0 0 auto" onclick="lerEdit();EDIT.adicionais.splice(' + k + ',1);desenhaEdit()">✕</button></div>'; });
   h += '<button class="mini bt3 full" onclick="lerEdit();EDIT.adicionais.push({nome:\'\',preco:\'\'});desenhaEdit()">➕ Adicional</button></div>' +
     '<div class="switch"><span>Disponível para venda</span><input type="checkbox" id="eAtivo"' + (e.ativo !== false ? ' checked' : '') + '></div>' +
@@ -297,10 +301,10 @@ function gerarDescIA(){
 
 /* ---------- robôs: importar por foto (Gemini) ---------- */
 var SCHEMA_ITEM = {type: 'OBJECT', properties: {
-  nome: {type: 'STRING'}, descricao: {type: 'STRING'}, categoria: {type: 'STRING'}, preco: {type: 'NUMBER', nullable: true},
+  nome: {type: 'STRING'}, descricao: {type: 'STRING'}, tipo: {type: 'STRING', enum: ['pizza', 'pizza_doce', 'borda', 'hamburguer', 'sanduiche', 'kikao', 'pastel', 'pastel_doce', 'marmita', 'prato', 'porcao', 'refrigerante', 'suco', 'agua', 'bebida', 'sobremesa', 'combo', 'adicional', 'outro']}, categoria: {type: 'STRING'}, preco: {type: 'NUMBER', nullable: true},
   tamanhos: {type: 'ARRAY', items: {type: 'OBJECT', properties: {nome: {type: 'STRING'}, preco: {type: 'NUMBER'}}, required: ['nome', 'preco']}},
   box_2d: {type: 'ARRAY', nullable: true, items: {type: 'INTEGER'}}
-}, required: ['nome', 'descricao', 'categoria', 'preco', 'tamanhos'], propertyOrdering: ['nome', 'descricao', 'categoria', 'preco', 'tamanhos', 'box_2d']};
+}, required: ['nome', 'descricao', 'tipo', 'categoria', 'preco', 'tamanhos'], propertyOrdering: ['nome', 'descricao', 'tipo', 'categoria', 'preco', 'tamanhos', 'box_2d']};
 var SCHEMA_ITENS = {type: 'OBJECT', properties: {itens: {type: 'ARRAY', items: SCHEMA_ITEM}}, required: ['itens']};
 var SCHEMA_DESC = {type: 'OBJECT', properties: {nome: {type: 'STRING'}, descricao: {type: 'STRING'}, categoria: {type: 'STRING'}}, required: ['nome', 'descricao', 'categoria']};
 function ctxLoja(){
@@ -312,9 +316,10 @@ function promptCardapio(){
     '\nExtraia TODOS os itens à venda que aparecem na imagem, na ordem em que aparecem. Para cada item:' +
     '\n- nome: como está escrito (corrija só erros óbvios de leitura; mantenha nomes como "X-Tudo", "X-Salada", "Misto"). Não coloque preço nem tamanho no nome.' +
     '\n- descricao: ingredientes/legenda escritos junto do item; se não houver, "" (não invente).' +
-    '\n- categoria: uma das categorias da loja; se nenhuma servir, o título da seção do cardápio.' +
+    '\n- tipo: O QUE O PRODUTO É de verdade, pelo nome, pelos ingredientes e pela foto (NÃO pelo título da seção do cardápio). Ex.: "Calabresa" numa seção "Lanches" mas com fatias/borda de pizza = pizza; "X-Tudo" = hamburguer; "Misto quente" = sanduiche; "Cachorro-quente"/"Kikão" = kikao; "Coca 2L" = refrigerante; pizza de chocolate = pizza_doce.' +
+    '\n- categoria: a categoria da loja que combina com o tipo (ex.: pizza -> Pizzas Salgadas); se não houver, um nome simples no plural (Pizzas, Hambúrgueres, Sanduíches, Kikão, Pastéis, Bebidas).' +
     '\n- preco: preço em reais como número (ex.: 18.5); se não aparecer, null.' +
-    '\n- tamanhos: se o item tiver preços diferentes por tamanho (P/M/G/Família, Broto/Grande, Pequena/Média/Grande, 300ml/500ml, 1L/2L, Simples/Duplo), liste [{nome, preco}] e ponha em preco o menor valor; senão []. Em tabelas com os tamanhos no cabeçalho das colunas, ligue cada preço à coluna certa.' +
+    '\n- tamanhos: se o item tiver preços diferentes por tamanho (P/M/G/Família, Broto/Grande, Pequena/Média/Grande, 300ml/500ml, 1L/2L, Simples/Duplo), liste [{nome, preco}] e ponha em preco o menor valor; senão []. Para pizza use P (broto/pequena), M (média), G (grande) e Família se houver. Em tabelas com os tamanhos no cabeçalho das colunas, ligue cada preço à coluna certa.' +
     '\n- box_2d: se houver uma FOTO deste item específico, a caixa [ymin, xmin, ymax, xmax] normalizada de 0 a 1000 cobrindo só a foto da comida (sem o texto); se não houver foto dele, null.' +
     '\nNão invente itens nem preços. Ignore telefone, endereço, logotipo, horário e propaganda. Preços como "15,90" viram 15.9.';
 }
@@ -323,7 +328,8 @@ function promptLanche(){
     '\nReconheça a comida e devolva em "itens" um item para cada lanche/prato DIFERENTE que aparece (quase sempre só 1):' +
     '\n- nome: nome comercial curto, comum no Brasil (ex.: "X-Tudo", "X-Salada", "Pizza de Calabresa", "Pastel de Carne", "Kikão Completo", "Marmita de Frango Grelhado", "Coca-Cola Lata").' +
     '\n- descricao: 1 frase apetitosa e honesta (até 140 caracteres), citando os ingredientes que dá para ver. Sem emojis.' +
-    '\n- categoria: uma das categorias da loja.' +
+    '\n- tipo: O QUE O PRODUTO É de verdade, pelo nome, pelos ingredientes e pela foto (NÃO pelo título da seção do cardápio). Ex.: "Calabresa" numa seção "Lanches" mas com fatias/borda de pizza = pizza; "X-Tudo" = hamburguer; "Misto quente" = sanduiche; "Cachorro-quente"/"Kikão" = kikao; "Coca 2L" = refrigerante; pizza de chocolate = pizza_doce.' +
+    '\n- categoria: a categoria da loja que combina com o tipo.' +
     '\n- preco: null (o dono vai preencher), a não ser que um preço esteja escrito na foto. tamanhos: [].' +
     '\n- box_2d: caixa [ymin, xmin, ymax, xmax] de 0 a 1000 em volta do lanche, com pequena folga.' +
     '\nSe a foto não for de comida ou bebida, devolva "itens": [].';
@@ -513,9 +519,9 @@ function desenhaRev(){
       '<input id="rC' + i + '" list="listaCatsRev" value="' + esc(r.cat) + '" placeholder="Categoria">';
     if (r.tamanhos.length){
       r.tamanhos.forEach(function(t, k){ h += '<div class="row tam"><input id="rTn' + i + '_' + k + '" value="' + esc(t.nome) + '" placeholder="Tamanho"><input id="rTp' + i + '_' + k + '" inputmode="decimal" value="' + String(t.preco).replace('.', ',') + '" placeholder="Preço"><button class="mini bt3" style="flex:0 0 auto" onclick="lerRev();REV[' + i + '].tamanhos.splice(' + k + ',1);desenhaRev()">✕</button></div>'; });
-      h += '<button class="mini bt3" onclick="lerRev();REV[' + i + '].tamanhos.push({nome:\'\',preco:\'\'});desenhaRev()">➕ tamanho</button>';
+      if (!ehPizza(r.cat)) h += '<button class="mini bt3" onclick="lerRev();var r=REV[' + i + '];r.preco=precoMin({tamanhos:r.tamanhos.filter(function(t){return num(t.preco)>0})})||r.preco;r.tamanhos=[];desenhaRev()">✕ tirar tamanhos</button>';
     } else {
-      h += '<div class="row"><input id="rP' + i + '" inputmode="decimal" value="' + (r.preco === '' ? '' : String(r.preco).replace('.', ',')) + '" placeholder="Preço (R$)"' + (semP ? ' style="border-color:#f59e0b"' : '') + '><button class="mini bt3" style="flex:0 0 auto" onclick="lerRev();var r=REV[' + i + '];r.tamanhos=[{nome:\'P\',preco:r.preco},{nome:\'G\',preco:\'\'}];desenhaRev()">📏 tamanhos</button></div>' +
+      h += '<div class="row"><input id="rP' + i + '" inputmode="decimal" value="' + (r.preco === '' ? '' : String(r.preco).replace('.', ',')) + '" placeholder="Preço (R$)"' + (semP ? ' style="border-color:#f59e0b"' : '') + '>' + (ehPizza(r.cat) ? '<button class="mini bt3" style="flex:0 0 auto" onclick="lerRev();var r=REV[' + i + '];r.tamanhos=tamanhosPizza([],r.preco);desenhaRev()">🍕 P/M/G</button>' : '') + '</div>' +
         (semP ? '<span class="tag esp">⚠️ falta o preço</span>' : '');
     }
     h += '</div></div>';

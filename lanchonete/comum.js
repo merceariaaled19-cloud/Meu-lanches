@@ -228,15 +228,59 @@ function nomeLinha(i, o, outro){
   if (ad.length) n += ' + ' + ad.join(', ');
   return n;
 }
+/* tipo do produto (pela IA ou pelo nome) -> categoria certa da loja */
+var TIPO_CAT = {pizza: ['Pizzas Salgadas', 'Pizzas'], pizza_doce: ['Pizzas Doces', 'Pizzas Doces'], borda: ['Bordas', 'Bordas'],
+  hamburguer: ['Hambúrgueres', 'Hambúrgueres'], sanduiche: ['Sanduíches', 'Sanduíches'], kikao: ['Kikão', 'Kikão'],
+  pastel: ['Pastéis Salgados', 'Pastéis'], pastel_doce: ['Pastéis Doces', 'Pastéis Doces'], marmita: ['Marmitas', 'Marmitas'], prato: ['Pratos', 'Pratos'],
+  porcao: ['Porções', 'Porções'], refrigerante: ['Refrigerantes', 'Refrigerantes'], suco: ['Sucos', 'Sucos'], agua: ['Água', 'Água'],
+  bebida: ['Bebidas', 'Bebidas'], sobremesa: ['Sobremesas', 'Sobremesas'], combo: ['Combos', 'Combos'], adicional: ['Adicionais', 'Adicionais']};
+var TIPO_NOME = [
+  [/pizza.*(chocolate|brigadeiro|banana|romeu|prestigio|doce|morango|nutella)|(chocolate|brigadeiro|banana|romeu|prestigio|morango|nutella).*pizza/, 'pizza_doce'],
+  [/borda/, 'borda'], [/pizza|calabresa|mussarela|marguerita|portuguesa|quatro queijos|frango com catupiry|napolitana|toscana/, 'pizza'],
+  [/kikao|cachorro|hot ?dog|dogao/, 'kikao'], [/pastel.*(chocolate|doce|banana|romeu)/, 'pastel_doce'], [/pastel|pasteis/, 'pastel'],
+  [/combo/, 'combo'], [/hamburg|burger|burguer|smash|^x |\bx (tudo|salada|bacon|egg|frango|burg|calabresa)/, 'hamburguer'],
+  [/sanduich|misto|bauru|beirute|americano|lanche/, 'sanduiche'], [/marmit|quentinha/, 'marmita'], [/prato|executivo|parmegiana|file|bife/, 'prato'],
+  [/porc|batata frita|fritas|calabresa acebolada|isca/, 'porcao'],
+  [/refri|refrigerante|coca|guarana|fanta|sprite|pepsi|lata|2 ?l\b|600 ?ml/, 'refrigerante'], [/suco|vitamina|polpa/, 'suco'], [/agua/, 'agua'],
+  [/milk ?shake|sorvete|acai|sobremesa|pudim|bolo|brownie/, 'sobremesa'], [/cerveja|chopp|bebida|cha |cafe/, 'bebida']];
+function tipoDoNome(t){ var n = ' ' + normTxt(t) + ' '; for (var i = 0; i < TIPO_NOME.length; i++) if (TIPO_NOME[i][0].test(n)) return TIPO_NOME[i][1]; return ''; }
+function catDoTipo(tipo, cats, sugerida){
+  var tc = TIPO_CAT[tipo]; if (!tc) return casaCat(sugerida || '', cats);
+  var ns = (cats || []).map(normTxt), alvo = [tc[0], tc[1]];
+  for (var a = 0; a < alvo.length; a++){ var k = ns.indexOf(normTxt(alvo[a])); if (k >= 0) return cats[k]; }
+  if (tipo === 'pizza'){ for (var q = 0; q < ns.length; q++) if (/pizza/.test(ns[q]) && !/doce|borda/.test(ns[q])) return cats[q]; }
+  if (tipo === 'hamburguer'){ var s = ns.indexOf('sanduiches'); if (s >= 0) return cats[s]; }
+  if (tipo === 'sanduiche'){ var hb = ns.indexOf('hamburgueres'); if (hb >= 0) return cats[hb]; }
+  return tc[1];
+}
+function ehPizzaTipo(t){ return t === 'pizza' || t === 'pizza_doce'; }
+/* tamanhos de pizza: sempre P / M / G (e Família se o cardápio tiver) */
+function tamanhosPizza(tams, preco){
+  var m = {P: '', M: '', G: ''}, fam = '';
+  (tams || []).forEach(function(t){
+    var n = ' ' + normTxt(t.nome) + ' ';
+    if (/familia|gigante|big|extra ?grande| gg /.test(n)) fam = t.preco;
+    else if (/broto|pequen|mini|individual| p | 4 ped| 6 ped/.test(n)) m.P = t.preco;
+    else if (/medi| m | 8 ped/.test(n)) m.M = t.preco;
+    else if (/grand| g | 12 ped/.test(n)) m.G = t.preco;
+  });
+  if (!m.P && !m.M && !m.G && !fam && num(preco) > 0) m.M = num(preco);
+  var r = [{nome: 'P', preco: m.P}, {nome: 'M', preco: m.M}, {nome: 'G', preco: m.G}];
+  if (fam) r.push({nome: 'Família', preco: fam});
+  return r;
+}
 /* converte um item devolvido pela IA no formato da tela de revisão */
 function itemDaIA(it, cats){
   if (!it || !String(it.nome || '').trim()) return null;
+  var nome = String(it.nome).trim().replace(/\s+/g, ' '), desc = String(it.descricao || it.desc || '').trim();
+  var tipo = String(it.tipo || '').toLowerCase();
+  if (!TIPO_CAT[tipo]) tipo = tipoDoNome(nome) || tipoDoNome(it.categoria || '') || tipoDoNome(desc) || '';
   var tams = limpaOpcoes(it.tamanhos).filter(function(t){ return t.preco > 0; });
-  if (tams.length === 1 && !(Number(it.preco) > 0)){ it.preco = tams[0].preco; tams = []; }
   var preco = Number(it.preco) > 0 ? Number(it.preco) : (typeof it.preco === 'string' && num(it.preco) > 0 ? num(it.preco) : '');
-  if (tams.length > 1) preco = Math.min.apply(null, tams.map(function(t){ return t.preco; }));
-  return {ok: true, nome: String(it.nome).trim().replace(/\s+/g, ' '), desc: String(it.descricao || it.desc || '').trim(), preco: preco,
-    tamanhos: tams.length > 1 ? tams : [], cat: casaCat(it.categoria || it.cat || '', cats), foto: ''};
+  if (!(preco > 0) && tams.length) preco = Math.min.apply(null, tams.map(function(t){ return t.preco; }));
+  var cat = catDoTipo(tipo, cats, it.categoria || it.cat || '');
+  if (ehPizzaTipo(tipo)) return {ok: true, nome: nome, desc: desc, preco: preco, tamanhos: tamanhosPizza(tams, preco), cat: cat, tipo: tipo, foto: ''};
+  return {ok: true, nome: nome, desc: desc, preco: preco, tamanhos: [], cat: cat, tipo: tipo, foto: ''};
 }
 /* caixa da IA [ymin,xmin,ymax,xmax] 0-1000 -> retângulo em px com 2% de folga (null se inválida) */
 function caixaPx(b, W, H, maxFrac){
