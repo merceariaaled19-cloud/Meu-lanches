@@ -450,7 +450,7 @@ function processaFotos(fs, modo){
 function chamaGemini(parts, schema, onEspera){
   var mods = [];
   if (CFG.geminiModelo) mods.push(CFG.geminiModelo);
-  ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'].forEach(function(m){ if (mods.indexOf(m) < 0) mods.push(m); });
+  ['gemini-3.5-flash', 'gemini-3-flash-preview', 'gemini-3.1-flash-lite', 'gemini-3.1-flash-lite-preview', 'gemini-2.5-flash'].forEach(function(m){ if (mods.indexOf(m) < 0) mods.push(m); });
   var i = 0, rodada = 0, semSchema = {}, limite = false;
   function corpo(m){
     var gc = {responseMimeType: 'application/json', temperature: 0.15, maxOutputTokens: 24576};
@@ -468,11 +468,13 @@ function chamaGemini(parts, schema, onEspera){
   }
   function tenta(){
     var m = mods[i++];
-    return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(CFG.geminiKey), {method: 'POST', headers: {'Content-Type': 'application/json'}, body: corpo(m)})
-      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {st: r.status, j: j}; }); }, function(){ throw new Error('Sem internet. Confira a conexão e tente de novo.'); })
+    var ac = window.AbortController ? new AbortController() : null, tmo = ac ? setTimeout(function(){ ac.abort(); }, 75000) : 0;
+    return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(CFG.geminiKey), {method: 'POST', headers: {'Content-Type': 'application/json'}, body: corpo(m), signal: ac ? ac.signal : undefined})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {st: r.status, j: j}; }); }, function(e){ clearTimeout(tmo); if (e && e.name === 'AbortError') return {st: 504, j: {}}; throw new Error('Sem internet. Confira a conexão e tente de novo.'); })
       .then(function(x){
         var txt = JSON.stringify(x.j || {});
-        if (x.st === 404 || (x.st === 400 && /not found|not supported|is not available/i.test(txt))) return proxModelo();
+        clearTimeout(tmo);
+        if (x.st === 404 || (x.st === 400 && /not found|not supported|is not available|no longer available/i.test(txt))) return proxModelo();
         if (x.st === 400 && schema && !semSchema[m] && /schema|response_schema|responseSchema|Invalid JSON payload|Unknown name/i.test(txt)){ semSchema[m] = 1; i--; return tenta(); }
         if (x.st === 400 && /API key|API_KEY/i.test(txt)) throw new Error('A chave da IA está errada. Avise o administrador.');
         if (x.st === 403) throw new Error('A chave da IA não tem permissão. Avise o administrador.');
