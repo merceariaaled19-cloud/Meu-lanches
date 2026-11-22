@@ -1,0 +1,39 @@
+{
+ "id": "/Meu-lanches/lanchonete/admin.html",
+ "name": "Meu Lanche ADM",
+ "short_name": "Meu Lanche ADM",
+ "description": "Painel do administrador do Meu Lanche: liberar lanchonetes.",
+ "lang": "pt-BR",
+ "dir": "ltr",
+ "start_url": "/Meu-lanches/lanchonete/admin.html",
+ "scope": "/Meu-lanches/lanchonete/",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#fff8f1",
+ "theme_color": "#ff6a00",
+ "categories": [
+  "food",
+  "business",
+  "shopping"
+ ],
+ "icons": [
+  {
+   "src": "adm-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "adm-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "adm-512-maskable.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

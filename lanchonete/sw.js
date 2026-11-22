@@ -1,5 +1,5 @@
 /* Meu Lanche Pro — service worker */
-var CACHE = 'ml-pro-v1';
+var CACHE = 'ml-pro-v2';
 var ARQ = ['./', 'index.html', 'admin.html', 'estilo.css?v=1', 'comum.js?v=1', 'loja.js?v=1', 'dono.js?v=1', 'admin.js?v=1', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-512-maskable.png'];
 self.addEventListener('install', function(e){
   self.skipWaiting();
