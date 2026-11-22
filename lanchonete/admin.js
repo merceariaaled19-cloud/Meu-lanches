@@ -96,8 +96,7 @@ $('bR').onclick = function(){ var e = $('em').value.trim().toLowerCase(); if (AD
 /* apaga a lanchonete inteira: cadastro, cardápio e pedidos */
 function exclui(id){
   var x = acha(id); if (!x) return;
-  if (!confirm('Excluir a conta "' + x.nome + '" (' + (x.email || '') + ')?\n\nApaga a loja, o cardápio e os pedidos. Não dá para desfazer.')) return;
-  if (prompt('Para confirmar, digite EXCLUIR') !== 'EXCLUIR') return toast('Cancelado.');
+  if (!confirm('Excluir a conta "' + x.nome + '" (' + (x.email || '') + ')?\n\nApaga a loja, o cardápio e os pedidos. Não dá para desfazer.\n\nTem certeza que quer excluir?')) return;
   toast('Excluindo…', 8000);
   var ref = db.collection('ml_lojas').doc(id);
   function apagaTudo(q){ return q.get().then(function(s){ var b = db.batch(), n = 0; s.docs.forEach(function(d){ b.delete(d.ref); n++; }); return n ? b.commit() : null; }); }
