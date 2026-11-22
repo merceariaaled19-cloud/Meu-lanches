@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Compra Certa</title>
-<meta name="description" content="Onde comprar mais barato em Manaus: promoções dos encartes e sites, com preço de venda pela sua margem.">
+<meta name="description" content="Onde comprar mais barato em Manaus: promoções dos encartes e sites.">
 <meta name="theme-color" content="#15803d">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -116,11 +116,6 @@ label.big{font-size:19px;font-weight:700;display:block}
 
 <section class="tela" id="tAjustes">
   <h2>⚙️ Ajustes</h2>
-  <div class="card">
-    <label class="big" for="margem">Margem de lucro (%)</label>
-    <form class="campo" id="fMargem"><input id="margem" type="number" inputmode="numeric" min="0" max="300"><button>Salvar</button></form>
-    <div class="nota">O "Vender por" é o preço da loja + a margem, arredondado pra cima e sempre terminando em 9 centavos (ex.: R$ 3,77 vira R$ 3,79; R$ 3,80 vira R$ 3,89). A conta usa o preço normal (sem app e sem cartão).</div>
-  </div>
   <div class="card">
     <label class="big">📷 Leitura por foto</label>
     <div class="nota">Primeiro o app tenta o código de barras. Se não der, usa a inteligência artificial (IA) para ler o nome na foto. A IA precisa entrar uma vez com a conta Google do administrador.</div>
@@ -234,7 +229,7 @@ function htmlItem(it, top){
     '<div class="nm">' + esc(it.produto) + '</div>' +
     '<div class="pr">' + reais(it.preco) + '</div>' +
     (ex.length ? '<div class="ex">' + ex.join(' · ') + '</div>' : '') +
-    '<div class="vd">Vender por: ' + reais(venderPor(it.preco)) + '</div>' +
+    
     '<div class="mt">' + mt.join(' · ') + ' · ' + esc(it.encarte) + ' · <a href="' + esc(it.link) + '" target="_blank" rel="noopener">abrir ↗</a></div></div>';
 }
 function mostraBusca(titulo, termos){
@@ -511,8 +506,6 @@ function vaiTela(t){
   window.scrollTo(0, 0);
 }
 document.querySelector('nav').onclick = function(e){ var b = e.target.closest('button'); if (b) vaiTela(b.dataset.t); };
-$('fMargem').onsubmit = function(e){ e.preventDefault(); var v = Number($('margem').value); if (!(v >= 0 && v <= 300)) return toast('Margem entre 0 e 300%.'); LS.set('margem', v); toast('Margem salva: ' + v + '%'); desenhaPromos(); salvaInscricao(); };
-$('margem').value = margem();
 
 /* ---------- dados ---------- */
 function carregaDados(){
