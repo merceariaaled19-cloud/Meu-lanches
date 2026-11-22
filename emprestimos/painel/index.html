@@ -1,0 +1,94 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Painel Empresta Certo</title>
+<meta name="theme-color" content="#1e3a8a"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="../icon-192.png"><link rel="apple-touch-icon" href="../icon-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:#fff}
+header{background:linear-gradient(90deg,#1e293b,#1e3a8a);border-bottom:3px solid #f59e0b;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:19px;margin:0}main{padding:14px;max-width:720px;margin:auto}
+.card{background:#1e293b;border-radius:14px;padding:14px;margin-bottom:14px}
+input,select{width:100%;padding:12px;font-size:16px;border-radius:10px;border:2px solid #334155;background:#0b1220;color:#fff;margin:6px 0}
+button{padding:12px 16px;font-size:15px;border:0;border-radius:10px;background:#f59e0b;color:#fff;font-weight:bold}
+button.s{background:#334155;padding:8px 10px;font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap}
+.planos{display:flex;gap:6px}.planos label{flex:1;background:#0b1220;border:2px solid #334155;border-radius:10px;padding:10px;text-align:center;cursor:pointer}
+.planos input{display:none}.planos input:checked+span{color:#ffd54a;font-weight:bold}
+.cod{font-size:30px;letter-spacing:4px;color:#ffd54a;text-align:center;margin:10px 0;font-weight:bold}
+.it{border-top:1px solid #334155;padding:10px 0}.it b{color:#ffd54a;letter-spacing:2px}.tag{font-size:12px;padding:2px 8px;border-radius:9px;margin-left:6px}
+.novo{background:#2563eb}.ok{background:#16a34a}.venc{background:#b91c1c}.mut{opacity:.75;font-size:13px;margin:4px 0}
+#msg{color:#ff8a8a;min-height:18px}.tot{display:flex;gap:8px;text-align:center}.tot div{flex:1;background:#0b1220;border-radius:10px;padding:8px}.tot b{display:block;font-size:22px}
+</style></head><body>
+<header><h1>💰 Painel Empresta Certo</h1><button class="s" id="sair" style="display:none">Sair</button></header>
+<main>
+<div class="card" id="login">
+ <p>Entre com sua conta de dono.</p>
+ <button id="bG" style="width:100%;background:#fff;color:#222">Entrar com Google</button>
+ <p class="mut" style="text-align:center">ou</p>
+ <input id="em" type="email" placeholder="E-mail"><input id="se" type="password" placeholder="Senha">
+ <button id="bE" style="width:100%">Entrar</button><p id="msg"></p>
+</div>
+<div id="app" style="display:none">
+ <div class="card">
+  <div class="planos">
+   <label><input type="radio" name="pl" value="1"><span>Teste<br>1 dia</span></label>
+   <label><input type="radio" name="pl" value="30" checked><span>Mensal<br>30 dias</span></label>
+   <label><input type="radio" name="pl" value="180"><span>Semestral<br>180 dias</span></label>
+   <label><input type="radio" name="pl" value="365"><span>Anual<br>365 dias</span></label>
+  </div>
+  <input id="cli" placeholder="Nome do cliente (opcional)" maxlength="40"><input id="zap" type="tel" placeholder="WhatsApp do cliente com DDD (opcional) Ex.: 92991234567" maxlength="20">
+  <button id="gera" style="width:100%">Gerar código</button>
+  <div id="novo" style="display:none"><div class="cod" id="cod"></div>
+   <div class="row"><button class="s" id="cp" style="flex:1">Copiar</button><button class="s" id="wa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
+ </div>
+ <div class="card"><div class="tot"><div><b id="tN">0</b>Sem usar</div><div><b id="tA">0</b>Ativos</div><div><b id="tV">0</b>Vencidos</div></div>
+  <input id="bus" placeholder="Buscar cliente ou código"><div id="lista"></div></div>
+</div>
+</main>
+<script>
+var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)};
+var NOME={1:'Empresta Teste 1 dia',30:'Empresta Mensal',180:'Empresta Semestral',365:'Empresta Anual'},TODOS=[],ULT='';
+function msg(t){$('msg').textContent=t}
+$('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});au.signInWithPopup(p).catch(function(e){if(e.code=='auth/popup-blocked'||e.code=='auth/operation-not-supported-in-this-environment')au.signInWithRedirect(p);else msg('Não entrou: '+e.code)})};
+$('bE').onclick=function(){au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){msg('Não entrou: '+e.code)})};
+$('sair').onclick=function(){au.signOut()};au.getRedirectResult().catch(function(){});
+au.onAuthStateChanged(function(u){$('login').style.display=u?'none':'block';$('app').style.display=u?'block':'none';$('sair').style.display=u?'block':'none';if(u)escuta();});
+function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(8);crypto.getRandomValues(r);for(var i=0;i<8;i++)s+=a[r[i]%a.length];return s}
+function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
+function zapUrl(n,t){if(/Android/i.test(navigator.userAgent))return 'intent://send?'+(n?'phone='+n+'&':'')+'text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;end';return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(t)}
+function link(x){return zapUrl(x&&x.zap,texto(x.id,x.dias,x.cliente))}
+function copia(t,b){function ok(){if(b){var o=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=o},1500)}}
+ function velho(){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity=0;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand('copy')}catch(e){}a.remove();if(r)ok();else prompt('Copie:',t)}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,velho);else velho()}
+function fmt(c){return c.slice(0,4)+'-'+c.slice(4)}
+$('gera').onclick=function(){var d=+document.querySelector('input[name=pl]:checked').value,c=gcod(),b=$('gera');b.disabled=true;
+ db.collection('licencas').doc(c).set({dias:d,plano:NOME[d],cliente:$('cli').value.trim(),zap:nz($('zap').value),device:'',ativadoEm:null,criadoEm:firebase.firestore.FieldValue.serverTimestamp()})
+ .then(function(){ULT=c;$('cod').textContent=fmt(c);$('novo').style.display='block';$('cli').value='';$('zap').value='';}).catch(function(e){alert('Erro: '+e.code)}).finally(function(){b.disabled=false})};
+function texto(c,d,n){return (n?'Olá, '+n+'! ':'')+'Seu código do Empresta Certo ('+NOME[d].replace('Empresta ','')+'): '+fmt(c)+'\nAbra o app: https://merceariaaled19-cloud.github.io/Meu-lanches/emprestimos/\nDigite o código. Ele fica preso a esse celular.'}
+$('cp').onclick=function(){var l=TODOS.filter(function(x){return x.id==ULT})[0]||{id:ULT,dias:30};copia(texto(l.id,l.dias,l.cliente),$('cp'))};
+$('wa').onclick=function(){var l=TODOS.filter(function(x){return x.id==ULT})[0]||{id:ULT,dias:30};location.href=link(l)};
+function vence(x){return x.ativadoEm?x.ativadoEm.toDate().getTime()+x.dias*864e5:0}
+function dt(ms){var d=new Date(ms);return d.toLocaleDateString('pt-BR')}
+var un;function escuta(){if(un)return;un=db.collection('licencas').orderBy('criadoEm','desc').onSnapshot(function(s){TODOS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).filter(function(x){return String(x.plano||'').indexOf('Empresta')===0});pinta()},function(e){alert('Erro ao listar: '+e.code)})}
+$('bus').oninput=pinta;
+function pinta(){var q=$('bus').value.trim().toUpperCase().replace('-',''),n=0,a=0,v=0,L=$('lista');L.innerHTML='';var agora=Date.now();
+ TODOS.forEach(function(x){var ve=vence(x),stt=!x.device?'novo':(ve>agora?'ok':'venc');if(stt=='novo')n++;else if(stt=='ok')a++;else v++;
+  if(q&&x.id.indexOf(q)<0&&(x.cliente||'').toUpperCase().indexOf(q)<0)return;
+  var d=document.createElement('div');d.className='it';
+  var h=document.createElement('div');var b=document.createElement('b');b.textContent=fmt(x.id);h.appendChild(b);var t=document.createElement('span');t.className='tag '+stt;t.textContent=stt=='novo'?'Sem usar':stt=='ok'?'Ativo':'Vencido';h.appendChild(t);d.appendChild(h);
+  var m=document.createElement('div');m.className='mut';m.textContent=(x.cliente||'Sem nome')+(x.zap?' • '+x.zap.slice(2):'')+' • '+(x.plano||NOME[x.dias]||x.dias+' dias').replace('Empresta ','')+(x.device?' • até '+dt(ve)+' • cel. '+x.device.slice(-8).toUpperCase():'');d.appendChild(m);
+  var r=document.createElement('div');r.className='row';
+  function bt(tx,f,c){var e=document.createElement('button');e.className='s';e.textContent=tx;if(c)e.style.background=c;e.onclick=f;r.appendChild(e)}
+  bt('Copiar',function(){copia(texto(x.id,x.dias,x.cliente),this)});
+  bt('WhatsApp',function(){location.href=link(x)},'#16a34a');
+  if(x.device){
+   bt('Renovar',function(){var p=prompt('Renovar por quantos dias? 1 = teste, 30 = mensal, 180 = semestral, 365 = anual','30');p=+p;if(!p)return;
+    var up=stt=='ok'?{dias:x.dias+p}:{dias:p,ativadoEm:firebase.firestore.FieldValue.serverTimestamp()};db.collection('licencas').doc(x.id).update(up).then(function(){var nv=stt=='ok'?ve+p*864e5:Date.now()+p*864e5;if(x.zap||confirm('Mandar aviso da renovação no WhatsApp?'))location.href=zapUrl(x.zap,(x.cliente?'Olá, '+x.cliente+'! ':'')+'Sua licença do Empresta Certo foi renovada até '+dt(nv)+'. Código: '+fmt(x.id)+'. É só fechar e abrir o app.')}).catch(function(e){alert('Erro: '+e.code)})});
+   bt('Trocar celular',function(){if(confirm('Soltar esse código do celular atual? O cliente digita de novo no celular novo e continua com os dias que faltam.'))db.collection('licencas').doc(x.id).update({device:'',ativadoEm:null,dias:Math.max(1,Math.ceil((ve-Date.now())/864e5))})});
+  }
+  bt('Editar cliente',function(){var n=prompt('Nome do cliente',x.cliente||'');if(n===null)return;var z=prompt('WhatsApp com DDD',x.zap?x.zap.slice(2):'');if(z===null)return;db.collection('licencas').doc(x.id).update({cliente:n.trim(),zap:nz(z)})});
+  bt('Apagar',function(){if(confirm('Apagar '+fmt(x.id)+'? O app do cliente para de funcionar.'))db.collection('licencas').doc(x.id).delete()},'#7f1d1d');
+  d.appendChild(r);L.appendChild(d)});
+ $('tN').textContent=n;$('tA').textContent=a;$('tV').textContent=v}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js',{scope:'./'}).catch(function(){});
+</script></body></html>

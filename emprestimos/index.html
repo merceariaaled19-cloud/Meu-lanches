@@ -33,7 +33,7 @@ nav button{flex:1;background:none;border-radius:0;padding:10px 2px;font-size:12p
 </style>
 </head>
 <body>
-<header><h1>💰 Empresta Certo</h1><small>Controle dos seus empréstimos</small></header>
+<header><h1>💰 Empresta Certo</h1><small>Controle dos seus empréstimos<span id="lic"></span></small></header>
 <main id="tela"></main>
 <nav>
 <button data-t="inicio" class="on"><i>🏠</i>Início</button>
@@ -297,8 +297,50 @@ function avisa(){
   var txt = (hj ? hj + ' parcela(s) vencem hoje' : '') + (hj && at ? ' e ' : '') + (at ? at + ' atrasada(s)' : '') + '.';
   navigator.serviceWorker.ready.then(function(r){ r.showNotification('💰 Empresta Certo', {body: txt, icon: 'icon-192.png', tag: 'emp'}); });
 }
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(function(){ avisa(); });
-vai('inicio');
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+// ===== Licença por código (painel) =====
+var LK = 'AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM', LP = 'pdv-mercadinho-1c882', LB = 'https://firestore.googleapis.com/v1/projects/' + LP + '/databases/(default)/documents';
+var DEV = localStorage.getItem('emp_dev'); if (!DEV){ DEV = 'cel-' + id() + id(); localStorage.setItem('emp_dev', DEV); }
+var OFF = +(localStorage.getItem('emp_off') || 0) || 0; function agora(){ return Date.now() + OFF; }
+function lts(t){ var m = String(t || '').match(/(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)/); return m ? Date.UTC(+m[1], m[2] - 1, +m[3], +m[4], +m[5], +m[6]) : 0; }
+function lcampos(j){ var f = j.fields || {}; return {dev: (f.device && f.device.stringValue) || '', dias: +((f.dias && (f.dias.integerValue || f.dias.doubleValue)) || 0), at: f.ativadoEm && f.ativadoEm.timestampValue ? lts(f.ativadoEm.timestampValue) : 0, plano: (f.plano && f.plano.stringValue) || ''}; }
+function lpega(c){ return fetch(LB + ':batchGet?key=' + LK, {method: 'POST', cache: 'no-store', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({documents: ['projects/' + LP + '/databases/(default)/documents/licencas/' + c]})}).then(function(r){ if (!r.ok) throw new Error('rede'); return r.json(); }).then(function(j){ var x = j && j[0] || {}; var rt = lts(x.readTime); if (rt){ OFF = rt - Date.now(); localStorage.setItem('emp_off', String(OFF)); } return x.found ? lcampos(x.found) : null; }); }
+function lconfere(l, c, er){
+  var ruim = function(t){ if (er){ er.textContent = t; } else { localStorage.removeItem('emp_lic'); trava(t); } };
+  if (!l || l.plano.indexOf('Empresta') !== 0) return ruim('Código não existe.');
+  if (l.dev && l.dev !== DEV) return ruim('Esse código já está em uso em outro celular.');
+  var exp = l.at + l.dias * 864e5;
+  localStorage.setItem('emp_lic', JSON.stringify({c: c, exp: exp}));
+  if (l.at && agora() > exp) return trava('Sua licença venceu em ' + new Date(exp).toLocaleDateString('pt-BR') + '. Fale com quem te vendeu e digite o código novo.');
+  libera(exp);
+}
+function lativa(c, er){
+  lpega(c).then(function(l){ if (!l || l.dev || l.plano.indexOf('Empresta') !== 0){ lconfere(l, c, er); return; }
+    return fetch(LB + ':commit?key=' + LK, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({writes: [{update: {name: 'projects/' + LP + '/databases/(default)/documents/licencas/' + c, fields: {device: {stringValue: DEV}}}, updateMask: {fieldPaths: ['device']}, updateTransforms: [{fieldPath: 'ativadoEm', setToServerValue: 'REQUEST_TIME'}], currentDocument: {exists: true}}]})})
+      .then(function(r){ if (!r.ok) throw new Error('neg'); return lpega(c); }).then(function(l2){ lconfere(l2, c, er); });
+  }).catch(function(){ if (er) er.textContent = 'Não deu pra ativar. Confira a internet e o código.'; });
+}
+var LIBERADO = false;
+function trava(t){
+  LIBERADO = false; document.querySelector('nav').style.display = 'none'; $('#lic').textContent = '';
+  $('#tela').innerHTML = '<div class="card" style="text-align:center"><div style="font-size:48px">🔑</div><h2>Ativar o app</h2><p class="muted">' + esc(t) + '</p>' +
+    '<input id="lc" placeholder="Código (ex: ABCD-1234)" style="text-align:center;font-size:22px;letter-spacing:3px;text-transform:uppercase" maxlength="12">' +
+    '<button class="b1" id="lb">Ativar</button><p id="le" style="color:#b91c1c;min-height:20px"></p>' +
+    '<p class="muted">Seus clientes e empréstimos ficam guardados neste celular e voltam quando ativar.</p></div>';
+  $('#lb').onclick = function(){ var c = $('#lc').value.toUpperCase().replace(/[^A-Z0-9]/g, ''); if (c.length !== 8){ $('#le').textContent = 'O código tem 8 letras/números.'; return; } $('#le').textContent = 'Conferindo...'; lativa(c, $('#le')); };
+}
+function libera(exp){
+  var d = Math.ceil((exp - agora()) / 864e5);
+  $('#lic').textContent = exp ? ' · licença até ' + new Date(exp).toLocaleDateString('pt-BR') + (d <= 5 ? ' (faltam ' + d + ' dias!)' : '') : '';
+  if (!LIBERADO){ LIBERADO = true; document.querySelector('nav').style.display = 'flex'; vai('inicio'); avisa(); }
+}
+(function(){
+  var L = null; try { L = JSON.parse(localStorage.getItem('emp_lic')); } catch(e){}
+  if (!L) return trava('Digite o código de ativação que você recebeu.');
+  if (L.exp && agora() > L.exp) trava('Sua licença venceu. Fale com quem te vendeu e digite o código novo.'); else libera(L.exp);
+  lpega(L.c).then(function(l){ lconfere(l, L.c, null); }).catch(function(){});
+})();
+
 </script>
 </body>
 </html>
