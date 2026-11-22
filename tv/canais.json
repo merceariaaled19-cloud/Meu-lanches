@@ -1,0 +1,545 @@
+{
+"atualizado": "2026-11-22T22:19",
+"canais": [
+{
+"nome": "Amazon Sat",
+"cat": "Amazonas",
+"logo": "https://i.imgur.com/7rjCS5i.png",
+"url": "https://amazonsat.brasilstream.com.br/hls/amazonsat/index.m3u8"
+},
+{
+"nome": "TV A Critica",
+"cat": "Amazonas",
+"logo": "https://i.imgur.com/j51rBro.png",
+"url": "https://cdn.live.br1.jmvstream.com/w/LVW-20715/LVW20715_50E3x2MCm2/playlist.m3u8"
+},
+{
+"nome": "Aratu On",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/Ht4jCab.png",
+"url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
+},
+{
+"nome": "Canal Metropolitano de Noticias",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/G0x4xqa.png",
+"url": "https://stmv5.samcast.com.br/claudio8701/claudio8701/playlist.m3u8"
+},
+{
+"nome": "CNN Brasil",
+"cat": "Notícias",
+"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/CNN_Brasil.svg/960px-CNN_Brasil.svg.png",
+"url": "https://d25usgadhphvwi.cloudfront.net/hls/main.m3u8"
+},
+{
+"nome": "J3NEWS TV",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/lezIQyL.png",
+"url": "https://video01.brascast.com/d92ebb4f/d92ebb4f/playlist.m3u8"
+},
+{
+"nome": "Plena TV",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/lH4RT7b.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9591/LVW9591_PmXtgATnaS/playlist.m3u8"
+},
+{
+"nome": "SBT News",
+"cat": "Notícias",
+"logo": "https://upload.wikimedia.org/wikipedia/commons/4/42/SBT_News_2025.svg",
+"url": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8"
+},
+{
+"nome": "STZ TV",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/SeF2I7q.png",
+"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-12952/playlist/playlist.m3u8"
+},
+{
+"nome": "TCM 10 HD",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/aMuMVvB.png",
+"url": "https://live.tcm10.com.br/tcm10hd/stream.m3u8"
+},
+{
+"nome": "Times Brasil",
+"cat": "Notícias",
+"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Times_Brasil_CNBC_logo_2025.svg/960px-Times_Brasil_CNBC_logo_2025.svg.png",
+"url": "https://ssai2-ads.api.leiniao.com/global-adinsertion-api/hls/live/v2/21fdb6dd7491406bba86497a24390a25/playlist.m3u8"
+},
+{
+"nome": "TV A Folha",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/I7XGMhj.png",
+"url": "https://video01.logicahost.com.br/tvafolha/tvafolha/playlist.m3u8"
+},
+{
+"nome": "TV Brusque",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/J2EAZPS.png",
+"url": "https://5ad482a77183d.streamlock.net/rodrigotvbrusque.com.br/5d880199c902eb4a1e8df00d/playlist.m3u8"
+},
+{
+"nome": "TV Camara (Brazil)",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/Sdou1Ab.png",
+"url": "https://stream3.camara.gov.br/tv1/manifest.m3u8"
+},
+{
+"nome": "TV Zoom",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/jCGrjf5.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9730/LVW9730_LmUwslM8jt/playlist.m3u8"
+},
+{
+"nome": "TVideoNews",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/vstHOYx.png",
+"url": "https://video01.logicahost.com.br/tvideonews/tvideonews/playlist.m3u8"
+},
+{
+"nome": "VEJA+ TV",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/n0pxHo4.png",
+"url": "https://gpa-vja.otteravision.com/gpa/vja/vja.m3u8"
+},
+{
+"nome": "Araruna TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/jl39ula.png",
+"url": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8"
+},
+{
+"nome": "Boas Novas",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/ZqhizdP.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8"
+},
+{
+"nome": "Chroma TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/SnaIMgj.png",
+"url": "https://5c483b9d1019c.streamlock.net/8054/8054/playlist.m3u8"
+},
+{
+"nome": "COM Brasil",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/GrjGwKM.png",
+"url": "https://dfr80qz435crc.cloudfront.net/EFGH/Amagi/NewCo/New_Brasil_BR/New_Brasil.m3u8"
+},
+{
+"nome": "Conecta Mais TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/qHwTWlz.png",
+"url": "https://adylnet.streampool.net/10324/live/hls/Conecta/index.m3u8"
+},
+{
+"nome": "ConecTV Brasil",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/XN6jjMR.png",
+"url": "https://stream01.msolutionbrasil.com.br/hls/conectv/live.m3u8"
+},
+{
+"nome": "Conexao TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/CJ9SPsZ.png",
+"url": "https://5a57bda70564a.streamlock.net/conexaotv/conexaotv.sdp/playlist.m3u8"
+},
+{
+"nome": "ElyTV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/1eHNe91.png",
+"url": "https://stmv1.srvsite.com/ely/ely/playlist.m3u8"
+},
+{
+"nome": "EUTV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/8PxpamC.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
+},
+{
+"nome": "Fala Litoral",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/NF6PL8O.png",
+"url": "https://5c483b9d1019c.streamlock.net/falalitoraltv/falalitoraltv/playlist.m3u8"
+},
+{
+"nome": "L!ke",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/chHsCzB.png",
+"url": "https://cnl-cl.otteravision.com/cnl/cl_h265/cl_h265.m3u8"
+},
+{
+"nome": "Loading",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/R0aflu1.png",
+"url": "https://stmv1.srvif.com/loadingtv/loadingtv/playlist.m3u8"
+},
+{
+"nome": "NTV (Brazil)",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/n79nkVC.png",
+"url": "https://cdn.livespanel.com/nossatv/nossatv/playlist.m3u8"
+},
+{
+"nome": "O Dia TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/1LUbAVP.png",
+"url": "https://6836041ea1117.streamlock.net/tvodia/tvodia/playlist.m3u8"
+},
+{
+"nome": "Petlovers TV",
+"cat": "Variedades",
+"logo": "https://petloverstv.com.br/storage/357/config/yqP4nOugWRxRFCmgLqXF4gRKyM9ybsAOfHgUaqPt.png",
+"url": "https://video04.logicahost.com.br/petloverstv/petloverstv/playlist.m3u8"
+},
+{
+"nome": "RBATV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/ZWFxlU1.png",
+"url": "https://cdn.live.br1.jmvstream.com/w/LVW-15748/LVW15748_Yed7yzLuRC/playlist.m3u8"
+},
+{
+"nome": "Rede Brasil",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/TXJKwzZ.png",
+"url": "https://redebrasil.nuvemplay.live/hls/stream.m3u8"
+},
+{
+"nome": "Rede Meio Norte",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/KVdTi0M.png",
+"url": "https://maystreaming.cloudecast.com/redemeio/index.m3u8"
+},
+{
+"nome": "Rede NGT",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/ZFN1R4B.png",
+"url": "https://isaocorp.cloudecast.com/ngt/index.m3u8"
+},
+{
+"nome": "Rede SPTV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/kh3LGAP.png",
+"url": "https://video01.logicahost.com.br/websptv/websptv/playlist.m3u8"
+},
+{
+"nome": "Rede TV! Mais",
+"cat": "Variedades",
+"logo": "https://i.ibb.co/F0Tm2WP/2103f4c07b851d64b4c96955765a9a95.png",
+"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8"
+},
+{
+"nome": "SBT Nova Mutum",
+"cat": "Variedades",
+"logo": "https://upload.wikimedia.org/wikipedia/pt/d/d0/Logotipo_do_SBT_Nova_Mutum.png",
+"url": "https://video09.logicahost.com.br/sbtmutum/sbtmutum/playlist.m3u8"
+},
+{
+"nome": "SIC TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/mHxQyB2.png",
+"url": "https://parecisfmlive.brasilstream.com.br/hls/parecisfmlive/index.m3u8"
+},
+{
+"nome": "SOU TV",
+"cat": "Variedades",
+"logo": "https://i.ibb.co/8cKmCNm/ezgif-com-gif-maker.png",
+"url": "https://video10.logicahost.com.br/soutv/soutv/playlist.m3u8"
+},
+{
+"nome": "TELE 6",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/p7tt72X.png",
+"url": "https://183.giatvcdn.com/ssh101/ssh101/tele6/playlist.m3u8"
+},
+{
+"nome": "TV Aldeia",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/rsfnv4Z.png",
+"url": "https://stmv1.samcast.com.br/giovane7843/giovane7843/playlist.m3u8"
+},
+{
+"nome": "TV Alianca Catarinense",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/eqmOhtP.png",
+"url": "https://video01.logicahost.com.br/tvalianca/tvalianca/playlist.m3u8"
+},
+{
+"nome": "TV Alternativa",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/wM9xXhc.png",
+"url": "https://stmv5.samcast.com.br/wagner7919/wagner7919/playlist.m3u8"
+},
+{
+"nome": "TV BRICS Portuguese",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/vLpm8tN.png",
+"url": "https://porbrics.mediacdn.ru/cdn/brics/portuguese/playlist.m3u8"
+},
+{
+"nome": "TV Clube",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/CpXjcyE.png",
+"url": "https://5c483b9d1019c.streamlock.net/8186/8186/playlist.m3u8"
+},
+{
+"nome": "TV Comunitaria",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/uxefHY3.png",
+"url": "https://5b7f3c45ab7c2.streamlock.net/8008/smil:8008.smil/playlist.m3u8?DVR="
+},
+{
+"nome": "TV Curuca",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/JdCKNZ4.png",
+"url": "https://stmv1.srvif.com/tvcurucasp/tvcurucasp/playlist.m3u8"
+},
+{
+"nome": "TV Difusao",
+"cat": "Variedades",
+"logo": "https://storage.googleapis.com/soultv-prod-media/media/brand/LOGO_TV_DIFUS%C3%83O_100x100px_doiivZN.png",
+"url": "https://tvdsoultv.acessaradios.com.br/tvdsoultv/tvdsoultv.stream/playlist.m3u8"
+},
+{
+"nome": "TV Guara",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/8PErNBT.png",
+"url": "https://video02.logicahost.com.br/tvguara23/tvguara23/playlist.m3u8"
+},
+{
+"nome": "TV Litoral RN",
+"cat": "Variedades",
+"logo": "https://upload.wikimedia.org/wikipedia/commons/3/3e/TV_LITORAL_RN.jpg",
+"url": "https://5ad482a77183d.streamlock.net/tvnordesteegmail.com/tvnordesteegmail.com/playlist.m3u8"
+},
+{
+"nome": "TV Mais Marica",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/lgCRX7q.png",
+"url": "https://5cf4a2c2512a2.streamlock.net/tvmaismarica/tvmaismarica/playlist.m3u8"
+},
+{
+"nome": "TV Pantanal MS",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/0FOmktl.png",
+"url": "https://5a2b083e9f360.streamlock.net/tvpantanal/tvpantanal.sdp/playlist.m3u8"
+},
+{
+"nome": "TV Passo Fundo",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/QFE6TiV.png",
+"url": "https://5a57bda70564a.streamlock.net/tvpasso/tvpasso.sdp/playlist.m3u8"
+},
+{
+"nome": "TV Petropolis",
+"cat": "Variedades",
+"logo": "https://web2.petropolis.rj.gov.br/imc/film-commission/uploads/profissional/perfil/785b645d9c574b4d88504a85dbd6ef37.png",
+"url": "https://video02.logicahost.com.br/tvpetropolis/tvpetropolis/playlist.m3u8"
+},
+{
+"nome": "TV Sao Raimundo",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/f34CQIG.png",
+"url": "https://stmv1.voxtvhd.com.br/9030/9030/playlist.m3u8"
+},
+{
+"nome": "TV+Pet",
+"cat": "Variedades",
+"logo": "https://www.tvmaispet.com.br/images/tvpet-logo.png",
+"url": "https://stmv5.samcast.com.br/tvmaispet6354/tvmaispet6354/playlist.m3u8"
+},
+{
+"nome": "TVCOM Maceio",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/IE7IZzi.png",
+"url": "https://srv5.zcast.com.br/tvcommaceio/tvcommaceio/playlist.m3u8"
+},
+{
+"nome": "TVitape",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/XeqcwKe.png",
+"url": "https://stream01.msolutionbrasil.com.br/hls/tvitape/live.m3u8"
+},
+{
+"nome": "TVLatinaSat",
+"cat": "Variedades",
+"logo": "https://latinasat.com.br/logo.png",
+"url": "https://www.latinasat.com.br/hls/live/stream/index.m3u8"
+},
+{
+"nome": "TVNBN",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/zoHBxn1.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8410/LVW8410_uiZOVm6vz1/playlist.m3u8"
+},
+{
+"nome": "UMA TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/m0RVb79.png",
+"url": "https://umatv.nuvemplay.live/hls/stream.m3u8"
+},
+{
+"nome": "FIFA+ Portuguese",
+"cat": "Esportes",
+"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/FIFA%2B_(2025).svg/960px-FIFA%2B_(2025).svg.png",
+"url": "https://e3be9ac5.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctYnJfRklGQVBsdXNQb3J0dWd1ZXNlX0hMUw/playlist.m3u8"
+},
+{
+"nome": "Red Bull TV BR",
+"cat": "Esportes",
+"logo": "https://images.pluto.tv/channels/5e7cb84a172a0f0007da69e4/colorLogoPNG.png",
+"url": "https://d03ae6b5c6724c24867e97a3dc04934a.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-1026-WORBBRPTFAST-WHALETVPLUS/1026/hls/master/playlist.m3u8"
+},
+{
+"nome": "Classique TV",
+"cat": "Filmes e Séries",
+"logo": "https://i.imgur.com/rHxcraT.png",
+"url": "https://stmv1.srvif.com/classique/classique/playlist.m3u8"
+},
+{
+"nome": "Comedy Central Brasil",
+"cat": "Filmes e Séries",
+"logo": "https://comcastadvertising.com/wp-content/uploads/2021/10/Comedy-Central-White.png",
+"url": "https://stmv2.srvif.com/gafeab/gafeab/playlist.m3u8"
+},
+{
+"nome": "MyTime Movie Network (Brazil)",
+"cat": "Filmes e Séries",
+"logo": "https://i.imgur.com/aiGQtzI.png",
+"url": "https://appletree-mytime-samsungbrazil.amagi.tv/playlist.m3u8"
+},
+{
+"nome": "TV Series",
+"cat": "Filmes e Séries",
+"logo": "https://i.imgur.com/Ff5mj0o.png",
+"url": "https://stmv1.srvif.com/tvserie/tvserie/playlist.m3u8"
+},
+{
+"nome": "Gospel Cartoon",
+"cat": "Infantil",
+"logo": "https://i.imgur.com/yxjPno5.png",
+"url": "https://stmv1.srvif.com/gospelcartoon/gospelcartoon/playlist.m3u8"
+},
+{
+"nome": "Kuriakos Kids",
+"cat": "Infantil",
+"logo": "https://i.imgur.com/SRX6EPY.png",
+"url": "https://w2.manasat.com/kkids/smil:kkids.smil/playlist.m3u8"
+},
+{
+"nome": "Retro Cartoon",
+"cat": "Infantil",
+"logo": "https://i.imgur.com/hIlEfhl.png",
+"url": "https://stmv1.video.brstream.com.br/retrotv/retrotv/chunklist_w1069200121.m3u8"
+},
+{
+"nome": "Lamore Rock Show WebTV",
+"cat": "Música",
+"logo": "https://www.lamorerockshowwebtv.com.br/wp-content/uploads/2024/11/logo_rockshow.avif",
+"url": "https://a.cdni.live/rodrigo2364/rodrigo2364/playlist.m3u8"
+},
+{
+"nome": "Trace Brazuca HD",
+"cat": "Música",
+"logo": "https://i.imgur.com/DFBocPu.png",
+"url": "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01131-tracetv-tracebrazuca-samsungbr/playlist.m3u8"
+},
+{
+"nome": "Canal FDR",
+"cat": "Educação e Cultura",
+"logo": "https://i.imgur.com/7SE4CkE.png",
+"url": "https://v-us-01.wisestream.io/memfs/e4ade538-7924-4359-81ef-b9d4dd229e91.m3u8"
+},
+{
+"nome": "ISTV (Brazil)",
+"cat": "Educação e Cultura",
+"logo": "https://i.imgur.com/RUKVrOH.png",
+"url": "https://stmv1.srvstm.com/sistema7933/sistema7933/playlist.m3u8"
+},
+{
+"nome": "Rede Minas",
+"cat": "Educação e Cultura",
+"logo": "https://i.imgur.com/MtQWAHv.png",
+"url": "https://8hzcavccys.zoeweb.tv/redeminas/ngrp:redeminas_all/playlist.m3u8"
+},
+{
+"nome": "TV Life America",
+"cat": "Educação e Cultura",
+"logo": "https://i.imgur.com/HZI0ilU.png",
+"url": "https://streaming.cloudecast.com/hls/tvlifeamerica/index.m3u8"
+},
+{
+"nome": "TV UFOP",
+"cat": "Educação e Cultura",
+"logo": "https://raw.githubusercontent.com/daniloroxette/tvufop/refs/heads/main/images/tvufop_logo.png",
+"url": "https://app.tvufop.com.br/hls/tvufop.m3u8"
+},
+{
+"nome": "Unisul TV",
+"cat": "Educação e Cultura",
+"logo": "https://i.imgur.com/N0TvAFz.png",
+"url": "https://sitetv.brasilstream.com.br/hls/sitetv/index.m3u8?token="
+},
+{
+"nome": "Angel TV Portuguese",
+"cat": "Religiosos",
+"logo": "https://i.imgur.com/qKLEGU7.png",
+"url": "https://janya-digimix.akamaized.net/vglive-sk-382409/portuese/ngrp:angelportuguese_all/playlist.m3u8"
+},
+{
+"nome": "Despertar TV",
+"cat": "Religiosos",
+"logo": "https://res.cloudinary.com/dpkehkbpv/image/upload/v1721839192/logo/mixtv/despertar_tv_ieb2l3.png",
+"url": "https://br.conectmy.com.br/DespertarTV/index.m3u8"
+},
+{
+"nome": "Fonte TV",
+"cat": "Religiosos",
+"logo": "https://i.imgur.com/7q2BmNc.png",
+"url": "https://59fb88a1b1108.streamlock.net/fonte/_definst_/fontetv/chunklist_w1224511652.m3u8"
+},
+{
+"nome": "Gospel Movie TV",
+"cat": "Religiosos",
+"logo": "https://i.imgur.com/cQN3nWt.png",
+"url": "https://stmv1.srvif.com/gospelf/gospelf/playlist.m3u8"
+},
+{
+"nome": "Plenitude TV",
+"cat": "Religiosos",
+"logo": "",
+"url": "https://strv.painelvox.top/plenitude/plenitude/playlist.m3u8"
+},
+{
+"nome": "Rede Gospel",
+"cat": "Religiosos",
+"logo": "https://i.imgur.com/mttSwgO.png",
+"url": "https://cdn.live.br1.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
+},
+{
+"nome": "TV Mana Brasil",
+"cat": "Religiosos",
+"logo": "https://i.imgur.com/AFb712e.png",
+"url": "https://w1.manasat.com/tvmana-brasil/smil:tvmana-brasil.smil/playlist.m3u8"
+},
+{
+"nome": "TV Padre Cicero",
+"cat": "Religiosos",
+"logo": "https://i.imgur.com/Y7b29VG.png",
+"url": "https://video01.logicahost.com.br/tvpadrecicero/tvpadrecicero/playlist.m3u8"
+},
+{
+"nome": "TV Terceiro Anjo",
+"cat": "Religiosos",
+"logo": "https://i.imgur.com/PExKWNv.png",
+"url": "https://streamer1.streamhost.org/salive/GMI3anjoh/playlist.m3u8"
+},
+{
+"nome": "TV Universal",
+"cat": "Religiosos",
+"logo": "https://i.imgur.com/TIsk5zN.png",
+"url": "https://644398c.ha.azioncdn.net/primary/tvuniversal_480p.sdp/playlist.m3u8"
+}
+]
+}

@@ -1,0 +1,28 @@
+name: TV Certa - testar canais
+on:
+  schedule:
+    - cron: '30 9 * * *'   # todo dia 5h30 em Manaus
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: tv
+  cancel-in-progress: false
+jobs:
+  canais:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Testar canais
+        run: python3 tv/robo.py
+      - name: Salvar
+        run: |
+          git config user.name "merceariaaled19-cloud"
+          git config user.email "merceariaaled19@gmail.com"
+          git add tv/canais.json
+          git diff --cached --quiet && exit 0
+          git commit -m "TV Certa: canais testados"
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
