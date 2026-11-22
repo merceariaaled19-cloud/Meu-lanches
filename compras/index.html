@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Compra Certa</title>
+<meta name="description" content="Onde comprar mais barato em Manaus: promoções dos encartes e sites, com preço de venda pela sua margem.">
+<meta name="theme-color" content="#15803d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--v:#15803d;--v2:#166534;--cl:#f3f6f4;--tx:#1f2937;--cz:#6b7280;--am:#facc15;--ve:#dc2626}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--cl);color:var(--tx);font:19px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:linear-gradient(135deg,#16a34a,#166534);color:#fff;padding:16px 16px 18px;padding-top:max(16px,env(safe-area-inset-top))}
+header h1{margin:0;font-size:27px;display:flex;align-items:center;gap:10px}
+header h1 img{width:38px;height:38px;border-radius:9px}
+header .sub{font-size:15px;opacity:.9;margin-top:2px}
+.busca{display:flex;gap:8px;margin-top:14px}
+.busca input{flex:1;font-size:20px;padding:14px;border-radius:14px;border:0;min-width:0}
+.busca button{font-size:22px;border:0;border-radius:14px;background:var(--am);padding:0 18px;font-weight:700}
+main{padding:14px 14px 110px;max-width:720px;margin:0 auto}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0 10px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font-size:17px;padding:11px 15px;border-radius:999px;background:#fff;border:2px solid #d1e7d8;font-weight:600;color:var(--v2)}
+.chip.on{background:var(--v);color:#fff;border-color:var(--v)}
+.acoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 14px}
+.bt{font-size:18px;font-weight:700;border:0;border-radius:16px;padding:16px 12px;background:#fff;color:var(--v2);box-shadow:0 1px 3px #0002;text-align:center;text-decoration:none;display:block}
+.bt.g{background:var(--v);color:#fff}
+.bt.am{background:var(--am);color:#3f3200}
+.bt.lg{grid-column:1/-1}
+h2{font-size:22px;margin:18px 4px 10px}
+.card{background:#fff;border-radius:18px;padding:14px 16px;margin:0 0 12px;box-shadow:0 1px 3px #0001}
+.grupo h3{margin:0 0 6px;font-size:19px;color:var(--v2)}
+.it{border-top:1px solid #eef2ef;padding:10px 0}
+.it:first-of-type{border-top:0}
+.it .nm{font-size:17px}
+.it .lj{font-weight:800;font-size:19px}
+.it .pr{font-size:30px;font-weight:800;color:var(--v2);line-height:1.1}
+.it.top .pr{color:#b45309}
+.tag{display:inline-block;font-size:14px;font-weight:800;padding:2px 9px;border-radius:999px;background:#fef3c7;color:#92400e;margin-left:6px;vertical-align:middle}
+.tag.n{background:#dcfce7;color:#166534}
+.tag.nv{background:var(--ve);color:#fff}
+.ex{font-size:16px;color:#374151}
+.vd{display:inline-block;margin-top:6px;font-size:18px;font-weight:800;background:#ecfdf5;color:#065f46;padding:5px 10px;border-radius:10px}
+.mt{font-size:14px;color:var(--cz);margin-top:5px}
+.mt a{color:var(--v2);font-weight:700}
+.mais{font-size:17px;border:0;background:#eef7f1;color:var(--v2);font-weight:700;border-radius:12px;padding:10px;width:100%;margin-top:6px}
+.vazio{color:var(--cz);text-align:center;padding:18px 8px;font-size:17px}
+.aviso{font-size:14px;color:var(--cz);text-align:center;margin:16px 6px}
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;display:flex;box-shadow:0 -2px 10px #0002;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;font-size:15px;font-weight:700;color:var(--cz);padding:9px 0 11px}
+nav button b{display:block;font-size:26px}
+nav button.on{color:var(--v)}
+.tela{display:none}.tela.on{display:block}
+.fav{display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #eef2ef;font-size:19px}
+.fav:first-child{border-top:0}
+.fav span{flex:1}
+.fav button{border:0;background:#fee2e2;color:var(--ve);font-size:18px;border-radius:12px;padding:8px 12px;font-weight:700}
+.campo{display:flex;gap:8px;margin-top:10px}
+.campo input{flex:1;font-size:20px;padding:13px;border-radius:12px;border:2px solid #d1d5db;min-width:0}
+.campo button{border:0;border-radius:12px;background:var(--v);color:#fff;font-size:19px;font-weight:700;padding:0 16px}
+label.big{font-size:19px;font-weight:700;display:block}
+.nota{font-size:15px;color:#4b5563;margin-top:8px}
+#toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 18px;border-radius:14px;font-size:17px;max-width:92%;display:none;z-index:9;text-align:center}
+#carga{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;z-index:8}
+#carga div{background:#fff;border-radius:18px;padding:22px;font-size:19px;font-weight:700;max-width:86%;text-align:center}
+.rob{font-size:44px;display:block;animation:pula .8s infinite alternate}
+@keyframes pula{to{transform:translateY(-8px)}}
+</style>
+</head>
+<body>
+<header>
+  <h1><img src="icon-192.png" alt="">Compra Certa</h1>
+  <div class="sub" id="atu">Carregando preços…</div>
+  <form class="busca" id="fBusca" autocomplete="off">
+    <input id="q" type="search" placeholder="Buscar produto (ex.: Skol)" enterkeyhint="search">
+    <button aria-label="Buscar">🔎</button>
+  </form>
+</header>
+
+<main>
+<section class="tela on" id="tInicio">
+  <div class="chips" id="chips"></div>
+  <div class="acoes">
+    <button class="bt am" id="bFoto">📷 Foto do produto</button>
+    <a class="bt" href="https://buscapreco.sefaz.am.gov.br/home" target="_blank" rel="noopener">🏛️ Ver em todas as lojas (SEFAZ)</a>
+  </div>
+  <input type="file" id="arqFoto" accept="image/*" capture="environment" hidden>
+  <div id="res"></div>
+  <div id="inicio">
+    <h2>🔥 Promoções de hoje dos seus favoritos</h2>
+    <div id="promos"></div>
+  </div>
+  <p class="aviso">Preços tirados de encartes e sites das lojas. Podem mudar; confirme na loja antes de comprar.</p>
+</section>
+
+<section class="tela" id="tFav">
+  <h2>⭐ Meus favoritos</h2>
+  <div class="card">
+    <div id="lFav"></div>
+    <form class="campo" id="fFav" autocomplete="off">
+      <input id="novoFav" placeholder="Ex.: Cerveja Skol" maxlength="40">
+      <button>Adicionar</button>
+    </form>
+    <div class="nota">Até 10 produtos. Escreva do jeito simples: "Skol", "Coca-Cola 2L", "Arroz Tio João".</div>
+  </div>
+  <h2>🔔 Avisos no celular</h2>
+  <div class="card">
+    <button class="bt g lg" id="bAvisos">🔔 Ativar avisos</button>
+    <div class="nota" id="stAvisos"></div>
+    <div class="nota">Quando um favorito aparece em promoção nova, chega um aviso na barra do celular, mesmo com o app fechado (o robô confere a cada 3 horas). Isso depende do celular deixar: se a economia de bateria do aparelho bloquear o Chrome, o aviso pode atrasar ou não chegar. Ao abrir o app, as promoções dos favoritos aparecem sempre.</div>
+  </div>
+</section>
+
+<section class="tela" id="tAjustes">
+  <h2>⚙️ Ajustes</h2>
+  <div class="card">
+    <label class="big" for="margem">Margem de lucro (%)</label>
+    <form class="campo" id="fMargem"><input id="margem" type="number" inputmode="numeric" min="0" max="300"><button>Salvar</button></form>
+    <div class="nota">O "Vender por" é o preço da loja + a margem, arredondado pra cima e sempre terminando em 9 centavos (ex.: R$ 3,77 vira R$ 3,79; R$ 3,80 vira R$ 3,89). A conta usa o preço normal (sem app e sem cartão).</div>
+  </div>
+  <div class="card">
+    <label class="big">📷 Leitura por foto</label>
+    <div class="nota">Primeiro o app tenta o código de barras. Se não der, usa a inteligência artificial (IA) para ler o nome na foto. A IA precisa entrar uma vez com a conta Google do administrador.</div>
+    <button class="bt lg" id="bLogin" style="margin-top:10px">Entrar com Google (para a IA)</button>
+    <div class="nota" id="stLogin"></div>
+  </div>
+  <div class="card">
+    <label class="big">De onde vêm os preços</label>
+    <div class="nota">Encartes das lojas de Manaus (site Ofertas Manaus) e preços do site do Nova Era. Atualiza sozinho a cada 3 horas. Para ver preço de nota fiscal em todo o comércio do Amazonas (inclusive lojas do Fuxico), use o botão SEFAZ.</div>
+    <div class="nota" id="stDados"></div>
+  </div>
+</section>
+</main>
+
+<nav>
+  <button class="on" data-t="tInicio"><b>🏠</b>Início</button>
+  <button data-t="tFav"><b>⭐</b>Favoritos</button>
+  <button data-t="tAjustes"><b>⚙️</b>Ajustes</button>
+</nav>
+<div id="toast"></div>
+<div id="carga"><div><span class="rob">🤖</span><span id="cargaTx">Lendo a foto…</span></div></div>
+
+<script>
+'use strict';
+var VAPID_PUB = 'BFsk5KK9UBQ-yxk8gh8saeciLM8fH2HazYCIt-dOH2sxS8ECZacTZiISS9mdj62rrl0N3xiS-FWJEmmpHZbt2c4';
+var FB = {apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+var FS = 'https://firestore.googleapis.com/v1/projects/pdv-mercadinho-1c882/databases/(default)/documents';
+var $ = function(i){ return document.getElementById(i); };
+var DADOS = null, ITENS = [];
+var LS = {
+  get: function(k, d){ try { var v = localStorage.getItem('cc_' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set: function(k, v){ try { localStorage.setItem('cc_' + k, JSON.stringify(v)); } catch (e) {} }
+};
+var HOJE = (function(){ var d = new Date(Date.now() - 4 * 3600e3); return d.toISOString().slice(0, 10); })(); // dia de Manaus
+
+function toast(t, ms){ var e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(function(){ e.style.display = 'none'; }, ms || 2600); }
+function carga(t){ if (t){ $('cargaTx').textContent = t; $('carga').style.display = 'flex'; } else $('carga').style.display = 'none'; }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function norm(s){ return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim(); }
+function reais(v){ return 'R$ ' + Number(v).toFixed(2).replace('.', ','); }
+function dataBR(iso){ if (!iso) return ''; var p = iso.slice(0, 10).split('-'); return p[2] + '/' + p[1]; }
+function horaBR(iso){ return iso ? dataBR(iso) + ' às ' + iso.slice(11, 16) : ''; }
+
+/* ---------- margem ---------- */
+function margem(){ return Number(LS.get('margem', 30)); }
+function venderPor(custo){
+  var c = Math.round(custo * (1 + margem() / 100) * 100);    // em centavos
+  var v = Math.ceil((c + 1) / 10) * 10 - 1;                   // pra cima, termina em 9
+  return v / 100;
+}
+
+/* ---------- busca ---------- */
+var PARADAS = {de:1,da:1,do:1,das:1,dos:1,e:1,com:1,em:1,a:1,o:1};
+function palavras(q){ return norm(q).split(' ').filter(function(w){ return w && !PARADAS[w]; }); }
+function casa(fp, it){
+  var pal = it._p;
+  if (!fp.length) return false;
+  if (!pal.slice(0, 3).some(function(p){ return p.indexOf(fp[0]) === 0; })) return false;  // 1ª palavra no começo do nome
+  return fp.every(function(f){ return pal.some(function(p){ return p.indexOf(f) === 0; }); });
+}
+var GENERICAS = 'refrigerante refri cerveja bebida lata latao garrafa pet pacote pct pacotes caixa cx fardo tipo com sem de da do o a e para kg g gr ml l lt litro litros un und unid unidade unidades pack c s'.split(' ');
+function medida(n){
+  var m = n.match(/(\d+(?:[ ,.]\d+)?)\s?(ml|l|lt|litro|litros|kg|g|gr)\b/);
+  if (!m) return '';
+  var v = parseFloat(m[1].replace(/[ ,]/, '.')), u = m[2];
+  if (u === 'l' || u === 'lt' || u === 'litro' || u === 'litros'){ v = v * 1000; u = 'ml'; }
+  if (u === 'kg'){ v = v * 1000; u = 'g'; }
+  if (u === 'gr') u = 'g';
+  if (v >= 1000) return String(+(v / 1000).toFixed(2)).replace('.', ',') + (u === 'ml' ? ' L' : ' kg');
+  return Math.round(v) + (u === 'ml' ? ' ml' : ' g');
+}
+function grupoDe(it, fp){
+  var n = it._n, pal = it._p, marca = '';
+  for (var i = 0; i < pal.length; i++){
+    var w = pal[i];
+    if (GENERICAS.indexOf(w) >= 0 || /^\d/.test(w) || w.length < 2) continue;
+    if (fp.some(function(f){ return w.indexOf(f) === 0; }) && pal.length > i + 1 && fp.length === 1 && /acucar|arroz|feijao|oleo|cafe|leite|farinha|macarrao|sal|margarina|sabao|detergente/.test(w)) continue;
+    marca = w; break;
+  }
+  var zero = /\bzero\b|sem acucar|\bs acucar|\blight\b|\bdiet\b/.test(n) ? ' zero' : '';
+  var BON = {coca: 'Coca-Cola', guarana: 'Guaraná', acucar: 'Açúcar', feijao: 'Feijão', oleo: 'Óleo', cafe: 'Café', sabao: 'Sabão', agua: 'Água', linguica: 'Linguiça', file: 'Filé', acem: 'Acém', musculo: 'Músculo', macarrao: 'Macarrão', higienico: 'Higiênico'};
+  return {k: marca + '|' + medida(n) + zero, nome: (marca ? (BON[marca] || marca.charAt(0).toUpperCase() + marca.slice(1)) : 'Outros') + (medida(n) ? ' ' + medida(n) : '') + (zero ? ' (zero/sem açúcar)' : '')};
+}
+function vale(it){ return !it.validade || it.validade >= HOJE; }
+function procura(termos){
+  var lista = termos.map(palavras).filter(function(x){ return x.length; });
+  return ITENS.filter(function(it){ return vale(it) && lista.some(function(fp){ return casa(fp, it); }); });
+}
+function agrupa(achados, termos){
+  var fp = palavras(termos[0] || ''), gs = {};
+  achados.forEach(function(it){
+    var g = grupoDe(it, fp);
+    (gs[g.k] = gs[g.k] || {nome: g.nome, itens: []}).itens.push(it);
+  });
+  var arr = Object.keys(gs).map(function(k){ var g = gs[k]; g.itens.sort(function(a, b){ return a.preco - b.preco; }); return g; });
+  arr.sort(function(a, b){ return (b.itens.length > 1) - (a.itens.length > 1) || a.itens[0].preco - b.itens[0].preco; });
+  return arr;
+}
+function htmlItem(it, top){
+  var ex = [];
+  if (it.preco_app) ex.push('No app da loja: <b>' + reais(it.preco_app) + '</b>');
+  if (it.preco_cartao) ex.push('App + cartão da loja: <b>' + reais(it.preco_cartao) + '</b>');
+  if (it.atacado) ex.push('Atacado: ' + esc(it.atacado));
+  if (it.preco_de) ex.push('Antes: ' + reais(it.preco_de));
+  if (it.obs) ex.push(esc(it.obs));
+  var mt = [];
+  mt.push(it.validade ? 'Válido até ' + dataBR(it.validade) : (it.fonte.indexOf('site') >= 0 ? 'Preço do site' : 'Enquanto durar o estoque'));
+  mt.push('Coletado ' + horaBR(it.coletado_em));
+  return '<div class="it' + (top ? ' top' : '') + '">' +
+    '<div class="lj">' + esc(it.loja) + (top ? '<span class="tag">MAIS BARATO</span>' : '') + (it.promo ? '<span class="tag n">promoção</span>' : '') + (it._novo ? '<span class="tag nv">NOVO</span>' : '') + '</div>' +
+    '<div class="nm">' + esc(it.produto) + '</div>' +
+    '<div class="pr">' + reais(it.preco) + '</div>' +
+    (ex.length ? '<div class="ex">' + ex.join(' · ') + '</div>' : '') +
+    '<div class="vd">Vender por: ' + reais(venderPor(it.preco)) + '</div>' +
+    '<div class="mt">' + mt.join(' · ') + ' · ' + esc(it.encarte) + ' · <a href="' + esc(it.link) + '" target="_blank" rel="noopener">abrir ↗</a></div></div>';
+}
+function mostraBusca(titulo, termos){
+  $('inicio').style.display = 'none';
+  var achados = procura(termos), r = $('res');
+  if (!achados.length){
+    r.innerHTML = '<h2>🔎 ' + esc(titulo) + '</h2><div class="card vazio">Não achei "' + esc(titulo) + '" nos encartes de hoje.<br>Tente escrever de outro jeito (ex.: só a marca) ou veja na SEFAZ.<br><br><a class="bt" href="https://buscapreco.sefaz.am.gov.br/home" target="_blank" rel="noopener">🏛️ Ver em todas as lojas (SEFAZ)</a></div>' + voltar();
+    return;
+  }
+  var gs = agrupa(achados, termos), h = '<h2>🔎 ' + esc(titulo) + ' <span style="font-size:15px;color:#6b7280">(' + achados.length + ' preços)</span></h2>';
+  gs.slice(0, 40).forEach(function(g, gi){
+    h += '<div class="card grupo"><h3>' + esc(g.nome) + (g.itens.length > 1 ? ' · ' + g.itens.length + ' lojas/opções' : '') + '</h3>';
+    g.itens.forEach(function(it, i){ h += (i === 2 ? '<div id="m' + gi + '" style="display:none">' : '') + htmlItem(it, i === 0 && g.itens.length > 1); });
+    if (g.itens.length > 2) h += '</div><button class="mais" onclick="this.previousElementSibling.style.display=\'block\';this.remove()">Ver mais ' + (g.itens.length - 2) + ' ▾</button>';
+    h += '</div>';
+  });
+  if (gs.length > 40) h += '<div class="vazio">Mostrando 40 grupos. Escreva mais detalhes para achar mais rápido.</div>';
+  r.innerHTML = h + voltar();
+  window.scrollTo(0, $('res').offsetTop - 10);
+}
+function voltar(){ return '<button class="mais" onclick="limpaBusca()">⬅ Voltar para o início</button>'; }
+function limpaBusca(){ $('res').innerHTML = ''; $('q').value = ''; $('inicio').style.display = 'block'; marcaChip(''); history.replaceState(null, '', location.pathname); window.scrollTo(0, 0); }
+$('fBusca').onsubmit = function(e){ e.preventDefault(); var q = $('q').value.trim(); if (!q) return limpaBusca(); vaiTela('tInicio'); marcaChip(''); $('q').blur(); mostraBusca(q, [q]); };
+
+/* ---------- categorias ---------- */
+var CATS = [
+  ['🥤 Refrigerantes', ['refrigerante', 'coca cola', 'guarana', 'fanta', 'sprite', 'kuat', 'pepsi', 'sukita']],
+  ['🍺 Cervejas Ambev', ['cerveja skol', 'cerveja brahma', 'cerveja antarctica', 'cerveja budweiser', 'cerveja original', 'cerveja spaten', 'cerveja stella', 'cerveja bohemia', 'cerveja corona', 'cerveja michelob', 'cerveja becks', 'skol', 'brahma']],
+  ['🍚 Açúcar', ['acucar']], ['🍚 Arroz', ['arroz']], ['🫘 Feijão', ['feijao']], ['🫙 Óleo', ['oleo']],
+  ['☕ Café', ['cafe']], ['🥛 Leite', ['leite']],
+  ['🥩 Carnes', ['carne', 'bife', 'alcatra', 'picanha', 'costela', 'patinho', 'acem', 'musculo', 'frango', 'coxa', 'peito frango', 'linguica', 'file']],
+  ['🧽 Limpeza', ['detergente', 'sabao', 'agua sanitaria', 'desinfetante', 'amaciante', 'limpador', 'esponja', 'papel higienico']]
+];
+function marcaChip(n){ Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(c){ c.classList.toggle('on', c.dataset.n === n); }); }
+$('chips').innerHTML = CATS.map(function(c){ return '<button class="chip" data-n="' + esc(c[0]) + '">' + esc(c[0]) + '</button>'; }).join('');
+$('chips').onclick = function(e){
+  var b = e.target.closest('.chip'); if (!b) return;
+  var c = CATS.filter(function(x){ return x[0] === b.dataset.n; })[0];
+  $('q').value = ''; marcaChip(c[0]); mostraBusca(c[0].replace(/^\S+\s/, ''), c[1]);
+};
+
+/* ---------- favoritos e promoções ---------- */
+function favs(){ return LS.get('favs', []); }
+function chaveIt(it){ return norm(it.produto) + '|' + it.loja + '|' + it.preco; }
+function promosFavs(){
+  var res = [];
+  favs().forEach(function(f){
+    var fp = palavras(f); if (!fp.length) return;
+    var m = ITENS.filter(function(it){ return it.promo && vale(it) && casa(fp, it); }).sort(function(a, b){ return a.preco - b.preco; });
+    res.push({fav: f, itens: m});
+  });
+  return res;
+}
+function desenhaPromos(){
+  var fs = favs(), el = $('promos');
+  if (!DADOS){ el.innerHTML = '<div class="card vazio">Carregando…</div>'; return; }
+  if (!fs.length){ el.innerHTML = '<div class="card vazio">Você ainda não tem favoritos.<br><br><button class="bt g lg" onclick="vaiTela(\'tFav\')">⭐ Escolher meus favoritos</button></div>'; return; }
+  var vistos = LS.get('vistos', {}), novosVistos = {}, novos = [], h = '';
+  promosFavs().forEach(function(p){
+    if (!p.itens.length){ h += '<div class="card"><h3 style="margin:0;color:#6b7280;font-size:18px">⭐ ' + esc(p.fav) + '</h3><div class="mt">Sem promoção nos encartes de hoje.</div></div>'; return; }
+    p.itens.forEach(function(it){ var k = chaveIt(it); novosVistos[k] = 1; it._novo = !vistos[k] && Object.keys(vistos).length > 0; if (!vistos[k]) novos.push({fav: p.fav, it: it}); });
+    h += '<div class="card grupo"><h3>⭐ ' + esc(p.fav) + ' · ' + p.itens.length + ' promoç' + (p.itens.length > 1 ? 'ões' : 'ão') + '</h3>' + htmlItem(p.itens[0], p.itens.length > 1) +
+      (p.itens.length > 1 ? '<button class="mais" data-f="' + esc(p.fav) + '">Ver todas as ' + p.itens.length + ' ▸</button>' : '') + '</div>';
+  });
+  el.innerHTML = h;
+  LS.set('vistos', novosVistos);
+  avisoAoAbrir(novos, Object.keys(vistos).length === 0);
+}
+$('promos').onclick = function(e){ var b = e.target.closest('[data-f]'); if (b){ $('q').value = b.dataset.f; mostraBusca(b.dataset.f, [b.dataset.f]); } };
+function avisoAoAbrir(novos, primeiraVez){
+  if (!novos.length || primeiraVez || !('Notification' in window) || Notification.permission !== 'granted' || !navigator.serviceWorker) return;
+  var porFav = {};
+  novos.forEach(function(n){ if (!porFav[n.fav] || n.it.preco < porFav[n.fav].preco) porFav[n.fav] = n.it; });
+  navigator.serviceWorker.ready.then(function(reg){
+    Object.keys(porFav).slice(0, 3).forEach(function(f){
+      var it = porFav[f];
+      reg.showNotification('🛒 ' + f + ' em promoção', {body: it.produto + ' em promoção no ' + it.loja + ': ' + reais(it.preco), icon: 'icon-192.png', badge: 'icon-192.png', tag: 'cc-' + norm(f).replace(/ /g, '-'), data: {q: f}});
+    });
+  });
+}
+function desenhaFavs(){
+  var fs = favs();
+  $('lFav').innerHTML = fs.length ? fs.map(function(f, i){ return '<div class="fav"><span>⭐ ' + esc(f) + '</span><button data-i="' + i + '">Tirar</button></div>'; }).join('') : '<div class="vazio">Nenhum favorito ainda.</div>';
+  $('fFav').style.display = fs.length >= 10 ? 'none' : 'flex';
+}
+$('lFav').onclick = function(e){ var b = e.target.closest('button[data-i]'); if (!b) return; var fs = favs(); fs.splice(+b.dataset.i, 1); LS.set('favs', fs); mudouFavs(); };
+$('fFav').onsubmit = function(e){
+  e.preventDefault(); var v = $('novoFav').value.trim().replace(/\s+/g, ' '); if (!v) return;
+  var fs = favs(); if (fs.length >= 10) return toast('Máximo de 10 favoritos.');
+  if (fs.some(function(f){ return norm(f) === norm(v); })) return toast('Esse já está nos favoritos.');
+  fs.push(v); LS.set('favs', fs); $('novoFav').value = ''; mudouFavs();
+  var n = procura([v]).length; toast(n ? '⭐ Adicionado. Achei ' + n + ' preços hoje.' : '⭐ Adicionado. Hoje não achei nos encartes; vou ficar de olho.', 3200);
+};
+function mudouFavs(){ desenhaFavs(); desenhaPromos(); salvaInscricao(); }
+
+/* ---------- avisos (Web Push) ---------- */
+function idAparelho(){
+  var id = LS.get('id', '');
+  if (!id){ var a = new Uint8Array(18); crypto.getRandomValues(a); id = Array.prototype.map.call(a, function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); LS.set('id', id); }
+  return id;
+}
+function b64u(s){ var p = '='.repeat((4 - s.length % 4) % 4), b = atob((s + p).replace(/-/g, '+').replace(/_/g, '/')); var u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+function pushOk(){ return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window; }
+function stAvisos(){
+  var e = $('stAvisos'), b = $('bAvisos');
+  if (!pushOk()){ e.textContent = '⚠️ Este navegador não aceita avisos. Abra no Chrome do Android.'; b.disabled = true; return; }
+  if (Notification.permission === 'denied'){ e.textContent = '⚠️ Os avisos foram bloqueados. Para liberar: toque no cadeado ao lado do endereço (ou Configurações do app) > Notificações > Permitir.'; b.textContent = '🔔 Ativar avisos'; return; }
+  if (LS.get('push', false) && Notification.permission === 'granted'){ e.textContent = '✅ Avisos ligados neste celular.'; b.textContent = '🔕 Desligar avisos'; b.classList.remove('g'); }
+  else { e.textContent = 'Avisos desligados.'; b.textContent = '🔔 Ativar avisos'; b.classList.add('g'); }
+}
+function salvaInscricao(forcar){
+  if (!LS.get('push', false) || !pushOk()) return Promise.resolve();
+  return navigator.serviceWorker.ready.then(function(reg){ return reg.pushManager.getSubscription(); }).then(function(s){
+    if (!s) return;
+    var j = s.toJSON();
+    var doc = {fields: {
+      sub: {mapValue: {fields: {endpoint: {stringValue: j.endpoint}, keys: {mapValue: {fields: {p256dh: {stringValue: j.keys.p256dh}, auth: {stringValue: j.keys.auth}}}}}}},
+      favs: {arrayValue: {values: favs().slice(0, 10).map(function(f){ return {stringValue: f}; })}},
+      margem: {integerValue: String(Math.round(margem()))},
+      atualizadoEm: {timestampValue: new Date().toISOString()}
+    }};
+    return fetch(FS + '/cc_inscricoes/' + idAparelho() + '?key=' + FB.apiKey, {method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(doc)})
+      .then(function(r){ if (!r.ok) throw new Error('st ' + r.status); LS.set('pushSalvo', HOJE); });
+  }).catch(function(){ if (forcar) toast('Não consegui salvar os avisos agora. Vou tentar de novo quando abrir o app.', 3500); });
+}
+$('bAvisos').onclick = function(){
+  if (LS.get('push', false) && Notification.permission === 'granted'){
+    LS.set('push', false);
+    navigator.serviceWorker.ready.then(function(reg){ return reg.pushManager.getSubscription(); }).then(function(s){ if (s) s.unsubscribe(); });
+    fetch(FS + '/cc_inscricoes/' + idAparelho() + '?key=' + FB.apiKey, {method: 'PATCH', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({fields: {sub: {mapValue: {fields: {endpoint: {stringValue: 'https://desligado'}}}}, favs: {arrayValue: {values: []}}}})}).catch(function(){});
+    stAvisos(); return toast('Avisos desligados.');
+  }
+  Notification.requestPermission().then(function(p){
+    if (p !== 'granted'){ stAvisos(); return toast('Sem permissão, não dá pra mandar avisos.', 3000); }
+    carga('Ligando os avisos…');
+    return navigator.serviceWorker.ready.then(function(reg){
+      return reg.pushManager.getSubscription().then(function(s){ return s || reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: b64u(VAPID_PUB)}); });
+    }).then(function(){ LS.set('push', true); return salvaInscricao(true); }).then(function(){
+      carga(); stAvisos();
+      navigator.serviceWorker.ready.then(function(reg){ reg.showNotification('🛒 Compra Certa', {body: 'Pronto! Vou avisar quando seus favoritos entrarem em promoção.', icon: 'icon-192.png', badge: 'icon-192.png', tag: 'cc-ok'}); });
+      if (!favs().length) toast('Agora escolha seus favoritos ⭐', 3000);
+    });
+  }).catch(function(e){ carga(); stAvisos(); toast('Não deu pra ligar os avisos neste celular (' + (e && e.name || 'erro') + ').', 4000); });
+};
+
+/* ---------- foto do produto ---------- */
+$('bFoto').onclick = function(){ $('arqFoto').value = ''; $('arqFoto').click(); };
+$('arqFoto').onchange = function(){
+  var f = this.files && this.files[0]; if (!f) return;
+  carga('Procurando o código de barras…');
+  lerCodigo(f).then(function(ean){
+    if (!ean) return null;
+    var noSite = ITENS.filter(function(it){ return it.ean === ean; })[0];
+    if (noSite) return noSite.produto;
+    carga('Achei o código ' + ean + '. Buscando o nome…');
+    return fetch('https://world.openfoodfacts.org/api/v2/product/' + ean + '.json?fields=product_name,product_name_pt,brands,quantity')
+      .then(function(r){ return r.json(); }).then(function(j){
+        var p = j && j.product; if (!p) return null;
+        var nm = (p.product_name_pt || p.product_name || '').trim(); if (!nm) return null;
+        var br = (p.brands || '').split(',')[0].trim();
+        return (nm.toLowerCase().indexOf(br.toLowerCase()) >= 0 || !br ? nm : nm + ' ' + br) + (p.quantity ? ' ' + p.quantity : '');
+      }).catch(function(){ return null; });
+  }).then(function(nome){
+    if (nome) return nome;
+    carga('Pedindo para a IA ler o nome na foto…');
+    return lerComIA(f);
+  }).then(function(nome){
+    carga();
+    if (!nome) return;
+    var termo = termoDeBusca(nome);
+    $('q').value = termo; vaiTela('tInicio'); marcaChip('');
+    toast('📷 ' + nome, 3500);
+    mostraBusca(termo, [termo]);
+  }).catch(function(e){ carga(); toast(e && e.message ? e.message : 'Não consegui ler a foto. Digite o nome na busca.', 4500); });
+};
+function termoDeBusca(nome){
+  // fica com tipo + marca (2 ou 3 palavras), sem medidas, pra achar em todas as lojas
+  var p = norm(nome).split(' ').filter(function(w){ return w && !PARADAS[w] && !/^\d/.test(w) && ['ml','l','kg','g','gr','lata','garrafa','pet','pacote','un'].indexOf(w) < 0; });
+  return p.slice(0, 3).join(' ');
+}
+function lerCodigo(f){
+  if (!('BarcodeDetector' in window)) return Promise.resolve(null);
+  var bd; try { bd = new BarcodeDetector({formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e']}); } catch (e) { return Promise.resolve(null); }
+  return createImageBitmap(f).then(function(img){ return bd.detect(img); }).then(function(r){ return r && r.length ? r[0].rawValue : null; }).catch(function(){ return null; });
+}
+function fotoBase64(f){
+  return createImageBitmap(f).then(function(img){
+    var s = Math.min(1, 1280 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+    c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.85).split(',')[1];
+  });
+}
+/* login Google só para pegar a chave da IA (fica no Firestore, nunca no código) */
+var fbPronto = null;
+function carregaFirebase(){
+  if (fbPronto) return fbPronto;
+  function js(u){ return new Promise(function(ok, no){ var s = document.createElement('script'); s.src = u; s.onload = ok; s.onerror = no; document.head.appendChild(s); }); }
+  fbPronto = js('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js').then(function(){ return js('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js'); })
+    .then(function(){ if (!firebase.apps.length) firebase.initializeApp(FB); var au = firebase.auth();
+      return au.getRedirectResult().catch(function(){}).then(function(){ return new Promise(function(ok){ var u = au.onAuthStateChanged(function(){ u(); ok(au); }); }); }); });
+  return fbPronto;
+}
+function entrarGoogle(){
+  LS.set('querLogin', true);
+  return carregaFirebase().then(function(au){
+    var p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt: 'select_account'});
+    if (/Android|iPhone/i.test(navigator.userAgent)) return au.signInWithRedirect(p);
+    return au.signInWithPopup(p).catch(function(e){ if (/popup/.test(e.code || '')) return au.signInWithRedirect(p); throw e; });
+  }).then(stLogin);
+}
+function stLogin(){
+  if (!LS.get('querLogin', false)){ $('stLogin').textContent = 'Ainda não entrou.'; return; }
+  carregaFirebase().then(function(au){
+    var u = au.currentUser;
+    $('stLogin').textContent = u ? '✅ Entrou como ' + (u.email || 'usuário') + '.' : 'Ainda não entrou.';
+    $('bLogin').textContent = u ? 'Sair da conta' : 'Entrar com Google (para a IA)';
+  }).catch(function(){ $('stLogin').textContent = 'Sem internet para o login.'; });
+}
+$('bLogin').onclick = function(){
+  carregaFirebase().then(function(au){ if (au.currentUser) return au.signOut().then(function(){ LS.set('querLogin', false); stLogin(); }); return entrarGoogle(); })
+    .catch(function(e){ toast('Não entrou: ' + (e.code || e.message), 4000); });
+};
+function chaveIA(){
+  return carregaFirebase().then(function(au){
+    if (!au.currentUser) throw new Error('Não achei o código de barras. Para a IA ler o nome pela foto, entre uma vez em ⚙️ Ajustes > Entrar com Google (conta do administrador). Ou digite o nome na busca.');
+    return au.currentUser.getIdToken();
+  }).then(function(tk){
+    return fetch(FS + '/ml_config/geral', {headers: {Authorization: 'Bearer ' + tk}});
+  }).then(function(r){
+    if (r.status === 403) throw new Error('Esta conta não tem acesso à IA. Entre com a conta do administrador em ⚙️ Ajustes.');
+    return r.json();
+  }).then(function(j){
+    var f = j.fields || {};
+    var k = f.geminiKey && f.geminiKey.stringValue, m = f.geminiModelo && f.geminiModelo.stringValue;
+    if (!k) throw new Error('A chave da IA ainda não foi salva no painel do administrador.');
+    return {k: k, m: m};
+  });
+}
+function lerComIA(f){
+  if (!LS.get('querLogin', false)) return Promise.reject(new Error('Não achei o código de barras. Para a IA ler o nome pela foto, entre uma vez em ⚙️ Ajustes > Entrar com Google (conta do administrador). Ou digite o nome na busca.'));
+  return Promise.all([chaveIA(), fotoBase64(f)]).then(function(x){
+    var cfg = x[0], img = x[1], mods = [];
+    if (cfg.m && !/2\.5-flash$/.test(cfg.m)) mods.push(cfg.m);
+    ['gemini-3.1-flash-lite', 'gemini-3.1-flash-lite-preview', 'gemini-3-flash-preview', 'gemini-3.5-flash'].forEach(function(m){ if (mods.indexOf(m) < 0) mods.push(m); });
+    var corpo = JSON.stringify({contents: [{role: 'user', parts: [
+      {text: 'Foto de um produto de supermercado no Brasil. Leia a embalagem e responda só JSON: {"nome": nome completo do produto como na prateleira (tipo + marca + variação + medida), "busca": 2 ou 3 palavras para buscar o produto em encartes (tipo + marca, ex.: "cerveja skol", "arroz tio joao", "oleo soya")}. Se não for um produto, nome e busca vazios.'},
+      {inline_data: {mime_type: 'image/jpeg', data: img}}]}],
+      generationConfig: {responseMimeType: 'application/json', temperature: 0.1, maxOutputTokens: 400}});
+    var i = 0;
+    function tenta(){
+      if (i >= mods.length) throw new Error('A IA está ocupada agora. Tente de novo em 1 minuto ou digite o nome na busca.');
+      var m = mods[i++];
+      return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent', {method: 'POST', headers: {'Content-Type': 'application/json', 'x-goog-api-key': cfg.k}, body: corpo})
+        .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {st: r.status, j: j}; }); })
+        .then(function(x){
+          if (x.st !== 200) return tenta();
+          var t = ((((x.j.candidates || [])[0] || {}).content || {}).parts || []).map(function(p){ return p.thought ? '' : (p.text || ''); }).join('');
+          var o; try { o = JSON.parse(t.replace(/^```json|```$/g, '').trim()); } catch (e) { return tenta(); }
+          if (!o.nome && !o.busca) throw new Error('A IA não reconheceu um produto nesta foto. Tente mais perto do nome.');
+          return o.busca ? o.busca + '' : o.nome;
+        });
+    }
+    return tenta();
+  });
+}
+
+/* ---------- telas ---------- */
+function vaiTela(t){
+  Array.prototype.forEach.call(document.querySelectorAll('.tela'), function(s){ s.classList.toggle('on', s.id === t); });
+  Array.prototype.forEach.call(document.querySelectorAll('nav button'), function(b){ b.classList.toggle('on', b.dataset.t === t); });
+  if (t === 'tAjustes') stLogin();
+  window.scrollTo(0, 0);
+}
+document.querySelector('nav').onclick = function(e){ var b = e.target.closest('button'); if (b) vaiTela(b.dataset.t); };
+$('fMargem').onsubmit = function(e){ e.preventDefault(); var v = Number($('margem').value); if (!(v >= 0 && v <= 300)) return toast('Margem entre 0 e 300%.'); LS.set('margem', v); toast('Margem salva: ' + v + '%'); desenhaPromos(); salvaInscricao(); };
+$('margem').value = margem();
+
+/* ---------- dados ---------- */
+function carregaDados(){
+  return fetch('dados/precos.json?t=' + Date.now()).then(function(r){ if (!r.ok) throw 0; return r.json(); })
+    .catch(function(){ return caches.match('dados/precos.json', {ignoreSearch: true}).then(function(r){ if (!r) throw 0; toast('Sem internet: mostrando os últimos preços guardados.', 3500); return r.json(); }); })
+    .then(function(d){
+      DADOS = d;
+      ITENS = d.itens.map(function(it){ it._n = norm(it.produto); it._p = it._n.split(' '); return it; });
+      $('atu').textContent = 'Preços de ' + horaBR(d.atualizado_em) + ' · ' + d.lojas.length + ' lojas';
+      $('stDados').textContent = 'Última coleta: ' + horaBR(d.atualizado_em) + ' · ' + d.total + ' preços · Lojas: ' + d.lojas.join(', ') + '.';
+      desenhaPromos();
+      var q = new URLSearchParams(location.search).get('q');
+      if (q){ $('q').value = q; mostraBusca(q, [q]); }
+    }).catch(function(){ $('atu').textContent = 'Sem preços ainda. Conecte na internet.'; $('promos').innerHTML = '<div class="card vazio">Não consegui carregar os preços.</div>'; });
+}
+if ('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(function(){ stAvisos(); if (LS.get('push', false) && LS.get('pushSalvo', '') !== HOJE) salvaInscricao(); });
+  navigator.serviceWorker.addEventListener('message', function(e){ if (e.data && typeof e.data.busca === 'string'){ vaiTela('tInicio'); if (e.data.busca){ $('q').value = e.data.busca; mostraBusca(e.data.busca, [e.data.busca]); } } });
+}
+if (LS.get('querLogin', false)) carregaFirebase().catch(function(){});
+desenhaFavs(); stAvisos(); carregaDados();
+</script>
+</body>
+</html>

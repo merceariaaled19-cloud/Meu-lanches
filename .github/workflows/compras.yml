@@ -1,0 +1,36 @@
+name: Compra Certa - precos e avisos
+on:
+  schedule:
+    - cron: '0 1,4,7,10,13,16,19,22 * * *'   # a cada 3 horas (10:00 UTC = 6h em Manaus)
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: compras
+  cancel-in-progress: false
+jobs:
+  precos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Coletar precos
+        run: python3 compras/robo.py
+      - name: Mandar avisos (Web Push)
+        continue-on-error: true
+        env:
+          CC_ROBO_SENHA: ${{ secrets.CC_ROBO_SENHA }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+        run: |
+          pip install -q pywebpush
+          python3 compras/avisos.py
+      - name: Salvar
+        run: |
+          git config user.name "merceariaaled19-cloud"
+          git config user.email "merceariaaled19@gmail.com"
+          git add compras/dados/precos.json compras/dados/avisados.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Compra Certa: precos atualizados"
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
