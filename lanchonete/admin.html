@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Administrador — Meu Lanche</title>
+<meta name="theme-color" content="#ff6a00">
+<meta name="robots" content="noindex">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="estilo.css?v=1">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="topo"><div class="lin"><img class="logo" src="icon-192.png" alt=""><div style="flex:1"><h1>Administrador</h1><small>Meu Lanche — liberar lanchonetes</small></div><button class="mini bt3" id="sair" style="display:none">Sair</button></div></div>
+<div class="wrap">
+ <div class="card" id="login" style="display:none">
+  <h2>Entrar</h2>
+  <button class="full" id="bG" style="background:#fff;color:#222;border:2px solid #ddd">Entrar com Google</button>
+  <p class="sub" style="text-align:center">ou</p>
+  <label>E-mail</label><input id="em" type="email" autocomplete="username">
+  <label>Senha</label><input id="se" type="password" autocomplete="current-password">
+  <p id="msg" style="color:var(--erro);min-height:18px"></p>
+  <button class="full" id="bE">Entrar</button>
+ </div>
+ <div id="app" style="display:none">
+  <div class="card">
+   <h3>🤖 Leitura de cardápio por foto</h3>
+   <p class="sub">Chave da API Google Gemini (pegue grátis em aistudio.google.com → Get API key). Só as lanchonetes liberadas conseguem usar.</p>
+   <label>Chave</label><input id="geminiKey" name="geminiKey" type="text" placeholder="AIza..." autocomplete="off">
+   <label>Modelo (opcional — deixe vazio para escolher sozinho)</label><input id="gMod" placeholder="gemini-2.5-flash">
+   <div class="row" style="margin-top:10px"><button id="gSalva">Salvar</button><button class="bt3" id="gTesta">Testar chave</button></div>
+   <p id="gMsg" class="sub"></p>
+  </div>
+  <div class="card">
+   <div class="row" style="text-align:center"><div><b id="tP" style="font-size:22px">0</b><div class="sub">Esperando</div></div><div><b id="tL" style="font-size:22px">0</b><div class="sub">Liberadas</div></div><div><b id="tB" style="font-size:22px">0</b><div class="sub">Bloqueadas/vencidas</div></div></div>
+   <input id="bus" placeholder="Buscar lanchonete, dono, e-mail" style="margin-top:10px">
+   <div class="opc" id="filtros" style="margin-top:8px"></div>
+   <div id="lista"></div>
+  </div>
+ </div>
+</div>
+<div id="modal"></div>
+<script src="comum.js?v=1"></script>
+<script src="admin.js?v=1"></script>
+</body>
+</html>
