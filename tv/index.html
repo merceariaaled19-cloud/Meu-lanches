@@ -36,6 +36,33 @@ video{width:100%;aspect-ratio:16/9;background:#000;display:block}
 .can .fav{position:absolute;top:2px;right:4px;font-size:17px;background:none;border:0;color:#64748b;padding:2px}
 .can .fav.s{color:#facc15}
 .can:focus,.bt:focus,#cats button:focus,input:focus{outline:3px solid #facc15;outline-offset:2px}
+
+#abas{display:flex;gap:4px;padding:8px 12px 0;background:#020617;position:sticky;top:52px;z-index:5}
+#abas button{flex:1;background:#1e293b;color:#cbd5e1;border:0;border-radius:10px 10px 0 0;padding:10px 4px;font-size:14px;font-weight:600}
+#abas button.on{background:#e11d48;color:#fff}
+#tela{top:96px}
+.aba{display:none}.aba.on{display:block}
+#vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:4px 12px 20px}
+.fm{background:#1e293b;border-radius:10px;overflow:hidden;border:2px solid transparent}
+.fm img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#0f172a}
+.fm .ft{font-size:13px;padding:6px 7px 2px;line-height:1.25;height:38px;overflow:hidden}
+.fm .fg{font-size:11px;color:#94a3b8;padding:0 7px 7px}
+.fm:focus{outline:3px solid #facc15}
+#mais{display:block;margin:0 auto 90px}
+#det{position:fixed;inset:0;background:#000d;z-index:30;display:none;overflow:auto}
+#det.on{display:block}
+#det .box{max-width:720px;margin:0 auto;background:#0f172a;min-height:100%}
+#det img{width:100%;aspect-ratio:16/9;object-fit:cover}
+#det .in{padding:14px}
+#det h2{margin:0 0 6px;font-size:20px}
+#det .meta{color:#94a3b8;font-size:13px;margin-bottom:10px}
+#det p{font-size:15px;line-height:1.45;color:#e2e8f0}
+#yt{position:fixed;inset:0;background:#000;z-index:40;display:none}
+#yt.on{display:block}
+#yt iframe{width:100%;height:100%;border:0}
+#yt .x{position:absolute;top:10px;right:10px;z-index:2;opacity:.85}
+.jogo{background:#1e293b;border-radius:12px;padding:14px;margin:8px 12px;display:flex;align-items:center;gap:12px}
+.jogo b{flex:1;font-size:16px}
 .vazio{grid-column:1/-1;text-align:center;color:#94a3b8;padding:30px 10px}
 #modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;z-index:20}
 #modal.on{display:flex}
@@ -54,6 +81,7 @@ small.av{display:block;color:#94a3b8;font-size:12px;text-align:center;padding:0 
   <h1>📺 TV <b>Certa</b></h1>
   <button class="bt" id="btListas">➕ Minha lista</button>
 </header>
+<div id="abas"><button class="on" data-a="vivo">📺 Ao Vivo</button><button data-a="filmes">🎬 Filmes</button><button data-a="series">🎞️ Séries</button><button data-a="jogos">⚽ Jogos</button></div>
 <div id="tela">
   <video id="v" controls playsinline autoplay></video>
   <div id="barra">
@@ -66,9 +94,25 @@ small.av{display:block;color:#94a3b8;font-size:12px;text-align:center;padding:0 
   </div>
   <div id="msg"></div>
 </div>
+<div class="aba on" id="aba-vivo">
 <div class="busca"><input id="q" type="search" placeholder="🔎 Buscar canal"></div>
 <div id="cats"></div>
 <div id="lista"><div class="vazio">Carregando canais…</div></div>
+</div>
+<div class="aba" id="aba-vod">
+  <div class="busca"><input id="qv" type="search" placeholder="🔎 Buscar filme ou série"></div>
+  <div id="gens" style="display:flex;gap:6px;overflow-x:auto;padding:10px 12px"></div>
+  <div id="vgrid"><div class="vazio">Carregando…</div></div>
+  <button class="bt" id="mais">Carregar mais</button>
+</div>
+<div class="aba" id="aba-jogos">
+  <p style="padding:12px 14px 0;color:#cbd5e1;font-size:14px">Jogos e transmissões ao vivo dos canais oficiais e gratuitos no YouTube. Se não tiver jogo agora, aparece que está fora do ar.</p>
+  <div class="jogo"><b>💜 CazéTV ao vivo</b><button class="bt v" data-live="UCZiYbVptd3PVPf4f6eR6UaQ">▶ Assistir</button></div>
+</div>
+<div id="det"><div class="box"><img id="dImg" alt=""><div class="in"><h2 id="dT"></h2><div class="meta" id="dM"></div>
+  <div class="lin"><button class="bt v" id="dPlay">▶ Assistir</button><button class="bt" id="dFav">☆ Favoritar</button><button class="bt" id="dX">Voltar</button></div>
+  <p id="dS"></p></div></div></div>
+<div id="yt"><button class="bt x" id="ytX">✕ Fechar</button><div id="ytBox" style="width:100%;height:100%"></div></div>
 <small class="av">Só canais com transmissão gratuita e aberta na internet, testados todo dia. Se um canal não abrir, ele pode estar fora do ar agora.</small>
 
 <div id="modal"><div id="caixa">
@@ -195,20 +239,79 @@ fetch('canais.json?' + Date.now()).then(r => r.json()).then(d => { base = d.cana
   if (!todos.length) $('#lista').innerHTML = '<div class="vazio">Sem internet pra carregar os canais.</div>';
 });
 
+
+// ===== Filmes e Séries (canais oficiais e gratuitos no YouTube) =====
+let vod = [], aba = 'vivo', gen = 'Lançamentos', mostra = 60, vlist = [], dAtual = null;
+let vfav = JSON.parse(localStorage.tvVodFav || '[]');
+document.querySelectorAll('#abas button').forEach(b => b.onclick = () => abrirAba(b.dataset.a));
+function abrirAba(a) {
+  aba = a;
+  document.querySelectorAll('#abas button').forEach(b => b.classList.toggle('on', b.dataset.a === a));
+  $('#aba-vivo').classList.toggle('on', a === 'vivo');
+  $('#aba-vod').classList.toggle('on', a === 'filmes' || a === 'series');
+  $('#aba-jogos').classList.toggle('on', a === 'jogos');
+  if (a !== 'vivo' && atual >= 0) $('#fechar').click();
+  if (a === 'filmes' || a === 'series') { gen = 'Lançamentos'; mostra = 60; carregarVod(); }
+}
+function carregarVod() {
+  if (vod.length) return desenharVod();
+  fetch('filmes.json?' + Date.now()).then(r => r.json()).then(d => { vod = d.itens; desenharVod(); }).catch(() => $('#vgrid').innerHTML = '<div class="vazio">Sem internet pra carregar.</div>');
+}
+function desenharVod() {
+  const tipo = aba === 'series' ? 'Série' : 'Filme';
+  const base = vod.filter(x => x.tipo === tipo);
+  const ordem = ['Ação','Comédia','Terror','Suspense','Drama','Romance','Policial','Guerra','Faroeste','Ficção','Animação','Família','Natal','Documentário'];
+  const gs = ['Lançamentos', '⭐ Favoritos', ...ordem.filter(g => base.some(x => x.g === g)), 'Infantil'];
+  if (!gs.includes(gen)) gen = 'Lançamentos';
+  $('#gens').innerHTML = gs.map(g => `<button class="bt ${g === gen ? 'v' : ''}" style="white-space:nowrap">${g}</button>`).join('');
+  [...$('#gens').children].forEach(b => b.onclick = () => { gen = b.textContent; mostra = 60; desenharVod(); });
+  const q = $('#qv').value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  vlist = base.filter(x => q ? x.t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(q)
+    : gen === 'Lançamentos' ? x.novo : gen === '⭐ Favoritos' ? vfav.includes(x.id) : gen === 'Infantil' ? x.kids : x.g === gen);
+  if (!vlist.length) { $('#vgrid').innerHTML = `<div class="vazio">${gen === '⭐ Favoritos' ? 'Abra um título e toque em ☆ Favoritar.' : 'Nada encontrado.'}</div>`; $('#mais').style.display = 'none'; return; }
+  $('#vgrid').innerHTML = vlist.slice(0, mostra).map((x, i) => `<div class="fm" tabindex="0" data-v="${i}"><img loading="lazy" src="https://i.ytimg.com/vi/${x.id}/mqdefault.jpg" alt=""><div class="ft">${esc(x.t)}</div><div class="fg">${x.g} · ${x.min} min</div></div>`).join('');
+  $('#mais').style.display = vlist.length > mostra ? 'block' : 'none';
+}
+$('#qv').oninput = () => { mostra = 60; desenharVod(); };
+$('#mais').onclick = () => { mostra += 60; desenharVod(); };
+$('#vgrid').onclick = e => { const c = e.target.closest('.fm'); if (c) detalhe(vlist[c.dataset.v]); };
+function detalhe(x) {
+  dAtual = x;
+  $('#dImg').src = `https://i.ytimg.com/vi/${x.id}/hqdefault.jpg`;
+  $('#dT').textContent = x.t;
+  $('#dM').textContent = `${x.tipo} · ${x.g} · ${x.min} min · Dublado`;
+  $('#dS').textContent = x.s || 'Sinopse ainda não disponível. Toque em Assistir pra ver completo e dublado.';
+  $('#dFav').textContent = vfav.includes(x.id) ? '★ Favorito' : '☆ Favoritar';
+  $('#det').classList.add('on'); $('#dPlay').focus();
+}
+$('#dX').onclick = () => $('#det').classList.remove('on');
+$('#dFav').onclick = () => { const id = dAtual.id; vfav = vfav.includes(id) ? vfav.filter(v => v !== id) : [...vfav, id]; localStorage.tvVodFav = JSON.stringify(vfav); detalhe(dAtual); };
+function tocarYT(src) {
+  $('#ytBox').innerHTML = `<iframe src="${src}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+  $('#yt').classList.add('on');
+  try { if (screen.orientation && screen.orientation.lock) document.documentElement.requestFullscreen().then(() => screen.orientation.lock('landscape')).catch(() => {}); } catch (e) {}
+}
+$('#dPlay').onclick = () => tocarYT(`https://www.youtube.com/embed/${dAtual.id}?autoplay=1&cc_load_policy=1&cc_lang_pref=pt&hl=pt&rel=0&playsinline=1`);
+document.querySelectorAll('[data-live]').forEach(b => b.onclick = () => tocarYT(`https://www.youtube.com/embed/live_stream?channel=${b.dataset.live}&autoplay=1&hl=pt`));
+$('#ytX').onclick = () => { $('#ytBox').innerHTML = ''; $('#yt').classList.remove('on'); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); };
+
 // Controle remoto (TV Box): setas movem, OK abre
 document.addEventListener('keydown', e => {
   const k = {ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key];
   const a = document.activeElement;
-  if ((e.key === 'Enter' || e.key === ' ') && a && a.classList.contains('can')) { e.preventDefault(); a.click(); return; }
+  if ((e.key === 'Enter' || e.key === ' ') && a && (a.classList.contains('can') || a.classList.contains('fm'))) { e.preventDefault(); a.click(); return; }
   if (e.key === 'Backspace' || e.key === 'Escape' || e.key === 'GoBack') {
-    if ($('#modal').classList.contains('on')) { $('#modal').classList.remove('on'); e.preventDefault(); }
+    if ($('#yt').classList.contains('on')) { $('#ytX').click(); e.preventDefault(); }
+    else if ($('#det').classList.contains('on')) { $('#det').classList.remove('on'); e.preventDefault(); }
+    else if ($('#modal').classList.contains('on')) { $('#modal').classList.remove('on'); e.preventDefault(); }
     return;
   }
   if (e.key === 'MediaTrackNext' || e.key === 'ChannelUp') { pular(1); return; }
   if (e.key === 'MediaTrackPrevious' || e.key === 'ChannelDown') { pular(-1); return; }
   if (!k) return;
   if (a && a.tagName === 'INPUT' && a.type !== 'file' && k[1] === 0) return;
-  const els = [...document.querySelectorAll('.can,.bt,#cats button,#q,video')].filter(x => x.offsetParent && (!$('#modal').classList.contains('on') || x.closest('#modal')));
+  const cama = ['#yt','#det','#modal'].map(s => $(s)).find(m => m.classList.contains('on'));
+  const els = [...document.querySelectorAll('.can,.fm,.bt,#cats button,#abas button,#q,#qv,video')].filter(x => x.offsetParent && (!cama || cama.contains(x)));
   if (!a || !els.includes(a)) { e.preventDefault(); (document.querySelector('.can') || els[0]).focus(); return; }
   const r = a.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
   let melhor = null, md = 1e9;

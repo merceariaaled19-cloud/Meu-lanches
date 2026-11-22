@@ -1,7 +1,7 @@
 name: TV Certa - testar canais
 on:
   schedule:
-    - cron: '30 9 * * *'   # todo dia 5h30 em Manaus
+    - cron: '30 3,9,15,21 * * *'   # 4x por dia (5h30 Manaus e a cada 6 h)
   workflow_dispatch:
 permissions:
   contents: write
@@ -18,11 +18,18 @@ jobs:
           python-version: '3.12'
       - name: Testar canais
         run: python3 tv/robo.py
+      - name: Filmes e series (YouTube oficial)
+        continue-on-error: true
+        env:
+          SINOPSES: '1'
+        run: |
+          pip install -q -U yt-dlp
+          python3 tv/filmes.py
       - name: Salvar
         run: |
           git config user.name "merceariaaled19-cloud"
           git config user.email "merceariaaled19@gmail.com"
-          git add tv/canais.json
+          git add tv/canais.json tv/filmes.json
           git diff --cached --quiet && exit 0
-          git commit -m "TV Certa: canais testados"
+          git commit -m "TV Certa: canais e filmes atualizados"
           for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
