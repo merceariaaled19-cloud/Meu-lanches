@@ -1,4 +1,4 @@
-# TV Certa - robo de filmes e series gratis (canais oficiais NetMovies no YouTube)
+# TV Certa - robo de filmes e series gratis (canais oficiais gratuitos no YouTube)
 import subprocess, json, re, os, urllib.request, concurrent.futures as cf, xml.etree.ElementTree as ET
 YTD = os.environ.get('YTD', 'yt-dlp')
 ARQ = 'tv/filmes.json'
