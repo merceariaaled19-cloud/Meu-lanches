@@ -68,6 +68,7 @@ label.big{font-size:19px;font-weight:700;display:block}
 #carga div{background:#fff;border-radius:18px;padding:22px;font-size:19px;font-weight:700;max-width:86%;text-align:center}
 .rob{font-size:44px;display:block;animation:pula .8s infinite alternate}
 @keyframes pula{to{transform:translateY(-8px)}}
+.mapa{display:inline-block;margin:8px 0 4px;padding:10px 14px;border-radius:12px;background:#e8f0fe;color:#1a56db;font-weight:700;font-size:17px;text-decoration:none}
 </style>
 </head>
 <body>
@@ -230,6 +231,7 @@ function htmlItem(it, top){
     '<div class="pr">' + reais(it.preco) + '</div>' +
     (ex.length ? '<div class="ex">' + ex.join(' · ') + '</div>' : '') +
     
+    '<a class="mapa" href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(it.loja + ' Manaus AM') + '" target="_blank" rel="noopener">📍 Ver lojas no mapa / como chegar</a>' +
     '<div class="mt">' + mt.join(' · ') + ' · ' + esc(it.encarte) + ' · <a href="' + esc(it.link) + '" target="_blank" rel="noopener">abrir ↗</a></div></div>';
 }
 function mostraBusca(titulo, termos){
