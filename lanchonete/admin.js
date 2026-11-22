@@ -56,13 +56,14 @@ function desenha(){
   l.forEach(function(x){
     var s = situacao(x), val = x.validade && x.validade.toDate ? x.validade.toDate() : null;
     h += '<div class="itemadm" style="flex-wrap:wrap">' + (x.logo ? '<img src="' + x.logo + '">' : '<div class="semft">🍔</div>') +
-      '<div class="tx"><b>' + esc(x.nome) + ' <span class="tag ' + s[2] + '">' + s[1] + '</span></b><div class="sub">' + esc(x.dono || '') + ' • ' + esc(x.email || '') + '<br>📱 ' + esc(x.zap || '') + (x.t ? ' • cadastro ' + new Date(x.t).toLocaleDateString('pt-BR') : '') +
+      '<div class="tx"><b>' + esc(x.nome) + ' <span class="tag ' + s[2] + '">' + s[1] + '</span></b><div class="sub">' + esc(x.dono || '') + ' • ' + esc(x.email || '') + '<br>📱 ' + esc(x.zap || '') + (x.t ? '<br>🕒 Cadastro: ' + new Date(x.t).toLocaleDateString('pt-BR') + ' às ' + new Date(x.t).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) : '') +
       (s[0] === 'liberado' || s[0] === 'vencido' ? '<br>Validade: ' + (val ? val.toLocaleDateString('pt-BR') : 'sem prazo') : '') + '</div></div>' +
       '<div class="row" style="flex-basis:100%;margin-top:6px">' +
       '<button class="mini" onclick="libera(\'' + x.id + '\')">✅ ' + (s[0] === 'liberado' ? 'Renovar' : 'Liberar') + '</button>' +
       (s[0] !== 'bloqueado' ? '<button class="mini btr" onclick="bloqueia(\'' + x.id + '\')">🔒 Bloquear</button>' : '') +
       '<button class="mini btz" onclick="avisa(\'' + x.id + '\')">💬 WhatsApp</button>' +
-      '<a class="bt mini bt3" target="_blank" href="' + esc(linkLoja(x.slug)) + '">👀 Loja</a></div></div>';
+      '<a class="bt mini bt3" target="_blank" href="' + esc(linkLoja(x.slug)) + '">👀 Loja</a>' +
+      '<button class="mini btr" style="flex-basis:100%;background:#7f1d1d" onclick="exclui(\'' + x.id + '\')">🗑️ Excluir conta</button></div></div>';
   });
   $('lista').innerHTML = h;
 }
@@ -91,3 +92,17 @@ function avisa(id, lib, val){
   abreZap(x.zap, t);
 }
 $('bR').onclick = function(){ var e = $('em').value.trim().toLowerCase(); if (ADMINS.indexOf(e) < 0) return msg('Digite seu e-mail de administrador no campo acima.'); au.sendPasswordResetEmail(e).then(function(){ msg('Pronto! Abra o e-mail que chegou em ' + e + ', crie a senha e volte aqui para entrar com e-mail e senha.'); }, function(x){ msg('Não enviou: ' + x.code); }); };
+
+/* apaga a lanchonete inteira: cadastro, cardápio e pedidos */
+function exclui(id){
+  var x = acha(id); if (!x) return;
+  if (!confirm('Excluir a conta "' + x.nome + '" (' + (x.email || '') + ')?\n\nApaga a loja, o cardápio e os pedidos. Não dá para desfazer.')) return;
+  if (prompt('Para confirmar, digite EXCLUIR') !== 'EXCLUIR') return toast('Cancelado.');
+  toast('Excluindo…', 8000);
+  var ref = db.collection('ml_lojas').doc(id);
+  function apagaTudo(q){ return q.get().then(function(s){ var b = db.batch(), n = 0; s.docs.forEach(function(d){ b.delete(d.ref); n++; }); return n ? b.commit() : null; }); }
+  apagaTudo(ref.collection('itens').limit(450)).then(function(){ return apagaTudo(ref.collection('itens').limit(450)); })
+    .then(function(){ return apagaTudo(db.collection('ml_pedidos').where('lojaId', '==', id).limit(450)); })
+    .then(function(){ return ref.delete(); })
+    .then(function(){ toast('Conta excluída 🗑️'); }, function(e){ toast('Erro ao excluir: ' + (e.code || e.message), 5000); });
+}
