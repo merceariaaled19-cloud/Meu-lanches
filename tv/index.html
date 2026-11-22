@@ -63,6 +63,37 @@ video{width:100%;aspect-ratio:16/9;background:#000;display:block}
 #yt .x{position:absolute;top:10px;right:10px;z-index:2;opacity:.85}
 .jogo{background:#1e293b;border-radius:12px;padding:14px;margin:8px 12px;display:flex;align-items:center;gap:12px}
 .jogo b{flex:1;font-size:16px}
+
+body{background:#0a0a0c}
+#intro{position:fixed;inset:0;background:#000;z-index:100;display:flex;align-items:center;justify-content:center;transition:opacity .6s}
+#intro canvas{position:absolute;inset:0;width:100%;height:100%}
+#intro .logo{position:relative;font-size:min(16vw,110px);font-weight:900;letter-spacing:2px;color:#fff;opacity:0;transform:scale(.6);animation:lg 1.4s .5s forwards;text-shadow:0 0 30px #e11d48aa}
+#intro .logo b{color:#e11d48}
+#intro small{position:absolute;bottom:8%;color:#94a3b8;font-size:13px}
+@keyframes lg{60%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+#home{padding:14px 18px 30px;display:none}
+#home.on{display:block}
+.hTop{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.hTop .mk{font-size:26px;font-weight:900;letter-spacing:1px}.hTop .mk b{color:#e11d48}
+.hTop .rel{flex:1;color:#a1a1aa;font-size:15px}
+.ic{width:46px;height:46px;border-radius:50%;background:#1c1c22;border:0;color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center}
+.ic:focus{outline:3px solid #fff}
+.hGrid{display:grid;grid-template-columns:1.05fr 1fr 1fr;grid-template-rows:1fr .7fr;gap:14px;height:min(56vw,460px)}
+.tl{border-radius:22px;border:1px solid #2a1416;background:linear-gradient(135deg,#2a1215,#151012);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:22px;font-weight:600;transition:transform .15s}
+.tl svg{width:56px;height:56px;stroke:#f05f6a;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tl.big{grid-row:1/3;background:linear-gradient(135deg,#7f1d24,#3b1013);font-size:30px}
+.tl.big svg{width:90px;height:90px}
+.tl.sm{flex-direction:row;justify-content:flex-start;padding:0 18px;gap:14px;font-size:19px;text-align:left}
+.tl.sm svg{width:34px;height:34px}
+.tl.sm span small{display:block;font-size:13px;color:#a1a1aa;font-weight:400;margin-top:3px}
+.tl:focus,.tl:hover{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 28px #e11d4888;transform:scale(1.02)}
+.sub3{grid-column:2/4;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.hCont{margin-top:22px}.hCont h3{font-size:20px;font-weight:600;margin:0 0 10px}
+#cont{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}
+#cont .fm{min-width:170px;max-width:170px}
+@media (max-width:700px){.hGrid{grid-template-columns:1fr 1fr;grid-template-rows:auto;height:auto}.tl{min-height:120px}.tl.big{grid-column:1/3;grid-row:auto;min-height:170px}.sub3{grid-column:1/3;grid-template-columns:1fr}.tl.sm{min-height:76px}.hTop .rel{font-size:12px}}
+#voltar{display:none}
+body.inicio header,body.inicio #abas{display:none}
 .vazio{grid-column:1/-1;text-align:center;color:#94a3b8;padding:30px 10px}
 #modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;z-index:20}
 #modal.on{display:flex}
@@ -76,9 +107,26 @@ video{width:100%;aspect-ratio:16/9;background:#000;display:block}
 small.av{display:block;color:#94a3b8;font-size:12px;text-align:center;padding:0 16px 20px}
 </style>
 </head>
-<body>
+<body class="inicio">
+<div id="intro"><canvas id="fw"></canvas><div class="logo">📺 TV <b>Certa</b></div><small>Toque pra pular</small></div>
+<div id="home">
+  <div class="hTop"><div class="mk">TV <b>Certa</b></div><div class="rel" id="rel"></div>
+    <button class="ic" id="hBusca" title="Buscar">🔍</button><button class="ic" id="hLista" title="Minha lista">👤</button></div>
+  <div class="hGrid">
+    <button class="tl big" data-ir="vivo"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 2l4 5 4-5"/></svg>TV ao Vivo</button>
+    <button class="tl" data-ir="filmes"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4"/></svg>Filmes</button>
+    <button class="tl" data-ir="series"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 3h8M10 11v6l5-3z"/></svg>Séries</button>
+    <div class="sub3">
+      <button class="tl sm" data-ir="fav"><svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 .6-5.3 4.7 1.6 7.2L12 17.8 5.7 21.5l1.6-7.2L2 9.6 9 9z"/></svg><span>Favoritos<small id="nFav">0 itens</small></span></button>
+      <button class="tl sm" data-ir="jogos"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 5h-5L8 10z"/></svg><span>Jogos<small>Ao vivo grátis</small></span></button>
+      <button class="tl sm" data-ir="busca"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg><span>Buscar<small>Filmes, séries e canais</small></span></button>
+    </div>
+  </div>
+  <div class="hCont" id="hCont"><h3>Continuar assistindo</h3><div id="cont"></div></div>
+</div>
+
 <header>
-  <h1>📺 TV <b>Certa</b></h1>
+  <button class="bt" id="voltar" style="display:block">‹ Início</button><h1>📺 TV <b>Certa</b></h1>
   <button class="bt" id="btListas">➕ Minha lista</button>
 </header>
 <div id="abas"><button class="on" data-a="vivo">📺 Ao Vivo</button><button data-a="filmes">🎬 Filmes</button><button data-a="series">🎞️ Séries</button><button data-a="jogos">⚽ Jogos</button></div>
@@ -183,7 +231,7 @@ function tocar(i) {
   if (i < 0 || i >= todos.length) return;
   atual = i; const c = todos[i];
   $('#tela').classList.add('on'); $('#nomeAtual').textContent = c.num + ' · ' + c.nome; aviso('Abrindo…');
-  localStorage.tvUltimo = c.id;
+  localStorage.tvUltimo = c.id; lembrar({tipo: 'canal', id: c.id, t: c.nome, img: c.logo});
   if (hls) { hls.destroy(); hls = null; }
   V.removeAttribute('src');
   if (c.url.startsWith('http:')) { aviso('Esse canal usa link sem segurança (http) e o celular bloqueia aqui dentro. Tente outro.'); desenhar(); return; }
@@ -291,19 +339,76 @@ function tocarYT(src) {
   $('#yt').classList.add('on');
   try { if (screen.orientation && screen.orientation.lock) document.documentElement.requestFullscreen().then(() => screen.orientation.lock('landscape')).catch(() => {}); } catch (e) {}
 }
-$('#dPlay').onclick = () => tocarYT(`https://www.youtube.com/embed/${dAtual.id}?autoplay=1&cc_load_policy=1&cc_lang_pref=pt&hl=pt&rel=0&playsinline=1`);
+$('#dPlay').onclick = () => { lembrar({tipo: 'vod', id: dAtual.id, t: dAtual.t, tipoV: dAtual.tipo, img: `https://i.ytimg.com/vi/${dAtual.id}/mqdefault.jpg`}); tocarYT(`https://www.youtube.com/embed/${dAtual.id}?autoplay=1&cc_load_policy=1&cc_lang_pref=pt&hl=pt&rel=0&playsinline=1`); };
 document.querySelectorAll('[data-live]').forEach(b => b.onclick = () => tocarYT(`https://www.youtube.com/embed/live_stream?channel=${b.dataset.live}&autoplay=1&hl=pt`));
 $('#ytX').onclick = () => { $('#ytBox').innerHTML = ''; $('#yt').classList.remove('on'); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); };
+
+
+// ===== Abertura com fogos =====
+(function () {
+  const cv = $('#fw'), ctx = cv.getContext('2d'); let W, H, ps = [], fim = false;
+  function rs() { W = cv.width = innerWidth; H = cv.height = innerHeight; } rs(); addEventListener('resize', rs);
+  const cores = ['#e11d48', '#facc15', '#ffffff', '#f97316', '#38bdf8'];
+  function boom(x, y) { const c = cores[Math.random() * cores.length | 0]; for (let i = 0; i < 70; i++) { const a = Math.random() * 6.283, v = Math.random() * 5 + 1.5; ps.push({x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, l: 1, c}); } }
+  let t = 0;
+  function loop() {
+    if (fim) return; t++;
+    ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(0, 0, W, H);
+    if (t % 18 === 1) boom(W * (.15 + Math.random() * .7), H * (.2 + Math.random() * .45));
+    ps = ps.filter(p => p.l > 0);
+    ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += .06; p.vx *= .985; p.l -= .016; ctx.globalAlpha = Math.max(p.l, 0); ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, 3, 3); });
+    ctx.globalAlpha = 1; requestAnimationFrame(loop);
+  }
+  loop();
+  function sair() { if (fim) return; fim = true; $('#intro').style.opacity = 0; setTimeout(() => $('#intro').remove(), 600); const b = document.querySelector('.tl.big'); if (b) b.focus(); }
+  $('#intro').onclick = sair; addEventListener('keydown', sair, {once: true});
+  setTimeout(sair, 3800);
+})();
+
+// ===== Tela inicial =====
+let hist = JSON.parse(localStorage.tvHist || '[]');
+function lembrar(item) { hist = [item, ...hist.filter(h => h.id !== item.id)].slice(0, 12); localStorage.tvHist = JSON.stringify(hist); }
+function relogio() {
+  const d = new Date(), s = d.toLocaleDateString('pt-BR', {weekday: 'long', day: 'numeric', month: 'long'});
+  $('#rel').textContent = d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}) + ' · ' + s.charAt(0).toUpperCase() + s.slice(1);
+}
+relogio(); setInterval(relogio, 20000);
+function irInicio() {
+  if (atual >= 0) $('#fechar').click();
+  document.body.classList.add('inicio'); $('#home').classList.add('on');
+  document.querySelectorAll('.aba').forEach(a => a.classList.remove('on'));
+  $('#nFav').textContent = (favs.length + vfav.length) + ' itens';
+  $('#hCont').style.display = hist.length ? '' : 'none';
+  $('#cont').innerHTML = hist.map((x, i) => `<div class="fm" tabindex="0" data-h="${i}"><img src="${x.img || 'icon-192.png'}" alt="" style="${x.img ? '' : 'object-fit:contain;padding:14px'}"><div class="ft">${esc(x.t)}</div><div class="fg">${x.tipo === 'canal' ? 'Ao vivo' : 'Filme/Série'}</div></div>`).join('');
+  setTimeout(() => { const b = document.querySelector('.tl.big'); if (b && !document.getElementById('intro')) b.focus(); }, 50);
+}
+function sairInicio() { document.body.classList.remove('inicio'); $('#home').classList.remove('on'); }
+$('#cont').onclick = e => {
+  const c = e.target.closest('[data-h]'); if (!c) return; const x = hist[c.dataset.h];
+  if (x.tipo === 'canal') { sairInicio(); abrirAba('vivo'); const i = todos.findIndex(t => t.id === x.id); if (i >= 0) tocar(i); }
+  else { sairInicio(); abrirAba(x.tipoV === 'Série' ? 'series' : 'filmes'); const go = () => { const v = vod.find(z => z.id === x.id); if (v) detalhe(v); else setTimeout(go, 300); }; go(); }
+};
+document.querySelectorAll('[data-ir]').forEach(b => b.onclick = () => {
+  const d = b.dataset.ir; sairInicio();
+  if (d === 'fav') { abrirAba('vivo'); cat = '⭐ Favoritos'; montar(); }
+  else if (d === 'busca') { abrirAba('filmes'); setTimeout(() => $('#qv').focus(), 100); }
+  else abrirAba(d);
+});
+$('#hBusca').onclick = () => document.querySelector('[data-ir=busca]').click();
+$('#hLista').onclick = () => $('#btListas').click();
+$('#voltar').onclick = irInicio;
+irInicio();
 
 // Controle remoto (TV Box): setas movem, OK abre
 document.addEventListener('keydown', e => {
   const k = {ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key];
   const a = document.activeElement;
-  if ((e.key === 'Enter' || e.key === ' ') && a && (a.classList.contains('can') || a.classList.contains('fm'))) { e.preventDefault(); a.click(); return; }
+  if ((e.key === 'Enter' || e.key === ' ') && a && (a.classList.contains('can') || a.classList.contains('fm')) && !a.closest('button')) { e.preventDefault(); a.click(); return; }
   if (e.key === 'Backspace' || e.key === 'Escape' || e.key === 'GoBack') {
     if ($('#yt').classList.contains('on')) { $('#ytX').click(); e.preventDefault(); }
     else if ($('#det').classList.contains('on')) { $('#det').classList.remove('on'); e.preventDefault(); }
     else if ($('#modal').classList.contains('on')) { $('#modal').classList.remove('on'); e.preventDefault(); }
+    else if (!document.body.classList.contains('inicio') && (!a || a.tagName !== 'INPUT')) { irInicio(); e.preventDefault(); }
     return;
   }
   if (e.key === 'MediaTrackNext' || e.key === 'ChannelUp') { pular(1); return; }
@@ -311,7 +416,7 @@ document.addEventListener('keydown', e => {
   if (!k) return;
   if (a && a.tagName === 'INPUT' && a.type !== 'file' && k[1] === 0) return;
   const cama = ['#yt','#det','#modal'].map(s => $(s)).find(m => m.classList.contains('on'));
-  const els = [...document.querySelectorAll('.can,.fm,.bt,#cats button,#abas button,#q,#qv,video')].filter(x => x.offsetParent && (!cama || cama.contains(x)));
+  const els = [...document.querySelectorAll('.tl,.ic,.can,.fm,.bt,#cats button,#abas button,#q,#qv,video')].filter(x => x.offsetParent && (!cama || cama.contains(x)));
   if (!a || !els.includes(a)) { e.preventDefault(); (document.querySelector('.can') || els[0]).focus(); return; }
   const r = a.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
   let melhor = null, md = 1e9;
