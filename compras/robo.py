@@ -13,7 +13,7 @@ SAIDA = os.path.join(AQUI, 'dados', 'precos.json')
 UA = {'User-Agent': 'Mozilla/5.0 (CompraCerta robo; +https://merceariaaled19-cloud.github.io/Meu-lanches/compras/)'}
 
 TERMOS_NE = ['coca-cola', 'guaraná antarctica', 'fanta', 'sprite', 'kuat', 'pepsi', 'cerveja skol', 'brahma',
-             'cerveja antarctica', 'budweiser', 'cerveja original', 'spaten', 'stella artois', 'bohemia', 'heineken',
+             'cerveja antarctica', 'budweiser', 'cerveja original', 'spaten', 'stella artois', 'bohemia', 'heineken', 'michelob', 'corona', 'amstel', 'eisenbahn', 'devassa', 'petra', 'colorado', 'beck', 'patagonia', 'itaipava', 'crystal', 'kaiser', 'tiger',
              'itaipava', 'amstel', 'água mineral', 'açúcar', 'arroz', 'feijão', 'óleo de soja', 'café', 'leite',
              'leite em pó', 'farinha', 'macarrão', 'sal', 'margarina', 'frango', 'carne', 'linguiça', 'sabão',
              'detergente', 'papel higiênico', 'água sanitária', 'biscoito', 'ovos']

@@ -171,13 +171,41 @@ function venderPor(custo){
 /* ---------- busca ---------- */
 var PARADAS = {de:1,da:1,do:1,das:1,dos:1,e:1,com:1,em:1,a:1,o:1};
 function palavras(q){ return norm(q).split(' ').filter(function(w){ return w && !PARADAS[w]; }); }
-function casa(fp, it){
-  var pal = it._p;
-  if (!fp.length) return false;
-  if (!pal.slice(0, 3).some(function(p){ return p.indexOf(fp[0]) === 0; })) return false;  // 1ª palavra no começo do nome
-  return fp.every(function(f){ return pal.some(function(p){ return p.indexOf(f) === 0; }); });
+function fon(w){ return w.replace(/ph/g,'f').replace(/y/g,'i').replace(/w/g,'v').replace(/k/g,'c').replace(/(ch|sh)/g,'x').replace(/qu/g,'c').replace(/ss|ç/g,'s').replace(/h/g,'').replace(/(.)\1+/g,'$1'); }
+function lev(a, b){
+  if (Math.abs(a.length - b.length) > 2) return 9;
+  var d = [], i, j; for (i = 0; i <= b.length; i++) d[i] = [i];
+  for (j = 0; j <= a.length; j++) d[0][j] = j;
+  for (i = 1; i <= b.length; i++) for (j = 1; j <= a.length; j++)
+    d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (b[i-1] === a[j-1] ? 0 : 1));
+  return d[b.length][a.length];
 }
+var FUZZY = false;
+function pareceP(f, p){
+  if (p.indexOf(f) === 0) return true;
+  if (!FUZZY) return false;
+  if (f.length >= 4 && p.length >= 4 && f.indexOf(p) === 0) return true;
+  if (f.length < 4 || /^\d/.test(f)) return false;
+  var ff = fon(f), pp = fon(p);
+  if (pp.indexOf(ff) === 0 || (pp.length >= 4 && ff.indexOf(pp) === 0)) return true;
+  if (ff.length < 5 || ff[0] !== pp[0]) return false;
+  var lim = ff.length >= 8 ? 2 : 1;
+  return lev(ff, pp) <= lim || (pp.length > ff.length && lev(ff, pp.slice(0, ff.length)) <= lim);
+}
+function pesoW(f){ return GEN_SET[f] ? 0 : 1; }
+function nota(fp, it){
+  var pal = it._p, imp = 0, ok = 0, extra = 0;
+  fp.forEach(function(f){
+    var bate = pal.some(function(p){ return pareceP(f, p); });
+    if (pesoW(f)){ imp++; if (bate) ok++; } else if (bate) extra++;
+  });
+  if (!imp) return 0;
+  return ok === imp ? 10 + extra : (ok ? ok / imp : 0);
+}
+function casa(fp, it){ return nota(fp, it) >= 10; }
+var GEN_SET = {};
 var GENERICAS = 'refrigerante refri cerveja bebida lata latao garrafa pet pacote pct pacotes caixa cx fardo tipo com sem de da do o a e para kg g gr ml l lt litro litros un und unid unidade unidades pack c s'.split(' ');
+GENERICAS.forEach(function(w){ GEN_SET[w] = 1; });
 function medida(n){
   var m = n.match(/(\d+(?:[ ,.]\d+)?)\s?(ml|l|lt|litro|litros|kg|g|gr)\b/);
   if (!m) return '';
@@ -203,7 +231,18 @@ function grupoDe(it, fp){
 function vale(it){ return !it.validade || it.validade >= HOJE; }
 function procura(termos){
   var lista = termos.map(palavras).filter(function(x){ return x.length; });
-  return ITENS.filter(function(it){ return vale(it) && lista.some(function(fp){ return casa(fp, it); }); });
+  FUZZY = false;
+  var r = ITENS.filter(function(it){ return vale(it) && lista.some(function(fp){ return casa(fp, it); }); });
+  if (r.length) return r;
+  FUZZY = true;
+  r = ITENS.filter(function(it){ return vale(it) && lista.some(function(fp){ return casa(fp, it); }); });
+  if (r.length){ FUZZY = false; return r; }
+  // nada exato: mostra os mais parecidos (metade ou mais das palavras importantes)
+  var notas = ITENS.filter(vale).map(function(it){ return [it, Math.max.apply(null, lista.map(function(fp){ return nota(fp, it); }).concat(0))]; });
+  var mx = Math.max.apply(null, notas.map(function(x){ return x[1]; }).concat(0));
+  if (mx < 0.5){ FUZZY = false; return []; }
+  FUZZY = false;
+  return notas.filter(function(x){ return x[1] >= mx; }).map(function(x){ return x[0]; });
 }
 function agrupa(achados, termos){
   var fp = palavras(termos[0] || ''), gs = {};
