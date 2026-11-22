@@ -93,7 +93,7 @@ body{background:#0a0a0c}
 #cont .fm{min-width:170px;max-width:170px}
 @media (max-width:700px){.hGrid{grid-template-columns:1fr 1fr;grid-template-rows:auto;height:auto}.tl{min-height:120px}.tl.big{grid-column:1/3;grid-row:auto;min-height:170px}.sub3{grid-column:1/3;grid-template-columns:1fr}.tl.sm{min-height:76px}.hTop .rel{font-size:12px}}
 #voltar{display:none}
-body.inicio header,body.inicio #abas{display:none}
+body.inicio header{display:none}#abas{display:none!important}
 .vazio{grid-column:1/-1;text-align:center;color:#94a3b8;padding:30px 10px}
 #modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;z-index:20}
 #modal.on{display:flex}
@@ -126,7 +126,7 @@ small.av{display:block;color:#94a3b8;font-size:12px;text-align:center;padding:0 
 </div>
 
 <header>
-  <button class="bt" id="voltar" style="display:block">‹ Início</button><h1>📺 TV <b>Certa</b></h1>
+  <button class="bt" id="voltar" style="display:block">‹ Início</button><h1 id="titSec">📺 TV <b>Certa</b></h1>
   <button class="bt" id="btListas">➕ Minha lista</button>
 </header>
 <div id="abas"><button class="on" data-a="vivo">📺 Ao Vivo</button><button data-a="filmes">🎬 Filmes</button><button data-a="series">🎞️ Séries</button><button data-a="jogos">⚽ Jogos</button></div>
@@ -299,7 +299,10 @@ function abrirAba(a) {
   $('#aba-vod').classList.toggle('on', a === 'filmes' || a === 'series');
   $('#aba-jogos').classList.toggle('on', a === 'jogos');
   if (a !== 'vivo' && atual >= 0) $('#fechar').click();
-  if (a === 'filmes' || a === 'series') { gen = 'Lançamentos'; mostra = 60; carregarVod(); }
+  if (a === 'filmes' || a === 'series') { gen = 'Lançamentos'; mostra = 60; $('#qv').value = ''; carregarVod(); }
+  if (a === 'vivo') { $('#q').value = ''; cat = 'Todos'; montar(); }
+  $('#titSec').innerHTML = {vivo: '📺 TV <b>ao Vivo</b>', filmes: '🎬 <b>Filmes</b>', series: '🎞️ <b>Séries</b>', jogos: '⚽ <b>Jogos</b>'}[a];
+  scrollTo(0, 0);
 }
 function carregarVod() {
   if (vod.length) return desenharVod();
@@ -382,7 +385,15 @@ function irInicio() {
   $('#cont').innerHTML = hist.map((x, i) => `<div class="fm" tabindex="0" data-h="${i}"><img src="${x.img || 'icon-192.png'}" alt="" style="${x.img ? '' : 'object-fit:contain;padding:14px'}"><div class="ft">${esc(x.t)}</div><div class="fg">${x.tipo === 'canal' ? 'Ao vivo' : 'Filme/Série'}</div></div>`).join('');
   setTimeout(() => { const b = document.querySelector('.tl.big'); if (b && !document.getElementById('intro')) b.focus(); }, 50);
 }
-function sairInicio() { document.body.classList.remove('inicio'); $('#home').classList.remove('on'); }
+function sairInicio() { document.body.classList.remove('inicio'); $('#home').classList.remove('on'); if (!history.state) history.pushState({s: 1}, ''); }
+function voltarUm() {
+  if ($('#yt').classList.contains('on')) $('#ytX').click();
+  else if ($('#det').classList.contains('on')) $('#det').classList.remove('on');
+  else if ($('#modal').classList.contains('on')) $('#modal').classList.remove('on');
+  else if (!document.body.classList.contains('inicio')) { irInicio(); return true; }
+  return false;
+}
+addEventListener('popstate', () => { if (!voltarUm()) history.pushState({s: 1}, ''); });
 $('#cont').onclick = e => {
   const c = e.target.closest('[data-h]'); if (!c) return; const x = hist[c.dataset.h];
   if (x.tipo === 'canal') { sairInicio(); abrirAba('vivo'); const i = todos.findIndex(t => t.id === x.id); if (i >= 0) tocar(i); }
@@ -390,13 +401,13 @@ $('#cont').onclick = e => {
 };
 document.querySelectorAll('[data-ir]').forEach(b => b.onclick = () => {
   const d = b.dataset.ir; sairInicio();
-  if (d === 'fav') { abrirAba('vivo'); cat = '⭐ Favoritos'; montar(); }
-  else if (d === 'busca') { abrirAba('filmes'); setTimeout(() => $('#qv').focus(), 100); }
+  if (d === 'fav') { abrirAba('vivo'); cat = '⭐ Favoritos'; montar(); $('#titSec').innerHTML = '⭐ <b>Favoritos</b>'; }
+  else if (d === 'busca') { abrirAba('filmes'); $('#titSec').innerHTML = '🔍 <b>Buscar</b>'; setTimeout(() => $('#qv').focus(), 100); }
   else abrirAba(d);
 });
 $('#hBusca').onclick = () => document.querySelector('[data-ir=busca]').click();
 $('#hLista').onclick = () => $('#btListas').click();
-$('#voltar').onclick = irInicio;
+$('#voltar').onclick = () => history.state ? history.back() : irInicio();
 irInicio();
 
 // Controle remoto (TV Box): setas movem, OK abre
@@ -405,10 +416,8 @@ document.addEventListener('keydown', e => {
   const a = document.activeElement;
   if ((e.key === 'Enter' || e.key === ' ') && a && (a.classList.contains('can') || a.classList.contains('fm')) && !a.closest('button')) { e.preventDefault(); a.click(); return; }
   if (e.key === 'Backspace' || e.key === 'Escape' || e.key === 'GoBack') {
-    if ($('#yt').classList.contains('on')) { $('#ytX').click(); e.preventDefault(); }
-    else if ($('#det').classList.contains('on')) { $('#det').classList.remove('on'); e.preventDefault(); }
-    else if ($('#modal').classList.contains('on')) { $('#modal').classList.remove('on'); e.preventDefault(); }
-    else if (!document.body.classList.contains('inicio') && (!a || a.tagName !== 'INPUT')) { irInicio(); e.preventDefault(); }
+    if (a && a.tagName === 'INPUT' && e.key === 'Backspace') return;
+    e.preventDefault(); if (history.state) history.back(); else voltarUm();
     return;
   }
   if (e.key === 'MediaTrackNext' || e.key === 'ChannelUp') { pular(1); return; }
