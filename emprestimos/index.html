@@ -198,7 +198,16 @@ function previa(){
   var c = calc(), el = document.activeElement;
   if (el && el.id === 'nv1') V1MEXEU = true;
   if (!V1MEXEU && el && (el.id === 'nfr' || el.id === 'ndt')) $('#nv1').value = soma($('#ndt').value || hoje(), c.fr, 1);
-  $('#prev').innerHTML = c.v ? 'Total a receber: <b>' + reais(c.tot) + '</b> em ' + c.n + 'x de ' + reais(c.pv) + (c.ult !== c.pv ? ' (última ' + reais(c.ult) + ')' : '') + (c.j ? ' · juros ' + reais(c.tot - c.v) : '') : '';
+  var tb = '';
+  if (c.v){
+    var un = {mensal: 'mês', quinzenal: 'quinzena', semanal: 'semana', diaria: 'dia'}[c.fr], pm = {mensal: 1, quinzenal: 0.5, semanal: 7 / 30, diaria: 1 / 30}[c.fr];
+    var ns = c.fr === 'diaria' ? [10, 15, 20, 24, 30, 40] : c.fr === 'semanal' ? [2, 4, 6, 8, 10, 12] : [1, 2, 3, 4, 5, 6, 8, 10, 12];
+    tb = '<div style="margin-top:12px"><b>📊 Simulação (toque pra escolher)</b><table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:14px"><tr style="color:#64748b;text-align:left"><th>Prazo</th><th>Parcela</th><th>Total</th><th>Juros</th></tr>';
+    ns.forEach(function(n){ var t = Math.round(c.v * (1 + c.j / 100 * pm * n) * 100) / 100;
+      tb += '<tr onclick="$(\'#nnp\').value=' + n + ';previa()" style="border-top:1px solid #e2e8f0;cursor:pointer' + (n === c.n ? ';background:#e0e7ff;font-weight:700' : '') + '"><td style="padding:8px 4px">' + n + 'x</td><td>' + reais(Math.round(t / n * 100) / 100) + '</td><td>' + reais(t) + '</td><td>' + reais(t - c.v) + '</td></tr>'; });
+    tb += '</table><div class="muted">Pagamento por ' + un + '. Juros simples de ' + String(c.j).replace('.', ',') + '% ao mês.</div></div>';
+  }
+  $('#prev').innerHTML = (c.v ? 'Total a receber: <b>' + reais(c.tot) + '</b> em ' + c.n + 'x de ' + reais(c.pv) + (c.ult !== c.pv ? ' (última ' + reais(c.ult) + ')' : '') + (c.j ? ' · juros ' + reais(c.tot - c.v) : '') : '') + tb;
 }
 function criaEmp(){
   var c = calc(); if (!c.v){ alert('Coloque o valor.'); return; }
