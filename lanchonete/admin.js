@@ -90,3 +90,4 @@ function avisa(id, lib, val){
     : 'Olá, ' + (x.dono || '').split(' ')[0] + '! Aqui é do Meu Lanche, sobre a lanchonete ' + x.nome + '.';
   abreZap(x.zap, t);
 }
+$('bR').onclick = function(){ var e = $('em').value.trim().toLowerCase(); if (ADMINS.indexOf(e) < 0) return msg('Digite seu e-mail de administrador no campo acima.'); au.sendPasswordResetEmail(e).then(function(){ msg('Pronto! Abra o e-mail que chegou em ' + e + ', crie a senha e volte aqui para entrar com e-mail e senha.'); }, function(x){ msg('Não enviou: ' + x.code); }); };
