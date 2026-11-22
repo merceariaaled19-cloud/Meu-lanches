@@ -216,7 +216,7 @@ function desenhar() {
     <span class="num">${c.num}</span>
     <button class="fav ${favs.includes(c.id) ? 's' : ''}" data-f="${i}">${favs.includes(c.id) ? '★' : '☆'}</button>
     <div class="lg">${c.logo ? `<img loading="lazy" src="${c.logo}" alt="" onerror="this.replaceWith(document.createTextNode('${esc(c.nome[0] || 'T')}'))">` : esc(c.nome[0] || 'T')}</div>
-    <div class="n">${esc(c.nome)}</div></div>`).join('');
+    <div class="n">${esc(c.nome)}${c.ext ? '<div style="font-size:11px;color:#fb7185">↗ abre no site grátis</div>' : ''}</div></div>`).join('');
 }
 function esc(s) { return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 $('#lista').onclick = e => {

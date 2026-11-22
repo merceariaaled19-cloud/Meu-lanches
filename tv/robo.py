@@ -46,11 +46,25 @@ vistos, unicos = set(), []
 for c in todos:
     if c['url'] not in vistos: vistos.add(c['url']); unicos.append(c)
 with cf.ThreadPoolExecutor(40) as ex: ok = [c for c in ex.map(testar, unicos) if c]
-ordem = ['Amazonas', 'Notícias', 'Variedades', 'Esportes', 'Filmes e Séries', 'Infantil', 'Música', 'Educação e Cultura', 'Religiosos', 'Grátis em outros sites']
+ordem = ['Amazonas', 'Notícias', 'Variedades', 'Esportes', 'Filmes e Séries', 'Infantil', 'Música', 'Educação e Cultura', 'Religiosos', 'Desenhos e Anime 24h', 'Comédia 24h', 'Séries 24h', 'Filmes 24h', 'Grátis em outros sites']
 saida = []
 for c in ok:
     nome = re.sub(r'\s*\(\d+p\)', '', c['nome']).replace('[Not 24/7]', '').strip()
     saida.append({'nome': nome, 'cat': categoria(c), 'logo': c['logo'], 'url': c['url']})
+# Pluto TV 24h: gratis e oficial, abre no site da Pluto (ela bloqueia tocar dentro de outro app)
+def cat_pluto(n):
+    l = n.lower()
+    if re.search(r'anime|naruto|boruto|one piece|pok[ée]mon|dragon|death note|hunter|inuyasha|jojo|yu-gi|beyblade|tokusato|super onze|desenho|bob esponja|kids|junior|nick|toons|padrinhos|smurfs|oggy|popeye|moranguinho|baby|teletubbies|turma da m|cocoric|reino infantil|avatar|bugiganga', l): return 'Desenhos e Anime 24h'
+    if re.search(r'com[ée]dia|south park|kenan|arnold|feiticeira|pegadinhas|failarmy|icarly', l): return 'Comédia 24h'
+    if re.search(r'cine|filmes|netmovies|runtime|filmelier|adrenalina|bang bang|terror|suspense', l): return 'Filmes 24h'
+    if re.search(r'news|jovem pan|record|cnbc|euronews|bm&c|uol|times brasil|cultura', l): return None
+    return 'Séries 24h'
+try:
+    for c in ler(baixar(PLUTO)):
+        m = re.search(r'plu-([0-9a-f]{24})', c['url'])
+        k = cat_pluto(c['nome'])
+        if m and k: saida.append({'nome': re.sub(r'\s*\(\d+p\)', '', c['nome']), 'cat': k, 'logo': 'https://images.pluto.tv/channels/%s/colorLogoPNG.png' % m.group(1), 'url': '', 'ext': 'https://pluto.tv/br/live-tv/' + m.group(1)})
+except Exception as e: print('pluto falhou', e)
 # Pluto TV e outros: gratis e oficiais, mas so tocam no site deles (bloqueiam dentro de outros apps)
 saida += [{'nome': 'Pluto TV - canais ao vivo', 'cat': 'Grátis em outros sites', 'logo': 'logo-pluto.png', 'url': '', 'ext': 'https://pluto.tv/br/live-tv'},
           {'nome': 'Pluto TV - filmes e séries', 'cat': 'Grátis em outros sites', 'logo': 'logo-pluto.png', 'url': '', 'ext': 'https://pluto.tv/br/on-demand'},

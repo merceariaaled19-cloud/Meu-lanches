@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-22T22:54",
+"atualizado": "2026-11-22T23:13",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -92,12 +92,6 @@
 "url": "https://stream3.camara.gov.br/tv1/manifest.m3u8"
 },
 {
-"nome": "TV Zoom",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/jCGrjf5.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9730/LVW9730_LmUwslM8jt/playlist.m3u8"
-},
-{
 "nome": "TVideoNews",
 "cat": "Notícias",
 "logo": "https://i.imgur.com/vstHOYx.png",
@@ -110,40 +104,16 @@
 "url": "https://gpa-vja.otteravision.com/gpa/vja/vja.m3u8"
 },
 {
-"nome": "1001 Noites",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/dWA9y2J.png",
-"url": "https://cpbr.appflux.com.br:2000/hls/1001noites/1001noites.m3u8"
-},
-{
-"nome": "Adesso TV",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/KgetM8j.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9715/LVW9715_12B26T62tm/playlist.m3u8"
-},
-{
 "nome": "Araruna TV",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/jl39ula.png",
 "url": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8"
 },
 {
-"nome": "Catve FM",
+"nome": "Boas Novas",
 "cat": "Variedades",
-"logo": "https://i.imgur.com/w89yw36.png",
-"url": "https://5b33b873179a2.streamlock.net:1443/radiocamera/livestream/playlist.m3u8"
-},
-{
-"nome": "Catve Master TV",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/4m7Iazm.png",
-"url": "https://5b33b873179a2.streamlock.net:1443/mastertv/livestream/playlist.m3u8"
-},
-{
-"nome": "Catve2",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/qiVfsfB.png",
-"url": "https://5b33b873179a2.streamlock.net:1443/catve2/catve2/playlist.m3u8"
+"logo": "https://i.imgur.com/ZqhizdP.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8"
 },
 {
 "nome": "Chroma TV",
@@ -180,6 +150,12 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/1eHNe91.png",
 "url": "https://stmv1.srvsite.com/ely/ely/playlist.m3u8"
+},
+{
+"nome": "EUTV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/8PxpamC.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
 },
 {
 "nome": "Fala Litoral",
@@ -252,12 +228,6 @@
 "cat": "Variedades",
 "logo": "https://i.ibb.co/F0Tm2WP/2103f4c07b851d64b4c96955765a9a95.png",
 "url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8"
-},
-{
-"nome": "RedeTV! Parana",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/D8R0Af4.png",
-"url": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8"
 },
 {
 "nome": "SBT Nova Mutum",
@@ -350,18 +320,6 @@
 "url": "https://5cf4a2c2512a2.streamlock.net/tvmaismarica/tvmaismarica/playlist.m3u8"
 },
 {
-"nome": "TV Marajoara",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/9d9vBN7.png",
-"url": "https://tv02.zas.media:1936/tvmarajoara/tvmarajoara/playlist.m3u8"
-},
-{
-"nome": "TV Metropole",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/bJyjLpg.png",
-"url": "https://cdn-fundacao-2110.ciclano.io:1443/fundacao-2110/fundacao-2110/playlist.m3u8"
-},
-{
 "nome": "TV Pantanal MS",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/0FOmktl.png",
@@ -444,12 +402,6 @@
 "cat": "Esportes",
 "logo": "https://images.pluto.tv/channels/5e7cb84a172a0f0007da69e4/colorLogoPNG.png",
 "url": "https://d03ae6b5c6724c24867e97a3dc04934a.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-1026-WORBBRPTFAST-WHALETVPLUS/1026/hls/master/playlist.m3u8"
-},
-{
-"nome": "+MaisUm",
-"cat": "Filmes e Séries",
-"logo": "https://i.ibb.co/ZRDvqJcf/Logo-Mais-Um-original-sem-fundo.png",
-"url": "https://stream.ichibansys.com:3230/hybrid/play.m3u8"
 },
 {
 "nome": "Classique TV",
@@ -536,12 +488,6 @@
 "url": "https://app.tvufop.com.br/hls/tvufop.m3u8"
 },
 {
-"nome": "TVE RS",
-"cat": "Educação e Cultura",
-"logo": "https://i.imgur.com/MQ6lJpS.png",
-"url": "https://streaming.procergs.com.br:8443/tve/stve/playlist.m3u8"
-},
-{
 "nome": "Unisul TV",
 "cat": "Educação e Cultura",
 "logo": "https://i.imgur.com/N0TvAFz.png",
@@ -578,10 +524,10 @@
 "url": "https://strv.painelvox.top/plenitude/plenitude/playlist.m3u8"
 },
 {
-"nome": "RIT TV",
+"nome": "Rede Gospel",
 "cat": "Religiosos",
-"logo": "https://i.imgur.com/Unjs1wi.png",
-"url": "https://acesso.ecast.site:3648/live/ritlive.m3u8"
+"logo": "https://i.imgur.com/mttSwgO.png",
+"url": "https://cdn.live.br1.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
 },
 {
 "nome": "TV Mana Brasil",
@@ -606,6 +552,1105 @@
 "cat": "Religiosos",
 "logo": "https://i.imgur.com/TIsk5zN.png",
 "url": "https://644398c.ha.azioncdn.net/primary/tvuniversal_480p.sdp/playlist.m3u8"
+},
+{
+"nome": "Avatar: A lenda de Aang",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/6759eeb1bd523200083b4f29/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6759eeb1bd523200083b4f29"
+},
+{
+"nome": "Baby Shark TV",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/63da6bcd60bc8f0008a5d364/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63da6bcd60bc8f0008a5d364"
+},
+{
+"nome": "Babyfirst",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/5f4fb4cf605ddf000748e16f/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f4fb4cf605ddf000748e16f"
+},
+{
+"nome": "Beyblade",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/633dc392e0282400071b0d39/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/633dc392e0282400071b0d39"
+},
+{
+"nome": "Bob Esponja Calça Quadrada",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/62545c0b002f4b0007688b61/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62545c0b002f4b0007688b61"
+},
+{
+"nome": "Boruto: Naruto Next Generations",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/656f389c3944b60008e5bdab/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/656f389c3944b60008e5bdab"
+},
+{
+"nome": "Cocoricó",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/62d969fd8451a30007f0fd94/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62d969fd8451a30007f0fd94"
+},
+{
+"nome": "Death Note",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/625464a945b6a200079257d1/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/625464a945b6a200079257d1"
+},
+{
+"nome": "Hunter x Hunter",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/65d9167818036500080e8780/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65d9167818036500080e8780"
+},
+{
+"nome": "Inspetor Bugiganga",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/69162648d03565d6c8c8df97/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69162648d03565d6c8c8df97"
+},
+{
+"nome": "Inuyasha",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/66b26681d2d50d00083abe8b/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66b26681d2d50d00083abe8b"
+},
+{
+"nome": "JoJo’s Bizarre Adventure",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/66c7982f6838ee00085f0d24/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66c7982f6838ee00085f0d24"
+},
+{
+"nome": "Moranguinho",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/63eba189c111bc0008ff59c5/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eba189c111bc0008ff59c5"
+},
+{
+"nome": "Naruto",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/5f6df5a173d7340007c559f7/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f6df5a173d7340007c559f7"
+},
+{
+"nome": "Naruto Shippuden",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/64c92f965580090008084968/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64c92f965580090008084968"
+},
+{
+"nome": "Nick Jr. Club",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/6824ce95f09106f4b18f4114/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6824ce95f09106f4b18f4114"
+},
+{
+"nome": "Nickelodeon Clássico",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/6824ce10c5d53e1351ceb8d1/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6824ce10c5d53e1351ceb8d1"
+},
+{
+"nome": "Nickelodeon iCarly",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/620ff46e0a576e0007dc2f89/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/620ff46e0a576e0007dc2f89"
+},
+{
+"nome": "Nickelodeon Teen",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/60f5fabf0721880007cd50e3/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/60f5fabf0721880007cd50e3"
+},
+{
+"nome": "Nickelodeon Toons",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/645951c0e94c38000802d2cb/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/645951c0e94c38000802d2cb"
+},
+{
+"nome": "O Reino Infantil",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/5f5c216df68f920007888315/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f5c216df68f920007888315"
+},
+{
+"nome": "Oggy e as Baratas Tontas",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/63221bafdc6e110007b50270/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63221bafdc6e110007b50270"
+},
+{
+"nome": "One Piece",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/624b1c8d4321e200073ee421/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/624b1c8d4321e200073ee421"
+},
+{
+"nome": "Os Padrinhos Mágicos",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/63221e41af69b500076f84e7/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63221e41af69b500076f84e7"
+},
+{
+"nome": "Os Smurfs",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/68b88ae1943f6fb1fb2ad749/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/68b88ae1943f6fb1fb2ad749"
+},
+{
+"nome": "Pluto TV Anime",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/5f12136385bccc00070142ed/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f12136385bccc00070142ed"
+},
+{
+"nome": "Pluto TV Anime Ação",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/604b79c558393100078faeef/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/604b79c558393100078faeef"
+},
+{
+"nome": "Pluto TV Desenhos Clássicos",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/655e5c4d2c46f3000877a54b/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/655e5c4d2c46f3000877a54b"
+},
+{
+"nome": "Pluto TV Junior",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/5f12141b146d760007934ea7/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f12141b146d760007934ea7"
+},
+{
+"nome": "Pluto TV Kids",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/5f1214a637c6fd00079c652f/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1214a637c6fd00079c652f"
+},
+{
+"nome": "Pluto TV Kids Club",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/66c8cae7fed35b0008580ec0/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66c8cae7fed35b0008580ec0"
+},
+{
+"nome": "Pokémon",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/687007a8ee4155e89a8f6d67/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/687007a8ee4155e89a8f6d67"
+},
+{
+"nome": "Popeye",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/677d93f37bffa600080795e7/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/677d93f37bffa600080795e7"
+},
+{
+"nome": "Super Onze",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/63988c2750108d00072e2686/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63988c2750108d00072e2686"
+},
+{
+"nome": "Teletubbies",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/64e50055286f6b000838c067/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64e50055286f6b000838c067"
+},
+{
+"nome": "Tokusato",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/5ff609de50ab210008025c1b/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5ff609de50ab210008025c1b"
+},
+{
+"nome": "Turma da Mônica",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/5f997e44949bc70007a6941e/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f997e44949bc70007a6941e"
+},
+{
+"nome": "Yu-Gi-Oh",
+"cat": "Desenhos e Anime 24h",
+"logo": "https://images.pluto.tv/channels/63988a50be012600070f5db3/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63988a50be012600070f5db3"
+},
+{
+"nome": "A Feiticeira",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/631fa8dd7f25240007099a40/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/631fa8dd7f25240007099a40"
+},
+{
+"nome": "Comedy Central South Park",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/609ae66b359b270007869ff1/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/609ae66b359b270007869ff1"
+},
+{
+"nome": "Diff’rent Strokes Arnold",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/61f1d27a189ed10007b7393e/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61f1d27a189ed10007b7393e"
+},
+{
+"nome": "FailArmy",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/5f5141c1605ddf000748eb1b/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f5141c1605ddf000748eb1b"
+},
+{
+"nome": "Kenan & Kel",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/5ffcc5130fd98c0007f2e216/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5ffcc5130fd98c0007f2e216"
+},
+{
+"nome": "Pegadinhas Just for Laughs",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/67802a22a5d8215f99dcee30/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67802a22a5d8215f99dcee30"
+},
+{
+"nome": "Pluto TV Cine Comédia",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/5f12101f0b12f00007844c7c/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f12101f0b12f00007844c7c"
+},
+{
+"nome": "Pluto TV Cine Comédia Romântica",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/62545ed3dab4380007582f7c/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62545ed3dab4380007582f7c"
+},
+{
+"nome": "Pluto TV Séries Comédia",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/655e5bc94261ca000810cb17/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/655e5bc94261ca000810cb17"
+},
+{
+"nome": "South Park: Coleção Cartman",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/65df71008b24c80008f04281/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65df71008b24c80008f04281"
+},
+{
+"nome": "South Park: Coleção Kenny",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/65df704366eec8000898e32f/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65df704366eec8000898e32f"
+},
+{
+"nome": "South Park: Coleção Kyle",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/65df713dec9fda0008b7a81d/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65df713dec9fda0008b7a81d"
+},
+{
+"nome": "South Park: Coleção Stan",
+"cat": "Comédia 24h",
+"logo": "https://images.pluto.tv/channels/65df70b0f7f0af0008c3b316/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65df70b0f7f0af0008c3b316"
+},
+{
+"nome": "A Caçadora de Relíquias",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/67e59a6557487a8b7fe73e23/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67e59a6557487a8b7fe73e23"
+},
+{
+"nome": "Acumuladores Obsessivos",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/656e2a4b4261ca00083aa99e/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/656e2a4b4261ca00083aa99e"
+},
+{
+"nome": "Assombrações",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/620d1512c7986a0007220213/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/620d1512c7986a0007220213"
+},
+{
+"nome": "BET Pluto TV",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5ff768b6a4c8b80008498610/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5ff768b6a4c8b80008498610"
+},
+{
+"nome": "Caçadores de Óvnis",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/656e2a10954b020008ed167c/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/656e2a10954b020008ed167c"
+},
+{
+"nome": "Charmed: Jovens Bruxas",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/67f9602ee173fa5664fafae8/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67f9602ee173fa5664fafae8"
+},
+{
+"nome": "Comedy Central Pluto TV",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f357e91b18f0b00073583d2/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f357e91b18f0b00073583d2"
+},
+{
+"nome": "CSI: Miami",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/63eb9c5351f5d000085e8d7e/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eb9c5351f5d000085e8d7e"
+},
+{
+"nome": "Detetives Médicos",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/638df93ae2f2a3000737c168/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/638df93ae2f2a3000737c168"
+},
+{
+"nome": "Estado Paranormal",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/656e2a81954b020008ed17a4/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/656e2a81954b020008ed17a4"
+},
+{
+"nome": "FIFA+",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/66997e8d3a4ad20008e50be9/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66997e8d3a4ad20008e50be9"
+},
+{
+"nome": "Homeful",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/67603668f433320008760af1/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67603668f433320008760af1"
+},
+{
+"nome": "Jornada nas Estrelas A Nova Geração",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/69162ad79505d0f3b1ebf07d/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69162ad79505d0f3b1ebf07d"
+},
+{
+"nome": "Jornada nas Estrelas Deep Space Nine",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/69162af591700f4c4c135c95/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69162af591700f4c4c135c95"
+},
+{
+"nome": "Jornada nas Estrelas Voyager",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/69162b1ef189e235142b17ab/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69162b1ef189e235142b17ab"
+},
+{
+"nome": "MacGyver",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/63eb9dc84e83e70008abea92/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eb9dc84e83e70008abea92"
+},
+{
+"nome": "Mais MasterChef Brasil",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/681111be5e0764e297fb200e/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/681111be5e0764e297fb200e"
+},
+{
+"nome": "MasterChef",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6077045b6031bd00078de127/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6077045b6031bd00078de127"
+},
+{
+"nome": "MasterChef Brasil Profissionais",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/681110afc188aa63faa147e0/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/681110afc188aa63faa147e0"
+},
+{
+"nome": "Mistérios sem Solução",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/62b5c5a064163d0007b2efe6/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62b5c5a064163d0007b2efe6"
+},
+{
+"nome": "MTV Are you the One?",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f6108d8cc331900075e98e4/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f6108d8cc331900075e98e4"
+},
+{
+"nome": "MTV Biggest Pop",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6047fbdbbb776a0007e7f2ff/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6047fbdbbb776a0007e7f2ff"
+},
+{
+"nome": "MTV Catfish",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/626c2a3502d84a0007cec817/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/626c2a3502d84a0007cec817"
+},
+{
+"nome": "MTV Com o Ex",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/61a528267e1b8b0007357920/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61a528267e1b8b0007357920"
+},
+{
+"nome": "MTV Dating",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6851bb3426beced4f2f67ee6/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6851bb3426beced4f2f67ee6"
+},
+{
+"nome": "MTV Jovens e Mães",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/620fdc7d8a36fc000710e3ba/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/620fdc7d8a36fc000710e3ba"
+},
+{
+"nome": "MTV Pluto TV",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f1212fb81e85c00077ae9ef/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1212fb81e85c00077ae9ef"
+},
+{
+"nome": "MTV Reality",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6851bdfc9ac48fde5e07f5ae/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6851bdfc9ac48fde5e07f5ae"
+},
+{
+"nome": "MTV Rocks",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/66a01e07d2d50d0008100d6a/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66a01e07d2d50d0008100d6a"
+},
+{
+"nome": "MTV Rupaul's Drag Race",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/645111f1d8436e00081bb2bd/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/645111f1d8436e00081bb2bd"
+},
+{
+"nome": "MTV Shore",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/625463563b8ddc0007134aeb/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/625463563b8ddc0007134aeb"
+},
+{
+"nome": "NatureTime",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/681ba2ad93d3d19bcab47433/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/681ba2ad93d3d19bcab47433"
+},
+{
+"nome": "NCIS",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/63eb9fdda995710008991c54/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eb9fdda995710008991c54"
+},
+{
+"nome": "Numbers",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/67f960c5441853fe50e7afc1/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67f960c5441853fe50e7afc1"
+},
+{
+"nome": "O Encantador de Cães",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/61099df8cee03b00074b2ecf/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61099df8cee03b00074b2ecf"
+},
+{
+"nome": "O Homem que veio do Céu",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/62052d3b4eeb740007fbe125/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62052d3b4eeb740007fbe125"
+},
+{
+"nome": "Os Arquivos do FBI",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/620d12a82e8ac50007c269c3/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/620d12a82e8ac50007c269c3"
+},
+{
+"nome": "PFL MMA",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/64f6180130ab3300083d896b/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64f6180130ab3300083d896b"
+},
+{
+"nome": "Pluto TV Aliens",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6806d65e84f24b70109485fa/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6806d65e84f24b70109485fa"
+},
+{
+"nome": "Pluto TV Animais",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6474aa984cfc2c0008883a92/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6474aa984cfc2c0008883a92"
+},
+{
+"nome": "Pluto TV Cozinha",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f1ef23020a5ac0007e5e8ea/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1ef23020a5ac0007e5e8ea"
+},
+{
+"nome": "Pluto TV Esportes",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f32d2db0af67400077f29c4/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f32d2db0af67400077f29c4"
+},
+{
+"nome": "Pluto TV Ficção Científica",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5fa15ad6367e170007cdd098/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fa15ad6367e170007cdd098"
+},
+{
+"nome": "Pluto TV História",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f1ef1a8cec6be00072a7ac9/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1ef1a8cec6be00072a7ac9"
+},
+{
+"nome": "Pluto TV Investigação",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f32cf37c9ff2b00082adbc8/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f32cf37c9ff2b00082adbc8"
+},
+{
+"nome": "Pluto TV Karaokê por Stingray",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/604b99d633a72b00078e05ad/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/604b99d633a72b00078e05ad"
+},
+{
+"nome": "Pluto TV KFOOD",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/633ee9ba83c08f00076b60a6/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/633ee9ba83c08f00076b60a6"
+},
+{
+"nome": "Pluto TV Minha Obsessão Favorita",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/61843f5e491af10007f7eefa/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61843f5e491af10007f7eefa"
+},
+{
+"nome": "Pluto TV Mistérios",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5fac52f142044f00078e2a51/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fac52f142044f00078e2a51"
+},
+{
+"nome": "Pluto TV MTV Classic",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/66a01dcb8561260008b0a41d/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66a01dcb8561260008b0a41d"
+},
+{
+"nome": "Pluto TV Natureza",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f1213ba0ecebc00070e170f/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1213ba0ecebc00070e170f"
+},
+{
+"nome": "Pluto TV Negócio Fechado",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/64ad7394798def00087b2bfe/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64ad7394798def00087b2bfe"
+},
+{
+"nome": "Pluto TV Novelas",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f512365abe1f50007d3ff56/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f512365abe1f50007d3ff56"
+},
+{
+"nome": "Pluto TV Paisagens por Stingray",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/604a8dedbca75b0007b1c753/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/604a8dedbca75b0007b1c753"
+},
+{
+"nome": "Pluto TV Policial",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/678fdf9e3de7c8cf948e8824/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/678fdf9e3de7c8cf948e8824"
+},
+{
+"nome": "Pluto TV Retrô",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f1212ad1728050007a523b8/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1212ad1728050007a523b8"
+},
+{
+"nome": "Pluto TV Shows por Stingray",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/604b91e0692f770007d9f33f/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/604b91e0692f770007d9f33f"
+},
+{
+"nome": "Pluto TV Star Trek",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f99ac4fded33000078f29ab/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f99ac4fded33000078f29ab"
+},
+{
+"nome": "Pluto TV Séries Ação",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6474ab1da51cb80008bfb5f4/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6474ab1da51cb80008bfb5f4"
+},
+{
+"nome": "Pluto TV Séries Criminais",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6474ab5cdc7a760008745008/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6474ab5cdc7a760008745008"
+},
+{
+"nome": "Pluto TV Séries Drama",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/65f060d84e01740008d7421f/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65f060d84e01740008d7421f"
+},
+{
+"nome": "Pluto TV Séries Novelescas",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/691627e4a29a6123e400b3e0/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/691627e4a29a6123e400b3e0"
+},
+{
+"nome": "Pluto TV Séries Sci-Fi",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/63d2ba2f60bc8f0008981a0e/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63d2ba2f60bc8f0008981a0e"
+},
+{
+"nome": "Pluto TV Turbo",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6014761dfb91870008ea6463/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6014761dfb91870008ea6463"
+},
+{
+"nome": "Pluto TV Viagens",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f32d432d612e50007e56133/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f32d432d612e50007e56133"
+},
+{
+"nome": "Pluto TV Vida Real",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f32d4d9ec194100070c7449/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f32d4d9ec194100070c7449"
+},
+{
+"nome": "PORTATV",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/69440d0611f6c6384ab78306/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69440d0611f6c6384ab78306"
+},
+{
+"nome": "Pronto-socorro: Histórias De Emergência",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/61bb72a7bf8c520007a8fd27/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61bb72a7bf8c520007a8fd27"
+},
+{
+"nome": "RACER Brasil",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/65a6818c7bdc8d0008457b21/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65a6818c7bdc8d0008457b21"
+},
+{
+"nome": "Realmadrid TV",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/63dac28760bc8f0008a7654b/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63dac28760bc8f0008a7654b"
+},
+{
+"nome": "Red Bull TV BR",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/67813f3162bf016db944c9ab/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67813f3162bf016db944c9ab"
+},
+{
+"nome": "Rookie Blue",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/64ff2d8c6625510008c5a512/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64ff2d8c6625510008c5a512"
+},
+{
+"nome": "Salon Line",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/66a7d0e0cd0d310008448610/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66a7d0e0cd0d310008448610"
+},
+{
+"nome": "SFT Combat",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6660b636cb3ea10008429c6a/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6660b636cb3ea10008429c6a"
+},
+{
+"nome": "Smithsonian Channel Pluto TV",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6298bd10d88ef000073f16b7/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6298bd10d88ef000073f16b7"
+},
+{
+"nome": "Sony One Shark Tank Brasil",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6647c0b91050b60008390de4/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6647c0b91050b60008390de4"
+},
+{
+"nome": "Tastemade",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5fd1419a3b4f4b000773ba85/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fd1419a3b4f4b000773ba85"
+},
+{
+"nome": "Tastemade Casa",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/68b88821e542386ab0bf5bef/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/68b88821e542386ab0bf5bef"
+},
+{
+"nome": "Tastemade Viagem",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/68b8875777201ec428d9eaa5/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/68b8875777201ec428d9eaa5"
+},
+{
+"nome": "The Pet Collective",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/5f515ebac01c0f00080e8439/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f515ebac01c0f00080e8439"
+},
+{
+"nome": "The Walking Dead by AMC",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/678aa104680721c77c506746/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/678aa104680721c77c506746"
+},
+{
+"nome": "TikTok Radio Brasil",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/63dac32bda711800088a2ba3/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63dac32bda711800088a2ba3"
+},
+{
+"nome": "Top Barça",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/6888ee858f4a4aa11feb9430/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6888ee858f4a4aa11feb9430"
+},
+{
+"nome": "UFC",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/69a20556814d27f4ae630a92/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69a20556814d27f4ae630a92"
+},
+{
+"nome": "World Poker Tour",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/63eba66da8b2270008436b10/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eba66da8b2270008436b10"
+},
+{
+"nome": "Z Nation",
+"cat": "Séries 24h",
+"logo": "https://images.pluto.tv/channels/66b3af48d2d50d00083d6936/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66b3af48d2d50d00083d6936"
+},
+{
+"nome": "Adrenalina Pura TV",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/61b790b985706b00072cb797/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61b790b985706b00072cb797"
+},
+{
+"nome": "Clube do Terror",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/64e501eec630a900088ed0f8/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64e501eec630a900088ed0f8"
+},
+{
+"nome": "Filmelier TV",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/633dcebd80386500074a2461/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/633dcebd80386500074a2461"
+},
+{
+"nome": "Filmes Suspense",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5f171d3442a0500007362f22/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f171d3442a0500007362f22"
+},
+{
+"nome": "Pluto TV Bang Bang",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/663b9dc7cb3ea10008f1a0ce/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/663b9dc7cb3ea10008f1a0ce"
+},
+{
+"nome": "Pluto TV Cine Clássicos",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5fa1612a669ba0000702017b/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fa1612a669ba0000702017b"
+},
+{
+"nome": "Pluto TV Cine Crime",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/6479ff764f5ba5000878dfe2/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6479ff764f5ba5000878dfe2"
+},
+{
+"nome": "Pluto TV Cine Drama",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5f1210d14ae1f80007bafb1d/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1210d14ae1f80007bafb1d"
+},
+{
+"nome": "Pluto TV Cine Família",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5f171f032cd22e0007f17f3d/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f171f032cd22e0007f17f3d"
+},
+{
+"nome": "Pluto TV Cine Inspiração",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5fa991b1f09e020007e78626/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fa991b1f09e020007e78626"
+},
+{
+"nome": "Pluto TV Cine Romance",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5f171f988ab9780007fa95ea/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f171f988ab9780007fa95ea"
+},
+{
+"nome": "Pluto TV Cine Sucessos",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5f120e94a5714d00074576a1/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f120e94a5714d00074576a1"
+},
+{
+"nome": "Pluto TV Cine Terror",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5f12111c9e6c2c00078ef3bb/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f12111c9e6c2c00078ef3bb"
+},
+{
+"nome": "Pluto TV Filmes Aventura",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/66c79a4262e5510008ff68a5/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66c79a4262e5510008ff68a5"
+},
+{
+"nome": "Pluto TV Filmes Ação",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5f120f41b7d403000783a6d6/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f120f41b7d403000783a6d6"
+},
+{
+"nome": "Pluto TV Filmes de Luta",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/6806d62369aec5b19cd628c0/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6806d62369aec5b19cd628c0"
+},
+{
+"nome": "Pluto TV Filmes Nacionais",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/5f5a545d0dbf7f0007c09408/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f5a545d0dbf7f0007c09408"
+},
+{
+"nome": "Pluto TV Netmovies",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/663b9de4f999220008230fa8/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/663b9de4f999220008230fa8"
+},
+{
+"nome": "Pluto TV Terror Trash",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/66aa67493a4ad2000806d91b/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66aa67493a4ad2000806d91b"
+},
+{
+"nome": "Runtime",
+"cat": "Filmes 24h",
+"logo": "https://images.pluto.tv/channels/62c5d32e2c48f9000715b6e9/colorLogoPNG.png",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62c5d32e2c48f9000715b6e9"
 },
 {
 "nome": "Libreflix - filmes brasileiros",
