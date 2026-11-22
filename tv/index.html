@@ -200,7 +200,7 @@ function lerM3U(txt, nomeLista) {
 function montar() {
   meus = [];
   listas.forEach(L => meus.push(...lerM3U(L.txt, L.nome)));
-  todos = [...base, ...meus].map((c, i) => ({...c, id: c.url, num: i + 1}));
+  todos = [...base, ...meus].map((c, i) => ({...c, id: c.url || c.ext, num: i + 1}));
   const cs = ['Todos', '⭐ Favoritos', ...new Set(todos.map(c => c.cat))];
   if (!cs.includes(cat)) cat = 'Todos';
   $('#cats').innerHTML = cs.map(c => `<button class="${c === cat ? 'on' : ''}">${c}</button>`).join('');
@@ -229,6 +229,7 @@ $('#q').oninput = desenhar;
 function aviso(t) { $('#msg').textContent = t; $('#msg').style.display = t ? 'block' : 'none'; }
 function tocar(i) {
   if (i < 0 || i >= todos.length) return;
+  const c0 = todos[i]; if (c0.ext) { lembrar({tipo: 'canal', id: c0.id, t: c0.nome, img: c0.logo}); window.open(c0.ext, '_blank'); aviso('Abrindo ' + c0.nome + ' no site oficial (grátis).'); return; }
   atual = i; const c = todos[i];
   $('#tela').classList.add('on'); $('#nomeAtual').textContent = c.num + ' · ' + c.nome; aviso('Abrindo…');
   localStorage.tvUltimo = c.id; lembrar({tipo: 'canal', id: c.id, t: c.nome, img: c.logo});

@@ -1,6 +1,7 @@
 # TV Certa - robo que testa os canais gratuitos e salva so os que abrem
 import re, json, ssl, urllib.request, concurrent.futures as cf, datetime
-FONTES = ['https://iptv-org.github.io/iptv/countries/br.m3u']
+FONTES = ['https://iptv-org.github.io/iptv/countries/br.m3u', 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/br_samsung.m3u']
+PLUTO = 'https://raw.githubusercontent.com/iptv-org/iptv/master/streams/br_pluto.m3u'
 ORIGEM = 'https://merceariaaled19-cloud.github.io'
 UA = 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36'
 def baixar(u):
@@ -45,12 +46,21 @@ vistos, unicos = set(), []
 for c in todos:
     if c['url'] not in vistos: vistos.add(c['url']); unicos.append(c)
 with cf.ThreadPoolExecutor(40) as ex: ok = [c for c in ex.map(testar, unicos) if c]
-ordem = ['Amazonas', 'Notícias', 'Variedades', 'Esportes', 'Filmes e Séries', 'Infantil', 'Música', 'Educação e Cultura', 'Religiosos']
+ordem = ['Amazonas', 'Pluto TV (abre no site)', 'Grátis em outros sites', 'Notícias', 'Variedades', 'Esportes', 'Filmes e Séries', 'Infantil', 'Música', 'Educação e Cultura', 'Religiosos']
 saida = []
 for c in ok:
     nome = re.sub(r'\s*\(\d+p\)', '', c['nome']).replace('[Not 24/7]', '').strip()
     saida.append({'nome': nome, 'cat': categoria(c), 'logo': c['logo'], 'url': c['url']})
+# Pluto TV: gratis e oficial, mas so toca no site/app deles (bloqueia dentro de outros apps)
+try:
+    for c in ler(baixar(PLUTO)):
+        m = re.search(r'plu-([0-9a-f]{24})', c['url'])
+        if m: saida.append({'nome': c['nome'], 'cat': 'Pluto TV (abre no site)', 'logo': '', 'url': '', 'ext': 'https://pluto.tv/br/live-tv/' + m.group(1)})
+except Exception as e: print('pluto falhou', e)
+saida += [{'nome': 'Pluto TV Filmes e Séries (sob demanda)', 'cat': 'Grátis em outros sites', 'logo': '', 'url': '', 'ext': 'https://pluto.tv/br/on-demand'},
+          {'nome': 'Libreflix (filmes brasileiros)', 'cat': 'Grátis em outros sites', 'logo': '', 'url': '', 'ext': 'https://libreflix.org'},
+          {'nome': 'Samsung TV Plus', 'cat': 'Grátis em outros sites', 'logo': '', 'url': '', 'ext': 'https://www.samsungtvplus.com'}]
 saida.sort(key=lambda c: (ordem.index(c['cat']), c['nome'].lower()))
-if len(saida) >= 10:
+if len([c for c in saida if c['url']]) >= 10:
     json.dump({'atualizado': datetime.datetime.now(datetime.timezone.utc).isoformat()[:16], 'canais': saida}, open('tv/canais.json', 'w'), ensure_ascii=False, indent=0)
 print(len(unicos), 'testados,', len(saida), 'funcionando')

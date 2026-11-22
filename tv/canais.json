@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-22T22:19",
+"atualizado": "2026-11-22T22:46",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -14,10 +14,1186 @@
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-20715/LVW20715_50E3x2MCm2/playlist.m3u8"
 },
 {
-"nome": "Aratu On",
+"nome": "A Caçadora de Relíquias",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67e59a6557487a8b7fe73e23"
+},
+{
+"nome": "A Feiticeira",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/631fa8dd7f25240007099a40"
+},
+{
+"nome": "Acumuladores Obsessivos",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/656e2a4b4261ca00083aa99e"
+},
+{
+"nome": "Adrenalina Pura TV",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61b790b985706b00072cb797"
+},
+{
+"nome": "Assombrações",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/620d1512c7986a0007220213"
+},
+{
+"nome": "Avatar: A lenda de Aang",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6759eeb1bd523200083b4f29"
+},
+{
+"nome": "Baby Shark TV",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63da6bcd60bc8f0008a5d364"
+},
+{
+"nome": "Babyfirst",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f4fb4cf605ddf000748e16f"
+},
+{
+"nome": "BET Pluto TV",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5ff768b6a4c8b80008498610"
+},
+{
+"nome": "Beyblade",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/633dc392e0282400071b0d39"
+},
+{
+"nome": "BM&C News (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/666c9c60a7efd40008f552f0"
+},
+{
+"nome": "Bob Esponja Calça Quadrada (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62545c0b002f4b0007688b61"
+},
+{
+"nome": "Boruto: Naruto Next Generations",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/656f389c3944b60008e5bdab"
+},
+{
+"nome": "Caçadores de Óvnis",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/656e2a10954b020008ed167c"
+},
+{
+"nome": "CBS News (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62310f66d5888f0007534342"
+},
+{
+"nome": "Charmed: Jovens Bruxas",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67f9602ee173fa5664fafae8"
+},
+{
+"nome": "Clube do Terror",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64e501eec630a900088ed0f8"
+},
+{
+"nome": "Cocoricó",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62d969fd8451a30007f0fd94"
+},
+{
+"nome": "Comedy Central Pluto TV",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f357e91b18f0b00073583d2"
+},
+{
+"nome": "Comedy Central South Park",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/609ae66b359b270007869ff1"
+},
+{
+"nome": "CSI: Miami",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eb9c5351f5d000085e8d7e"
+},
+{
+"nome": "Death Note",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/625464a945b6a200079257d1"
+},
+{
+"nome": "Detetives Médicos",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/638df93ae2f2a3000737c168"
+},
+{
+"nome": "Diff’rent Strokes Arnold",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61f1d27a189ed10007b7393e"
+},
+{
+"nome": "Estado Paranormal",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/656e2a81954b020008ed17a4"
+},
+{
+"nome": "Euronews Portuguese (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/619e6614c9d9650007a2b171"
+},
+{
+"nome": "FailArmy",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f5141c1605ddf000748eb1b"
+},
+{
+"nome": "FIFA+",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66997e8d3a4ad20008e50be9"
+},
+{
+"nome": "Filmelier TV",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/633dcebd80386500074a2461"
+},
+{
+"nome": "Filmes Suspense",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f171d3442a0500007362f22"
+},
+{
+"nome": "Homeful (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67603668f433320008760af1"
+},
+{
+"nome": "Hunter x Hunter",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65d9167818036500080e8780"
+},
+{
+"nome": "Inspetor Bugiganga",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69162648d03565d6c8c8df97"
+},
+{
+"nome": "Inuyasha",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66b26681d2d50d00083abe8b"
+},
+{
+"nome": "JoJo’s Bizarre Adventure",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66c7982f6838ee00085f0d24"
+},
+{
+"nome": "Jornada nas Estrelas A Nova Geração",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69162ad79505d0f3b1ebf07d"
+},
+{
+"nome": "Jornada nas Estrelas Deep Space Nine",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69162af591700f4c4c135c95"
+},
+{
+"nome": "Jornada nas Estrelas Voyager",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69162b1ef189e235142b17ab"
+},
+{
+"nome": "Jovem Pan NEWS (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6317ba014d4d040007227f72"
+},
+{
+"nome": "Kenan & Kel",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5ffcc5130fd98c0007f2e216"
+},
+{
+"nome": "MacGyver",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eb9dc84e83e70008abea92"
+},
+{
+"nome": "Mais MasterChef Brasil",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/681111be5e0764e297fb200e"
+},
+{
+"nome": "MasterChef",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6077045b6031bd00078de127"
+},
+{
+"nome": "MasterChef Brasil Profissionais",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/681110afc188aa63faa147e0"
+},
+{
+"nome": "Mistérios sem Solução",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62b5c5a064163d0007b2efe6"
+},
+{
+"nome": "Moranguinho",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eba189c111bc0008ff59c5"
+},
+{
+"nome": "MTV Are you the One?",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f6108d8cc331900075e98e4"
+},
+{
+"nome": "MTV Biggest Pop (1080p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6047fbdbbb776a0007e7f2ff"
+},
+{
+"nome": "MTV Catfish (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/626c2a3502d84a0007cec817"
+},
+{
+"nome": "MTV Com o Ex",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61a528267e1b8b0007357920"
+},
+{
+"nome": "MTV Dating",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6851bb3426beced4f2f67ee6"
+},
+{
+"nome": "MTV Jovens e Mães (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/620fdc7d8a36fc000710e3ba"
+},
+{
+"nome": "MTV Pluto TV",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1212fb81e85c00077ae9ef"
+},
+{
+"nome": "MTV Reality (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6851bdfc9ac48fde5e07f5ae"
+},
+{
+"nome": "MTV Rocks",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66a01e07d2d50d0008100d6a"
+},
+{
+"nome": "MTV Rupaul's Drag Race",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/645111f1d8436e00081bb2bd"
+},
+{
+"nome": "MTV Shore",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/625463563b8ddc0007134aeb"
+},
+{
+"nome": "Naruto",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f6df5a173d7340007c559f7"
+},
+{
+"nome": "Naruto Shippuden",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64c92f965580090008084968"
+},
+{
+"nome": "NatureTime (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/681ba2ad93d3d19bcab47433"
+},
+{
+"nome": "NCIS",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eb9fdda995710008991c54"
+},
+{
+"nome": "Nick Jr. Club (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6824ce95f09106f4b18f4114"
+},
+{
+"nome": "Nickelodeon Clássico (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6824ce10c5d53e1351ceb8d1"
+},
+{
+"nome": "Nickelodeon iCarly",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/620ff46e0a576e0007dc2f89"
+},
+{
+"nome": "Nickelodeon Teen (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/60f5fabf0721880007cd50e3"
+},
+{
+"nome": "Nickelodeon Toons (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/645951c0e94c38000802d2cb"
+},
+{
+"nome": "Numbers",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67f960c5441853fe50e7afc1"
+},
+{
+"nome": "O Encantador de Cães",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61099df8cee03b00074b2ecf"
+},
+{
+"nome": "O Homem que veio do Céu",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62052d3b4eeb740007fbe125"
+},
+{
+"nome": "O Reino Infantil",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f5c216df68f920007888315"
+},
+{
+"nome": "Oggy e as Baratas Tontas",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63221bafdc6e110007b50270"
+},
+{
+"nome": "One Piece",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/624b1c8d4321e200073ee421"
+},
+{
+"nome": "Os Arquivos do FBI",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/620d12a82e8ac50007c269c3"
+},
+{
+"nome": "Os Padrinhos Mágicos",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63221e41af69b500076f84e7"
+},
+{
+"nome": "Os Smurfs",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/68b88ae1943f6fb1fb2ad749"
+},
+{
+"nome": "Pegadinhas Just for Laughs (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67802a22a5d8215f99dcee30"
+},
+{
+"nome": "PFL MMA (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64f6180130ab3300083d896b"
+},
+{
+"nome": "Pluto TV Aliens",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6806d65e84f24b70109485fa"
+},
+{
+"nome": "Pluto TV Animais",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6474aa984cfc2c0008883a92"
+},
+{
+"nome": "Pluto TV Anime",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f12136385bccc00070142ed"
+},
+{
+"nome": "Pluto TV Anime Ação",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/604b79c558393100078faeef"
+},
+{
+"nome": "Pluto TV Bang Bang",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/663b9dc7cb3ea10008f1a0ce"
+},
+{
+"nome": "Pluto TV Canal UOL (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64b9370b409629000802d32b"
+},
+{
+"nome": "Pluto TV Cine Clássicos",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fa1612a669ba0000702017b"
+},
+{
+"nome": "Pluto TV Cine Comédia",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f12101f0b12f00007844c7c"
+},
+{
+"nome": "Pluto TV Cine Comédia Romântica",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62545ed3dab4380007582f7c"
+},
+{
+"nome": "Pluto TV Cine Crime",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6479ff764f5ba5000878dfe2"
+},
+{
+"nome": "Pluto TV Cine Drama",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1210d14ae1f80007bafb1d"
+},
+{
+"nome": "Pluto TV Cine Família",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f171f032cd22e0007f17f3d"
+},
+{
+"nome": "Pluto TV Cine Inspiração",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fa991b1f09e020007e78626"
+},
+{
+"nome": "Pluto TV Cine Romance",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f171f988ab9780007fa95ea"
+},
+{
+"nome": "Pluto TV Cine Sucessos",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f120e94a5714d00074576a1"
+},
+{
+"nome": "Pluto TV Cine Terror",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f12111c9e6c2c00078ef3bb"
+},
+{
+"nome": "Pluto TV Cozinha",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1ef23020a5ac0007e5e8ea"
+},
+{
+"nome": "Pluto TV Desenhos Clássicos",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/655e5c4d2c46f3000877a54b"
+},
+{
+"nome": "Pluto TV Esportes",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f32d2db0af67400077f29c4"
+},
+{
+"nome": "Pluto TV Ficção Científica",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fa15ad6367e170007cdd098"
+},
+{
+"nome": "Pluto TV Filmes Aventura",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66c79a4262e5510008ff68a5"
+},
+{
+"nome": "Pluto TV Filmes Ação",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f120f41b7d403000783a6d6"
+},
+{
+"nome": "Pluto TV Filmes de Luta",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6806d62369aec5b19cd628c0"
+},
+{
+"nome": "Pluto TV Filmes Nacionais",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f5a545d0dbf7f0007c09408"
+},
+{
+"nome": "Pluto TV História",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1ef1a8cec6be00072a7ac9"
+},
+{
+"nome": "Pluto TV Investigação",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f32cf37c9ff2b00082adbc8"
+},
+{
+"nome": "Pluto TV Junior",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f12141b146d760007934ea7"
+},
+{
+"nome": "Pluto TV Karaokê por Stingray (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/604b99d633a72b00078e05ad"
+},
+{
+"nome": "Pluto TV KFOOD",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/633ee9ba83c08f00076b60a6"
+},
+{
+"nome": "Pluto TV Kids",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1214a637c6fd00079c652f"
+},
+{
+"nome": "Pluto TV Kids Club",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66c8cae7fed35b0008580ec0"
+},
+{
+"nome": "Pluto TV Minha Obsessão Favorita",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61843f5e491af10007f7eefa"
+},
+{
+"nome": "Pluto TV Mistérios",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fac52f142044f00078e2a51"
+},
+{
+"nome": "Pluto TV MTV Classic (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66a01dcb8561260008b0a41d"
+},
+{
+"nome": "Pluto TV Natureza",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1213ba0ecebc00070e170f"
+},
+{
+"nome": "Pluto TV Negócio Fechado",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64ad7394798def00087b2bfe"
+},
+{
+"nome": "Pluto TV Netmovies",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/663b9de4f999220008230fa8"
+},
+{
+"nome": "Pluto TV Novelas",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f512365abe1f50007d3ff56"
+},
+{
+"nome": "Pluto TV Paisagens por Stingray (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/604a8dedbca75b0007b1c753"
+},
+{
+"nome": "Pluto TV Policial",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/678fdf9e3de7c8cf948e8824"
+},
+{
+"nome": "Pluto TV Record News (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6102e04e9ab1db0007a980a1"
+},
+{
+"nome": "Pluto TV Retrô",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f1212ad1728050007a523b8"
+},
+{
+"nome": "Pluto TV Shows por Stingray (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/604b91e0692f770007d9f33f"
+},
+{
+"nome": "Pluto TV Star Trek",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f99ac4fded33000078f29ab"
+},
+{
+"nome": "Pluto TV Séries Ação",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6474ab1da51cb80008bfb5f4"
+},
+{
+"nome": "Pluto TV Séries Comédia",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/655e5bc94261ca000810cb17"
+},
+{
+"nome": "Pluto TV Séries Criminais",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6474ab5cdc7a760008745008"
+},
+{
+"nome": "Pluto TV Séries Drama",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65f060d84e01740008d7421f"
+},
+{
+"nome": "Pluto TV Séries Novelescas",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/691627e4a29a6123e400b3e0"
+},
+{
+"nome": "Pluto TV Séries Sci-Fi",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63d2ba2f60bc8f0008981a0e"
+},
+{
+"nome": "Pluto TV Terror Trash",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66aa67493a4ad2000806d91b"
+},
+{
+"nome": "Pluto TV Turbo",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6014761dfb91870008ea6463"
+},
+{
+"nome": "Pluto TV Viagens",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f32d432d612e50007e56133"
+},
+{
+"nome": "Pluto TV Vida Real",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f32d4d9ec194100070c7449"
+},
+{
+"nome": "Pokémon",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/687007a8ee4155e89a8f6d67"
+},
+{
+"nome": "Popeye",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/677d93f37bffa600080795e7"
+},
+{
+"nome": "PORTATV",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69440d0611f6c6384ab78306"
+},
+{
+"nome": "Pronto-socorro: Histórias De Emergência",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/61bb72a7bf8c520007a8fd27"
+},
+{
+"nome": "RACER Brasil (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65a6818c7bdc8d0008457b21"
+},
+{
+"nome": "Realmadrid TV (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63dac28760bc8f0008a7654b"
+},
+{
+"nome": "Red Bull TV BR (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/67813f3162bf016db944c9ab"
+},
+{
+"nome": "Rookie Blue",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64ff2d8c6625510008c5a512"
+},
+{
+"nome": "Runtime",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62c5d32e2c48f9000715b6e9"
+},
+{
+"nome": "Salon Line",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66a7d0e0cd0d310008448610"
+},
+{
+"nome": "SFT Combat (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6660b636cb3ea10008429c6a"
+},
+{
+"nome": "Smithsonian Channel Pluto TV",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6298bd10d88ef000073f16b7"
+},
+{
+"nome": "Sony One Shark Tank Brasil (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6647c0b91050b60008390de4"
+},
+{
+"nome": "South Park: Coleção Cartman",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65df71008b24c80008f04281"
+},
+{
+"nome": "South Park: Coleção Kenny",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65df704366eec8000898e32f"
+},
+{
+"nome": "South Park: Coleção Kyle",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65df713dec9fda0008b7a81d"
+},
+{
+"nome": "South Park: Coleção Stan",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/65df70b0f7f0af0008c3b316"
+},
+{
+"nome": "Super Onze",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63988c2750108d00072e2686"
+},
+{
+"nome": "Tastemade (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5fd1419a3b4f4b000773ba85"
+},
+{
+"nome": "Tastemade Casa (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/68b88821e542386ab0bf5bef"
+},
+{
+"nome": "Tastemade Viagem (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/68b8875777201ec428d9eaa5"
+},
+{
+"nome": "Teletubbies",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/64e50055286f6b000838c067"
+},
+{
+"nome": "The Pet Collective (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f515ebac01c0f00080e8439"
+},
+{
+"nome": "The Walking Dead by AMC (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/678aa104680721c77c506746"
+},
+{
+"nome": "TikTok Radio Brasil (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63dac32bda711800088a2ba3"
+},
+{
+"nome": "Times Brasil | CNBC (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/679a973a97782f0008ff4bb6"
+},
+{
+"nome": "Tokusato",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5ff609de50ab210008025c1b"
+},
+{
+"nome": "Top Barça (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/6888ee858f4a4aa11feb9430"
+},
+{
+"nome": "Turma da Mônica (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/5f997e44949bc70007a6941e"
+},
+{
+"nome": "TV Cultura (720p)",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/62e010e6cd663f0007e57dc8"
+},
+{
+"nome": "UFC",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/69a20556814d27f4ae630a92"
+},
+{
+"nome": "World Poker Tour",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63eba66da8b2270008436b10"
+},
+{
+"nome": "Yu-Gi-Oh",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/63988a50be012600070f5db3"
+},
+{
+"nome": "Z Nation",
+"cat": "Pluto TV (abre no site)",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/live-tv/66b3af48d2d50d00083d6936"
+},
+{
+"nome": "Libreflix (filmes brasileiros)",
+"cat": "Grátis em outros sites",
+"logo": "",
+"url": "",
+"ext": "https://libreflix.org"
+},
+{
+"nome": "Pluto TV Filmes e Séries (sob demanda)",
+"cat": "Grátis em outros sites",
+"logo": "",
+"url": "",
+"ext": "https://pluto.tv/br/on-demand"
+},
+{
+"nome": "Samsung TV Plus",
+"cat": "Grátis em outros sites",
+"logo": "",
+"url": "",
+"ext": "https://www.samsungtvplus.com"
+},
+{
+"nome": "Canal 38",
 "cat": "Notícias",
-"logo": "https://i.imgur.com/Ht4jCab.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
+"logo": "https://i.imgur.com/co7TCWC.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8503/LVW8503_d0V5oduFlK/playlist.m3u8"
 },
 {
 "nome": "Canal Metropolitano de Noticias",
@@ -104,16 +1280,16 @@
 "url": "https://gpa-vja.otteravision.com/gpa/vja/vja.m3u8"
 },
 {
+"nome": "Adesso TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/KgetM8j.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9715/LVW9715_12B26T62tm/playlist.m3u8"
+},
+{
 "nome": "Araruna TV",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/jl39ula.png",
 "url": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8"
-},
-{
-"nome": "Boas Novas",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/ZqhizdP.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8"
 },
 {
 "nome": "Chroma TV",
@@ -222,12 +1398,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/kh3LGAP.png",
 "url": "https://video01.logicahost.com.br/websptv/websptv/playlist.m3u8"
-},
-{
-"nome": "Rede TV! Mais",
-"cat": "Variedades",
-"logo": "https://i.ibb.co/F0Tm2WP/2103f4c07b851d64b4c96955765a9a95.png",
-"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8"
 },
 {
 "nome": "SBT Nova Mutum",
@@ -344,6 +1514,12 @@
 "url": "https://stmv1.voxtvhd.com.br/9030/9030/playlist.m3u8"
 },
 {
+"nome": "TV Vila Real",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/Z1uWe7g.png",
+"url": "https://cdn.jmvstream.com/w/LVW-10841/LVW10841_mT77z9o2cP/playlist.m3u8"
+},
+{
 "nome": "TV+Pet",
 "cat": "Variedades",
 "logo": "https://www.tvmaispet.com.br/images/tvpet-logo.png",
@@ -378,6 +1554,12 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/m0RVb79.png",
 "url": "https://umatv.nuvemplay.live/hls/stream.m3u8"
+},
+{
+"nome": "VEJA+ TV",
+"cat": "Variedades",
+"logo": "",
+"url": "https://gpa-vja-samsungtvplus-br.otteravision.com/gpa/vja/vja.m3u8"
 },
 {
 "nome": "FIFA+ Portuguese",
