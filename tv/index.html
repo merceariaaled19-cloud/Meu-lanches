@@ -67,10 +67,10 @@ video{width:100%;aspect-ratio:16/9;background:#000;display:block}
 body{background:#0a0a0c}
 #intro{position:fixed;inset:0;background:#000;z-index:100;display:flex;align-items:center;justify-content:center;transition:opacity .6s}
 #intro canvas{position:absolute;inset:0;width:100%;height:100%}
-#intro .logo{position:relative;font-size:min(16vw,110px);font-weight:900;letter-spacing:2px;color:#fff;opacity:0;transform:scale(.6);animation:lg 1.4s .5s forwards;text-shadow:0 0 30px #e11d48aa}
+#intro .logo{position:relative;font-size:min(16vw,110px);font-weight:900;letter-spacing:2px;color:#fff;opacity:0;transform:scale(.6);animation:lg 3.2s .8s cubic-bezier(.2,.7,.2,1) forwards;text-shadow:0 0 30px #e11d48aa}
 #intro .logo b{color:#e11d48}
 #intro small{position:absolute;bottom:8%;color:#94a3b8;font-size:13px}
-@keyframes lg{60%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+@keyframes lg{0%{opacity:0;transform:scale(.6);filter:blur(8px)}70%{opacity:1;transform:scale(1.05);filter:blur(0)}100%{opacity:1;transform:scale(1)}}
 #home{padding:14px 18px 30px;display:none}
 #home.on{display:block}
 .hTop{display:flex;align-items:center;gap:14px;margin-bottom:16px}
@@ -349,20 +349,20 @@ $('#ytX').onclick = () => { $('#ytBox').innerHTML = ''; $('#yt').classList.remov
   const cv = $('#fw'), ctx = cv.getContext('2d'); let W, H, ps = [], fim = false;
   function rs() { W = cv.width = innerWidth; H = cv.height = innerHeight; } rs(); addEventListener('resize', rs);
   const cores = ['#e11d48', '#facc15', '#ffffff', '#f97316', '#38bdf8'];
-  function boom(x, y) { const c = cores[Math.random() * cores.length | 0]; for (let i = 0; i < 70; i++) { const a = Math.random() * 6.283, v = Math.random() * 5 + 1.5; ps.push({x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, l: 1, c}); } }
+  function boom(x, y) { const c = cores[Math.random() * cores.length | 0]; for (let i = 0; i < 70; i++) { const a = Math.random() * 6.283, v = Math.random() * 2.2 + .6; ps.push({x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, l: 1, c}); } }
   let t = 0;
   function loop() {
     if (fim) return; t++;
-    ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(0, 0, W, H);
-    if (t % 18 === 1) boom(W * (.15 + Math.random() * .7), H * (.2 + Math.random() * .45));
+    ctx.fillStyle = 'rgba(0,0,0,.09)'; ctx.fillRect(0, 0, W, H);
+    if (t % 40 === 1) boom(W * (.15 + Math.random() * .7), H * (.2 + Math.random() * .45));
     ps = ps.filter(p => p.l > 0);
-    ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += .06; p.vx *= .985; p.l -= .016; ctx.globalAlpha = Math.max(p.l, 0); ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, 3, 3); });
+    ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.vy += .012; p.vx *= .995; p.l -= .0055; ctx.globalAlpha = Math.max(p.l, 0); ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, 3.5, 3.5); });
     ctx.globalAlpha = 1; requestAnimationFrame(loop);
   }
   loop();
   function sair() { if (fim) return; fim = true; $('#intro').style.opacity = 0; setTimeout(() => $('#intro').remove(), 600); const b = document.querySelector('.tl.big'); if (b) b.focus(); }
   $('#intro').onclick = sair; addEventListener('keydown', sair, {once: true});
-  setTimeout(sair, 3800);
+  setTimeout(sair, 6500);
 })();
 
 // ===== Tela inicial =====
