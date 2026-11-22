@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Empresta Certo</title>
+<meta name="theme-color" content="#1e3a8a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Roboto,Arial,sans-serif;background:#f1f5f9;color:#0f172a;padding-bottom:76px}
+header{background:#1e3a8a;color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}header h1{margin:0;font-size:20px}header small{opacity:.8}
+main{padding:12px;max-width:640px;margin:auto}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px #0001}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.k{background:#fff;border-radius:14px;padding:12px;box-shadow:0 1px 3px #0001}.k b{display:block;font-size:20px;margin-top:4px}.k span{font-size:13px;color:#475569}
+.k.r b{color:#b91c1c}.k.g b{color:#15803d}.k.a b{color:#b45309}
+h2{font-size:17px;margin:4px 0 10px}
+label{display:block;font-size:14px;color:#334155;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff}
+button{border:0;border-radius:10px;padding:12px 14px;font-size:15px;font-weight:600;cursor:pointer}
+.b1{background:#1e3a8a;color:#fff;width:100%;margin-top:14px}.b2{background:#e2e8f0;color:#0f172a}.bz{background:#16a34a;color:#fff}.bv{background:#dc2626;color:#fff}.bp{padding:8px 10px;font-size:14px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #e2e8f0;z-index:6}
+nav button{flex:1;background:none;border-radius:0;padding:10px 2px;font-size:12px;color:#64748b}nav button.on{color:#1e3a8a}nav button i{display:block;font-style:normal;font-size:20px}
+.parc{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-top:1px solid #f1f5f9;flex-wrap:wrap}
+.tag{font-size:12px;padding:3px 8px;border-radius:99px;font-weight:600}.t-ok{background:#dcfce7;color:#166534}.t-at{background:#fee2e2;color:#991b1b}.t-hj{background:#fef3c7;color:#92400e}.t-ab{background:#e0e7ff;color:#3730a3}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+.muted{color:#64748b;font-size:13px}.aviso{background:#fef3c7;color:#78350f;border-radius:10px;padding:10px;font-size:13px;margin-top:8px}
+.cli{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid #f1f5f9;cursor:pointer}
+#modal{position:fixed;inset:0;background:#0007;display:none;align-items:flex-end;justify-content:center;z-index:20}#modal .card{width:100%;max-width:640px;margin:0;border-radius:16px 16px 0 0;max-height:90vh;overflow:auto}
+.vazio{text-align:center;color:#64748b;padding:20px}
+</style>
+</head>
+<body>
+<header><h1>💰 Empresta Certo</h1><small>Controle dos seus empréstimos</small></header>
+<main id="tela"></main>
+<nav>
+<button data-t="inicio" class="on"><i>🏠</i>Início</button>
+<button data-t="clientes"><i>👥</i>Clientes</button>
+<button data-t="novo"><i>➕</i>Emprestar</button>
+<button data-t="ajustes"><i>⚙️</i>Backup</button>
+</nav>
+<div id="modal"><div class="card" id="mc"></div></div>
+<script>
+var DB = carrega();
+function carrega(){ try { return JSON.parse(localStorage.getItem('emp_db')) || {clientes: [], emps: []}; } catch(e){ return {clientes: [], emps: []}; } }
+function salva(){ localStorage.setItem('emp_db', JSON.stringify(DB)); }
+function id(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function $(s){ return document.querySelector(s); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function reais(v){ return 'R$ ' + (Math.round(v * 100) / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+function num(s){ return parseFloat(String(s).replace(/\./g, '').replace(',', '.')) || 0; }
+function hoje(){ var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function dBR(s){ var p = s.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
+function soma(d, freq, n){
+  var x = new Date(d + 'T12:00:00');
+  if (freq === 'mensal') x.setMonth(x.getMonth() + n);
+  else x.setDate(x.getDate() + n * ({quinzenal: 15, semanal: 7, diaria: 1})[freq]);
+  return x.toISOString().slice(0, 10);
+}
+function cli(cid){ return DB.clientes.filter(function(c){ return c.id === cid; })[0] || {nome: '(apagado)', tel: ''}; }
+function falta(p){ return Math.max(0, Math.round((p.valor - p.pago) * 100) / 100); }
+function status(p){ if (falta(p) <= 0) return 'ok'; if (p.venc < hoje()) return 'at'; if (p.venc === hoje()) return 'hj'; return 'ab'; }
+var ROT = {ok: 'Pago', at: 'Atrasada', hj: 'Vence hoje', ab: 'Em aberto'};
+function saldoEmp(e){ return e.parcelas.reduce(function(s, p){ return s + falta(p); }, 0); }
+function saldoCli(cid){ return DB.emps.filter(function(e){ return e.cli === cid; }).reduce(function(s, e){ return s + saldoEmp(e); }, 0); }
+function zap(tel, txt){ var t = String(tel || '').replace(/\D/g, ''); if (t && t.length <= 11) t = '55' + t; window.open('https://wa.me/' + t + '?text=' + encodeURIComponent(txt), '_blank'); }
+function abre(html){ $('#mc').innerHTML = html; $('#modal').style.display = 'flex'; }
+function fecha(){ $('#modal').style.display = 'none'; }
+$('#modal').onclick = function(e){ if (e.target.id === 'modal') fecha(); };
+
+var ABA = 'inicio';
+document.querySelectorAll('nav button').forEach(function(b){ b.onclick = function(){ vai(b.dataset.t); }; });
+function vai(t, arg){ ABA = t; document.querySelectorAll('nav button').forEach(function(b){ b.classList.toggle('on', b.dataset.t === t); }); window.scrollTo(0, 0); TELAS[t](arg); }
+
+var TELAS = {
+inicio: function(){
+  var emp = 0, rec = 0, aber = 0, atr = 0, lista = [];
+  DB.emps.forEach(function(e){
+    emp += e.valor;
+    e.parcelas.forEach(function(p, i){
+      rec += p.pago; aber += falta(p);
+      var s = status(p); if (s === 'at') atr += falta(p);
+      if (s === 'at' || s === 'hj' || (s === 'ab' && p.venc <= soma(hoje(), 'diaria', 7))) lista.push({e: e, p: p, i: i, s: s});
+    });
+  });
+  lista.sort(function(a, b){ return a.p.venc < b.p.venc ? -1 : 1; });
+  var h = '<div class="grid" style="margin-bottom:12px">' +
+    '<div class="k"><span>Emprestado</span><b>' + reais(emp) + '</b></div>' +
+    '<div class="k a"><span>A receber</span><b>' + reais(aber) + '</b></div>' +
+    '<div class="k g"><span>Já recebido</span><b>' + reais(rec) + '</b></div>' +
+    '<div class="k r"><span>Atrasado</span><b>' + reais(atr) + '</b></div></div>';
+  h += '<div class="card"><h2>📅 Atrasadas e próximos 7 dias</h2>';
+  if (!lista.length) h += '<div class="vazio">Nada vencendo agora 👍</div>';
+  lista.forEach(function(x){ h += linhaParc(x.e, x.p, x.i, true); });
+  h += '</div>';
+  if (!DB.emps.length) h += '<div class="card vazio">Comece cadastrando um cliente e depois toque em <b>➕ Emprestar</b>.</div>';
+  $('#tela').innerHTML = h;
+},
+clientes: function(){
+  var h = '<div class="card"><h2>👥 Clientes</h2><input id="bc" placeholder="Procurar nome..." oninput="filtraCli()"><div id="lc"></div>' +
+    '<button class="b1" onclick="formCli()">+ Novo cliente</button></div>';
+  $('#tela').innerHTML = h; filtraCli();
+},
+novo: function(cid){
+  if (!DB.clientes.length){ $('#tela').innerHTML = '<div class="card vazio">Cadastre um cliente primeiro.<button class="b1" onclick="formCli(null,true)">+ Novo cliente</button></div>'; return; }
+  var ops = DB.clientes.slice().sort(function(a, b){ return a.nome.localeCompare(b.nome); }).map(function(c){ return '<option value="' + c.id + '"' + (c.id === cid ? ' selected' : '') + '>' + esc(c.nome) + '</option>'; }).join('');
+  $('#tela').innerHTML = '<div class="card"><h2>➕ Novo empréstimo</h2>' +
+    '<label>Cliente</label><select id="ncli">' + ops + '</select>' +
+    '<label>Valor emprestado (R$)</label><input id="nval" inputmode="decimal" placeholder="Ex: 500" oninput="previa()">' +
+    '<label>Juros por mês (%)</label><input id="njur" inputmode="decimal" value="0" oninput="previa()">' +
+    '<div class="aviso">⚠️ Entre pessoas, a lei limita os juros (por volta de 1% ao mês). Cobrar acima disso é agiotagem, que é crime.</div>' +
+    '<div class="row"><div><label>Parcelas</label><input id="nnp" type="number" min="1" value="1" oninput="previa()"></div>' +
+    '<div><label>Pagamento</label><select id="nfr" onchange="previa()"><option value="mensal">Mensal</option><option value="quinzenal">Quinzenal</option><option value="semanal">Semanal</option><option value="diaria">Diário</option></select></div></div>' +
+    '<div class="row"><div><label>Data do empréstimo</label><input id="ndt" type="date" value="' + hoje() + '" onchange="previa()"></div>' +
+    '<div><label>1º vencimento</label><input id="nv1" type="date" value="' + soma(hoje(), 'mensal', 1) + '" onchange="previa()"></div></div>' +
+    '<label>Observação</label><input id="nobs" placeholder="Opcional">' +
+    '<div id="prev" class="muted" style="margin-top:10px"></div>' +
+    '<button class="b1" onclick="criaEmp()">Salvar empréstimo</button></div>';
+  previa();
+},
+ajustes: function(){
+  $('#tela').innerHTML = '<div class="card"><h2>💾 Backup</h2><p class="muted">Os dados ficam só neste celular. Faça backup de vez em quando e guarde o arquivo (no Drive ou WhatsApp) para não perder se trocar de celular.</p>' +
+    '<button class="b1" onclick="exporta()">⬇️ Salvar backup</button>' +
+    '<label>Restaurar backup</label><input type="file" accept=".json,application/json" onchange="importa(this)"></div>' +
+    '<div class="card"><h2>🔔 Avisos</h2><p class="muted">Ao abrir o app, ele avisa se tem parcela vencendo hoje ou atrasada.</p><button class="b1" onclick="pedeAviso()">Ativar avisos</button></div>' +
+    '<div class="card"><button class="bv" style="width:100%" onclick="zera()">Apagar todos os dados</button></div>';
+}
+};
+
+function linhaParc(e, p, i, comNome){
+  var s = status(p), c = cli(e.cli);
+  return '<div class="parc"><div>' + (comNome ? '<b>' + esc(c.nome) + '</b><br>' : '') +
+    'Parcela ' + (i + 1) + '/' + e.parcelas.length + ' · ' + dBR(p.venc) + '<br><span class="muted">' + reais(p.valor) + (p.pago > 0 && falta(p) > 0 ? ' · falta ' + reais(falta(p)) : '') + '</span></div>' +
+    '<div class="row" style="flex:0 0 auto;align-items:center"><span class="tag t-' + s + '">' + ROT[s] + '</span>' +
+    (s !== 'ok' ? '<button class="bz bp" onclick="receber(\'' + e.id + '\',' + i + ')">Receber</button>' : '') +
+    (s !== 'ok' && c.tel ? '<button class="b2 bp" onclick="lembra(\'' + e.id + '\',' + i + ')">📲</button>' : '') + '</div></div>';
+}
+function filtraCli(){
+  var q = ($('#bc').value || '').toLowerCase();
+  var l = DB.clientes.filter(function(c){ return c.nome.toLowerCase().indexOf(q) >= 0; }).sort(function(a, b){ return saldoCli(b.id) - saldoCli(a.id) || a.nome.localeCompare(b.nome); });
+  $('#lc').innerHTML = l.length ? l.map(function(c){ var s = saldoCli(c.id); return '<div class="cli" onclick="verCli(\'' + c.id + '\')"><div><b>' + esc(c.nome) + '</b><br><span class="muted">' + esc(c.tel || 'sem telefone') + '</span></div><b style="color:' + (s > 0 ? '#b45309' : '#15803d') + '">' + (s > 0 ? reais(s) : 'em dia') + '</b></div>'; }).join('') : '<div class="vazio">Nenhum cliente.</div>';
+}
+function formCli(cid, depoisEmprestar){
+  var c = cid ? cli(cid) : {nome: '', tel: '', obs: ''};
+  abre('<h2>' + (cid ? 'Editar' : 'Novo') + ' cliente</h2><label>Nome</label><input id="cn" value="' + esc(c.nome) + '"><label>WhatsApp (com DDD)</label><input id="ct" inputmode="tel" placeholder="92 99999-9999" value="' + esc(c.tel) + '"><label>Observação / endereço</label><input id="co" value="' + esc(c.obs) + '">' +
+    '<button class="b1" onclick="salvaCli(\'' + (cid || '') + '\',' + !!depoisEmprestar + ')">Salvar</button>' + (cid ? '<button class="bv" style="width:100%;margin-top:8px" onclick="apagaCli(\'' + cid + '\')">Apagar cliente</button>' : '') + '<button class="b2" style="width:100%;margin-top:8px" onclick="fecha()">Cancelar</button>');
+}
+function salvaCli(cid, dep){
+  var n = $('#cn').value.trim(); if (!n){ alert('Coloque o nome.'); return; }
+  var c; if (cid){ c = cli(cid); } else { c = {id: id()}; DB.clientes.push(c); }
+  c.nome = n; c.tel = $('#ct').value.trim(); c.obs = $('#co').value.trim(); salva(); fecha();
+  if (dep) vai('novo', c.id); else if (ABA === 'clientes') TELAS.clientes(); else verCli(c.id);
+}
+function apagaCli(cid){
+  if (saldoCli(cid) > 0 && !confirm('Esse cliente ainda deve. Apagar mesmo assim, junto com os empréstimos?')) return;
+  if (!confirm('Apagar cliente?')) return;
+  DB.clientes = DB.clientes.filter(function(c){ return c.id !== cid; }); DB.emps = DB.emps.filter(function(e){ return e.cli !== cid; }); salva(); fecha(); vai('clientes');
+}
+function verCli(cid){
+  var c = cli(cid), es = DB.emps.filter(function(e){ return e.cli === cid; });
+  var h = '<div class="card"><button class="b2 bp" onclick="vai(\'clientes\')">← Voltar</button><h2 style="margin-top:12px">' + esc(c.nome) + '</h2><div class="muted">' + esc(c.tel || 'sem telefone') + (c.obs ? ' · ' + esc(c.obs) : '') + '</div>' +
+    '<p>Deve no total: <b>' + reais(saldoCli(cid)) + '</b></p><div class="row"><button class="b2" onclick="formCli(\'' + cid + '\')">✏️ Editar</button><button class="bz" onclick="vai(\'novo\',\'' + cid + '\')">➕ Emprestar</button></div></div>';
+  if (!es.length) h += '<div class="card vazio">Nenhum empréstimo.</div>';
+  es.slice().reverse().forEach(function(e){
+    var tot = e.parcelas.reduce(function(s, p){ return s + p.valor; }, 0);
+    h += '<div class="card"><b>' + reais(e.valor) + '</b> em ' + dBR(e.data) + (e.juros ? ' · ' + String(e.juros).replace('.', ',') + '% ao mês' : ' · sem juros') + '<br><span class="muted">Total a pagar ' + reais(tot) + ' · falta ' + reais(saldoEmp(e)) + (e.obs ? ' · ' + esc(e.obs) : '') + '</span>';
+    e.parcelas.forEach(function(p, i){ h += linhaParc(e, p, i, false); });
+    h += '<div class="row" style="margin-top:8px">' + (c.tel ? '<button class="b2 bp" onclick="extrato(\'' + e.id + '\')">📲 Enviar extrato</button>' : '') + '<button class="b2 bp" onclick="apagaEmp(\'' + e.id + '\')">🗑️ Apagar</button></div></div>';
+  });
+  $('#tela').innerHTML = h; window.scrollTo(0, 0);
+}
+function calc(){
+  var v = num($('#nval').value), j = num($('#njur').value), n = Math.max(1, parseInt($('#nnp').value) || 1), fr = $('#nfr').value;
+  var meses = {mensal: 1, quinzenal: 0.5, semanal: 7 / 30, diaria: 1 / 30}[fr] * n;
+  var tot = Math.round(v * (1 + j / 100 * meses) * 100) / 100, pv = Math.floor(tot / n * 100) / 100;
+  return {v: v, j: j, n: n, fr: fr, tot: tot, pv: pv, ult: Math.round((tot - pv * (n - 1)) * 100) / 100};
+}
+var V1MEXEU = false;
+function previa(){
+  var c = calc(), el = document.activeElement;
+  if (el && el.id === 'nv1') V1MEXEU = true;
+  if (!V1MEXEU && el && (el.id === 'nfr' || el.id === 'ndt')) $('#nv1').value = soma($('#ndt').value || hoje(), c.fr, 1);
+  $('#prev').innerHTML = c.v ? 'Total a receber: <b>' + reais(c.tot) + '</b> em ' + c.n + 'x de ' + reais(c.pv) + (c.ult !== c.pv ? ' (última ' + reais(c.ult) + ')' : '') + (c.j ? ' · juros ' + reais(c.tot - c.v) : '') : '';
+}
+function criaEmp(){
+  var c = calc(); if (!c.v){ alert('Coloque o valor.'); return; }
+  if (c.j > 1 && !confirm('Juros acima de 1% ao mês podem ser considerados agiotagem pela lei. Salvar mesmo assim?')) return;
+  var v1 = $('#nv1').value || soma(hoje(), c.fr, 1), ps = [];
+  for (var i = 0; i < c.n; i++) ps.push({venc: soma(v1, c.fr, i), valor: i === c.n - 1 ? c.ult : c.pv, pago: 0, hist: []});
+  var e = {id: id(), cli: $('#ncli').value, valor: c.v, juros: c.j, freq: c.fr, data: $('#ndt').value || hoje(), obs: $('#nobs').value.trim(), parcelas: ps};
+  DB.emps.push(e); salva(); V1MEXEU = false; verCli(e.cli);
+}
+function achaEmp(eid){ return DB.emps.filter(function(e){ return e.id === eid; })[0]; }
+function apagaEmp(eid){ var e = achaEmp(eid); if (!confirm('Apagar esse empréstimo?')) return; DB.emps = DB.emps.filter(function(x){ return x.id !== eid; }); salva(); verCli(e.cli); }
+function receber(eid, i){
+  var e = achaEmp(eid), p = e.parcelas[i];
+  abre('<h2>Receber parcela ' + (i + 1) + '</h2><div class="muted">' + esc(cli(e.cli).nome) + ' · vence ' + dBR(p.venc) + '</div><label>Valor recebido (R$)</label><input id="rv" inputmode="decimal" value="' + falta(p).toFixed(2).replace('.', ',') + '"><label>Data</label><input id="rd" type="date" value="' + hoje() + '">' +
+    '<button class="b1" onclick="confReceber(\'' + eid + '\',' + i + ')">Confirmar</button><button class="b2" style="width:100%;margin-top:8px" onclick="fecha()">Cancelar</button>');
+}
+function confReceber(eid, i){
+  var e = achaEmp(eid), v = num($('#rv').value), d = $('#rd').value || hoje(); if (v <= 0){ alert('Valor inválido.'); return; }
+  var resto = v;
+  for (var k = i; k < e.parcelas.length && resto > 0.001; k++){ var p = e.parcelas[k], f = falta(p), u = Math.min(f, resto); if (u > 0){ p.pago = Math.round((p.pago + u) * 100) / 100; p.hist.push({d: d, v: u}); resto -= u; } }
+  salva(); var c = cli(e.cli);
+  abre('<h2>✅ Recebido ' + reais(v) + '</h2><p>' + esc(c.nome) + ' agora deve <b>' + reais(saldoCli(e.cli)) + '</b>.</p>' + (c.tel ? '<button class="b1 bz" onclick="recibo(\'' + eid + '\',' + v + ',\'' + d + '\')">📲 Mandar recibo no WhatsApp</button>' : '') + '<button class="b2" style="width:100%;margin-top:8px" onclick="fecha();refaz(\'' + e.cli + '\')">Fechar</button>');
+}
+function refaz(cid){ if (ABA === 'inicio') TELAS.inicio(); else verCli(cid); }
+function recibo(eid, v, d){
+  var e = achaEmp(eid), c = cli(e.cli);
+  zap(c.tel, 'Olá, ' + c.nome + '! Recebi ' + reais(v) + ' em ' + dBR(d) + '. Obrigado!\nSaldo que falta: ' + reais(saldoEmp(e)) + '.\n— Recibo Empresta Certo');
+  fecha(); refaz(e.cli);
+}
+function lembra(eid, i){
+  var e = achaEmp(eid), p = e.parcelas[i], c = cli(e.cli), s = status(p);
+  zap(c.tel, 'Olá, ' + c.nome + '! Tudo bem? Passando pra lembrar da parcela ' + (i + 1) + ' de ' + reais(falta(p)) + (s === 'at' ? ', que venceu em ' : s === 'hj' ? ', que vence hoje (' : ', que vence em ') + dBR(p.venc) + (s === 'hj' ? ')' : '') + '. Qualquer coisa me avisa. Obrigado!');
+}
+function extrato(eid){
+  var e = achaEmp(eid), c = cli(e.cli);
+  var t = 'Olá, ' + c.nome + '! Segue o resumo do empréstimo de ' + reais(e.valor) + ' (' + dBR(e.data) + '):\n';
+  e.parcelas.forEach(function(p, i){ t += '\n' + (i + 1) + 'ª ' + dBR(p.venc) + ' — ' + reais(p.valor) + ' — ' + (falta(p) <= 0 ? 'paga ✅' : p.pago > 0 ? 'falta ' + reais(falta(p)) : ROT[status(p)].toLowerCase()); });
+  zap(c.tel, t + '\n\nFalta no total: ' + reais(saldoEmp(e)) + '.');
+}
+function exporta(){
+  var b = new Blob([JSON.stringify(DB)], {type: 'application/json'}), a = document.createElement('a');
+  a.href = URL.createObjectURL(b); a.download = 'emprestimos-backup-' + hoje() + '.json'; a.click();
+}
+function importa(inp){
+  var f = inp.files[0]; if (!f) return; var r = new FileReader();
+  r.onload = function(){ try { var d = JSON.parse(r.result); if (!d.clientes || !d.emps) throw 0; if (!confirm('Trocar os dados atuais pelos do backup?')) return; DB = d; salva(); alert('Backup restaurado!'); vai('inicio'); } catch(e){ alert('Arquivo inválido.'); } };
+  r.readAsText(f);
+}
+function zera(){ if (confirm('Apagar TUDO? Não tem volta.') && confirm('Tem certeza mesmo?')){ DB = {clientes: [], emps: []}; salva(); vai('inicio'); } }
+function pedeAviso(){ if (!('Notification' in window)){ alert('Este celular não aceita avisos.'); return; } Notification.requestPermission().then(function(p){ alert(p === 'granted' ? 'Avisos ativados!' : 'Avisos não liberados.'); if (p === 'granted'){ localStorage.removeItem('emp_av'); avisa(); } }); }
+function avisa(){
+  if (!('Notification' in window) || Notification.permission !== 'granted' || localStorage.getItem('emp_av') === hoje()) return;
+  var at = 0, hj = 0; DB.emps.forEach(function(e){ e.parcelas.forEach(function(p){ var s = status(p); if (s === 'at') at++; if (s === 'hj') hj++; }); });
+  if (!at && !hj) return; localStorage.setItem('emp_av', hoje());
+  var txt = (hj ? hj + ' parcela(s) vencem hoje' : '') + (hj && at ? ' e ' : '') + (at ? at + ' atrasada(s)' : '') + '.';
+  navigator.serviceWorker.ready.then(function(r){ r.showNotification('💰 Empresta Certo', {body: txt, icon: 'icon-192.png', tag: 'emp'}); });
+}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(function(){ avisa(); });
+vai('inicio');
+</script>
+</body>
+</html>
