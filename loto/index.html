@@ -17,7 +17,7 @@ h2{font-size:16px;margin:0 0 8px;color:var(--c)}.mut{color:#66756e;font-size:13p
 .jg{border-top:1px dashed #d5ddd9;padding:10px 0}.jg:first-child{border-top:0}.cod{font-family:monospace;font-size:12px;color:#66756e}
 .selo{display:inline-block;background:#dcfce7;color:#166534;font-size:11px;border-radius:8px;padding:2px 7px;font-weight:bold}
 .pre{font-size:22px;font-weight:900;color:var(--c)}.aviso{font-size:12px;color:#66756e;text-align:center;margin:14px 0 30px}
-.tabs{display:flex;gap:6px;margin-bottom:8px}.tabs button{flex:1;border:0;padding:8px;border-radius:10px;background:#e8ecea;font-weight:bold}.tabs button.on{background:var(--c);color:#fff}
+.tabs{display:flex;gap:6px;margin-bottom:8px}.tabs button{flex:1;border:0;padding:8px 3px;font-size:13px;border-radius:10px;background:#e8ecea;font-weight:bold}.tabs button.on{background:var(--c);color:#fff}
 #load{text-align:center;padding:40px;color:#66756e}
 </style></head><body>
 <header><h1>🍀 Loto Palpite</h1><small id="sub">Jogos inéditos com os números que mais saem</small></header>
@@ -76,9 +76,10 @@ var ULT=[];
 function tela(){var g=G[J],d=D[J],s=stats(J),m=$('main');$('sub').textContent=g.n+' • '+d.n+' concursos analisados';
  var h='<div class="card"><h2>Último resultado • concurso '+d.ultimo+' ('+d.data+')</h2>'+(J=='duplasena'?bolas(d.dezenas.slice(0,6),'p')+bolas(d.dezenas.slice(6),'p'):bolas(d.dezenas,'p'))+extra({trevos:d.trevos,mes:d.mes,time:d.time})+
  (d.prox?'<div class="mut" style="margin-top:6px">Próximo sorteio: <b>'+d.prox+'</b>'+(d.acumulou?' • acumulou!':'')+'</div>':'')+(d.premio?'<div class="pre">'+brl(d.premio)+'</div>':'')+'</div>';
- h+='<div class="tabs"><button id="tG">🎲 Gerar</button><button id="tE">📊 Mais saem</button><button id="tM">📋 Meus jogos</button></div><div id="aba"></div><p class="aviso">Os jogos gerados nunca saíram em nenhum concurso e não se repetem. O sorteio da Caixa é aleatório: a estatística ajuda a escolher, mas não garante prêmio.</p>';
- m.innerHTML=h;$('tG').onclick=function(){ABA='gerar';aba()};$('tE').onclick=function(){ABA='est';aba()};$('tM').onclick=function(){ABA='meus';aba()};aba()}
-function aba(){['tG','tE','tM'].forEach(function(i){$(i).className=''});$({gerar:'tG',est:'tE',meus:'tM'}[ABA]).className='on';var a=$('aba'),g=G[J],s=stats(J);
+ h+='<div class="tabs"><button id="tG">🎲 Gerar</button><button id="tE">📊 Mais saem</button><button id="tM">📋 Meus jogos</button><button id="tB">👥 Bolão</button></div><div id="aba"></div><p class="aviso">Os jogos gerados nunca saíram em nenhum concurso e não se repetem. O sorteio da Caixa é aleatório: a estatística ajuda a escolher, mas não garante prêmio.</p>';
+ m.innerHTML=h;$('tG').onclick=function(){ABA='gerar';aba()};$('tE').onclick=function(){ABA='est';aba()};$('tM').onclick=function(){ABA='meus';aba()};$('tB').onclick=function(){ABA='bolao';aba()};aba()}
+function aba(){['tG','tE','tM','tB'].forEach(function(i){$(i).className=''});$({gerar:'tG',est:'tE',meus:'tM',bolao:'tB'}[ABA]).className='on';var a=$('aba'),g=G[J],s=stats(J);
+ if(ABA=='bolao'){abaBolao(a);return}
  if(ABA=='gerar'){var op='';for(var q=g.pick[0];q<=g.pick[1];q++)op+='<option>'+q+'</option>';
   a.innerHTML='<div class="card"><div class="row"><label>Números por jogo <select id="qtd" '+(g.pick[0]==g.pick[1]?'disabled':'')+'>'+op+'</select></label><label>Quantos jogos <select id="nq"><option>1</option><option selected>3</option><option>5</option><option>10</option></select></label></div>'+
   '<div class="row" style="margin-top:8px"><label>Estratégia <select id="modo">'+(J=="supersete"?"":'<option value="auto">⭐ Recomendado pra este jogo</option><option value="top3">⭐ 3 dos que mais saem + resto inédito</option><option value="top2">⭐ 2 dos que mais saem + resto inédito</option>')+'<option value="quente">🔥 Os que mais saem</option><option value="equil">⚖️ Equilibrado</option><option value="atrasado">⏳ Atrasados (não saem há tempo)</option></select></label></div>'+
@@ -100,6 +101,51 @@ function mostra(){var r=$('res');if(!r)return;r.innerHTML='<div class="card"><h2
  (ULT.length>1?'<button class="btn" id="zt" style="background:#25d366">Mandar todos no WhatsApp</button>':'')+'</div>';
  r.querySelectorAll('[data-c]').forEach(function(b){b.onclick=function(){copia(texto(ULT[+b.dataset.c]),b)}});r.querySelectorAll('[data-z]').forEach(function(b){b.onclick=function(){zap(texto(ULT[+b.dataset.z]))}});
  if($('zt'))$('zt').onclick=function(){zap(ULT.map(texto).join('\n\n'))};r.scrollIntoView({behavior:'smooth'})}
+
+/* ===== Bolão ===== */
+var PRECO={megasena:6,lotofacil:3.5,quina:3,duplasena:3,lotomania:3,timemania:3.5,diadesorte:2.5,maismilionaria:6,supersete:3};
+function comb(n,k){var r=1;for(var i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r)}
+function precoJogo(j,q){var g=G[j];if(g.pick[0]==g.pick[1])return PRECO[j];return PRECO[j]*comb(q,g.pick[0])}
+function reais(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function bols(){try{return JSON.parse(localStorage.lpBol||'[]')}catch(e){return[]}}
+function salvaBols(l){localStorage.lpBol=JSON.stringify(l)}
+function abaBolao(a){var g=G[J],op='';for(var q=g.pick[0];q<=g.pick[1];q++)op+='<option value="'+q+'">'+q+' números • '+reais(precoJogo(J,q))+'</option>';
+ a.innerHTML='<div class="card"><h2>👥 Montar bolão da '+g.n+'</h2>'+
+ '<label>Nome do bolão <input id="bNome" placeholder="Ex.: Bolão da Taberna" style="width:100%"></label>'+
+ '<div class="row" style="margin-top:8px"><label>Números por jogo <select id="bQtd" '+(g.pick[0]==g.pick[1]?'disabled':'')+'>'+op+'</select></label><label>Quantos jogos <select id="bNq">'+[2,3,5,10,15,20,30,50].map(function(n){return '<option'+(n==5?' selected':'')+'>'+n+'</option>'}).join('')+'</select></label></div>'+
+ '<div class="row" style="margin-top:8px"><label>Estratégia <select id="bModo">'+(J=="supersete"?"":'<option value="auto">⭐ Recomendado pra este jogo</option><option value="top3">⭐ 3 dos que mais saem + resto inédito</option><option value="top2">⭐ 2 dos que mais saem + resto inédito</option>')+'<option value="quente">🔥 Os que mais saem</option><option value="equil">⚖️ Equilibrado</option><option value="atrasado">⏳ Atrasados</option></select></label></div>'+
+ '<label style="display:block;margin-top:8px">Participantes (um nome por linha)<textarea id="bPes" rows="5" placeholder="João&#10;Maria&#10;Pedro" style="width:100%"></textarea></label>'+
+ '<div class="mut" id="bConta" style="margin:6px 0"></div>'+
+ '<button class="btn" id="bGera">Gerar bolão com jogos inéditos</button></div><div id="bRes"></div><div id="bLista"></div>';
+ function conta(){var p=pessoas(),q=+$('bQtd').value||g.pick[0],n=+$('bNq').value,t=precoJogo(J,q)*n;$('bConta').innerHTML='Total: <b>'+reais(t)+'</b>'+(p.length?' • '+p.length+' cota(s) de <b>'+reais(t/p.length)+'</b>':'')}
+ function pessoas(){return $('bPes').value.split('\n').map(function(x){return x.trim()}).filter(Boolean)}
+ ['bQtd','bNq','bPes'].forEach(function(i){$(i).oninput=conta;$(i).onchange=conta});conta();
+ $('bGera').onclick=function(){var p=pessoas();if(!p.length&&!confirm('Gerar sem participantes? Você pode anotar depois.'))return;
+  var q=+$('bQtd').value||g.pick[0],n=+$('bNq').value,js=gerar(q,$('bModo').value,n);if(!js.length){alert('Não consegui gerar jogos novos. Tente outra estratégia.');return}salvar(js);
+  var b={id:Date.now(),j:J,nome:$('bNome').value.trim()||('Bolão '+g.n),con:D[J].ultimo+1,q:q,jogos:js.map(function(x){return{str:x.str,cod:x.cod,trevos:x.trevos,mes:x.mes,time:x.time}}),pes:p.map(function(x){return{n:x,pg:false}}),total:precoJogo(J,q)*js.length};
+  var l=bols();l.unshift(b);salvaBols(l);mostraBol(b.id)};
+ listaBol()}
+function txtBol(b){var g=G[b.j],c=b.pes.length?b.total/b.pes.length:0;
+ return '🍀 '+b.nome+' • '+g.n+' (concurso '+b.con+')\n\n'+b.jogos.map(function(x,i){return 'Jogo '+(i+1)+': '+(b.j=='supersete'?x.str.split('').join(' | '):x.str)+(x.trevos?' • Trevos '+x.trevos.join(' e '):'')+(x.mes?' • Mês '+x.mes:'')+(x.time?' • Time '+x.time:'')}).join('\n')+
+ '\n\n💰 Total: '+reais(b.total)+(b.pes.length?'\n👥 '+b.pes.length+' cotas de '+reais(c)+'\n'+b.pes.map(function(p){return (p.pg?'✅ ':'⏳ ')+p.n}).join('\n'):'')+'\n\nJogos gerados pelo Loto Palpite. Sorteio é aleatório, sem garantia de prêmio.'}
+function mostraBol(id){var l=bols(),b=l.filter(function(x){return x.id==id})[0];if(!b)return;var r=$('bRes'),g=G[b.j],d=D[b.j],c=b.pes.length?b.total/b.pes.length:0;
+ var conf=d.ultimo>=b.con;
+ r.innerHTML='<div class="card"><h2>'+b.nome.replace(/</g,'&lt;')+'</h2><div class="mut">'+g.n+' • concurso '+b.con+' • '+b.jogos.length+' jogos de '+b.q+' números</div>'+
+ b.jogos.map(function(x,i){var nums=b.j=='supersete'?x.str.split('').map(Number):x.str.split(' ').map(Number),ac=null;
+  if(conf&&d.ultimo==b.con){ac=b.j=='supersete'?null:nums.filter(function(n){return d.dezenas.indexOf(n)>=0})}
+  return '<div class="jg"><b>Jogo '+(i+1)+'</b>'+bolas(nums,'p',ac)+extra(x)+'<div class="cod">'+x.cod+(ac?' • '+ac.length+' acerto(s)':'')+'</div></div>'}).join('')+
+ '<div class="pre" style="font-size:20px">Total '+reais(b.total)+'</div>'+(b.pes.length?'<div class="mut">'+b.pes.length+' cotas de <b>'+reais(c)+'</b> • toque no nome quando pagar</div>':'')+
+ b.pes.map(function(p,k){return '<div class="row" style="justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee" data-p="'+k+'"><span>'+(p.pg?'✅ ':'⏳ ')+p.n.replace(/</g,'&lt;')+'</span><span class="mut">'+(p.pg?'pagou':'falta pagar')+'</span></div>'}).join('')+
+ '<div class="row" style="margin-top:8px"><input id="bAdd" placeholder="Adicionar participante" style="flex:1"><button class="sbtn" id="bAddB">+</button></div>'+
+ '<button class="btn" id="bZap" style="background:#25d366">Mandar bolão no WhatsApp</button><div class="row" style="margin-top:6px"><button class="sbtn" id="bCop">Copiar</button><button class="sbtn" id="bDel" style="background:#fee;color:#b00">Apagar bolão</button></div></div>';
+ r.querySelectorAll('[data-p]').forEach(function(e){e.onclick=function(){var l=bols(),x=l.filter(function(y){return y.id==id})[0];x.pes[+e.dataset.p].pg=!x.pes[+e.dataset.p].pg;salvaBols(l);mostraBol(id);listaBol()}});
+ $('bAddB').onclick=function(){var n=$('bAdd').value.trim();if(!n)return;var l=bols(),x=l.filter(function(y){return y.id==id})[0];x.pes.push({n:n,pg:false});salvaBols(l);mostraBol(id);listaBol()};
+ $('bZap').onclick=function(){zap(txtBol(b))};$('bCop').onclick=function(){copia(txtBol(b),$('bCop'))};
+ $('bDel').onclick=function(){if(!confirm('Apagar este bolão?'))return;salvaBols(bols().filter(function(y){return y.id!=id}));r.innerHTML='';listaBol()};
+ r.scrollIntoView({behavior:'smooth'})}
+function listaBol(){var e=$('bLista');if(!e)return;var l=bols().filter(function(b){return b.j==J});if(!l.length){e.innerHTML='';return}
+ e.innerHTML='<div class="card"><h2>📂 Meus bolões da '+G[J].n+'</h2>'+l.map(function(b){var pg=b.pes.filter(function(p){return p.pg}).length;return '<div class="jg" data-b="'+b.id+'" style="cursor:pointer"><b>'+b.nome.replace(/</g,'&lt;')+'</b><div class="mut">Concurso '+b.con+' • '+b.jogos.length+' jogos • '+reais(b.total)+(b.pes.length?' • '+pg+'/'+b.pes.length+' pagaram':'')+'</div></div>'}).join('')+'</div>';
+ e.querySelectorAll('[data-b]').forEach(function(x){x.onclick=function(){mostraBol(+x.dataset.b)}})}
 /* atualização ao vivo do último concurso */
 function atualiza(){Object.keys(G).forEach(function(j){fetch('https://loteriascaixa-api.herokuapp.com/api/'+j+'/latest').then(function(r){return r.json()}).then(function(x){var d=D[j];if(!x||!x.concurso||x.concurso<=d.ultimo||!x.dezenas)return;
   var dz=x.dezenas.map(Number);d.ultimo=x.concurso;d.data=x.data;d.prox=x.dataProximoConcurso;d.premio=x.valorEstimadoProximoConcurso;d.acumulou=x.acumulou;d.dezenas=dz;d.n++;
