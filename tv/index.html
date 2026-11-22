@@ -35,6 +35,7 @@ video{width:100%;aspect-ratio:16/9;background:#000;display:block}
 .can .num{position:absolute;top:4px;left:6px;font-size:10px;color:#94a3b8}
 .can .fav{position:absolute;top:2px;right:4px;font-size:17px;background:none;border:0;color:#64748b;padding:2px}
 .can .fav.s{color:#facc15}
+.can:focus,.bt:focus,#cats button:focus,input:focus{outline:3px solid #facc15;outline-offset:2px}
 .vazio{grid-column:1/-1;text-align:center;color:#94a3b8;padding:30px 10px}
 #modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-end;z-index:20}
 #modal.on{display:flex}
@@ -119,7 +120,7 @@ function desenhar() {
   filtrados = todos.filter(c => (cat === 'Todos' || (cat === '⭐ Favoritos' ? favs.includes(c.id) : c.cat === cat))
     && (!q || c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(q)));
   if (!filtrados.length) { $('#lista').innerHTML = `<div class="vazio">${cat === '⭐ Favoritos' ? 'Toque na ☆ de um canal pra salvar aqui.' : 'Nenhum canal encontrado.'}</div>`; return; }
-  $('#lista').innerHTML = filtrados.map((c, i) => `<div class="can ${atual >= 0 && todos[atual] && todos[atual].id === c.id ? 'on' : ''}" data-i="${i}">
+  $('#lista').innerHTML = filtrados.map((c, i) => `<div tabindex="0" class="can ${atual >= 0 && todos[atual] && todos[atual].id === c.id ? 'on' : ''}" data-i="${i}">
     <span class="num">${c.num}</span>
     <button class="fav ${favs.includes(c.id) ? 's' : ''}" data-f="${i}">${favs.includes(c.id) ? '★' : '☆'}</button>
     <div class="lg">${c.logo ? `<img loading="lazy" src="${c.logo}" alt="" onerror="this.replaceWith(document.createTextNode('${esc(c.nome[0] || 'T')}'))">` : esc(c.nome[0] || 'T')}</div>
@@ -192,6 +193,28 @@ $('#modal').onclick = e => { if (e.target.id === 'modal') $('#modal').classList.
 fetch('canais.json?' + Date.now()).then(r => r.json()).then(d => { base = d.canais; }).catch(() => {}).finally(() => {
   montar();
   if (!todos.length) $('#lista').innerHTML = '<div class="vazio">Sem internet pra carregar os canais.</div>';
+});
+
+// Controle remoto (TV Box): setas movem, OK abre
+document.addEventListener('keydown', e => {
+  const k = {ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key];
+  const a = document.activeElement;
+  if ((e.key === 'Enter' || e.key === ' ') && a && a.classList.contains('can')) { e.preventDefault(); a.click(); return; }
+  if (e.key === 'Backspace' || e.key === 'Escape' || e.key === 'GoBack') {
+    if ($('#modal').classList.contains('on')) { $('#modal').classList.remove('on'); e.preventDefault(); }
+    return;
+  }
+  if (e.key === 'MediaTrackNext' || e.key === 'ChannelUp') { pular(1); return; }
+  if (e.key === 'MediaTrackPrevious' || e.key === 'ChannelDown') { pular(-1); return; }
+  if (!k) return;
+  if (a && a.tagName === 'INPUT' && a.type !== 'file' && k[1] === 0) return;
+  const els = [...document.querySelectorAll('.can,.bt,#cats button,#q,video')].filter(x => x.offsetParent && (!$('#modal').classList.contains('on') || x.closest('#modal')));
+  if (!a || !els.includes(a)) { e.preventDefault(); (document.querySelector('.can') || els[0]).focus(); return; }
+  const r = a.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  let melhor = null, md = 1e9;
+  els.forEach(x => { if (x === a) return; const q = x.getBoundingClientRect(), dx = q.left + q.width / 2 - cx, dy = q.top + q.height / 2 - cy;
+    const fr = k[0] ? dx * k[0] : dy * k[1]; if (fr <= 2) return; const lat = k[0] ? Math.abs(dy) : Math.abs(dx); const d = fr + lat * 2.5; if (d < md) { md = d; melhor = x; } });
+  if (melhor) { e.preventDefault(); melhor.focus(); melhor.scrollIntoView({block: 'nearest', inline: 'nearest'}); }
 });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
