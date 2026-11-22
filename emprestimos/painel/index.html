@@ -55,7 +55,7 @@ $('sair').onclick=function(){au.signOut()};au.getRedirectResult().catch(function
 au.onAuthStateChanged(function(u){$('login').style.display=u?'none':'block';$('app').style.display=u?'block':'none';$('sair').style.display=u?'block':'none';if(u)escuta();});
 function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(8);crypto.getRandomValues(r);for(var i=0;i<8;i++)s+=a[r[i]%a.length];return s}
 function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
-function zapUrl(n,t){if(/Android/i.test(navigator.userAgent))return 'intent://send?'+(n?'phone='+n+'&':'')+'text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;end';return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(t)}
+function zapUrl(n,t){return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(t)}
 function link(x){return zapUrl(x&&x.zap,texto(x.id,x.dias,x.cliente))}
 function copia(t,b){function ok(){if(b){var o=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=o},1500)}}
  function velho(){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity=0;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand('copy')}catch(e){}a.remove();if(r)ok();else prompt('Copie:',t)}
