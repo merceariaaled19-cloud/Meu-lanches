@@ -39,11 +39,12 @@ nav button{flex:1;background:none;border-radius:0;padding:10px 2px;font-size:12p
 <button data-t="inicio" class="on"><i>🏠</i>Início</button>
 <button data-t="clientes"><i>👥</i>Clientes</button>
 <button data-t="novo"><i>➕</i>Emprestar</button>
-<button data-t="ajustes"><i>⚙️</i>Backup</button>
+<button data-t="ajustes"><i>⚙️</i>Ajustes</button>
 </nav>
 <div id="modal"><div class="card" id="mc"></div></div>
 <script>
 var DB = carrega();
+function cfg(){ DB.cfg = DB.cfg || {nome: '', cidade: 'MANAUS', pix: '', tipo: 'cpf', multa: 2, mora: 1}; return DB.cfg; }
 function carrega(){ try { return JSON.parse(localStorage.getItem('emp_db')) || {clientes: [], emps: []}; } catch(e){ return {clientes: [], emps: []}; } }
 function salva(){ localStorage.setItem('emp_db', JSON.stringify(DB)); }
 function id(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
@@ -61,9 +62,16 @@ function soma(d, freq, n){
 }
 function cli(cid){ return DB.clientes.filter(function(c){ return c.id === cid; })[0] || {nome: '(apagado)', tel: ''}; }
 function falta(p){ return Math.max(0, Math.round((p.valor - p.pago) * 100) / 100); }
+function diasAtraso(p){ if (falta(p) <= 0 || p.venc >= hoje()) return 0; return Math.round((new Date(hoje() + 'T12:00:00') - new Date(p.venc + 'T12:00:00')) / 864e5); }
+function encargos(p){
+  var d = diasAtraso(p); if (!d) return 0; var c = cfg(), f = falta(p);
+  var e = f * (num(c.multa) / 100) + f * (num(c.mora) / 100) * d / 30;
+  return Math.max(0, Math.round((e - (p.encPago || 0)) * 100) / 100);
+}
+function devido(p){ return Math.round((falta(p) + encargos(p)) * 100) / 100; }
 function status(p){ if (falta(p) <= 0) return 'ok'; if (p.venc < hoje()) return 'at'; if (p.venc === hoje()) return 'hj'; return 'ab'; }
 var ROT = {ok: 'Pago', at: 'Atrasada', hj: 'Vence hoje', ab: 'Em aberto'};
-function saldoEmp(e){ return e.parcelas.reduce(function(s, p){ return s + falta(p); }, 0); }
+function saldoEmp(e){ return e.parcelas.reduce(function(s, p){ return s + devido(p); }, 0); }
 function saldoCli(cid){ return DB.emps.filter(function(e){ return e.cli === cid; }).reduce(function(s, e){ return s + saldoEmp(e); }, 0); }
 function zap(tel, txt){ var t = String(tel || '').replace(/\D/g, ''); if (t && t.length <= 11) t = '55' + t; window.open('https://wa.me/' + t + '?text=' + encodeURIComponent(txt), '_blank'); }
 function abre(html){ $('#mc').innerHTML = html; $('#modal').style.display = 'flex'; }
@@ -80,8 +88,8 @@ inicio: function(){
   DB.emps.forEach(function(e){
     emp += e.valor;
     e.parcelas.forEach(function(p, i){
-      rec += p.pago; aber += falta(p);
-      var s = status(p); if (s === 'at') atr += falta(p);
+      rec += p.pago; aber += devido(p);
+      var s = status(p); if (s === 'at') atr += devido(p);
       if (s === 'at' || s === 'hj' || (s === 'ab' && p.venc <= soma(hoje(), 'diaria', 7))) lista.push({e: e, p: p, i: i, s: s});
     });
   });
@@ -95,6 +103,7 @@ inicio: function(){
   if (!lista.length) h += '<div class="vazio">Nada vencendo agora 👍</div>';
   lista.forEach(function(x){ h += linhaParc(x.e, x.p, x.i, true); });
   h += '</div>';
+  if (!cfg().pix) h += '<div class="card aviso" onclick="vai(\'ajustes\')">💳 Coloque sua chave Pix em ⚙️ Ajustes pra ela ir junto nas cobranças.</div>';
   if (!DB.emps.length) h += '<div class="card vazio">Comece cadastrando um cliente e depois toque em <b>➕ Emprestar</b>.</div>';
   $('#tela').innerHTML = h;
 },
@@ -121,7 +130,14 @@ novo: function(cid){
   previa();
 },
 ajustes: function(){
-  $('#tela').innerHTML = '<div class="card"><h2>💾 Backup</h2><p class="muted">Os dados ficam só neste celular. Faça backup de vez em quando e guarde o arquivo (no Drive ou WhatsApp) para não perder se trocar de celular.</p>' +
+  var c = cfg();
+  $('#tela').innerHTML = '<div class="card"><h2>👤 Seus dados e Pix</h2><p class="muted">Vai junto nas mensagens de cobrança, pra pessoa copiar e pagar.</p>' +
+    '<label>Seu nome (como está no banco)</label><input id="gn" value="' + esc(c.nome) + '"><label>Tipo da chave</label><select id="gt">' + [['cpf','CPF'],['cel','Celular'],['email','E-mail'],['alea','Chave aleatória'],['cnpj','CNPJ']].map(function(o){ return '<option value="' + o[0] + '"' + (c.tipo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select><label>Sua chave Pix</label><input id="gp" placeholder="CPF, celular, e-mail ou chave aleatória" value="' + esc(c.pix) + '"><label>Cidade</label><input id="gc" value="' + esc(c.cidade) + '">' +
+    '<h2 style="margin-top:16px">⏰ Se atrasar</h2><div class="row"><div><label>Multa (%) uma vez</label><input id="gm" inputmode="decimal" value="' + String(c.multa).replace('.', ',') + '"></div><div><label>Juros por mês de atraso (%)</label><input id="gj" inputmode="decimal" value="' + String(c.mora).replace('.', ',') + '"></div></div>' +
+    '<div class="muted" style="margin-top:6px">Ex: parcela de R$ 100 com 2% de multa e 1% ao mês, 15 dias atrasada = R$ 102,50. Conta por dia.</div>' +
+    '<div class="aviso">⚠️ O comum pela lei é até 2% de multa e 1% ao mês de juros de atraso.</div>' +
+    '<button class="b1" onclick="salvaCfg()">Salvar</button></div>' +
+    '<div class="card"><h2>💾 Backup</h2><p class="muted">Os dados ficam só neste celular. Faça backup de vez em quando e guarde o arquivo (no Drive ou WhatsApp) para não perder se trocar de celular.</p>' +
     '<button class="b1" onclick="exporta()">⬇️ Salvar backup</button>' +
     '<label>Restaurar backup</label><input type="file" accept=".json,application/json" onchange="importa(this)"></div>' +
     '<div class="card"><h2>🔔 Avisos</h2><p class="muted">Ao abrir o app, ele avisa se tem parcela vencendo hoje ou atrasada.</p><button class="b1" onclick="pedeAviso()">Ativar avisos</button></div>' +
@@ -132,7 +148,7 @@ ajustes: function(){
 function linhaParc(e, p, i, comNome){
   var s = status(p), c = cli(e.cli);
   return '<div class="parc"><div>' + (comNome ? '<b>' + esc(c.nome) + '</b><br>' : '') +
-    'Parcela ' + (i + 1) + '/' + e.parcelas.length + ' · ' + dBR(p.venc) + '<br><span class="muted">' + reais(p.valor) + (p.pago > 0 && falta(p) > 0 ? ' · falta ' + reais(falta(p)) : '') + '</span></div>' +
+    'Parcela ' + (i + 1) + '/' + e.parcelas.length + ' · ' + dBR(p.venc) + '<br><span class="muted">' + reais(p.valor) + (p.pago > 0 && falta(p) > 0 ? ' · falta ' + reais(falta(p)) : '') + (encargos(p) > 0 ? '<br><b style="color:#b91c1c">' + diasAtraso(p) + ' dia(s) de atraso: ' + reais(devido(p)) + '</b>' : '') + '</span></div>' +
     '<div class="row" style="flex:0 0 auto;align-items:center"><span class="tag t-' + s + '">' + ROT[s] + '</span>' +
     (s !== 'ok' ? '<button class="bz bp" onclick="receber(\'' + e.id + '\',' + i + ')">Receber</button>' : '') +
     (s !== 'ok' && c.tel ? '<button class="b2 bp" onclick="lembra(\'' + e.id + '\',' + i + ')">📲</button>' : '') + '</div></div>';
@@ -143,14 +159,14 @@ function filtraCli(){
   $('#lc').innerHTML = l.length ? l.map(function(c){ var s = saldoCli(c.id); return '<div class="cli" onclick="verCli(\'' + c.id + '\')"><div><b>' + esc(c.nome) + '</b><br><span class="muted">' + esc(c.tel || 'sem telefone') + '</span></div><b style="color:' + (s > 0 ? '#b45309' : '#15803d') + '">' + (s > 0 ? reais(s) : 'em dia') + '</b></div>'; }).join('') : '<div class="vazio">Nenhum cliente.</div>';
 }
 function formCli(cid, depoisEmprestar){
-  var c = cid ? cli(cid) : {nome: '', tel: '', obs: ''};
-  abre('<h2>' + (cid ? 'Editar' : 'Novo') + ' cliente</h2><label>Nome</label><input id="cn" value="' + esc(c.nome) + '"><label>WhatsApp (com DDD)</label><input id="ct" inputmode="tel" placeholder="92 99999-9999" value="' + esc(c.tel) + '"><label>Observação / endereço</label><input id="co" value="' + esc(c.obs) + '">' +
+  var c = cid ? cli(cid) : {nome: '', tel: '', obs: '', end: '', doc: ''};
+  abre('<h2>' + (cid ? 'Editar' : 'Novo') + ' cliente</h2><label>Nome</label><input id="cn" value="' + esc(c.nome) + '"><label>WhatsApp (com DDD)</label><input id="ct" inputmode="tel" placeholder="92 99999-9999" value="' + esc(c.tel) + '"><label>Endereço</label><input id="ce" placeholder="Rua, número, bairro" value="' + esc(c.end || '') + '"><label>CPF / RG (opcional)</label><input id="cd" value="' + esc(c.doc || '') + '"><label>Observação</label><input id="co" placeholder="Ex: indicado por, local de trabalho" value="' + esc(c.obs) + '">' +
     '<button class="b1" onclick="salvaCli(\'' + (cid || '') + '\',' + !!depoisEmprestar + ')">Salvar</button>' + (cid ? '<button class="bv" style="width:100%;margin-top:8px" onclick="apagaCli(\'' + cid + '\')">Apagar cliente</button>' : '') + '<button class="b2" style="width:100%;margin-top:8px" onclick="fecha()">Cancelar</button>');
 }
 function salvaCli(cid, dep){
   var n = $('#cn').value.trim(); if (!n){ alert('Coloque o nome.'); return; }
   var c; if (cid){ c = cli(cid); } else { c = {id: id()}; DB.clientes.push(c); }
-  c.nome = n; c.tel = $('#ct').value.trim(); c.obs = $('#co').value.trim(); salva(); fecha();
+  c.nome = n; c.tel = $('#ct').value.trim(); c.obs = $('#co').value.trim(); c.end = $('#ce').value.trim(); c.doc = $('#cd').value.trim(); salva(); fecha();
   if (dep) vai('novo', c.id); else if (ABA === 'clientes') TELAS.clientes(); else verCli(c.id);
 }
 function apagaCli(cid){
@@ -160,8 +176,8 @@ function apagaCli(cid){
 }
 function verCli(cid){
   var c = cli(cid), es = DB.emps.filter(function(e){ return e.cli === cid; });
-  var h = '<div class="card"><button class="b2 bp" onclick="vai(\'clientes\')">← Voltar</button><h2 style="margin-top:12px">' + esc(c.nome) + '</h2><div class="muted">' + esc(c.tel || 'sem telefone') + (c.obs ? ' · ' + esc(c.obs) : '') + '</div>' +
-    '<p>Deve no total: <b>' + reais(saldoCli(cid)) + '</b></p><div class="row"><button class="b2" onclick="formCli(\'' + cid + '\')">✏️ Editar</button><button class="bz" onclick="vai(\'novo\',\'' + cid + '\')">➕ Emprestar</button></div></div>';
+  var h = '<div class="card"><button class="b2 bp" onclick="vai(\'clientes\')">← Voltar</button><h2 style="margin-top:12px">' + esc(c.nome) + '</h2><div class="muted">📞 ' + esc(c.tel || 'sem telefone') + (c.end ? '<br>📍 ' + esc(c.end) : '') + (c.doc ? '<br>🪪 ' + esc(c.doc) : '') + (c.obs ? '<br>📝 ' + esc(c.obs) : '') + '</div>' +
+    '<p>Deve no total: <b>' + reais(saldoCli(cid)) + '</b></p><div class="row"><button class="b2" onclick="formCli(\'' + cid + '\')">✏️ Editar</button>' + (saldoCli(cid) > 0 && c.tel ? '<button class="b2" onclick="cobraTudo(\'' + cid + '\')">📲 Cobrar</button>' : '') + '<button class="bz" onclick="vai(\'novo\',\'' + cid + '\')">➕ Emprestar</button></div></div>';
   if (!es.length) h += '<div class="card vazio">Nenhum empréstimo.</div>';
   es.slice().reverse().forEach(function(e){
     var tot = e.parcelas.reduce(function(s, p){ return s + p.valor; }, 0);
@@ -196,13 +212,17 @@ function achaEmp(eid){ return DB.emps.filter(function(e){ return e.id === eid; }
 function apagaEmp(eid){ var e = achaEmp(eid); if (!confirm('Apagar esse empréstimo?')) return; DB.emps = DB.emps.filter(function(x){ return x.id !== eid; }); salva(); verCli(e.cli); }
 function receber(eid, i){
   var e = achaEmp(eid), p = e.parcelas[i];
-  abre('<h2>Receber parcela ' + (i + 1) + '</h2><div class="muted">' + esc(cli(e.cli).nome) + ' · vence ' + dBR(p.venc) + '</div><label>Valor recebido (R$)</label><input id="rv" inputmode="decimal" value="' + falta(p).toFixed(2).replace('.', ',') + '"><label>Data</label><input id="rd" type="date" value="' + hoje() + '">' +
+  abre('<h2>Receber parcela ' + (i + 1) + '</h2><div class="muted">' + esc(cli(e.cli).nome) + ' · vence ' + dBR(p.venc) + '</div><label>Valor recebido (R$)</label><input id="rv" inputmode="decimal" value="' + devido(p).toFixed(2).replace('.', ',') + '">' + (encargos(p) > 0 ? '<div class="muted">Parcela ' + reais(falta(p)) + ' + atraso ' + reais(encargos(p)) + ' (' + diasAtraso(p) + ' dias)</div>' : '') + '<label>Data</label><input id="rd" type="date" value="' + hoje() + '">' +
     '<button class="b1" onclick="confReceber(\'' + eid + '\',' + i + ')">Confirmar</button><button class="b2" style="width:100%;margin-top:8px" onclick="fecha()">Cancelar</button>');
 }
 function confReceber(eid, i){
   var e = achaEmp(eid), v = num($('#rv').value), d = $('#rd').value || hoje(); if (v <= 0){ alert('Valor inválido.'); return; }
   var resto = v;
-  for (var k = i; k < e.parcelas.length && resto > 0.001; k++){ var p = e.parcelas[k], f = falta(p), u = Math.min(f, resto); if (u > 0){ p.pago = Math.round((p.pago + u) * 100) / 100; p.hist.push({d: d, v: u}); resto -= u; } }
+  for (var k = i; k < e.parcelas.length && resto > 0.001; k++){
+    var p = e.parcelas[k], en = encargos(p);
+    if (en > 0){ var ue = Math.min(en, resto); p.encPago = Math.round(((p.encPago || 0) + ue) * 100) / 100; p.hist.push({d: d, v: ue, enc: 1}); resto -= ue; }
+    var f = falta(p), u = Math.min(f, resto); if (u > 0){ p.pago = Math.round((p.pago + u) * 100) / 100; p.hist.push({d: d, v: u}); resto -= u; }
+  }
   salva(); var c = cli(e.cli);
   abre('<h2>✅ Recebido ' + reais(v) + '</h2><p>' + esc(c.nome) + ' agora deve <b>' + reais(saldoCli(e.cli)) + '</b>.</p>' + (c.tel ? '<button class="b1 bz" onclick="recibo(\'' + eid + '\',' + v + ',\'' + d + '\')">📲 Mandar recibo no WhatsApp</button>' : '') + '<button class="b2" style="width:100%;margin-top:8px" onclick="fecha();refaz(\'' + e.cli + '\')">Fechar</button>');
 }
@@ -212,15 +232,48 @@ function recibo(eid, v, d){
   zap(c.tel, 'Olá, ' + c.nome + '! Recebi ' + reais(v) + ' em ' + dBR(d) + '. Obrigado!\nSaldo que falta: ' + reais(saldoEmp(e)) + '.\n— Recibo Empresta Certo');
   fecha(); refaz(e.cli);
 }
+function txtPix(v){
+  var c = cfg(); if (!c.pix) return '';
+  var t = '\n\n💳 Pix: ' + c.pix + (c.nome ? ' (' + c.nome + ')' : '');
+  var cod = pixCode(v); if (cod) t += '\n\nPix copia e cola (já com o valor):\n' + cod;
+  return t;
+}
 function lembra(eid, i){
-  var e = achaEmp(eid), p = e.parcelas[i], c = cli(e.cli), s = status(p);
-  zap(c.tel, 'Olá, ' + c.nome + '! Tudo bem? Passando pra lembrar da parcela ' + (i + 1) + ' de ' + reais(falta(p)) + (s === 'at' ? ', que venceu em ' : s === 'hj' ? ', que vence hoje (' : ', que vence em ') + dBR(p.venc) + (s === 'hj' ? ')' : '') + '. Qualquer coisa me avisa. Obrigado!');
+  var e = achaEmp(eid), p = e.parcelas[i], c = cli(e.cli), s = status(p), v = devido(p);
+  var t = 'Olá, ' + c.nome + '! Tudo bem? Passando pra lembrar da parcela ' + (i + 1) + '/' + e.parcelas.length + (s === 'at' ? ', que venceu em ' : s === 'hj' ? ', que vence hoje, ' : ', que vence em ') + dBR(p.venc) + '.';
+  if (encargos(p) > 0) t += '\nValor da parcela: ' + reais(falta(p)) + '\nAtraso de ' + diasAtraso(p) + ' dia(s): + ' + reais(encargos(p));
+  t += '\n*Total pra pagar hoje: ' + reais(v) + '*';
+  zap(c.tel, t + txtPix(v) + '\n\nQualquer coisa me avisa. Obrigado!');
+}
+function cobraTudo(cid){
+  var c = cli(cid), t = 'Olá, ' + c.nome + '! Tudo bem? Segue o que está em aberto:\n', tot = 0, hojeTot = 0;
+  DB.emps.filter(function(e){ return e.cli === cid; }).forEach(function(e){ e.parcelas.forEach(function(p, i){
+    if (falta(p) <= 0) return; var s = status(p), v = devido(p); tot += v; if (s === 'at' || s === 'hj') hojeTot += v;
+    t += '\n• ' + (i + 1) + 'ª parcela — vence ' + dBR(p.venc) + ' — ' + reais(v) + (s === 'at' ? ' (atrasada ' + diasAtraso(p) + ' dias)' : s === 'hj' ? ' (vence hoje)' : '');
+  }); });
+  var pagar = hojeTot || tot;
+  t += '\n\n' + (hojeTot ? '*Vencido até hoje: ' + reais(hojeTot) + '*\nTotal geral: ' + reais(tot) : '*Total: ' + reais(tot) + '*');
+  zap(c.tel, t + txtPix(pagar) + '\n\nObrigado!');
+}
+// Pix copia e cola (padrão do Banco Central)
+function emv(id, v){ return id + ('0' + v.length).slice(-2) + v; }
+function crc16(s){ var c = 0xFFFF; for (var i = 0; i < s.length; i++){ c ^= s.charCodeAt(i) << 8; for (var j = 0; j < 8; j++) c = (c & 0x8000) ? ((c << 1) ^ 0x1021) & 0xFFFF : (c << 1) & 0xFFFF; } return ('000' + c.toString(16).toUpperCase()).slice(-4); }
+function semAc(s, n){ return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9 ]/g, '').toUpperCase().slice(0, n).trim(); }
+function chavePix(k, tipo){ k = String(k || '').trim(); var d = k.replace(/\D/g, '');
+  if (tipo === 'cel') return '+' + (d.length <= 11 ? '55' + d : d);
+  if (tipo === 'cpf' || tipo === 'cnpj') return d;
+  return tipo === 'email' || tipo === 'alea' ? k.toLowerCase() : k; }
+function pixCode(v){
+  var c = cfg(); if (!c.pix || !c.nome) return '';
+  var p = emv('00', '01') + emv('26', emv('00', 'br.gov.bcb.pix') + emv('01', chavePix(c.pix, c.tipo))) + emv('52', '0000') + emv('53', '986') +
+    (v > 0 ? emv('54', v.toFixed(2)) : '') + emv('58', 'BR') + emv('59', semAc(c.nome, 25) || 'RECEBEDOR') + emv('60', semAc(c.cidade || 'MANAUS', 15) || 'MANAUS') + emv('62', emv('05', '***')) + '6304';
+  return p + crc16(p);
 }
 function extrato(eid){
   var e = achaEmp(eid), c = cli(e.cli);
   var t = 'Olá, ' + c.nome + '! Segue o resumo do empréstimo de ' + reais(e.valor) + ' (' + dBR(e.data) + '):\n';
-  e.parcelas.forEach(function(p, i){ t += '\n' + (i + 1) + 'ª ' + dBR(p.venc) + ' — ' + reais(p.valor) + ' — ' + (falta(p) <= 0 ? 'paga ✅' : p.pago > 0 ? 'falta ' + reais(falta(p)) : ROT[status(p)].toLowerCase()); });
-  zap(c.tel, t + '\n\nFalta no total: ' + reais(saldoEmp(e)) + '.');
+  e.parcelas.forEach(function(p, i){ t += '\n' + (i + 1) + 'ª ' + dBR(p.venc) + ' — ' + reais(p.valor) + ' — ' + (falta(p) <= 0 ? 'paga ✅' : p.pago > 0 ? 'falta ' + reais(falta(p)) : (encargos(p) > 0 ? reais(devido(p)) + ' com atraso' : ROT[status(p)].toLowerCase())); });
+  zap(c.tel, t + '\n\nFalta no total: ' + reais(saldoEmp(e)) + '.' + txtPix(saldoEmp(e)));
 }
 function exporta(){
   var b = new Blob([JSON.stringify(DB)], {type: 'application/json'}), a = document.createElement('a');
@@ -231,7 +284,11 @@ function importa(inp){
   r.onload = function(){ try { var d = JSON.parse(r.result); if (!d.clientes || !d.emps) throw 0; if (!confirm('Trocar os dados atuais pelos do backup?')) return; DB = d; salva(); alert('Backup restaurado!'); vai('inicio'); } catch(e){ alert('Arquivo inválido.'); } };
   r.readAsText(f);
 }
-function zera(){ if (confirm('Apagar TUDO? Não tem volta.') && confirm('Tem certeza mesmo?')){ DB = {clientes: [], emps: []}; salva(); vai('inicio'); } }
+function salvaCfg(){
+  var c = cfg(); c.nome = $('#gn').value.trim(); c.pix = $('#gp').value.trim(); c.tipo = $('#gt').value; c.cidade = $('#gc').value.trim() || 'MANAUS'; c.multa = num($('#gm').value); c.mora = num($('#gj').value);
+  salva(); alert('Salvo!' + (c.pix && !c.nome ? ' Coloque seu nome pra gerar o Pix copia e cola.' : ''));
+}
+function zera(){ if (confirm('Apagar TUDO? Não tem volta.') && confirm('Tem certeza mesmo?')){ var cf = DB.cfg; DB = {clientes: [], emps: [], cfg: cf}; salva(); vai('inicio'); } }
 function pedeAviso(){ if (!('Notification' in window)){ alert('Este celular não aceita avisos.'); return; } Notification.requestPermission().then(function(p){ alert(p === 'granted' ? 'Avisos ativados!' : 'Avisos não liberados.'); if (p === 'granted'){ localStorage.removeItem('emp_av'); avisa(); } }); }
 function avisa(){
   if (!('Notification' in window) || Notification.permission !== 'granted' || localStorage.getItem('emp_av') === hoje()) return;
