@@ -209,7 +209,7 @@ function montar() {
 }
 function desenhar() {
   const q = $('#q').value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  filtrados = todos.filter(c => (cat === 'Todos' || (cat === '⭐ Favoritos' ? favs.includes(c.id) : c.cat === cat))
+  filtrados = todos.filter(c => ((cat === 'Todos' && !c.ext) || (cat === '⭐ Favoritos' ? favs.includes(c.id) : c.cat === cat))
     && (!q || c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(q)));
   if (!filtrados.length) { $('#lista').innerHTML = `<div class="vazio">${cat === '⭐ Favoritos' ? 'Toque na ☆ de um canal pra salvar aqui.' : 'Nenhum canal encontrado.'}</div>`; return; }
   $('#lista').innerHTML = filtrados.map((c, i) => `<div tabindex="0" class="can ${atual >= 0 && todos[atual] && todos[atual].id === c.id ? 'on' : ''}" data-i="${i}">
