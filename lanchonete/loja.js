@@ -40,8 +40,11 @@ function desenhaLoja(){
   if ((LJ.tipos || []).length) h += '<div class="tiposloja">' + TIPOS_ORDEM.filter(function(t){ return LJ.tipos.indexOf(t) >= 0; }).map(function(t){ return '<span>' + TIPOS[t].ico + ' ' + esc(TIPOS[t].nome.replace(/ \(.*\)/, '')) + '</span>'; }).join('') + '</div>';
   if (cs.length > 1){ h += '<div class="chips">'; cs.forEach(function(c, i){ h += '<a href="#cat' + i + '"><i>' + icoCat(c) + '</i>' + esc(c) + '</a>'; }); h += '</div>'; }
   if (!ITENS.length) h += '<div class="vazio">O cardápio ainda está sendo montado. Volte daqui a pouco!</div>';
+  var monteFeito = false;
   cs.forEach(function(c, ci){
-    h += '<h2 id="cat' + ci + '" class="tcat"><span>' + icoCat(c) + '</span>' + esc(c) + '</h2><div class="grade ' + (LJ.layout === 'lista' ? 'lista' : '') + '">';
+    h += '<h2 id="cat' + ci + '" class="tcat"><span>' + icoCat(c) + '</span>' + esc(c) + '</h2>';
+    if (!monteFeito && aberto && ehPizza(c) && tamsPizzaLoja().length){ monteFeito = true; h += '<button class="full" style="margin:0 0 12px" onclick="abreMonte()">🍕 Monte sua pizza (até 4 sabores)</button>'; }
+    h += '<div class="grade ' + (LJ.layout === 'lista' ? 'lista' : '') + '">';
     ITENS.filter(function(i){ return (i.cat || 'Cardápio') === c; }).forEach(function(i){
       var op = temOpcoes(i);
       h += '<div class="prod"' + (op && aberto ? ' onclick="if(event.target.tagName!==\'BUTTON\')abreOpcoes(\'' + i.id + '\')"' : '') + '>' + (i.foto ? '<img class="ft" loading="lazy" src="' + i.foto + '" alt="">' : '<div class="ft">' + icoCat(i.cat) + '</div>') +
@@ -74,23 +77,61 @@ function itemPorId(id){ return ITENS.filter(function(x){ return x.id === id; })[
 /* ---------- escolher tamanho / meio a meio / adicionais ---------- */
 var OPC = null;
 function abreOpcoes(id){ var i = itemPorId(id); if (!i) return; OPC = {id: id, tam: i.tamanhos && i.tamanhos.length ? 0 : null, meio: '', adds: [], qtd: 1}; desenhaOpcoes(); }
+function ehSabor(x){ return x && x.ativo !== false && (x.meioMeio || ehPizza(x.cat)); }
 function saboresMeio(i){
-  if (!i.meioMeio) return [];
-  var tn = i.tamanhos && i.tamanhos.length ? normTxt((i.tamanhos[OPC.tam] || {}).nome) : null;
-  return ITENS.filter(function(x){ return x.id !== i.id && x.meioMeio && (x.cat || '') === (i.cat || '') && (!tn || (x.tamanhos || []).some(function(t){ return normTxt(t.nome) === tn; })); });
+  if (!ehSabor(i)) return [];
+  var tn = i.tamanhos && i.tamanhos.length ? (i.tamanhos[OPC.tam] || {}).nome : null;
+  return ITENS.filter(function(x){ return x.id !== i.id && ehSabor(x) && (!tn || (x.tamanhos || []).some(function(t){ return chaveTam(t.nome) === chaveTam(tn); })); });
+}
+function maxDoOpc(i){ return i.tamanhos && i.tamanhos.length ? maxSabores((i.tamanhos[OPC.tam] || {}).nome) : 2; }
+function outrosOpc(){ return (OPC.meio ? OPC.meio.split(',') : []).map(itemPorId).filter(Boolean); }
+function togSab(id){
+  var i = itemPorId(OPC.id), l = OPC.meio ? OPC.meio.split(',') : [], p = l.indexOf(id);
+  if (p >= 0) l.splice(p, 1); else { if (l.length + 1 >= maxDoOpc(i)) return toast('Esse tamanho aceita até ' + maxDoOpc(i) + ' sabor' + (maxDoOpc(i) > 1 ? 'es' : '') + '.'); l.push(id); }
+  OPC.meio = l.join(','); desenhaOpcoes();
+}
+/* Monte sua pizza: escolhe o tamanho e depois os sabores */
+function tamsPizzaLoja(){
+  var m = {}; ITENS.forEach(function(x){ if (ehSabor(x) && ehPizza(x.cat)) (x.tamanhos || []).forEach(function(t){ var k = chaveTam(t.nome); if (MAX_SAB[k] && !m[k]) m[k] = t.nome; }); });
+  return ['broto', 'p', 'm', 'g', 'fam'].filter(function(k){ return m[k]; }).map(function(k){ return {k: k, nome: m[k]}; });
+}
+var MONTE = null;
+function abreMonte(){ var ts = tamsPizzaLoja(); if (!ts.length) return; MONTE = {k: ts[Math.min(2, ts.length - 1)].k, sab: [], qtd: 1}; desenhaMonte(); }
+function sabMonte(){ return ITENS.filter(function(x){ return ehSabor(x) && ehPizza(x.cat) && (x.tamanhos || []).some(function(t){ return chaveTam(t.nome) === MONTE.k; }); }); }
+function togMonte(id){ var p = MONTE.sab.indexOf(id), mx = MAX_SAB[MONTE.k] || 2; if (p >= 0) MONTE.sab.splice(p, 1); else { if (MONTE.sab.length >= mx){ if (mx === 1) MONTE.sab = []; else return toast('Esse tamanho aceita até ' + mx + ' sabores.'); } MONTE.sab.push(id); } desenhaMonte(); }
+function desenhaMonte(){
+  var ts = tamsPizzaLoja(), mx = MAX_SAB[MONTE.k] || 2, ss = sabMonte();
+  MONTE.sab = MONTE.sab.filter(function(id){ return ss.some(function(x){ return x.id === id; }); }).slice(0, mx);
+  var esc1 = MONTE.sab.map(itemPorId), p = 0, tn = (ts.filter(function(t){ return t.k === MONTE.k; })[0] || {}).nome;
+  esc1.forEach(function(x){ p = Math.max(p, precoNoTam(x, tn, 0)); });
+  var h = '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha" id="folhaOpc"><button class="fecha" onclick="fechaModal()">✕</button><h2>🍕 Monte sua pizza</h2>' +
+    '<div class="card"><h3>1. Tamanho</h3><div class="opc">' + ts.map(function(t){ return '<label class="' + (MONTE.k === t.k ? 'on' : '') + '" onclick="MONTE.k=\'' + t.k + '\';desenhaMonte()"><b>' + esc(t.nome) + '</b><br><small>' + MAX_SAB[t.k] + ' sabor' + (MAX_SAB[t.k] > 1 ? 'es' : '') + '</small></label>'; }).join('') + '</div></div>' +
+    '<div class="card"><h3>2. Sabores <small class="sub">(' + MONTE.sab.length + ' de ' + mx + ')</small></h3>' +
+    ss.map(function(x){ var on = MONTE.sab.indexOf(x.id) >= 0; return '<div class="switch" onclick="togMonte(\'' + x.id + '\')"><span>' + esc(x.nome) + ' <b>' + brl(precoNoTam(x, tn, 0)) + '</b>' + (x.desc ? '<br><small class="sub">' + esc(x.desc) + '</small>' : '') + '</span><input type="checkbox"' + (on ? ' checked' : '') + ' onclick="event.stopPropagation();togMonte(\'' + x.id + '\')"></div>'; }).join('') +
+    '<p class="sub">Com mais de um sabor, vale o preço do sabor mais caro.</p></div>' +
+    '<div class="row" style="margin-top:12px"><span class="qtd" style="flex:0 0 auto"><button onclick="if(MONTE.qtd>1){MONTE.qtd--;desenhaMonte()}">−</button><b>' + MONTE.qtd + '</b><button onclick="MONTE.qtd++;desenhaMonte()">+</button></span>' +
+    '<button style="flex:1"' + (MONTE.sab.length ? '' : ' disabled') + ' onclick="addMonte()">' + (MONTE.sab.length ? 'Adicionar • ' + brl(p * MONTE.qtd) : 'Escolha os sabores') + '</button></div></div></div>';
+  var y = $('folhaOpc') ? $('folhaOpc').scrollTop : 0; $('modal').innerHTML = h; $('folhaOpc').scrollTop = y;
+}
+function addMonte(){
+  if (!MONTE.sab.length) return;
+  var i = itemPorId(MONTE.sab[0]), tam = 0; (i.tamanhos || []).forEach(function(t, k){ if (chaveTam(t.nome) === MONTE.k) tam = k; });
+  var o = {tam: i.tamanhos && i.tamanhos.length ? tam : null, meio: MONTE.sab.slice(1).join(','), adds: []}, k = chaveLinha(i.id, o);
+  if (!CAR[k]) CAR[k] = {id: i.id, tam: o.tam, meio: o.meio, adds: [], qtd: 0};
+  CAR[k].qtd += MONTE.qtd; salvaCar(); fechaModal(); atualizaQtd(); toast('Pizza adicionada! 🍕');
 }
 function desenhaOpcoes(){
   var i = itemPorId(OPC.id); if (!i) return fechaModal();
-  var sab = saboresMeio(i); if (OPC.meio && !sab.some(function(x){ return x.id === OPC.meio; })) OPC.meio = '';
-  var outro = OPC.meio ? itemPorId(OPC.meio) : null, pu = precoLinha(i, OPC, outro);
+  var sab = saboresMeio(i), mx = maxDoOpc(i);
+  OPC.meio = (OPC.meio ? OPC.meio.split(',') : []).filter(function(id){ return sab.some(function(x){ return x.id === id; }); }).slice(0, Math.max(0, mx - 1)).join(',');
+  var outro = outrosOpc(), pu = precoLinha(i, OPC, outro);
   var h = '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha" id="folhaOpc"><button class="fecha" onclick="fechaModal()">✕</button>' +
     (i.foto ? '<img src="' + i.foto + '" style="width:100%;max-height:230px;object-fit:cover;border-radius:16px">' : '') + '<h2>' + esc(i.nome) + '</h2>' + (i.desc ? '<p class="sub">' + esc(i.desc) + '</p>' : '');
   if (i.tamanhos && i.tamanhos.length){
     h += '<div class="card"><h3>Tamanho</h3><div class="opc">' + i.tamanhos.map(function(t, k){ return '<label class="' + (OPC.tam === k ? 'on' : '') + '" onclick="OPC.tam=' + k + ';desenhaOpcoes()"><b>' + esc(t.nome) + '</b><br>' + brl(t.preco) + '</label>'; }).join('') + '</div></div>';
   }
-  if (sab.length){
-    h += '<div class="card"><h3>🍕 Meio a meio? <small class="sub">(opcional)</small></h3><select onchange="OPC.meio=this.value;desenhaOpcoes()"><option value="">Não, sabor inteiro</option>' +
-      sab.map(function(x){ return '<option value="' + x.id + '"' + (OPC.meio === x.id ? ' selected' : '') + '>½ ' + esc(i.nome) + ' + ½ ' + esc(x.nome) + '</option>'; }).join('') + '</select><p class="sub">No meio a meio vale o preço do sabor mais caro.</p></div>';
+  if (sab.length && mx > 1){
+    h += '<div class="card"><h3>🍕 Mais sabores? <small class="sub">(até ' + mx + ' no total)</small></h3>' + sab.map(function(x){ var on = OPC.meio.split(',').indexOf(x.id) >= 0; return '<div class="switch" onclick="togSab(\'' + x.id + '\')"><span>' + esc(x.nome) + '</span><input type="checkbox"' + (on ? ' checked' : '') + ' onclick="event.stopPropagation();togSab(\'' + x.id + '\')"></div>'; }).join('') + '<p class="sub">Com mais de um sabor, vale o preço do sabor mais caro.</p></div>';
   }
   if (i.adicionais && i.adicionais.length){
     h += '<div class="card"><h3>Adicionais <small class="sub">(opcional)</small></h3>' + i.adicionais.map(function(a, k){ var on = OPC.adds.indexOf(k) >= 0; return '<div class="switch" onclick="togAdd(' + k + ')"><span>' + esc(a.nome) + ' <b>+ ' + brl(a.preco) + '</b></span><input type="checkbox"' + (on ? ' checked' : '') + ' onclick="event.stopPropagation();togAdd(' + k + ')"></div>'; }).join('') + '</div>';
@@ -110,7 +151,7 @@ function itensCar(){
   var r = [];
   Object.keys(CAR).forEach(function(k){
     var c = CAR[k], i = itemPorId(c.id); if (!i || !(c.qtd > 0)) return;
-    var outro = c.meio ? itemPorId(c.meio) : null, o = {tam: c.tam, meio: outro ? c.meio : '', adds: c.adds || []};
+    var outro = (c.meio ? String(c.meio).split(',') : []).map(itemPorId).filter(Boolean), o = {tam: c.tam, meio: outro.length ? outro.map(function(x){ return x.id; }).join(',') : '', adds: c.adds || []};
     r.push({k: k, id: i.id, nome: nomeLinha(i, o, outro), preco: precoLinha(i, o, outro), qtd: c.qtd});
   });
   return r;

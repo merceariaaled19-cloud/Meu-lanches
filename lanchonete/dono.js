@@ -224,12 +224,12 @@ function editaItem(id, ci){
   EDIT.tamanhos = EDIT.tamanhos || []; EDIT.adicionais = EDIT.adicionais || []; EDIT.meioMeio = !!EDIT.meioMeio;
   desenhaEdit();
 }
-function ehPizza(cat){ var n = normTxt(cat); return /pizza/.test(n) && !/borda/.test(n); }
 function desenhaEdit(){
   var e = EDIT, cs = catsLista().slice(); if (e.cat && cs.indexOf(e.cat) < 0) cs.push(e.cat);
   var h = '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha" id="folhaEd"><button class="fecha" onclick="fechaModal()">✕</button><h2>' + (e.id ? 'Editar item' : 'Novo item') + '</h2>' +
     '<div style="text-align:center">' + (e.foto ? '<img src="' + e.foto + '" style="width:200px;height:200px;object-fit:cover;border-radius:18px">' : '<div style="width:200px;height:200px;border-radius:18px;margin:auto;background:var(--linha);display:flex;align-items:center;justify-content:center;font-size:70px">' + icoCat(e.cat) + '</div>') + '</div>' +
     '<div class="row" style="margin-top:8px"><button class="mini bt3" onclick="lerEdit();pedeFoto(true,function(d){EDIT.foto=d;desenhaEdit()})">📷 Câmera</button><button class="mini bt3" onclick="lerEdit();pedeFoto(false,function(d){EDIT.foto=d;desenhaEdit()})">🖼️ Galeria</button>' + (e.foto ? '<button class="mini bt3" onclick="lerEdit();EDIT.foto=\'\';desenhaEdit()">Tirar foto</button>' : '') + '</div>' +
+    '<button class="mini bt2 full" id="eFotoIA" style="margin-top:8px" onclick="gerarFotoEdit()">🎨 Criar foto com IA (pelos ingredientes)</button>' +
     '<label>Nome</label><input id="eNome" value="' + esc(e.nome) + '" placeholder="Ex.: X-Tudo">' +
     '<div class="row" style="align-items:flex-end"><label style="flex:1">Descrição</label><button class="mini bt2" style="flex:0 0 auto;margin-bottom:4px" id="eIA" onclick="gerarDescIA()">✨ Gerar descrição com IA</button></div>' +
     '<textarea id="eDesc" placeholder="Ex.: pão, hambúrguer, ovo, bacon, queijo, salada">' + esc(e.desc) + '</textarea>' +
@@ -239,10 +239,10 @@ function desenhaEdit(){
   var mostraTam = ehPizza(e.cat) || e.tamanhos.length;
   if (mostraTam){
   h += '<div class="card" style="margin-top:12px"><h3>📏 Tamanhos com preços diferentes</h3>';
-  if (!e.tamanhos.length) h += '<p class="sub">Pizza: preço da P, M e G.</p>';
+  if (!e.tamanhos.length) h += '<p class="sub">Pizza: preencha só os tamanhos que você faz. Broto 1 sabor, Pequena e Média até 2, Grande até 3, Família até 4.</p>';
   e.tamanhos.forEach(function(t, k){ h += '<div class="faixa"><input id="eTn' + k + '" value="' + esc(t.nome) + '" placeholder="Tamanho" style="flex:2"><span>R$</span><input id="eTp' + k + '" inputmode="decimal" value="' + (t.preco !== '' && t.preco != null ? String(t.preco).replace('.', ',') : '') + '" placeholder="0,00"><button class="mini btr" style="flex:0 0 auto" onclick="lerEdit();EDIT.tamanhos.splice(' + k + ',1);desenhaEdit()">✕</button></div>'; });
-  h += '<div class="row"><button class="mini bt3" onclick="lerEdit();EDIT.tamanhos.push({nome:\'\',preco:\'\'});desenhaEdit()">➕ Tamanho</button><button class="mini bt3" onclick="tamPizza()">🍕 P / M / G</button></div>';
-  if (ehPizza(e.cat)) h += '<div class="switch"><span>½ Aceita meio a meio (cliente escolhe outro sabor da mesma categoria; vale o mais caro)</span><input type="checkbox" id="eMeio"' + (e.meioMeio ? ' checked' : '') + '></div>';
+  h += '<div class="row"><button class="mini bt3" onclick="lerEdit();EDIT.tamanhos.push({nome:\'\',preco:\'\'});desenhaEdit()">➕ Tamanho</button><button class="mini bt3" onclick="tamPizza()">🍕 Broto / P / M / G / Família</button></div>';
+  if (ehPizza(e.cat)) h += '<p class="sub">🍕 Esta pizza aparece no "Monte sua pizza" do cliente.</p>';
   h += '</div>';
   }
   h += '<div class="card"><h3>➕ Adicionais (opcional)</h3><p class="sub">O cliente pode marcar. Ex.: bacon R$ 3,00, borda de catupiry R$ 8,00.</p>';
@@ -252,7 +252,7 @@ function desenhaEdit(){
     '<button class="full" style="margin-top:14px" id="eSalva" onclick="salvaItem()">Salvar</button>' + (e.id ? '<p></p><button class="btr full" onclick="apagaItem()">Apagar este item</button>' : '') + '</div></div>';
   var y = $('folhaEd') ? $('folhaEd').scrollTop : 0; $('modal').innerHTML = h; $('folhaEd').scrollTop = y;
 }
-function tamPizza(){ lerEdit(); var v = {}; EDIT.tamanhos.forEach(function(t){ v[normTxt(t.nome)] = t.preco; }); EDIT.tamanhos = TAM_PIZZA.map(function(n){ return {nome: n, preco: v[normTxt(n)] != null ? v[normTxt(n)] : (n === 'P' && EDIT.preco ? EDIT.preco : '')}; }); if (ehPizza(EDIT.cat)) EDIT.meioMeio = true; desenhaEdit(); }
+function tamPizza(){ lerEdit(); var base = EDIT.tamanhos.length ? EDIT.tamanhos : (num(EDIT.preco) > 0 ? [{nome: 'Média', preco: EDIT.preco}] : []); var v = {}; base.forEach(function(t){ v[chaveTam(t.nome)] = t.preco; }); EDIT.tamanhos = TAM_PIZZA.map(function(n){ var k = chaveTam(n); return {nome: n, preco: v[k] != null ? v[k] : ''}; }); EDIT.meioMeio = true; desenhaEdit(); }
 function lerEdit(){
   if (!$('eNome')) return; EDIT.nome = $('eNome').value.trim(); EDIT.desc = $('eDesc').value.trim(); if ($('ePreco')) EDIT.preco = $('ePreco').value;
   var c = $('eCat').value; if (c && c !== '__nova') EDIT.cat = c; EDIT.ativo = $('eAtivo').checked; if ($('eMeio')) EDIT.meioMeio = $('eMeio').checked;
@@ -261,10 +261,10 @@ function lerEdit(){
 }
 function salvaItem(){
   lerEdit(); var e = EDIT; if (!e.nome) return toast('Digite o nome do item.');
-  var tams = limpaOpcoes(e.tamanhos), adds = limpaOpcoes(e.adicionais);
+  var tams = limpaOpcoes(e.tamanhos).filter(function(t){ return t.preco > 0; }), adds = limpaOpcoes(e.adicionais);
   if (tams.some(function(t){ return !(t.preco > 0); })) return toast('Coloque o preço de cada tamanho.');
   var d = {nome: e.nome, desc: e.desc, preco: tams.length ? precoMin({tamanhos: tams}) : num(e.preco), cat: e.cat || 'Cardápio', foto: e.foto || '', ativo: e.ativo,
-    tamanhos: tams, adicionais: adds, meioMeio: !!(e.meioMeio && (tams.length || ehPizza(e.cat)))};
+    tamanhos: tams, adicionais: adds, meioMeio: ehPizza(e.cat)};
   $('eSalva').disabled = true;
   var ref = db.collection('ml_lojas').doc(U.uid).collection('itens');
   var pr = e.id ? ref.doc(e.id).update(d) : (d.ordem = Date.now(), ref.add(d));
@@ -319,7 +319,7 @@ function promptCardapio(){
     '\n- tipo: O QUE O PRODUTO É de verdade, pelo nome, pelos ingredientes e pela foto (NÃO pelo título da seção do cardápio). Ex.: "Calabresa" numa seção "Lanches" mas com fatias/borda de pizza = pizza; "X-Tudo" = hamburguer; "Misto quente" = sanduiche; "Cachorro-quente"/"Kikão" = kikao; "Coca 2L" = refrigerante; pizza de chocolate = pizza_doce.' +
     '\n- categoria: a categoria da loja que combina com o tipo (ex.: pizza -> Pizzas Salgadas); se não houver, um nome simples no plural (Pizzas, Hambúrgueres, Sanduíches, Kikão, Pastéis, Bebidas).' +
     '\n- preco: preço em reais como número (ex.: 18.5); se não aparecer, null.' +
-    '\n- tamanhos: se o item tiver preços diferentes por tamanho (P/M/G/Família, Broto/Grande, Pequena/Média/Grande, 300ml/500ml, 1L/2L, Simples/Duplo), liste [{nome, preco}] e ponha em preco o menor valor; senão []. Para pizza use P (broto/pequena), M (média), G (grande) e Família se houver. Em tabelas com os tamanhos no cabeçalho das colunas, ligue cada preço à coluna certa.' +
+    '\n- tamanhos: se o item tiver preços diferentes por tamanho (P/M/G/Família, Broto/Grande, Pequena/Média/Grande, 300ml/500ml, 1L/2L, Simples/Duplo), liste [{nome, preco}] e ponha em preco o menor valor; senão []. Para pizza use Broto, Pequena, Média, Grande e Família (só os que o cardápio tiver). Em tabelas com os tamanhos no cabeçalho das colunas, ligue cada preço à coluna certa.' +
     '\n- box_2d: se houver uma FOTO deste item específico, a caixa [ymin, xmin, ymax, xmax] normalizada de 0 a 1000 cobrindo só a foto da comida (sem o texto); se não houver foto dele, null.' +
     '\nNão invente itens nem preços. Ignore telefone, endereço, logotipo, horário e propaganda. Preços como "15,90" viram 15.9.';
 }
@@ -516,7 +516,8 @@ function desenhaRev(){
     h += '<div class="rev" style="' + (r.ok ? '' : 'opacity:.45') + '"><input type="checkbox"' + (r.ok ? ' checked' : '') + ' onchange="lerRev();REV[' + i + '].ok=this.checked;desenhaRev()">' +
       (r.foto ? '<img src="' + r.foto + '" onclick="fotoRev(' + i + ')">' : '<div class="semft" onclick="fotoRev(' + i + ')">📷</div>') +
       '<div class="tx"><input id="rN' + i + '" value="' + esc(r.nome) + '" placeholder="Nome"><textarea id="rD' + i + '" placeholder="Descrição">' + esc(r.desc) + '</textarea>' +
-      '<input id="rC' + i + '" list="listaCatsRev" value="' + esc(r.cat) + '" placeholder="Categoria">';
+      '<input id="rC' + i + '" list="listaCatsRev" value="' + esc(r.cat) + '" placeholder="Categoria">' +
+      (r.foto ? '' : '<button class="mini bt2" id="rF' + i + '" onclick="gerarFotoRev(' + i + ')">🎨 Criar foto</button>');
     if (r.tamanhos.length){
       r.tamanhos.forEach(function(t, k){ h += '<div class="row tam"><input id="rTn' + i + '_' + k + '" value="' + esc(t.nome) + '" placeholder="Tamanho"><input id="rTp' + i + '_' + k + '" inputmode="decimal" value="' + String(t.preco).replace('.', ',') + '" placeholder="Preço"><button class="mini bt3" style="flex:0 0 auto" onclick="lerRev();REV[' + i + '].tamanhos.splice(' + k + ',1);desenhaRev()">✕</button></div>'; });
       if (!ehPizza(r.cat)) h += '<button class="mini bt3" onclick="lerRev();var r=REV[' + i + '];r.preco=precoMin({tamanhos:r.tamanhos.filter(function(t){return num(t.preco)>0})})||r.preco;r.tamanhos=[];desenhaRev()">✕ tirar tamanhos</button>';
@@ -677,3 +678,69 @@ function abaMensagens(c){
   c.innerHTML = h;
 }
 function lerMs(){ MS.forEach(function(m, i){ if ($('mN' + i)){ m.nome = $('mN' + i).value.trim() || 'Mensagem'; m.txt = $('mT' + i).value; } }); }
+
+/* ---------- 🎨 criar foto do lanche com IA ---------- */
+var SCHEMA_PROMPT = {type: 'OBJECT', properties: {prompt: {type: 'STRING'}}, required: ['prompt']};
+function promptFoto(nome, desc, cat){
+  var base = 'professional food photography of ' + nome + (desc ? ', ' + desc : '') + ', appetizing, restaurant menu photo, soft light, no text';
+  if (!CFG || !CFG.geminiKey) return Promise.resolve(base);
+  return chamaGemini([{text: 'Write a short English prompt (max 60 words) for an AI image generator to create a REALISTIC, appetizing photo of this Brazilian snack bar menu item, showing exactly its ingredients. Item: "' + nome + '". Description: "' + (desc || '') + '". Category: "' + (cat || '') + '". Mention how it is served (ex.: whole pizza on a wooden board seen from above; burger on a board with the bun open showing layers; hot dog in a bun; soda can with ice). End with: professional food photography, soft natural light, shallow depth of field, no text, no logo.'}], SCHEMA_PROMPT)
+    .then(function(o){ return o && o.prompt ? String(o.prompt) : base; }, function(){ return base; });
+}
+function imgDeBlob(b){ return new Promise(function(ok, ruim){ var u = URL.createObjectURL(b), im = new Image(); im.onload = function(){ ok(im); }; im.onerror = function(){ ruim(new Error('img')); }; im.src = u; }); }
+function fotoDaImg(im, cortaBaixo){
+  var w = im.naturalWidth, h = im.naturalHeight - (cortaBaixo || 0), l = Math.min(w, h);
+  var c = document.createElement('canvas'); c.width = l; c.height = l; c.getContext('2d').drawImage(im, (w - l) / 2, 0, l, l, 0, 0, l, l);
+  return melhoraFoto(c, 0, 0, l, l, 600);
+}
+/* 1º tenta a IA de imagem do Google (só funciona com cobrança ativa); se não der, usa a gratuita (Pollinations) */
+function fotoGoogle(prompt){
+  var mods = ['gemini-2.5-flash-image', 'gemini-3-pro-image-preview'], i = 0;
+  function tenta(){
+    var m = mods[i++]; if (!m) return Promise.reject(new Error('sem'));
+    return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(CFG.geminiKey), {method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({contents: [{parts: [{text: prompt}]}], generationConfig: {responseModalities: ['IMAGE'], imageConfig: {aspectRatio: '1:1'}}})})
+      .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('st' + r.status)); })
+      .then(function(j){ var ps = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [], d = null;
+        ps.forEach(function(p){ var x = p.inlineData || p.inline_data; if (x && x.data && !d) d = 'data:' + (x.mimeType || x.mime_type || 'image/png') + ';base64,' + x.data; });
+        if (!d) throw new Error('vazio'); return fetch(d).then(function(r){ return r.blob(); }); })
+      .then(imgDeBlob).then(function(im){ return fotoDaImg(im, 0); })
+      .catch(function(){ return tenta(); });
+  }
+  if (!CFG || !CFG.geminiKey || CFG.semFotoGoogle) return Promise.reject(new Error('sem'));
+  return tenta().catch(function(e){ CFG.semFotoGoogle = true; throw e; });
+}
+function fotoGratis(prompt, onEspera){
+  var tent = 0, seed = Math.floor(Math.random() * 99999);
+  function vai(){
+    tent++;
+    var u = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt.slice(0, 700)) + '?width=768&height=816&nologo=true&seed=' + seed;
+    var ac = window.AbortController ? new AbortController() : null, tmo = ac ? setTimeout(function(){ ac.abort(); }, 90000) : 0;
+    return fetch(u, {signal: ac ? ac.signal : undefined}).then(function(r){
+      clearTimeout(tmo);
+      if (r.ok && /image/.test(r.headers.get('content-type') || '')) return r.blob().then(imgDeBlob).then(function(im){ return fotoDaImg(im, Math.round(im.naturalHeight * 0.06)); });
+      var esp = Math.min(50, Math.max(10, parseInt(r.headers.get('retry-after') || '0', 10) || (r.status === 402 || r.status === 429 ? 46 : 12)));
+      if (tent >= 4) throw new Error('A IA de fotos grátis está ocupada. Tente de novo em 1 minuto.');
+      return new Promise(function(ok){ var s = esp; (function c(){ if (onEspera) onEspera(s); if (s-- <= 0) return ok(); setTimeout(c, 1000); })(); }).then(vai);
+    }, function(){ clearTimeout(tmo); if (tent >= 3) throw new Error('Sem internet ou a IA de fotos demorou demais.'); return vai(); });
+  }
+  return vai();
+}
+function criaFotoIA(nome, desc, cat, onEspera){
+  return promptFoto(nome, desc, cat).then(function(p){ return fotoGoogle(p).catch(function(){ return fotoGratis(p, onEspera); }); });
+}
+function gerarFotoEdit(){
+  lerEdit(); var e = EDIT;
+  if (!e.nome) return toast('Digite o nome do lanche primeiro.');
+  if (e.foto && !confirm('Trocar a foto atual por uma criada pela IA?')) return;
+  var b = $('eFotoIA'); b.disabled = true; b.textContent = '🎨 Criando a foto… (até 1 min)';
+  criaFotoIA(e.nome, e.desc, e.cat, function(s){ if ($('eFotoIA')) $('eFotoIA').textContent = '🎨 Fila da IA grátis… ' + s + 's'; })
+    .then(function(d){ lerEdit(); EDIT.foto = d; EDIT.fotoIA = true; desenhaEdit(); toast('Foto criada! É uma ilustração: confira se ficou parecida ✨', 4500); },
+      function(x){ var bb = $('eFotoIA'); if (bb){ bb.disabled = false; bb.textContent = '🎨 Criar foto com IA (pelos ingredientes)'; } toast(x.message || 'Não deu certo. Tente de novo.', 4500); });
+}
+function gerarFotoRev(i){
+  lerRev(); var r = REV[i]; if (!r || !r.nome) return toast('Coloque o nome primeiro.');
+  var b = $('rF' + i); if (b){ b.disabled = true; b.textContent = '🎨 Criando…'; }
+  criaFotoIA(r.nome, r.desc, r.cat, function(s){ var bb = $('rF' + i); if (bb) bb.textContent = '⏳ ' + s + 's'; })
+    .then(function(d){ lerRev(); REV[i].foto = d; desenhaRev(); }, function(x){ var bb = $('rF' + i); if (bb){ bb.disabled = false; bb.textContent = '🎨 Criar foto'; } toast(x.message || 'Não deu certo.', 4500); });
+}

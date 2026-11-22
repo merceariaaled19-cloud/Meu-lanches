@@ -203,26 +203,28 @@ function casaCat(cat, lista){
 }
 
 /* ---------- tamanhos / adicionais / meio a meio ---------- */
-var TAM_PIZZA = ['P', 'M', 'G', 'Família'];
+var TAM_PIZZA = ['Broto', 'Pequena', 'Média', 'Grande', 'Família'];
+/* chave do tamanho: broto | p | m | g | fam (P = Pequena, M = Média...) */
+function chaveTam(n){ n = ' ' + normTxt(n) + ' '; if (/broto|mini|individual/.test(n)) return 'broto'; if (/familia|gigante|big|extra ?grande| gg /.test(n)) return 'fam'; if (/pequen| p /.test(n)) return 'p'; if (/medi| m /.test(n)) return 'm'; if (/grand| g /.test(n)) return 'g'; return n.trim(); }
+var MAX_SAB = {broto: 1, p: 2, m: 2, g: 3, fam: 4};
+function maxSabores(nomeTam){ var k = chaveTam(nomeTam); return MAX_SAB[k] || 2; }
 function limpaOpcoes(a){ return (a || []).map(function(x){ return {nome: String(x && x.nome || '').trim(), preco: num(x && x.preco)}; }).filter(function(x){ return x.nome; }); }
 function temOpcoes(i){ return !!(i && ((i.tamanhos && i.tamanhos.length) || (i.adicionais && i.adicionais.length) || i.meioMeio)); }
 function precoMin(i){ if (i && i.tamanhos && i.tamanhos.length) return Math.min.apply(null, i.tamanhos.map(function(t){ return Number(t.preco) || 0; })); return Number(i && i.preco) || 0; }
 function chaveLinha(id, o){ o = o || {}; var a = (o.adds || []).slice().sort(function(x, y){ return x - y; }); if (o.tam == null && !o.meio && !a.length) return id; return id + '|' + (o.tam == null ? '' : o.tam) + '|' + (o.meio || '') + '|' + a.join(','); }
-/* preço de 1 unidade: tamanho escolhido (meio a meio = o maior dos dois sabores no mesmo tamanho) + adicionais */
+function listaOutros(outro){ return !outro ? [] : (outro.length != null && !outro.id ? outro : [outro]).filter(Boolean); }
+function precoNoTam(x, nomeTam, padrao){ if (!x.tamanhos || !x.tamanhos.length) return Number(x.preco) || 0; var k = chaveTam(nomeTam); var t = x.tamanhos.filter(function(y){ return chaveTam(y.nome) === k; })[0]; return t ? Number(t.preco) || 0 : padrao; }
+/* preço de 1 unidade: tamanho escolhido (vários sabores = o sabor mais caro no mesmo tamanho) + adicionais */
 function precoLinha(i, o, outro){
-  o = o || {}; var p = Number(i.preco) || 0, t = null;
+  o = o || {}; var p = Number(i.preco) || 0, t = null, os = listaOutros(outro);
   if (i.tamanhos && i.tamanhos.length){ t = i.tamanhos[o.tam] || i.tamanhos[0]; p = Number(t.preco) || 0; }
-  if (outro && o.meio){
-    var po = Number(outro.preco) || 0;
-    if (t && outro.tamanhos && outro.tamanhos.length){ var tt = outro.tamanhos.filter(function(x){ return normTxt(x.nome) === normTxt(t.nome); })[0]; po = tt ? Number(tt.preco) || 0 : p; }
-    p = Math.max(p, po);
-  }
+  if (o.meio) os.forEach(function(x){ p = Math.max(p, t ? precoNoTam(x, t.nome, p) : Number(x.preco) || 0); });
   (o.adds || []).forEach(function(k){ var a = (i.adicionais || [])[k]; if (a) p += Number(a.preco) || 0; });
   return Math.round(p * 100) / 100;
 }
 function nomeLinha(i, o, outro){
-  o = o || {}; var n = i.nome;
-  if (outro && o.meio) n = 'Meio a meio: ½ ' + i.nome + ' + ½ ' + outro.nome;
+  o = o || {}; var n = i.nome, os = o.meio ? listaOutros(outro) : [];
+  if (os.length){ var fr = ['', '', '½', '⅓', '¼'][os.length + 1] || ''; n = (os.length + 1) + ' sabores: ' + [i].concat(os).map(function(x){ return fr + ' ' + x.nome; }).join(' + '); }
   if (i.tamanhos && i.tamanhos.length){ var t = i.tamanhos[o.tam] || i.tamanhos[0]; n += ' (' + t.nome + ')'; }
   var ad = (o.adds || []).map(function(k){ return (i.adicionais || [])[k]; }).filter(Boolean).map(function(a){ return a.nome; });
   if (ad.length) n += ' + ' + ad.join(', ');
@@ -253,21 +255,14 @@ function catDoTipo(tipo, cats, sugerida){
   if (tipo === 'sanduiche'){ var hb = ns.indexOf('hamburgueres'); if (hb >= 0) return cats[hb]; }
   return tc[1];
 }
+function ehPizza(cat){ var n = normTxt(cat); return /pizza/.test(n) && !/borda/.test(n); }
 function ehPizzaTipo(t){ return t === 'pizza' || t === 'pizza_doce'; }
-/* tamanhos de pizza: sempre P / M / G (e Família se o cardápio tiver) */
+/* tamanhos de pizza: Broto / Pequena / Média / Grande / Família (os que o cardápio tiver; senão P/M/G em branco) */
 function tamanhosPizza(tams, preco){
-  var m = {P: '', M: '', G: ''}, fam = '';
-  (tams || []).forEach(function(t){
-    var n = ' ' + normTxt(t.nome) + ' ';
-    if (/familia|gigante|big|extra ?grande| gg /.test(n)) fam = t.preco;
-    else if (/broto|pequen|mini|individual| p | 4 ped| 6 ped/.test(n)) m.P = t.preco;
-    else if (/medi| m | 8 ped/.test(n)) m.M = t.preco;
-    else if (/grand| g | 12 ped/.test(n)) m.G = t.preco;
-  });
-  if (!m.P && !m.M && !m.G && !fam && num(preco) > 0) m.M = num(preco);
-  var r = [{nome: 'P', preco: m.P}, {nome: 'M', preco: m.M}, {nome: 'G', preco: m.G}];
-  if (fam) r.push({nome: 'Família', preco: fam});
-  return r;
+  var m = {}, ord = [['broto', 'Broto'], ['p', 'Pequena'], ['m', 'Média'], ['g', 'Grande'], ['fam', 'Família']];
+  (tams || []).forEach(function(t){ var k = chaveTam(t.nome); if (MAX_SAB[k]) m[k] = t.preco; });
+  if (!Object.keys(m).length){ m = {p: '', m: num(preco) > 0 ? num(preco) : '', g: ''}; }
+  return ord.filter(function(o){ return o[0] in m; }).map(function(o){ return {nome: o[1], preco: m[o[0]]}; });
 }
 /* converte um item devolvido pela IA no formato da tela de revisão */
 function itemDaIA(it, cats){
