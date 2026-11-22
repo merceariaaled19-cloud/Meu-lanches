@@ -25,7 +25,7 @@ function telaLogin(){
     h += '<h2>Cadastre sua lanchonete</h2><p class="sub">Depois do cadastro, a gente libera seu acesso rapidinho.</p>' +
       '<label>Seu nome</label><input id="lDono" placeholder="Seu nome">' +
       '<label>Nome da lanchonete</label><input id="lNome" placeholder="Ex.: Lanches do Zé">' +
-      '<label>WhatsApp da lanchonete</label><input id="lZap" type="tel" placeholder="(92) 99999-9999">';
+      '<label>WhatsApp da lanchonete</label><input id="lZap" type="tel" placeholder="(92) 99999-9999">' + htmlTipos(TIPOS_SEL);
   } else h += '<h2>Entrar</h2>';
   h += '<label>E-mail</label><input id="lEm" type="email" autocomplete="username" placeholder="seuemail@gmail.com">' +
     '<label>Senha</label><input id="lSe" type="password" autocomplete="' + (modoLogin === 'criar' ? 'new-password' : 'current-password') + '" placeholder="' + (modoLogin === 'criar' ? 'Crie uma senha (mínimo 6)' : 'Sua senha') + '">' +
@@ -45,7 +45,8 @@ function criaConta(){
   var dono = $('lDono').value.trim(), nome = $('lNome').value.trim(), zap = soNum($('lZap').value);
   if (!dono || !nome) return ($('lMsg').textContent = 'Preencha seu nome e o nome da lanchonete.');
   if (zap.length < 10) return ($('lMsg').textContent = 'Digite o WhatsApp com DDD.');
-  PEND_CAD = {dono: dono, nome: nome, zap: zap};
+  if (!TIPOS_SEL.length) return ($('lMsg').textContent = 'Marque pelo menos um tipo de lanche que você vende.');
+  PEND_CAD = {dono: dono, nome: nome, zap: zap, tipos: TIPOS_SEL.slice()};
   $('lBt').disabled = true;
   au.createUserWithEmailAndPassword($('lEm').value.trim(), $('lSe').value).catch(erroAuth);
 }
@@ -62,16 +63,26 @@ function slugLivre(base, uid){
 }
 function telaNovaLoja(){
   var c = PEND_CAD;
-  if (c){ PEND_CAD = null; return criaLoja(c.dono, c.nome, c.zap); }
+  if (c){ PEND_CAD = null; return criaLoja(c.dono, c.nome, c.zap, c.tipos); }
   var h = '<div class="wrap"><div class="hero"><div class="ico">🍔</div><h2>Quase lá!</h2><p class="sub">Complete o cadastro da sua lanchonete.</p></div><div class="card">' +
     '<label>Seu nome</label><input id="lDono" value="' + esc(U.displayName || '') + '">' +
     '<label>Nome da lanchonete</label><input id="lNome" placeholder="Ex.: Lanches do Zé">' +
-    '<label>WhatsApp da lanchonete</label><input id="lZap" type="tel" placeholder="(92) 99999-9999"><p id="lMsg" style="color:var(--erro)"></p>' +
-    '<button class="full" id="lBt" onclick="var z=soNum($(\'lZap\').value);if(!$(\'lNome\').value.trim()||z.length<10){$(\'lMsg\').textContent=\'Preencha o nome e o WhatsApp com DDD.\';return}this.disabled=true;criaLoja($(\'lDono\').value.trim(),$(\'lNome\').value.trim(),z)">Enviar cadastro</button>' +
+    '<label>WhatsApp da lanchonete</label><input id="lZap" type="tel" placeholder="(92) 99999-9999">' + htmlTipos(TIPOS_SEL) + '<p id="lMsg" style="color:var(--erro)"></p>' +
+    '<button class="full" id="lBt" onclick="var z=soNum($(\'lZap\').value);if(!$(\'lNome\').value.trim()||z.length<10){$(\'lMsg\').textContent=\'Preencha o nome e o WhatsApp com DDD.\';return}if(!TIPOS_SEL.length){$(\'lMsg\').textContent=\'Marque pelo menos um tipo de lanche.\';return}this.disabled=true;criaLoja($(\'lDono\').value.trim(),$(\'lNome\').value.trim(),z,TIPOS_SEL.slice())">Enviar cadastro</button>' +
     '<p style="text-align:center"><a href="#" onclick="au.signOut();return false">Sair</a></p></div></div>';
   $('raiz').innerHTML = h;
 }
-function criaLoja(dono, nome, zap){
+/* ---------- tipo da lanchonete (vários) ---------- */
+var TIPOS_SEL = [];
+function htmlTipos(sel){
+  return '<label>O que você vende? (pode marcar vários)</label><div class="tipos" id="boxTipos">' + TIPOS_ORDEM.map(function(t){
+    return '<button type="button" class="' + (sel.indexOf(t) >= 0 ? 'on' : '') + '" onclick="togTipo(\'' + t + '\',this)"><i>' + TIPOS[t].ico + '</i>' + esc(TIPOS[t].nome) + '</button>';
+  }).join('') + '</div><p class="sub" id="tiposCats">' + cTiposTxt(sel) + '</p>';
+}
+function cTiposTxt(sel){ var c = catsDosTipos(sel); return c.length ? 'Categorias que vamos criar no cardápio: ' + esc(c.join(', ')) : ''; }
+function togTipo(t, b){ var p = TIPOS_SEL.indexOf(t); if (p >= 0) TIPOS_SEL.splice(p, 1); else TIPOS_SEL.push(t); b.className = p >= 0 ? '' : 'on'; if ($('tiposCats')) $('tiposCats').innerHTML = cTiposTxt(TIPOS_SEL); }
+function criaLoja(dono, nome, zap, tipos){
+  tipos = tipos || [];
   $('raiz').innerHTML = '<div class="hero"><div class="ico">🍔</div><p class="sub">Criando seu cadastro…</p></div>';
   slugLivre(slugify(nome), U.uid).then(function(slug){
     return db.collection('ml_lojas').doc(U.uid).set({
@@ -79,7 +90,7 @@ function criaLoja(dono, nome, zap){
       endereco: '', lat: null, lng: null, aviso: '', pedMin: 0, horario: horarioPadrao(),
       faixas: [{km: 2, valor: 3}, {km: 3, valor: 5}, {km: 5, valor: 8}], retirada: true, semEntrega: false,
       pag: {dinheiro: true, cartao: true, pix: false, pixTipo: 'Celular', pixChave: '', pixNome: ''},
-      msgs: MSGS_PADRAO, catOrdem: [], criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+      msgs: MSGS_PADRAO, tipos: tipos, catOrdem: catsDosTipos(tipos), criadoEm: firebase.firestore.FieldValue.serverTimestamp()
     });
   }).catch(function(e){ $('raiz').innerHTML = '<div class="wrap"><div class="aviso no">Não deu para criar o cadastro (' + esc(e.code || e.message) + ').</div><button onclick="location.reload()">Tentar de novo</button></div>'; });
 }
@@ -170,146 +181,311 @@ function copiaPed(i){ var p = LISTA_PED[i]; if (p) copiar(textoPedido(p, LD), 'P
 function apagaPed(i){ var p = LISTA_PED[i]; if (p && confirm('Apagar o pedido nº ' + p.numero + '?')) db.collection('ml_pedidos').doc(p.id).delete().catch(function(e){ toast('Erro: ' + e.code); }); }
 
 /* ---------- cardápio ---------- */
+function catsLista(){ var c = catsDono(); catsDosTipos(LD.tipos).forEach(function(x){ if (c.indexOf(x) < 0) c.push(x); }); if (!c.length) c.push('Lanches'); return c; }
 function abaCardapio(c){
-  var h = '<div class="card" style="background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;border:0"><h2>📸 Importar cardápio por foto</h2><p style="margin:4px 0 10px">Tire uma foto do seu cardápio de papel e o app monta tudo sozinho: nomes, preços e até as fotos dos lanches.</p>' +
-    '<div class="row"><button class="bt3" onclick="importa(true)">📷 Tirar foto</button><button class="bt3" onclick="importa(false)">🖼️ Da galeria</button></div></div>';
-  h += '<button class="bt2 full" onclick="editaItem(null)">➕ Adicionar lanche</button>';
-  if (!IT.length) h += '<div class="vazio">Seu cardápio está vazio. Importe pela foto ou adicione os lanches um por um.</div>';
-  var cat = null;
-  IT.forEach(function(i, k){
-    if ((i.cat || 'Cardápio') !== cat){
-      cat = i.cat || 'Cardápio';
-      var ci = catsDono().indexOf(cat);
-      h += (k ? '</div>' : '') + '<div class="card"><div class="row" style="justify-content:space-between"><h3 style="flex:1">' + esc(cat) + '</h3><button class="mini bt3" style="flex:0 0 auto" onclick="moveCat(' + ci + ',-1)">⬆️</button><button class="mini bt3" style="flex:0 0 auto" onclick="moveCat(' + ci + ',1)">⬇️</button></div>';
-    }
-    h += '<div class="itemadm" style="' + (i.ativo === false ? 'opacity:.5' : '') + '">' + (i.foto ? '<img src="' + i.foto + '">' : '<div class="semft">🍔</div>') +
-      '<div class="tx"><b>' + esc(i.nome) + '</b><span class="sub">' + brl(i.preco) + (i.ativo === false ? ' • esgotado' : '') + '</span></div>' +
-      '<button class="mini bt3" onclick="editaItem(\'' + i.id + '\')">✏️</button></div>';
+  var h = '<div class="card imp"><h2>🤖 Robôs que montam seu cardápio</h2><p style="margin:4px 0 10px">Mande uma foto do cardápio de papel ou fotos dos seus lanches. Os robôs leem, recortam, melhoram as fotos e separam por categoria. Você confere antes de salvar.</p>' +
+    '<div class="modos"><button onclick="importa(\'cardapio\')"><i>📋</i><b>Foto do cardápio</b><small>nomes, preços e fotos</small></button><button onclick="importa(\'lanches\')"><i>🍔</i><b>Fotos dos lanches</b><small>várias de uma vez — a IA reconhece</small></button></div></div>';
+  h += '<button class="bt2 full" onclick="editaItem(null)">➕ Adicionar item</button>';
+  var cs = catsDono();
+  if (!IT.length && !cs.length) h += '<div class="vazio">Seu cardápio está vazio. Use os robôs ou adicione os itens um por um.<br>Dica: escolha o tipo da sua lanchonete na aba Loja para criar as categorias.</div>';
+  cs.forEach(function(cat, ci){
+    var its = IT.filter(function(i){ return (i.cat || 'Cardápio') === cat; });
+    h += '<div class="card"><div class="row" style="justify-content:space-between"><h3 style="flex:1">' + icoCat(cat) + ' ' + esc(cat) + ' <small class="sub">(' + its.length + ')</small></h3><button class="mini bt3" style="flex:0 0 auto" onclick="moveCat(' + ci + ',-1)">⬆️</button><button class="mini bt3" style="flex:0 0 auto" onclick="moveCat(' + ci + ',1)">⬇️</button>' +
+      (!its.length ? '<button class="mini bt3" style="flex:0 0 auto" title="Tirar categoria" onclick="tiraCat(' + ci + ')">✕</button>' : '') + '</div>';
+    its.forEach(function(i){
+      h += '<div class="itemadm" style="' + (i.ativo === false ? 'opacity:.5' : '') + '">' + (i.foto ? '<img src="' + i.foto + '">' : '<div class="semft">' + icoCat(i.cat) + '</div>') +
+        '<div class="tx"><b>' + esc(i.nome) + '</b><span class="sub">' + (i.tamanhos && i.tamanhos.length ? i.tamanhos.map(function(t){ return esc(t.nome) + ' ' + brl(t.preco); }).join(' • ') : brl(i.preco)) +
+        (i.adicionais && i.adicionais.length ? ' • ➕ ' + i.adicionais.length + ' adicionais' : '') + (i.meioMeio ? ' • ½ meio a meio' : '') + (i.ativo === false ? ' • pausado/esgotado' : '') + '</span></div>' +
+        '<button class="mini bt3" onclick="editaItem(\'' + i.id + '\')">✏️</button></div>';
+    });
+    h += '<button class="mini bt3 full" style="margin-top:8px" onclick="editaItem(null,' + ci + ')">➕ Adicionar em ' + esc(cat) + '</button></div>';
   });
-  if (IT.length) h += '</div>';
   c.innerHTML = h;
 }
 function catsDono(){ var c = []; (LD.catOrdem || []).forEach(function(x){ if (c.indexOf(x) < 0) c.push(x); }); IT.forEach(function(i){ var k = i.cat || 'Cardápio'; if (c.indexOf(k) < 0) c.push(k); }); return c; }
 function moveCat(i, d){
   var c = catsDono(), j = i + d; if (i < 0 || j < 0 || j >= c.length) return;
-  var t = c[i]; c[i] = c[j]; c[j] = t; LD.catOrdem = c; salva({catOrdem: c}, 'Ordem salva'); 
+  var t = c[i]; c[i] = c[j]; c[j] = t; LD.catOrdem = c; salva({catOrdem: c}, 'Ordem salva');
   IT.sort(function(a, b){ return c.indexOf(a.cat || 'Cardápio') - c.indexOf(b.cat || 'Cardápio') || (a.ordem || 0) - (b.ordem || 0); }); desenhaAba();
 }
+function tiraCat(i){ var c = catsDono(), n = c[i]; if (!n || !confirm('Tirar a categoria "' + n + '" (está vazia)?')) return; c.splice(i, 1); LD.catOrdem = c; salva({catOrdem: c}, 'Categoria removida'); desenhaAba(); }
 function pedeFoto(cam, cb){
   fotoCb = cb; var inp = $(cam ? 'arqCam' : 'arqGal'); inp.value = '';
   inp.onchange = function(){ var f = inp.files[0]; if (!f) return; toast('Melhorando a foto…'); fotoDeArquivo(f, 600).then(function(d){ fotoCb && fotoCb(d); }, function(){ toast('Não deu para abrir essa foto.'); }); };
   inp.click();
 }
+
+/* ---------- editar item ---------- */
 var EDIT = null;
-function editaItem(id){
+function editaItem(id, ci){
   var i = id ? IT.filter(function(x){ return x.id === id; })[0] : null;
-  EDIT = i ? JSON.parse(JSON.stringify(i)) : {nome: '', desc: '', preco: '', cat: catsDono()[0] || 'Lanches', foto: '', ativo: true};
+  var cs = catsLista(), cat = ci != null ? catsDono()[ci] : cs[0];
+  EDIT = i ? JSON.parse(JSON.stringify(i)) : {nome: '', desc: '', preco: '', cat: cat || 'Lanches', foto: '', ativo: true};
+  EDIT.tamanhos = EDIT.tamanhos || []; EDIT.adicionais = EDIT.adicionais || []; EDIT.meioMeio = !!EDIT.meioMeio;
   desenhaEdit();
 }
+function ehPizza(cat){ var n = normTxt(cat); return /pizza/.test(n) && !/borda/.test(n); }
 function desenhaEdit(){
-  var e = EDIT, cs = catsDono();
-  var h = '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha"><button class="fecha" onclick="fechaModal()">✕</button><h2>' + (e.id ? 'Editar lanche' : 'Novo lanche') + '</h2>' +
-    '<div style="text-align:center">' + (e.foto ? '<img src="' + e.foto + '" style="width:200px;height:200px;object-fit:cover;border-radius:18px">' : '<div style="width:200px;height:200px;border-radius:18px;margin:auto;background:var(--linha);display:flex;align-items:center;justify-content:center;font-size:70px">🍔</div>') + '</div>' +
+  var e = EDIT, cs = catsLista().slice(); if (e.cat && cs.indexOf(e.cat) < 0) cs.push(e.cat);
+  var h = '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha" id="folhaEd"><button class="fecha" onclick="fechaModal()">✕</button><h2>' + (e.id ? 'Editar item' : 'Novo item') + '</h2>' +
+    '<div style="text-align:center">' + (e.foto ? '<img src="' + e.foto + '" style="width:200px;height:200px;object-fit:cover;border-radius:18px">' : '<div style="width:200px;height:200px;border-radius:18px;margin:auto;background:var(--linha);display:flex;align-items:center;justify-content:center;font-size:70px">' + icoCat(e.cat) + '</div>') + '</div>' +
     '<div class="row" style="margin-top:8px"><button class="mini bt3" onclick="lerEdit();pedeFoto(true,function(d){EDIT.foto=d;desenhaEdit()})">📷 Câmera</button><button class="mini bt3" onclick="lerEdit();pedeFoto(false,function(d){EDIT.foto=d;desenhaEdit()})">🖼️ Galeria</button>' + (e.foto ? '<button class="mini bt3" onclick="lerEdit();EDIT.foto=\'\';desenhaEdit()">Tirar foto</button>' : '') + '</div>' +
     '<label>Nome</label><input id="eNome" value="' + esc(e.nome) + '" placeholder="Ex.: X-Tudo">' +
-    '<label>Descrição</label><textarea id="eDesc" placeholder="Ex.: pão, hambúrguer, ovo, bacon, queijo, salada">' + esc(e.desc) + '</textarea>' +
-    '<div class="row"><div><label>Preço (R$)</label><input id="ePreco" inputmode="decimal" value="' + (e.preco !== '' ? String(e.preco).replace('.', ',') : '') + '" placeholder="0,00"></div>' +
-    '<div><label>Categoria</label><input id="eCat" list="listaCats" value="' + esc(e.cat) + '"><datalist id="listaCats">' + cs.map(function(c){ return '<option value="' + esc(c) + '">'; }).join('') + '</datalist></div></div>' +
+    '<div class="row" style="align-items:flex-end"><label style="flex:1">Descrição</label><button class="mini bt2" style="flex:0 0 auto;margin-bottom:4px" id="eIA" onclick="gerarDescIA()">✨ Gerar descrição com IA</button></div>' +
+    '<textarea id="eDesc" placeholder="Ex.: pão, hambúrguer, ovo, bacon, queijo, salada">' + esc(e.desc) + '</textarea>' +
+    '<label>Categoria</label><select id="eCat" onchange="if(this.value===\'__nova\'){var n=prompt(\'Nome da nova categoria:\');lerEdit();if(n&&n.trim())EDIT.cat=n.trim();desenhaEdit()}else{lerEdit();desenhaEdit()}">' +
+    cs.map(function(c){ return '<option value="' + esc(c) + '"' + (c === e.cat ? ' selected' : '') + '>' + icoCat(c) + ' ' + esc(c) + '</option>'; }).join('') + '<option value="__nova">➕ Criar nova categoria…</option></select>';
+  if (!e.tamanhos.length) h += '<label>Preço (R$)</label><input id="ePreco" inputmode="decimal" value="' + (e.preco !== '' && e.preco != null ? String(e.preco).replace('.', ',') : '') + '" placeholder="0,00">';
+  h += '<div class="card" style="margin-top:12px"><h3>📏 Tamanhos com preços diferentes</h3>';
+  if (!e.tamanhos.length) h += '<p class="sub">Opcional. Ex.: pizza P/M/G/Família, suco 300ml/500ml.</p>';
+  e.tamanhos.forEach(function(t, k){ h += '<div class="faixa"><input id="eTn' + k + '" value="' + esc(t.nome) + '" placeholder="Tamanho" style="flex:2"><span>R$</span><input id="eTp' + k + '" inputmode="decimal" value="' + (t.preco !== '' && t.preco != null ? String(t.preco).replace('.', ',') : '') + '" placeholder="0,00"><button class="mini btr" style="flex:0 0 auto" onclick="lerEdit();EDIT.tamanhos.splice(' + k + ',1);desenhaEdit()">✕</button></div>'; });
+  h += '<div class="row"><button class="mini bt3" onclick="lerEdit();EDIT.tamanhos.push({nome:\'\',preco:\'\'});desenhaEdit()">➕ Tamanho</button><button class="mini bt3" onclick="tamPizza()">🍕 P / M / G / Família</button></div>';
+  if (e.tamanhos.length || ehPizza(e.cat)) h += '<div class="switch"><span>½ Aceita meio a meio (cliente escolhe outro sabor da mesma categoria; vale o mais caro)</span><input type="checkbox" id="eMeio"' + (e.meioMeio ? ' checked' : '') + '></div>';
+  h += '</div><div class="card"><h3>➕ Adicionais (opcional)</h3><p class="sub">O cliente pode marcar. Ex.: bacon R$ 3,00, borda de catupiry R$ 8,00.</p>';
+  e.adicionais.forEach(function(a, k){ h += '<div class="faixa"><input id="eAn' + k + '" value="' + esc(a.nome) + '" placeholder="Ex.: Bacon" style="flex:2"><span>R$</span><input id="eAp' + k + '" inputmode="decimal" value="' + (a.preco !== '' && a.preco != null ? String(a.preco).replace('.', ',') : '') + '" placeholder="0,00"><button class="mini btr" style="flex:0 0 auto" onclick="lerEdit();EDIT.adicionais.splice(' + k + ',1);desenhaEdit()">✕</button></div>'; });
+  h += '<button class="mini bt3 full" onclick="lerEdit();EDIT.adicionais.push({nome:\'\',preco:\'\'});desenhaEdit()">➕ Adicional</button></div>' +
     '<div class="switch"><span>Disponível para venda</span><input type="checkbox" id="eAtivo"' + (e.ativo !== false ? ' checked' : '') + '></div>' +
-    '<button class="full" style="margin-top:14px" id="eSalva" onclick="salvaItem()">Salvar</button>' + (e.id ? '<p></p><button class="btr full" onclick="apagaItem()">Apagar este lanche</button>' : '') + '</div></div>';
-  $('modal').innerHTML = h;
+    '<button class="full" style="margin-top:14px" id="eSalva" onclick="salvaItem()">Salvar</button>' + (e.id ? '<p></p><button class="btr full" onclick="apagaItem()">Apagar este item</button>' : '') + '</div></div>';
+  var y = $('folhaEd') ? $('folhaEd').scrollTop : 0; $('modal').innerHTML = h; $('folhaEd').scrollTop = y;
 }
-function lerEdit(){ if (!$('eNome')) return; EDIT.nome = $('eNome').value.trim(); EDIT.desc = $('eDesc').value.trim(); EDIT.preco = $('ePreco').value; EDIT.cat = $('eCat').value.trim() || 'Cardápio'; EDIT.ativo = $('eAtivo').checked; }
+function tamPizza(){ lerEdit(); var v = {}; EDIT.tamanhos.forEach(function(t){ v[normTxt(t.nome)] = t.preco; }); EDIT.tamanhos = TAM_PIZZA.map(function(n){ return {nome: n, preco: v[normTxt(n)] != null ? v[normTxt(n)] : (n === 'P' && EDIT.preco ? EDIT.preco : '')}; }); if (ehPizza(EDIT.cat)) EDIT.meioMeio = true; desenhaEdit(); }
+function lerEdit(){
+  if (!$('eNome')) return; EDIT.nome = $('eNome').value.trim(); EDIT.desc = $('eDesc').value.trim(); if ($('ePreco')) EDIT.preco = $('ePreco').value;
+  var c = $('eCat').value; if (c && c !== '__nova') EDIT.cat = c; EDIT.ativo = $('eAtivo').checked; if ($('eMeio')) EDIT.meioMeio = $('eMeio').checked;
+  EDIT.tamanhos.forEach(function(t, k){ if ($('eTn' + k)){ t.nome = $('eTn' + k).value.trim(); t.preco = $('eTp' + k).value; } });
+  EDIT.adicionais.forEach(function(a, k){ if ($('eAn' + k)){ a.nome = $('eAn' + k).value.trim(); a.preco = $('eAp' + k).value; } });
+}
 function salvaItem(){
-  lerEdit(); var e = EDIT; if (!e.nome) return toast('Digite o nome do lanche.');
-  var d = {nome: e.nome, desc: e.desc, preco: num(e.preco), cat: e.cat, foto: e.foto || '', ativo: e.ativo};
+  lerEdit(); var e = EDIT; if (!e.nome) return toast('Digite o nome do item.');
+  var tams = limpaOpcoes(e.tamanhos), adds = limpaOpcoes(e.adicionais);
+  if (tams.some(function(t){ return !(t.preco > 0); })) return toast('Coloque o preço de cada tamanho.');
+  var d = {nome: e.nome, desc: e.desc, preco: tams.length ? precoMin({tamanhos: tams}) : num(e.preco), cat: e.cat || 'Cardápio', foto: e.foto || '', ativo: e.ativo,
+    tamanhos: tams, adicionais: adds, meioMeio: !!(e.meioMeio && (tams.length || ehPizza(e.cat)))};
   $('eSalva').disabled = true;
   var ref = db.collection('ml_lojas').doc(U.uid).collection('itens');
   var pr = e.id ? ref.doc(e.id).update(d) : (d.ordem = Date.now(), ref.add(d));
-  pr.then(function(){ garanteCat(d.cat); fechaModal(); toast('Lanche salvo! ✅'); }, function(x){ $('eSalva').disabled = false; toast('Não salvou: ' + (x.code || x.message), 4000); });
+  pr.then(function(){ garanteCat(d.cat); fechaModal(); toast('Item salvo! ✅'); }, function(x){ $('eSalva').disabled = false; toast('Não salvou: ' + (x.code || x.message), 4000); });
 }
 function garanteCat(c){ var co = (LD.catOrdem || []).slice(); if (co.indexOf(c) < 0){ co.push(c); salva({catOrdem: co}, 'Salvo! ✅'); } }
 function apagaItem(){ if (!confirm('Apagar ' + EDIT.nome + '?')) return; db.collection('ml_lojas').doc(U.uid).collection('itens').doc(EDIT.id).delete().then(function(){ fechaModal(); toast('Apagado'); }); }
-
-/* ---------- importar por foto (Gemini) ---------- */
-var PROMPT_CARD = 'Você recebe a foto de um cardápio de lanchonete brasileira. Extraia TODOS os itens à venda. ' +
-  'Responda SOMENTE em JSON no formato {"itens":[{"categoria":"","nome":"","descricao":"","preco":0,"box_2d":null}]}. ' +
-  'Regras: "categoria" é o título da seção onde o item está (ex.: Lanches, Hambúrgueres, Bebidas, Porções, Sucos); se não houver, use "Lanches". ' +
-  '"nome" com as palavras como estão no cardápio (corrija só erros óbvios de leitura). "descricao" com os ingredientes/detalhes escritos (ou ""). ' +
-  '"preco" é número em reais com ponto decimal (ex.: 18.5); se o item tiver vários tamanhos/preços, crie um item para cada tamanho, com o tamanho no nome. ' +
-  '"box_2d": se existir uma FOTO/IMAGEM desse lanche específico no cardápio, dê a caixa da foto como [ymin, xmin, ymax, xmax] normalizada de 0 a 1000; se não houver foto dele, use null. ' +
-  'Não invente itens nem preços que não estão na imagem.';
-function importa(cam){
-  if (CFG === null){ toast('Carregando… tente de novo em 2 segundos.'); return; }
+function iaPronta(){
+  if (CFG === null){ toast('Carregando… tente de novo em 2 segundos.'); return false; }
   if (!CFG.geminiKey){
-    $('modal').innerHTML = '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha" style="text-align:center"><div style="font-size:50px">🤖</div><h2>Leitura por foto ainda não ativada</h2><p>A leitura automática do cardápio ainda não foi ligada pelo administrador. Enquanto isso, você pode cadastrar os lanches um por um — é rapidinho!</p><button class="full" onclick="fechaModal();editaItem(null)">➕ Adicionar lanche</button><p></p><a class="bt btz full" target="_blank" href="' + zapLink(ZAP_ADMIN, 'Olá! Quero usar a leitura do cardápio por foto no Meu Lanche (' + LD.nome + ').') + '">Avisar o administrador</a></div></div>';
+    $('modal').innerHTML = '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha" style="text-align:center"><div style="font-size:50px">🤖</div><h2>Robôs ainda não ativados</h2><p>A leitura com IA ainda não foi ligada pelo administrador. Enquanto isso, você pode cadastrar os itens um por um — é rapidinho!</p><button class="full" onclick="fechaModal();editaItem(null)">➕ Adicionar item</button><p></p><a class="bt btz full" target="_blank" href="' + zapLink(ZAP_ADMIN, 'Olá! Quero usar os robôs de leitura por foto no Meu Lanche (' + LD.nome + ').') + '">Avisar o administrador</a></div></div>';
+    return false;
+  }
+  return true;
+}
+function gerarDescIA(){
+  lerEdit(); var e = EDIT;
+  if (!e.nome && !e.foto) return toast('Digite o nome ou coloque uma foto primeiro.');
+  if (CFG === null || !CFG.geminiKey) return toast(CFG === null ? 'Carregando… tente de novo.' : 'A IA ainda não foi ativada pelo administrador.', 3500);
+  var b = $('eIA'); b.disabled = true; b.textContent = '✨ Pensando…';
+  var parts = [];
+  if (e.foto && e.foto.indexOf('data:') === 0){ var m = e.foto.match(/^data:([^;]+);base64,(.*)$/); if (m) parts.push({inline_data: {mime_type: m[1], data: m[2]}}); }
+  parts.push({text: 'Você escreve cardápios de lanchonetes brasileiras. ' + ctxLoja() + '\nItem: "' + (e.nome || '(sem nome, veja a foto)') + '"' + (e.desc ? ' — anotação do dono: "' + e.desc + '"' : '') + (parts.length ? ' (a foto anexa é deste item).' : '.') +
+    '\nEscreva "descricao": 1 frase apetitosa e honesta (até 140 caracteres) em português do Brasil, citando os ingredientes típicos ou visíveis, sem exageros e sem emojis. ' +
+    '"nome": o nome curto comercial (mantenha o do dono se ele deu). "categoria": uma das categorias da loja.'});
+  chamaGemini(parts, SCHEMA_DESC).then(function(o){
+    lerEdit();
+    if (o.descricao) EDIT.desc = String(o.descricao).trim();
+    if (!EDIT.nome && o.nome) EDIT.nome = String(o.nome).trim();
+    if (!EDIT.id && o.categoria) EDIT.cat = casaCat(o.categoria, catsLista());
+    desenhaEdit(); toast('Descrição pronta! Confira e ajuste se quiser ✨');
+  }, function(x){ b.disabled = false; b.textContent = '✨ Gerar descrição com IA'; toast(x.message || 'Não deu certo.', 4500); });
+}
+
+/* ---------- robôs: importar por foto (Gemini) ---------- */
+var SCHEMA_ITEM = {type: 'OBJECT', properties: {
+  nome: {type: 'STRING'}, descricao: {type: 'STRING'}, categoria: {type: 'STRING'}, preco: {type: 'NUMBER', nullable: true},
+  tamanhos: {type: 'ARRAY', items: {type: 'OBJECT', properties: {nome: {type: 'STRING'}, preco: {type: 'NUMBER'}}, required: ['nome', 'preco']}},
+  box_2d: {type: 'ARRAY', nullable: true, items: {type: 'INTEGER'}}
+}, required: ['nome', 'descricao', 'categoria', 'preco', 'tamanhos'], propertyOrdering: ['nome', 'descricao', 'categoria', 'preco', 'tamanhos', 'box_2d']};
+var SCHEMA_ITENS = {type: 'OBJECT', properties: {itens: {type: 'ARRAY', items: SCHEMA_ITEM}}, required: ['itens']};
+var SCHEMA_DESC = {type: 'OBJECT', properties: {nome: {type: 'STRING'}, descricao: {type: 'STRING'}, categoria: {type: 'STRING'}}, required: ['nome', 'descricao', 'categoria']};
+function ctxLoja(){
+  var t = nomesTipos(LD.tipos);
+  return (t.length ? 'A lanchonete vende: ' + t.join(', ') + '. ' : '') + 'Categorias do cardápio desta loja (use exatamente um destes nomes sempre que fizer sentido): ' + catsLista().join(' | ') + '.';
+}
+function promptCardapio(){
+  return 'Você é especialista em ler cardápios de lanchonetes brasileiras (papel, banner, quadro, panfleto ou print de tela). ' + ctxLoja() +
+    '\nExtraia TODOS os itens à venda que aparecem na imagem, na ordem em que aparecem. Para cada item:' +
+    '\n- nome: como está escrito (corrija só erros óbvios de leitura; mantenha nomes como "X-Tudo", "X-Salada", "Misto"). Não coloque preço nem tamanho no nome.' +
+    '\n- descricao: ingredientes/legenda escritos junto do item; se não houver, "" (não invente).' +
+    '\n- categoria: uma das categorias da loja; se nenhuma servir, o título da seção do cardápio.' +
+    '\n- preco: preço em reais como número (ex.: 18.5); se não aparecer, null.' +
+    '\n- tamanhos: se o item tiver preços diferentes por tamanho (P/M/G/Família, Broto/Grande, Pequena/Média/Grande, 300ml/500ml, 1L/2L, Simples/Duplo), liste [{nome, preco}] e ponha em preco o menor valor; senão []. Em tabelas com os tamanhos no cabeçalho das colunas, ligue cada preço à coluna certa.' +
+    '\n- box_2d: se houver uma FOTO deste item específico, a caixa [ymin, xmin, ymax, xmax] normalizada de 0 a 1000 cobrindo só a foto da comida (sem o texto); se não houver foto dele, null.' +
+    '\nNão invente itens nem preços. Ignore telefone, endereço, logotipo, horário e propaganda. Preços como "15,90" viram 15.9.';
+}
+function promptLanche(){
+  return 'Esta é a foto de comida de uma lanchonete brasileira (normalmente sem texto). ' + ctxLoja() +
+    '\nReconheça a comida e devolva em "itens" um item para cada lanche/prato DIFERENTE que aparece (quase sempre só 1):' +
+    '\n- nome: nome comercial curto, comum no Brasil (ex.: "X-Tudo", "X-Salada", "Pizza de Calabresa", "Pastel de Carne", "Kikão Completo", "Marmita de Frango Grelhado", "Coca-Cola Lata").' +
+    '\n- descricao: 1 frase apetitosa e honesta (até 140 caracteres), citando os ingredientes que dá para ver. Sem emojis.' +
+    '\n- categoria: uma das categorias da loja.' +
+    '\n- preco: null (o dono vai preencher), a não ser que um preço esteja escrito na foto. tamanhos: [].' +
+    '\n- box_2d: caixa [ymin, xmin, ymax, xmax] de 0 a 1000 em volta do lanche, com pequena folga.' +
+    '\nSe a foto não for de comida ou bebida, devolva "itens": [].';
+}
+var MODO_IMP = 'cardapio';
+function importa(modo, origem){
+  if (modo) MODO_IMP = modo;
+  if (!iaPronta()) return;
+  if (!origem){
+    var lan = MODO_IMP === 'lanches';
+    $('modal').innerHTML = '<div class="fundo" onclick="if(event.target===this)voltaImp()"><div class="folha" style="text-align:center"><div style="font-size:50px">' + (lan ? '🍔' : '📋') + '</div><h2>' + (lan ? 'Fotos dos lanches' : 'Foto do cardápio') + '</h2>' +
+      '<p class="sub">' + (lan ? 'Pode escolher várias fotos de uma vez. Uma foto por lanche, bem de perto e com boa luz. Os robôs reconhecem cada um, escrevem a descrição e deixam a foto bonita. O preço você coloca depois.' : 'Foto bem de frente, com boa luz, sem cortar as bordas. Se o cardápio tiver várias páginas, escolha todas da galeria.') + '</p>' +
+      '<div class="row"><button onclick="importa(null,\'cam\')">📷 Tirar foto</button><button onclick="importa(null,\'gal\')">🖼️ Da galeria</button></div><p></p><button class="bt3 full" onclick="voltaImp()">Voltar</button></div></div>';
     return;
   }
-  var inp = $(cam ? 'arqCardCam' : 'arqCard'); inp.value = '';
-  inp.onchange = function(){ var fs = Array.prototype.slice.call(inp.files || []); if (fs.length) processaFotos(fs); };
+  var inp = $(origem === 'cam' ? 'arqCardCam' : 'arqCard'); inp.value = '';
+  inp.onchange = function(){ var fs = Array.prototype.slice.call(inp.files || []); if (fs.length) processaFotos(fs, MODO_IMP); };
   inp.click();
 }
-function telaProg(t, pct){
-  $('modal').innerHTML = '<div class="fundo"><div class="folha" style="text-align:center"><div class="hero" style="padding:10px"><div class="ico">🤖</div></div><h2>Lendo seu cardápio…</h2><p id="pTxt">' + esc(t) + '</p><div class="prog"><i id="pBar" style="width:' + (pct || 5) + '%"></i></div><p class="sub">Pode levar até 1 minuto por foto. Não feche o app.</p></div></div>';
+function voltaImp(){ if (REV.length) desenhaRev(); else fechaModal(); }
+
+var ROBOS = [
+  {id: 'leitor', nome: 'Leitor', cor: '#3b82f6', fun: {cardapio: 'lê nomes, preços e ingredientes', lanches: 'descobre que lanche é'}},
+  {id: 'fotografo', nome: 'Fotógrafo', cor: '#ec4899', fun: {cardapio: 'acha e recorta as fotos dos lanches', lanches: 'enquadra o lanche na foto'}},
+  {id: 'caprichoso', nome: 'Caprichoso', cor: '#f59e0b', fun: {cardapio: 'deixa as fotos mais bonitas', lanches: 'deixa a foto com cara de cardápio'}},
+  {id: 'organizador', nome: 'Organizador', cor: '#10b981', fun: {cardapio: 'separa tudo por categoria', lanches: 'escolhe a categoria certa'}}
+];
+function svgRobo(cor){
+  return '<svg viewBox="0 0 64 72" width="58" height="66" aria-hidden="true"><line x1="32" y1="4" x2="32" y2="13" stroke="' + cor + '" stroke-width="3"/><circle class="ant" cx="32" cy="5" r="4" fill="' + cor + '"/>' +
+    '<rect x="10" y="13" width="44" height="30" rx="10" fill="' + cor + '"/><rect x="15" y="18" width="34" height="19" rx="7" fill="#fff"/>' +
+    '<g class="olhos"><circle cx="25" cy="27" r="4" fill="#222"/><circle cx="39" cy="27" r="4" fill="#222"/></g><path class="boca" d="M27 33 Q32 36 37 33" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+    '<rect x="16" y="46" width="32" height="20" rx="7" fill="' + cor + '"/><circle cx="32" cy="56" r="4" fill="#fff" opacity=".8"/>' +
+    '<rect class="braco b1" x="4" y="48" width="9" height="5" rx="2.5" fill="' + cor + '"/><rect class="braco b2" x="51" y="48" width="9" height="5" rx="2.5" fill="' + cor + '"/></svg>';
+}
+function telaRobos(total, modo){
+  var h = '<div class="fundo"><div class="folha robos-tela"><h2 style="text-align:center">' + (modo === 'lanches' ? '🍔 Os robôs estão olhando seus lanches' : '📋 Os robôs estão lendo seu cardápio') + '</h2>' +
+    '<p class="sub" style="text-align:center" id="pTxt">Preparando…</p><div class="prog"><i id="pBar" style="width:3%"></i></div><div class="robos">';
+  ROBOS.forEach(function(r){
+    h += '<div class="robo esp" id="rb_' + r.id + '">' + svgRobo(r.cor) + '<b>' + r.nome + '</b><small>' + r.fun[modo] + '</small><span class="rst" id="rs_' + r.id + '">esperando…</span><div class="prog mini"><i id="rp_' + r.id + '" style="background:' + r.cor + '"></i></div></div>';
+  });
+  h += '</div><p class="sub" style="text-align:center">' + total + ' foto' + (total > 1 ? 's' : '') + '. Pode levar até 1 minuto por foto. Não feche o app.</p></div></div>';
+  $('modal').innerHTML = h;
+}
+function setRobo(id, est, txt, pct){
+  var b = $('rb_' + id); if (!b) return;
+  b.className = 'robo ' + est; if (txt != null) $('rs_' + id).textContent = txt; if (pct != null) $('rp_' + id).style.width = Math.max(0, Math.min(100, pct)) + '%';
 }
 function prog(t, pct){ if ($('pTxt')) $('pTxt').textContent = t; if ($('pBar')) $('pBar').style.width = pct + '%'; }
-function processaFotos(fs){
-  var novos = [], k = 0;
-  telaProg('Preparando a foto 1 de ' + fs.length + '…', 5);
+function pausa(ms){ return new Promise(function(ok){ setTimeout(ok, ms); }); }
+function perguntaErro(msg, n, tot){
+  return new Promise(function(ok){
+    window.__respErro = function(v){ ok(v); };
+    $('modal').innerHTML = '<div class="fundo"><div class="folha" style="text-align:center"><div class="robo erro" style="margin:auto;display:inline-flex">' + svgRobo('#9ca3af') + '</div><h2>Ops! Um robô tropeçou</h2><p>' + esc(msg) + '</p><p class="sub">Foto ' + n + ' de ' + tot + '.</p>' +
+      '<button class="full" onclick="__respErro(\'tenta\')">🔄 Tentar de novo</button><p></p>' + (n < tot ? '<button class="bt3 full" onclick="__respErro(\'pula\')">Pular esta foto</button><p></p>' : '') +
+      '<button class="bt3 full" onclick="__respErro(\'para\')">' + (REV.length ? 'Parar e revisar o que já foi lido' : 'Parar') + '</button></div></div>';
+  });
+}
+function processaFotos(fs, modo){
+  var novos = [], k = 0, N = fs.length, cats = catsLista(), lan = modo === 'lanches';
+  telaRobos(N, modo);
+  function pctG(n, f){ return Math.round(((n - 1) + f) / N * 100); }
   function prox(){
-    if (k >= fs.length) return fimImport(novos);
-    var f = fs[k], n = k + 1; k++;
-    prog('Preparando a foto ' + n + ' de ' + fs.length + '…', Math.round((n - 1) / fs.length * 100) + 5);
-    arquivoParaCanvas(f, 2000).then(function(cv){
-      prog('Lendo a foto ' + n + ' de ' + fs.length + ' (nomes, preços e fotos)…', Math.round((n - .6) / fs.length * 100));
+    if (k >= N){ ROBOS.forEach(function(r){ setRobo(r.id, 'ok', 'pronto! ✅', 100); }); prog('Tudo pronto! Abrindo a revisão…', 100); return pausa(900).then(function(){ fimImport(novos); }); }
+    var f = fs[k], n = k + 1, cv;
+    if (!$('rb_leitor')) telaRobos(N, modo);
+    ROBOS.forEach(function(r){ setRobo(r.id, 'esp', 'esperando…', 0); });
+    setRobo('leitor', 'trab', 'abrindo a foto ' + n + '…', 10); prog('Foto ' + n + ' de ' + N, pctG(n, .05));
+    return arquivoParaCanvas(f, 2000).then(function(c){
+      cv = c; setRobo('leitor', 'trab', lan ? 'olhando o lanche…' : 'lendo nomes e preços…', 35); prog('Foto ' + n + ' de ' + N + ': ' + (lan ? 'reconhecendo…' : 'lendo…'), pctG(n, .15));
+      var tk = setInterval(function(){ var e = $('rp_leitor'); if (e){ var w = parseFloat(e.style.width) || 35; if (w < 92) e.style.width = (w + 3) + '%'; } }, 1200);
       var b64 = cv.toDataURL('image/jpeg', 0.88).split(',')[1];
-      return chamaGemini(b64).then(function(r){
-        prog('Recortando e melhorando as fotos dos lanches…', Math.round((n - .2) / fs.length * 100));
-        (r.itens || []).forEach(function(it){
-          if (!it || !it.nome) return;
-          var foto = '';
-          var b = it.box_2d;
-          if (b && b.length === 4 && b.every(function(v){ return typeof v === 'number'; })){
-            var y0 = b[0] / 1000 * cv.height, x0 = b[1] / 1000 * cv.width, y1 = b[2] / 1000 * cv.height, x1 = b[3] / 1000 * cv.width;
-            var w = x1 - x0, h = y1 - y0;
-            if (w > 30 && h > 30 && w < cv.width * 0.95 && h < cv.height * 0.95){
-              var px = w * 0.02, py = h * 0.02;
-              x0 = Math.max(0, x0 - px); y0 = Math.max(0, y0 - py); w = Math.min(cv.width - x0, w + 2 * px); h = Math.min(cv.height - y0, h + 2 * py);
-              try { foto = melhoraFoto(cv, x0, y0, w, h, 600); } catch (e) { foto = ''; }
-            }
-          }
-          novos.push({ok: true, nome: String(it.nome).trim(), desc: String(it.descricao || '').trim(), preco: num(it.preco), cat: String(it.categoria || 'Lanches').trim(), foto: foto});
+      return chamaGemini([{inline_data: {mime_type: 'image/jpeg', data: b64}}, {text: lan ? promptLanche() : promptCardapio()}], SCHEMA_ITENS, function(seg){
+        setRobo('leitor', 'trab', 'descansando ' + seg + 's (limite da IA)…'); prog('Os robôs estão tomando um fôlego… voltam em ' + seg + 's', pctG(n, .3));
+      }).then(function(r){ clearInterval(tk); return r; }, function(e){ clearInterval(tk); throw e; });
+    }).then(function(r){
+      var its = (r && r.itens) || [];
+      setRobo('leitor', 'ok', its.length ? 'achei ' + its.length + ' ite' + (its.length > 1 ? 'ns' : 'm') + ' ✅' : 'não achei itens 😕', 100);
+      /* fotógrafo: acha as caixas */
+      setRobo('fotografo', 'trab', 'procurando fotos…', 20); prog('Foto ' + n + ' de ' + N + ': recortando…', pctG(n, .6));
+      var cxs = its.map(function(it){
+        var c = caixaPx(it && it.box_2d, cv.width, cv.height, lan ? 1.01 : 0.95);
+        if (!c && lan){ var l = Math.min(cv.width, cv.height); c = {x: (cv.width - l) / 2, y: (cv.height - l) / 2, w: l, h: l}; }
+        return c;
+      });
+      var nf = cxs.filter(Boolean).length;
+      return pausa(350).then(function(){
+        setRobo('fotografo', 'ok', nf ? nf + ' foto' + (nf > 1 ? 's' : '') + ' recortada' + (nf > 1 ? 's' : '') + ' ✅' : 'sem fotos no cardápio', 100);
+        setRobo('caprichoso', nf ? 'trab' : 'ok', nf ? 'melhorando 0 de ' + nf + '…' : 'nada para melhorar', nf ? 5 : 100);
+        var fotos = [], j = 0, feitas = 0;
+        function cap(){
+          if (j >= cxs.length) return Promise.resolve();
+          var c = cxs[j], jj = j; j++;
+          if (!c){ fotos[jj] = ''; return cap(); }
+          return pausa(30).then(function(){
+            try { fotos[jj] = melhoraFoto(cv, c.x, c.y, c.w, c.h, 600); } catch (e) { fotos[jj] = ''; }
+            feitas++; setRobo('caprichoso', 'trab', 'melhorando ' + feitas + ' de ' + nf + '…', feitas / nf * 100);
+            return cap();
+          });
+        }
+        return cap().then(function(){
+          if (nf) setRobo('caprichoso', 'ok', 'fotos caprichadas ✅', 100);
+          setRobo('organizador', 'trab', 'separando por categoria…', 40); prog('Foto ' + n + ' de ' + N + ': organizando…', pctG(n, .9));
+          return pausa(300).then(function(){
+            var porCat = {};
+            its.forEach(function(it, q){ var x = itemDaIA(it, cats); if (!x) return; x.foto = fotos[q] || ''; novos.push(x); porCat[x.cat] = (porCat[x.cat] || 0) + 1; });
+            var ks = Object.keys(porCat);
+            setRobo('organizador', 'ok', ks.length ? ks.length + ' categoria' + (ks.length > 1 ? 's' : '') + ' ✅' : 'nada a organizar', 100);
+            k++; return pausa(lan && k < N ? 700 : 300).then(prox);
+          });
         });
       });
-    }).then(prox, function(e){
+    }, function(e){
       var m = e && e.message || String(e);
-      if (!confirm('Não deu para ler a foto ' + n + ': ' + m + '\n\nContinuar com as outras?')) return fimImport(novos);
-      prox();
+      return perguntaErro(m, n, N).then(function(v){
+        if (v === 'tenta'){ telaRobos(N, modo); return prox(); }
+        if (v === 'pula'){ k++; telaRobos(N, modo); return prox(); }
+        return fimImport(novos);
+      });
     });
   }
   prox();
 }
-function chamaGemini(b64){
+/* chama o Gemini com JSON + schema; troca de modelo se faltar; espera e tenta de novo no limite (429) */
+function chamaGemini(parts, schema, onEspera){
   var mods = [];
   if (CFG.geminiModelo) mods.push(CFG.geminiModelo);
   ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'].forEach(function(m){ if (mods.indexOf(m) < 0) mods.push(m); });
-  var body = JSON.stringify({contents: [{parts: [{inline_data: {mime_type: 'image/jpeg', data: b64}}, {text: PROMPT_CARD}]}], generationConfig: {responseMimeType: 'application/json', temperature: 0.1}});
-  var i = 0;
+  var i = 0, rodada = 0, semSchema = {}, limite = false;
+  function corpo(m){
+    var gc = {responseMimeType: 'application/json', temperature: 0.15, maxOutputTokens: 24576};
+    if (schema && !semSchema[m]) gc.responseSchema = schema;
+    return JSON.stringify({contents: [{role: 'user', parts: parts}], generationConfig: gc});
+  }
+  function proxModelo(){
+    if (i < mods.length) return tenta();
+    if (limite && rodada < 2){
+      rodada++; i = 0; limite = false; var s = rodada === 1 ? 20 : 40;
+      return new Promise(function(ok){ (function conta(){ if (onEspera) onEspera(s); if (s-- <= 0) return ok(); setTimeout(conta, 1000); })(); }).then(tenta);
+    }
+    if (limite) throw new Error('Os robôs bateram no limite de leituras grátis da IA. Espere 1 ou 2 minutos e toque em "Tentar de novo".');
+    throw new Error('A IA está ocupada agora. Tente de novo daqui a pouco.');
+  }
   function tenta(){
     var m = mods[i++];
-    return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(CFG.geminiKey), {method: 'POST', headers: {'Content-Type': 'application/json'}, body: body})
-      .then(function(r){ return r.json().then(function(j){ return {st: r.status, j: j}; }); })
+    return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(CFG.geminiKey), {method: 'POST', headers: {'Content-Type': 'application/json'}, body: corpo(m)})
+      .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {st: r.status, j: j}; }); }, function(){ throw new Error('Sem internet. Confira a conexão e tente de novo.'); })
       .then(function(x){
-        if (x.st === 404 || (x.st === 400 && /not found|not supported/i.test(JSON.stringify(x.j)))){ if (i < mods.length) return tenta(); throw new Error('Modelo de leitura indisponível.'); }
-        if (x.st === 429) throw new Error('Muitas leituras seguidas. Espere 1 minuto e tente de novo.');
-        if (x.st === 400 && /API key|API_KEY/i.test(JSON.stringify(x.j))) throw new Error('A chave de leitura está errada. Avise o administrador.');
-        if (x.st === 403) throw new Error('A chave de leitura não tem permissão. Avise o administrador.');
-        if (x.st >= 500 && i < mods.length) return tenta();
-        if (x.st !== 200) throw new Error('Erro ' + x.st + ' na leitura.');
-        var t = '';
-        try { t = x.j.candidates[0].content.parts.map(function(p){ return p.text || ''; }).join(''); } catch (e) { throw new Error('A leitura voltou vazia. Tente uma foto mais nítida.'); }
-        t = t.replace(/^```(json)?/i, '').replace(/```\s*$/, '').trim();
-        var o; try { o = JSON.parse(t); } catch (e) { var a = t.indexOf('{'), z = t.lastIndexOf('}'); o = JSON.parse(t.slice(a, z + 1)); }
+        var txt = JSON.stringify(x.j || {});
+        if (x.st === 404 || (x.st === 400 && /not found|not supported|is not available/i.test(txt))) return proxModelo();
+        if (x.st === 400 && schema && !semSchema[m] && /schema|response_schema|responseSchema|Invalid JSON payload|Unknown name/i.test(txt)){ semSchema[m] = 1; i--; return tenta(); }
+        if (x.st === 400 && /API key|API_KEY/i.test(txt)) throw new Error('A chave da IA está errada. Avise o administrador.');
+        if (x.st === 403) throw new Error('A chave da IA não tem permissão. Avise o administrador.');
+        if (x.st === 429 || x.st === 503 || x.st === 500){ limite = true; return proxModelo(); }
+        if (x.st >= 500) return proxModelo();
+        if (x.st !== 200) throw new Error('Erro ' + x.st + ' na IA. Tente de novo.');
+        var c0 = x.j.candidates && x.j.candidates[0];
+        if (!c0 || !c0.content || !c0.content.parts){
+          if (c0 && /SAFETY|PROHIBITED|BLOCK/i.test(c0.finishReason || '')) throw new Error('A IA não quis ler esta foto. Tente outra.');
+          throw new Error('A leitura voltou vazia. Tente uma foto mais nítida.');
+        }
+        var o = lerJsonIA(c0.content.parts.map(function(p){ return p.thought ? '' : (p.text || ''); }).join(''));
+        if (!o) return proxModelo();
         if (Array.isArray(o)) o = {itens: o};
         return o;
       });
@@ -318,24 +494,41 @@ function chamaGemini(b64){
 }
 function fimImport(novos){
   REV = REV.concat(novos);
-  if (!REV.length){ $('modal').innerHTML = '<div class="fundo"><div class="folha" style="text-align:center"><h2>Não achamos lanches na foto 😕</h2><p>Tente outra foto, bem de frente, com boa luz e sem cortar as bordas.</p><button class="full" onclick="fechaModal()">OK</button></div></div>'; return; }
+  if (!REV.length){ $('modal').innerHTML = '<div class="fundo"><div class="folha" style="text-align:center"><div class="robo esp" style="margin:auto;display:inline-flex">' + svgRobo('#9ca3af') + '</div><h2>Os robôs não acharam itens 😕</h2><p>Tente outra foto: bem de frente, com boa luz e sem cortar as bordas.</p><button class="full" onclick="fechaModal()">OK</button></div></div>'; return; }
   desenhaRev();
 }
 function desenhaRev(){
-  var n = REV.filter(function(r){ return r.ok; }).length, comFoto = REV.filter(function(r){ return r.foto; }).length;
-  var h = '<div class="fundo"><div class="folha"><button class="fecha" onclick="if(confirm(\'Descartar a leitura?\')){REV=[];fechaModal()}">✕</button><h2>Confira seu cardápio</h2>' +
-    '<p class="sub">Achamos ' + REV.length + ' itens' + (comFoto ? ' (' + comFoto + ' com foto)' : '') + '. Corrija o que precisar, desmarque o que não quiser e toque em Salvar. Toque na foto para trocar.</p>';
+  var n = REV.filter(function(r){ return r.ok; }).length, comFoto = REV.filter(function(r){ return r.foto; }).length, cs = catsLista().slice();
+  REV.forEach(function(r){ if (r.cat && cs.indexOf(r.cat) < 0) cs.push(r.cat); });
+  var h = '<div class="fundo"><div class="folha" id="folhaRev"><button class="fecha" onclick="if(confirm(\'Descartar a leitura?\')){REV=[];fechaModal()}">✕</button><h2>Confira antes de salvar</h2>' +
+    '<p class="sub">Os robôs acharam ' + REV.length + ' itens' + (comFoto ? ' (' + comFoto + ' com foto)' : '') + '. Corrija o que precisar, desmarque o que não quiser e toque em Salvar. Toque na foto para trocar.</p>' +
+    '<datalist id="listaCatsRev">' + cs.map(function(c){ return '<option value="' + esc(c) + '">'; }).join('') + '</datalist>';
   REV.forEach(function(r, i){
+    var semP = r.ok && !r.tamanhos.length && !(num(r.preco) > 0);
     h += '<div class="rev" style="' + (r.ok ? '' : 'opacity:.45') + '"><input type="checkbox"' + (r.ok ? ' checked' : '') + ' onchange="lerRev();REV[' + i + '].ok=this.checked;desenhaRev()">' +
       (r.foto ? '<img src="' + r.foto + '" onclick="fotoRev(' + i + ')">' : '<div class="semft" onclick="fotoRev(' + i + ')">📷</div>') +
       '<div class="tx"><input id="rN' + i + '" value="' + esc(r.nome) + '" placeholder="Nome"><textarea id="rD' + i + '" placeholder="Descrição">' + esc(r.desc) + '</textarea>' +
-      '<div class="row"><input id="rP' + i + '" inputmode="decimal" value="' + String(r.preco).replace('.', ',') + '" placeholder="Preço"><input id="rC' + i + '" value="' + esc(r.cat) + '" placeholder="Categoria"></div></div></div>';
+      '<input id="rC' + i + '" list="listaCatsRev" value="' + esc(r.cat) + '" placeholder="Categoria">';
+    if (r.tamanhos.length){
+      r.tamanhos.forEach(function(t, k){ h += '<div class="row tam"><input id="rTn' + i + '_' + k + '" value="' + esc(t.nome) + '" placeholder="Tamanho"><input id="rTp' + i + '_' + k + '" inputmode="decimal" value="' + String(t.preco).replace('.', ',') + '" placeholder="Preço"><button class="mini bt3" style="flex:0 0 auto" onclick="lerRev();REV[' + i + '].tamanhos.splice(' + k + ',1);desenhaRev()">✕</button></div>'; });
+      h += '<button class="mini bt3" onclick="lerRev();REV[' + i + '].tamanhos.push({nome:\'\',preco:\'\'});desenhaRev()">➕ tamanho</button>';
+    } else {
+      h += '<div class="row"><input id="rP' + i + '" inputmode="decimal" value="' + (r.preco === '' ? '' : String(r.preco).replace('.', ',')) + '" placeholder="Preço (R$)"' + (semP ? ' style="border-color:#f59e0b"' : '') + '><button class="mini bt3" style="flex:0 0 auto" onclick="lerRev();var r=REV[' + i + '];r.tamanhos=[{nome:\'P\',preco:r.preco},{nome:\'G\',preco:\'\'}];desenhaRev()">📏 tamanhos</button></div>' +
+        (semP ? '<span class="tag esp">⚠️ falta o preço</span>' : '');
+    }
+    h += '</div></div>';
   });
-  h += '<div class="row" style="margin-top:12px;position:sticky;bottom:0;background:var(--bg);padding:8px 0"><button class="bt3" onclick="lerRev();importa(false)">➕ Mais fotos</button><button id="rSalva" onclick="salvaRev()" style="flex:2">Salvar ' + n + ' itens</button></div></div></div>';
-  var y = document.querySelector('.folha') ? document.querySelector('.folha').scrollTop : 0;
-  $('modal').innerHTML = h; document.querySelector('.folha').scrollTop = y;
+  h += '<div class="row" style="margin-top:12px;position:sticky;bottom:0;background:var(--bg);padding:8px 0"><button class="bt3" onclick="lerRev();importa(null)">➕ Mais fotos</button><button id="rSalva" onclick="salvaRev()" style="flex:2">Salvar ' + n + ' itens</button></div></div></div>';
+  var y = $('folhaRev') ? $('folhaRev').scrollTop : 0;
+  $('modal').innerHTML = h; $('folhaRev').scrollTop = y;
 }
-function lerRev(){ REV.forEach(function(r, i){ if (!$('rN' + i)) return; r.nome = $('rN' + i).value.trim(); r.desc = $('rD' + i).value.trim(); r.preco = num($('rP' + i).value); r.cat = $('rC' + i).value.trim() || 'Lanches'; }); }
+function lerRev(){
+  REV.forEach(function(r, i){
+    if (!$('rN' + i)) return; r.nome = $('rN' + i).value.trim(); r.desc = $('rD' + i).value.trim(); r.cat = $('rC' + i).value.trim() || 'Lanches';
+    if ($('rP' + i)) r.preco = $('rP' + i).value.trim() === '' ? '' : num($('rP' + i).value);
+    r.tamanhos.forEach(function(t, k){ if ($('rTn' + i + '_' + k)){ t.nome = $('rTn' + i + '_' + k).value.trim(); t.preco = num($('rTp' + i + '_' + k).value); } });
+  });
+}
 function fotoRev(i){
   lerRev();
   var esc2 = confirm('OK = tirar foto com a câmera\nCancelar = escolher da galeria');
@@ -344,6 +537,9 @@ function fotoRev(i){
 function salvaRev(){
   lerRev();
   var sel = REV.filter(function(r){ return r.ok && r.nome; }); if (!sel.length) return toast('Marque pelo menos um item.');
+  sel.forEach(function(r){ r._t = limpaOpcoes(r.tamanhos).filter(function(t){ return t.preco > 0; }); });
+  var semPreco = sel.filter(function(r){ return !r._t.length && !(num(r.preco) > 0); }).length;
+  if (semPreco && !confirm(semPreco + ' item(ns) estão sem preço. Eles serão salvos como PAUSADOS (o cliente não vê) até você colocar o preço no Cardápio. Continuar?')) return;
   $('rSalva').disabled = true; $('rSalva').textContent = 'Salvando…';
   var ref = db.collection('ml_lojas').doc(U.uid).collection('itens'), base = Date.now(), k = 0, erros = 0;
   var co = (LD.catOrdem || []).slice(); sel.forEach(function(r){ if (co.indexOf(r.cat) < 0) co.push(r.cat); });
@@ -353,7 +549,9 @@ function salvaRev(){
       REV = []; fechaModal(); vaiAba('cardapio'); return;
     }
     var r = sel[k], o = k; k++; $('rSalva').textContent = 'Salvando ' + k + ' de ' + sel.length + '…';
-    ref.add({nome: r.nome, desc: r.desc, preco: r.preco, cat: r.cat, foto: r.foto || '', ativo: true, ordem: base + o}).then(prox, function(){ erros++; prox(); });
+    var t = r._t.length > 1 ? r._t : [], preco = t.length ? precoMin({tamanhos: t}) : (r._t.length === 1 ? r._t[0].preco : num(r.preco));
+    ref.add({nome: r.nome, desc: r.desc, preco: preco, cat: r.cat, foto: r.foto || '', ativo: preco > 0, ordem: base + o,
+      tamanhos: t, adicionais: [], meioMeio: !!(t.length && ehPizza(r.cat))}).then(prox, function(){ erros++; prox(); });
   }
   prox();
 }
@@ -368,6 +566,8 @@ function abaLoja(c){
     '<label>Aviso no topo da loja (opcional)</label><input id="sAviso" value="' + esc(LD.aviso || '') + '" placeholder="Ex.: Promoção: 2 X-Burguer por R$ 25!">' +
     '<label>Pedido mínimo (R$, 0 = sem mínimo)</label><input id="sMin" inputmode="decimal" value="' + String(LD.pedMin || 0).replace('.', ',') + '">' +
     '<button class="full" style="margin-top:12px" onclick="salvaLoja()">Salvar</button></div>';
+  TIPOS_SEL = (LD.tipos || []).slice();
+  h += '<div class="card"><h3>Tipo da lanchonete</h3>' + htmlTipos(TIPOS_SEL) + '<p class="sub">Isso cria categorias sugeridas no cardápio, aparece na sua loja e ajuda os robôs a lerem as fotos.</p><button class="full" onclick="salvaTipos()">Salvar tipos</button></div>';
   h += '<div class="card"><h3>Cores</h3><div class="temas">' + Object.keys(TEMAS).map(function(k){ var t = TEMAS[k]; return '<button class="' + (LD.tema === k ? 'on' : '') + '" onclick="salva({tema:\'' + k + '\'},\'Cores trocadas!\')"><i style="background:linear-gradient(135deg,' + t.p + ',' + t.p2 + ')"></i>' + t.nome + '</button>'; }).join('') + '</div>' +
     '<h3 style="margin-top:14px">Jeito do cardápio</h3><div class="opc"><label class="' + (LD.layout !== 'lista' ? 'on' : '') + '" onclick="salva({layout:\'grade\'})">🔲 Fotos grandes<br>(2 por linha)</label><label class="' + (LD.layout === 'lista' ? 'on' : '') + '" onclick="salva({layout:\'lista\'})">📃 Lista<br>(1 por linha)</label></div></div>';
   h += '<div class="card"><h3>Endereço e localização</h3><label>Endereço da lanchonete</label><input id="sEnd" value="' + esc(LD.endereco || '') + '" placeholder="Rua, número, bairro">' +
@@ -377,6 +577,12 @@ function abaLoja(c){
     '<label>ou cole o link do Google Maps da lanchonete</label><div class="row"><input id="sMaps" placeholder="https://maps.google.com/..."><button class="mini" style="flex:0 0 auto" onclick="linkMaps()">Usar</button></div>' +
     '<button class="full" style="margin-top:12px" onclick="salva({endereco:$(\'sEnd\').value.trim()})">Salvar endereço</button></div>';
   c.innerHTML = h;
+}
+function salvaTipos(){
+  if (!TIPOS_SEL.length) return toast('Marque pelo menos um tipo.');
+  var co = (LD.catOrdem || []).slice(), novas = 0;
+  catsDosTipos(TIPOS_SEL).forEach(function(c){ if (co.indexOf(c) < 0){ co.push(c); novas++; } });
+  salva({tipos: TIPOS_SEL.slice(), catOrdem: co}, novas ? 'Salvo! ' + novas + ' categorias novas no cardápio ✅' : 'Salvo! ✅');
 }
 function pedeLogo(cam){
   var inp = $(cam ? 'arqCam' : 'arqGal'); inp.value = '';

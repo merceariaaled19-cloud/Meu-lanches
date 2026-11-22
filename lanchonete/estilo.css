@@ -100,3 +100,43 @@ button:disabled{opacity:.5}
 .linkbox{display:flex;gap:6px;align-items:center;background:var(--card);border:2px dashed var(--p);border-radius:14px;padding:8px 10px;font-size:13px;word-break:break-all}
 .switch{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--linha)}
 .switch input{width:26px;height:26px;flex:0 0 26px}
+/* v2: tipos, categorias com ícone, opções, robôs */
+.tipos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tipos button{flex-direction:column;gap:2px;background:var(--card);color:var(--tx);border:2px solid var(--linha);padding:10px 6px;font-size:13px;font-weight:600;line-height:1.15}
+.tipos button i{font-style:normal;font-size:26px}
+.tipos button.on{border-color:var(--p);background:color-mix(in srgb,var(--p) 14%,var(--card));box-shadow:0 0 0 2px color-mix(in srgb,var(--p) 30%,transparent)}
+.tiposloja{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.tiposloja span{font-size:13px;font-weight:700;padding:5px 10px;border-radius:20px;background:var(--card);border:1px solid var(--linha)}
+.chips a i{font-style:normal;margin-right:5px}
+.tcat{margin:18px 2px 8px;font-size:19px;display:flex;align-items:center;gap:8px}
+.tcat span{display:inline-flex;width:36px;height:36px;border-radius:12px;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--p2),var(--p));font-size:20px}
+.prod .tams{font-size:11.5px;color:var(--sub);font-weight:700}
+.prod .pr small{font-size:10.5px;font-weight:600;color:var(--sub)}
+.imp{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;border:0}
+.modos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.modos button{flex-direction:column;gap:2px;background:rgba(255,255,255,.95);color:#222;padding:12px 6px;line-height:1.15}
+.modos button i{font-style:normal;font-size:30px}
+.modos button small{font-weight:500;font-size:11.5px;color:#555}
+.rev .row.tam input{margin-bottom:2px}
+.robos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.robo{background:var(--card);border:2px solid var(--linha);border-radius:18px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;transition:.3s}
+.robo b{font-size:15px}.robo small{font-size:11.5px;color:var(--sub);min-height:28px}
+.robo .rst{font-size:12px;font-weight:700;min-height:16px}
+.robo .prog.mini{height:6px;width:100%;margin:6px 0 0}
+.robo .prog.mini i{transition:width .5s}
+.robo.esp{opacity:.55;filter:grayscale(.6)}
+.robo.trab{border-color:var(--p);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.robo.trab svg{animation:roboPula .7s ease-in-out infinite}
+.robo.trab .b1{animation:roboBraco .5s ease-in-out infinite;transform-origin:13px 50px}
+.robo.trab .b2{animation:roboBraco .5s ease-in-out infinite reverse;transform-origin:51px 50px}
+.robo.trab .ant{animation:roboAnt .6s steps(2) infinite}
+.robo.ok{border-color:#16a34a}
+.robo.ok .boca{d:path("M25 32 Q32 39 39 32")}
+.robo .olhos{animation:roboPisca 3.2s infinite;transform-origin:32px 27px}
+.robo.erro svg{animation:roboTreme .4s ease 3}
+@keyframes roboPula{50%{transform:translateY(-5px) rotate(-3deg)}}
+@keyframes roboBraco{50%{transform:rotate(-35deg)}}
+@keyframes roboAnt{50%{fill:#fff}}
+@keyframes roboPisca{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes roboTreme{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.robo svg,.robo *{animation:none!important}}

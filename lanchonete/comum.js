@@ -151,3 +151,111 @@ if ('serviceWorker' in navigator){
     navigator.serviceWorker.addEventListener('controllerchange', function(){ if (recarregou || !tinha) return; recarregou = true; if (!window.__naoRecarregar) location.reload(); });
   });
 }
+
+/* ---------- tipos de lanchonete / categorias ---------- */
+var TIPOS = {
+  sanduiche: {nome: 'Sanduíches/Hambúrguer', ico: '🍔', cats: ['Hambúrgueres', 'Sanduíches', 'Porções', 'Adicionais']},
+  kikao:     {nome: 'Kikão (cachorro-quente)', ico: '🌭', cats: ['Kikão', 'Adicionais']},
+  pizza:     {nome: 'Pizza', ico: '🍕', cats: ['Pizzas Salgadas', 'Pizzas Doces', 'Bordas']},
+  pastel:    {nome: 'Pastel', ico: '🥟', cats: ['Pastéis Salgados', 'Pastéis Doces']},
+  comida:    {nome: 'Comida (marmita/pratos)', ico: '🍛', cats: ['Marmitas', 'Pratos', 'Acompanhamentos']},
+  bebidas:   {nome: 'Bebidas', ico: '🥤', cats: ['Refrigerantes', 'Sucos', 'Água']}
+};
+var TIPOS_ORDEM = ['sanduiche', 'kikao', 'pizza', 'pastel', 'comida', 'bebidas'];
+function catsDosTipos(tipos){
+  var c = [];
+  TIPOS_ORDEM.forEach(function(t){ if ((tipos || []).indexOf(t) >= 0) TIPOS[t].cats.forEach(function(x){ if (c.indexOf(x) < 0) c.push(x); }); });
+  /* "Adicionais" sempre no fim */
+  var a = c.indexOf('Adicionais'); if (a >= 0){ c.splice(a, 1); c.push('Adicionais'); }
+  return c;
+}
+function nomesTipos(tipos){ return TIPOS_ORDEM.filter(function(t){ return (tipos || []).indexOf(t) >= 0; }).map(function(t){ return TIPOS[t].nome; }); }
+function normTxt(s){ return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); }
+var ICO_CAT = [
+  [/pizza.*doce|doce.*pizza/, '🍫'], [/borda/, '🧀'], [/pizza/, '🍕'], [/kikao|cachorro|hot ?dog|dogao/, '🌭'],
+  [/hamburg|burger|burguer|smash|^x | x /, '🍔'], [/sanduich|lanche|misto|baurU|beirute/i, '🥪'], [/pastel|pasteis/, '🥟'],
+  [/marmit|prato|refeic|almoco|janta|executivo|comida/, '🍛'], [/acompanh|porc|batata|frita/, '🍟'], [/refri|refrigerante|lata|cola/, '🥤'],
+  [/suco|vitamina|polpa/, '🧃'], [/agua/, '💧'], [/cerveja|chopp/, '🍺'], [/bebida|drink/, '🥤'], [/acai/, '🍇'],
+  [/sobremesa|doce|bolo|sorvete|milk/, '🍰'], [/adiciona|extra|complement/, '➕'], [/combo|promo/, '🔥'], [/salada/, '🥗'], [/cafe/, '☕']
+];
+function icoCat(cat){ var n = ' ' + normTxt(cat) + ' '; for (var i = 0; i < ICO_CAT.length; i++) if (ICO_CAT[i][0].test(n)) return ICO_CAT[i][1]; return '🍽️'; }
+/* escolhe a categoria da lista que mais combina com a sugerida (ex.: "refri" -> "Refrigerantes") */
+var SIN_CAT = [
+  [/refri|refrigerante|lata|coca|guarana|2 ?l/, 'refrigerantes'], [/suco|vitamina|polpa/, 'sucos'], [/agua/, 'agua'],
+  [/pizza.*doce|doce.*pizza/, 'pizzas doces'], [/borda/, 'bordas'], [/pizza/, 'pizzas salgadas'],
+  [/kikao|cachorro|hot ?dog|dogao/, 'kikao'], [/pastel.*doce|doce.*pastel/, 'pasteis doces'], [/pastel|pasteis/, 'pasteis salgados'],
+  [/hamburg|burger|burguer|smash/, 'hamburgueres'], [/sanduich|lanche|misto|x /, 'sanduiches'], [/porc|batata|frita/, 'porcoes'],
+  [/marmit|quentinha/, 'marmitas'], [/prato|refeic|executivo|almoco/, 'pratos'], [/acompanh|arroz|farofa/, 'acompanhamentos'], [/adiciona|extra/, 'adicionais']
+];
+function casaCat(cat, lista){
+  lista = lista || []; var n = normTxt(cat);
+  if (!n) return lista[0] || 'Lanches';
+  var ns = lista.map(normTxt), i;
+  for (i = 0; i < ns.length; i++) if (ns[i] === n) return lista[i];
+  var sing = function(s){ return s.split(' ').map(function(w){ return w.replace(/(oes|aes)$/, 'ao').replace(/eis$/, 'el').replace(/s$/, ''); }).join(' '); };
+  for (i = 0; i < ns.length; i++) if (sing(ns[i]) === sing(n)) return lista[i];
+  for (i = 0; i < ns.length; i++) if (ns[i].length > 3 && (n.indexOf(ns[i]) >= 0 || ns[i].indexOf(n) >= 0) && n.length > 3) return lista[i];
+  var nx = ' ' + n + ' ';
+  for (var s = 0; s < SIN_CAT.length; s++) if (SIN_CAT[s][0].test(nx)){
+    for (i = 0; i < ns.length; i++) if (ns[i] === SIN_CAT[s][1] || sing(ns[i]) === sing(SIN_CAT[s][1])) return lista[i];
+  }
+  return String(cat).trim().replace(/^\w/, function(c){ return c.toUpperCase(); });
+}
+
+/* ---------- tamanhos / adicionais / meio a meio ---------- */
+var TAM_PIZZA = ['P', 'M', 'G', 'Família'];
+function limpaOpcoes(a){ return (a || []).map(function(x){ return {nome: String(x && x.nome || '').trim(), preco: num(x && x.preco)}; }).filter(function(x){ return x.nome; }); }
+function temOpcoes(i){ return !!(i && ((i.tamanhos && i.tamanhos.length) || (i.adicionais && i.adicionais.length) || i.meioMeio)); }
+function precoMin(i){ if (i && i.tamanhos && i.tamanhos.length) return Math.min.apply(null, i.tamanhos.map(function(t){ return Number(t.preco) || 0; })); return Number(i && i.preco) || 0; }
+function chaveLinha(id, o){ o = o || {}; var a = (o.adds || []).slice().sort(function(x, y){ return x - y; }); if (o.tam == null && !o.meio && !a.length) return id; return id + '|' + (o.tam == null ? '' : o.tam) + '|' + (o.meio || '') + '|' + a.join(','); }
+/* preço de 1 unidade: tamanho escolhido (meio a meio = o maior dos dois sabores no mesmo tamanho) + adicionais */
+function precoLinha(i, o, outro){
+  o = o || {}; var p = Number(i.preco) || 0, t = null;
+  if (i.tamanhos && i.tamanhos.length){ t = i.tamanhos[o.tam] || i.tamanhos[0]; p = Number(t.preco) || 0; }
+  if (outro && o.meio){
+    var po = Number(outro.preco) || 0;
+    if (t && outro.tamanhos && outro.tamanhos.length){ var tt = outro.tamanhos.filter(function(x){ return normTxt(x.nome) === normTxt(t.nome); })[0]; po = tt ? Number(tt.preco) || 0 : p; }
+    p = Math.max(p, po);
+  }
+  (o.adds || []).forEach(function(k){ var a = (i.adicionais || [])[k]; if (a) p += Number(a.preco) || 0; });
+  return Math.round(p * 100) / 100;
+}
+function nomeLinha(i, o, outro){
+  o = o || {}; var n = i.nome;
+  if (outro && o.meio) n = 'Meio a meio: ½ ' + i.nome + ' + ½ ' + outro.nome;
+  if (i.tamanhos && i.tamanhos.length){ var t = i.tamanhos[o.tam] || i.tamanhos[0]; n += ' (' + t.nome + ')'; }
+  var ad = (o.adds || []).map(function(k){ return (i.adicionais || [])[k]; }).filter(Boolean).map(function(a){ return a.nome; });
+  if (ad.length) n += ' + ' + ad.join(', ');
+  return n;
+}
+/* converte um item devolvido pela IA no formato da tela de revisão */
+function itemDaIA(it, cats){
+  if (!it || !String(it.nome || '').trim()) return null;
+  var tams = limpaOpcoes(it.tamanhos).filter(function(t){ return t.preco > 0; });
+  if (tams.length === 1 && !(Number(it.preco) > 0)){ it.preco = tams[0].preco; tams = []; }
+  var preco = Number(it.preco) > 0 ? Number(it.preco) : (typeof it.preco === 'string' && num(it.preco) > 0 ? num(it.preco) : '');
+  if (tams.length > 1) preco = Math.min.apply(null, tams.map(function(t){ return t.preco; }));
+  return {ok: true, nome: String(it.nome).trim().replace(/\s+/g, ' '), desc: String(it.descricao || it.desc || '').trim(), preco: preco,
+    tamanhos: tams.length > 1 ? tams : [], cat: casaCat(it.categoria || it.cat || '', cats), foto: ''};
+}
+/* caixa da IA [ymin,xmin,ymax,xmax] 0-1000 -> retângulo em px com 2% de folga (null se inválida) */
+function caixaPx(b, W, H, maxFrac){
+  if (!b || b.length !== 4 || !b.every(function(v){ return typeof v === 'number' && isFinite(v); })) return null;
+  var y0 = Math.min(b[0], b[2]) / 1000 * H, x0 = Math.min(b[1], b[3]) / 1000 * W, y1 = Math.max(b[0], b[2]) / 1000 * H, x1 = Math.max(b[1], b[3]) / 1000 * W;
+  var w = x1 - x0, h = y1 - y0, mf = maxFrac || 0.95;
+  if (w < 30 || h < 30 || (w > W * mf && h > H * mf)) return null;
+  var px = w * 0.02, py = h * 0.02;
+  x0 = Math.max(0, x0 - px); y0 = Math.max(0, y0 - py);
+  return {x: x0, y: y0, w: Math.min(W - x0, w + 2 * px), h: Math.min(H - y0, h + 2 * py)};
+}
+/* lê o JSON devolvido pela IA (tira ``` e lixo em volta); null se não der */
+function lerJsonIA(t){
+  t = String(t || '').replace(/^\s*```(json)?/i, '').replace(/```\s*$/, '').trim();
+  try { return JSON.parse(t); } catch (e) {}
+  var a = t.indexOf('{'), z = t.lastIndexOf('}');
+  if (a >= 0 && z > a){ try { return JSON.parse(t.slice(a, z + 1)); } catch (e) {} }
+  /* resposta cortada: tenta fechar a lista de itens no último item completo */
+  var u = t.lastIndexOf('},');
+  if (a >= 0 && u > a){ try { return JSON.parse(t.slice(a, u + 1) + ']}'); } catch (e) {} }
+  return null;
+}

@@ -12,6 +12,7 @@ function abreLoja(slug){
     if (LJ.status !== 'liberado' || ven) return lojaErro('Esta lanchonete está indisponível no momento.');
     aplicaTema(LJ.tema); document.title = LJ.nome || 'Meu Lanche';
     try { CAR = JSON.parse(sessionStorage.getItem('ml_car_' + LJID) || '{}'); } catch (e) { CAR = {}; }
+    Object.keys(CAR).forEach(function(k){ if (typeof CAR[k] === 'number') CAR[k] = {id: k, qtd: CAR[k], adds: []}; else if (!CAR[k] || !CAR[k].id) delete CAR[k]; });
     return db.collection('ml_lojas').doc(LJID).collection('itens').get().then(function(si){
       ITENS = si.docs.map(function(d){ var x = d.data(); x.id = d.id; return x; }).filter(function(x){ return x.ativo !== false; });
       ITENS.sort(ordemItens); desenhaLoja();
@@ -36,13 +37,16 @@ function desenhaLoja(){
   if (!aberto){ var pa = proximaAbertura(LJ.horario); h += '<div class="fechado">Estamos fechados agora' + (pa ? ' — abrimos ' + esc(pa) : '') + '. Você pode olhar o cardápio à vontade! 😉</div>'; }
   if (LJ.aviso) h += '<div class="aviso">' + esc(LJ.aviso) + '</div>';
   var cs = cats();
-  if (cs.length > 1){ h += '<div class="chips">'; cs.forEach(function(c, i){ h += '<a href="#cat' + i + '">' + esc(c) + '</a>'; }); h += '</div>'; }
+  if ((LJ.tipos || []).length) h += '<div class="tiposloja">' + TIPOS_ORDEM.filter(function(t){ return LJ.tipos.indexOf(t) >= 0; }).map(function(t){ return '<span>' + TIPOS[t].ico + ' ' + esc(TIPOS[t].nome.replace(/ \(.*\)/, '')) + '</span>'; }).join('') + '</div>';
+  if (cs.length > 1){ h += '<div class="chips">'; cs.forEach(function(c, i){ h += '<a href="#cat' + i + '"><i>' + icoCat(c) + '</i>' + esc(c) + '</a>'; }); h += '</div>'; }
   if (!ITENS.length) h += '<div class="vazio">O cardápio ainda está sendo montado. Volte daqui a pouco!</div>';
   cs.forEach(function(c, ci){
-    h += '<h2 id="cat' + ci + '" style="margin:18px 2px 8px;font-size:19px">' + esc(c) + '</h2><div class="grade ' + (LJ.layout === 'lista' ? 'lista' : '') + '">';
+    h += '<h2 id="cat' + ci + '" class="tcat"><span>' + icoCat(c) + '</span>' + esc(c) + '</h2><div class="grade ' + (LJ.layout === 'lista' ? 'lista' : '') + '">';
     ITENS.filter(function(i){ return (i.cat || 'Cardápio') === c; }).forEach(function(i){
-      h += '<div class="prod">' + (i.foto ? '<img class="ft" loading="lazy" src="' + i.foto + '" alt="">' : '<div class="ft">🍔</div>') +
-        '<div class="in"><b>' + esc(i.nome) + '</b><p>' + esc(i.desc || '') + '</p><div class="pr"><span>' + brl(i.preco) + '</span>' + botaoQtd(i.id, aberto) + '</div></div></div>';
+      var op = temOpcoes(i);
+      h += '<div class="prod"' + (op && aberto ? ' onclick="if(event.target.tagName!==\'BUTTON\')abreOpcoes(\'' + i.id + '\')"' : '') + '>' + (i.foto ? '<img class="ft" loading="lazy" src="' + i.foto + '" alt="">' : '<div class="ft">' + icoCat(i.cat) + '</div>') +
+        '<div class="in"><b>' + esc(i.nome) + '</b><p>' + esc(i.desc || '') + '</p>' + (i.tamanhos && i.tamanhos.length ? '<small class="tams">' + i.tamanhos.map(function(t){ return esc(t.nome); }).join(' • ') + '</small>' : '') +
+        '<div class="pr"><span>' + (i.tamanhos && i.tamanhos.length > 1 ? '<small>a partir de</small> ' : '') + brl(precoMin(i)) + '</span>' + botaoQtd(i, aberto) + '</div></div></div>';
     });
     h += '</div>';
   });
@@ -50,17 +54,67 @@ function desenhaLoja(){
   h += '<div id="barra"></div>';
   $('raiz').innerHTML = h; barra();
 }
-function botaoQtd(id, aberto){
+function botaoQtd(i, aberto){
   if (!aberto) return '';
-  var q = CAR[id] || 0;
+  var id = i.id;
+  if (temOpcoes(i)){ var n = qtdDoItem(id); return '<button class="mini" onclick="abreOpcoes(\'' + id + '\')">' + (n ? '✓ ' + n + ' • +' : '+ Escolher') + '</button>'; }
+  var q = CAR[id] ? CAR[id].qtd : 0;
   if (!q) return '<button class="mini" onclick="mais(\'' + id + '\')">+ Adicionar</button>';
   return '<span class="qtd"><button onclick="menos(\'' + id + '\')">−</button><b>' + q + '</b><button onclick="mais(\'' + id + '\')">+</button></span>';
 }
 function salvaCar(){ try { sessionStorage.setItem('ml_car_' + LJID, JSON.stringify(CAR)); } catch (e) {} }
-function mais(id){ CAR[id] = (CAR[id] || 0) + 1; salvaCar(); atualizaQtd(); }
-function menos(id){ CAR[id] = (CAR[id] || 0) - 1; if (CAR[id] <= 0) delete CAR[id]; salvaCar(); atualizaQtd(); }
+function qtdDoItem(id){ var n = 0; Object.keys(CAR).forEach(function(k){ if (CAR[k].id === id) n += CAR[k].qtd; }); return n; }
+function mais(id){ if (!CAR[id]) CAR[id] = {id: id, qtd: 0, adds: []}; CAR[id].qtd++; salvaCar(); atualizaQtd(); }
+function menos(id){ if (!CAR[id]) return; CAR[id].qtd--; if (CAR[id].qtd <= 0) delete CAR[id]; salvaCar(); atualizaQtd(); }
+var LINHAS = [];
+function maisL(k){ var c = LINHAS[k]; if (c && CAR[c]){ CAR[c].qtd++; salvaCar(); atualizaQtd(); } }
+function menosL(k){ var c = LINHAS[k]; if (c && CAR[c]){ CAR[c].qtd--; if (CAR[c].qtd <= 0) delete CAR[c]; salvaCar(); atualizaQtd(); } }
+function itemPorId(id){ return ITENS.filter(function(x){ return x.id === id; })[0]; }
+
+/* ---------- escolher tamanho / meio a meio / adicionais ---------- */
+var OPC = null;
+function abreOpcoes(id){ var i = itemPorId(id); if (!i) return; OPC = {id: id, tam: i.tamanhos && i.tamanhos.length ? 0 : null, meio: '', adds: [], qtd: 1}; desenhaOpcoes(); }
+function saboresMeio(i){
+  if (!i.meioMeio) return [];
+  var tn = i.tamanhos && i.tamanhos.length ? normTxt((i.tamanhos[OPC.tam] || {}).nome) : null;
+  return ITENS.filter(function(x){ return x.id !== i.id && x.meioMeio && (x.cat || '') === (i.cat || '') && (!tn || (x.tamanhos || []).some(function(t){ return normTxt(t.nome) === tn; })); });
+}
+function desenhaOpcoes(){
+  var i = itemPorId(OPC.id); if (!i) return fechaModal();
+  var sab = saboresMeio(i); if (OPC.meio && !sab.some(function(x){ return x.id === OPC.meio; })) OPC.meio = '';
+  var outro = OPC.meio ? itemPorId(OPC.meio) : null, pu = precoLinha(i, OPC, outro);
+  var h = '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha" id="folhaOpc"><button class="fecha" onclick="fechaModal()">✕</button>' +
+    (i.foto ? '<img src="' + i.foto + '" style="width:100%;max-height:230px;object-fit:cover;border-radius:16px">' : '') + '<h2>' + esc(i.nome) + '</h2>' + (i.desc ? '<p class="sub">' + esc(i.desc) + '</p>' : '');
+  if (i.tamanhos && i.tamanhos.length){
+    h += '<div class="card"><h3>Tamanho</h3><div class="opc">' + i.tamanhos.map(function(t, k){ return '<label class="' + (OPC.tam === k ? 'on' : '') + '" onclick="OPC.tam=' + k + ';desenhaOpcoes()"><b>' + esc(t.nome) + '</b><br>' + brl(t.preco) + '</label>'; }).join('') + '</div></div>';
+  }
+  if (sab.length){
+    h += '<div class="card"><h3>🍕 Meio a meio? <small class="sub">(opcional)</small></h3><select onchange="OPC.meio=this.value;desenhaOpcoes()"><option value="">Não, sabor inteiro</option>' +
+      sab.map(function(x){ return '<option value="' + x.id + '"' + (OPC.meio === x.id ? ' selected' : '') + '>½ ' + esc(i.nome) + ' + ½ ' + esc(x.nome) + '</option>'; }).join('') + '</select><p class="sub">No meio a meio vale o preço do sabor mais caro.</p></div>';
+  }
+  if (i.adicionais && i.adicionais.length){
+    h += '<div class="card"><h3>Adicionais <small class="sub">(opcional)</small></h3>' + i.adicionais.map(function(a, k){ var on = OPC.adds.indexOf(k) >= 0; return '<div class="switch" onclick="togAdd(' + k + ')"><span>' + esc(a.nome) + ' <b>+ ' + brl(a.preco) + '</b></span><input type="checkbox"' + (on ? ' checked' : '') + ' onclick="event.stopPropagation();togAdd(' + k + ')"></div>'; }).join('') + '</div>';
+  }
+  h += '<div class="row" style="margin-top:12px"><span class="qtd" style="flex:0 0 auto"><button onclick="if(OPC.qtd>1){OPC.qtd--;desenhaOpcoes()}">−</button><b>' + OPC.qtd + '</b><button onclick="OPC.qtd++;desenhaOpcoes()">+</button></span>' +
+    '<button style="flex:1" onclick="addOpcoes()">Adicionar • ' + brl(pu * OPC.qtd) + '</button></div></div></div>';
+  var y = $('folhaOpc') ? $('folhaOpc').scrollTop : 0; $('modal').innerHTML = h; $('folhaOpc').scrollTop = y;
+}
+function togAdd(k){ var p = OPC.adds.indexOf(k); if (p >= 0) OPC.adds.splice(p, 1); else OPC.adds.push(k); desenhaOpcoes(); }
+function addOpcoes(){
+  var o = {tam: OPC.tam, meio: OPC.meio || '', adds: OPC.adds.slice().sort(function(a, b){ return a - b; })}, k = chaveLinha(OPC.id, o);
+  if (!CAR[k]) CAR[k] = {id: OPC.id, tam: o.tam, meio: o.meio, adds: o.adds, qtd: 0};
+  CAR[k].qtd += OPC.qtd; salvaCar(); fechaModal(); atualizaQtd(); toast('Adicionado ao pedido! 🛒');
+}
 function atualizaQtd(){ var y = window.scrollY; desenhaLoja(); window.scrollTo(0, y); if ($('folhaCar')) desenhaCarrinho(); }
-function itensCar(){ return ITENS.filter(function(i){ return CAR[i.id]; }).map(function(i){ return {id: i.id, nome: i.nome, preco: Number(i.preco) || 0, qtd: CAR[i.id]}; }); }
+function itensCar(){
+  var r = [];
+  Object.keys(CAR).forEach(function(k){
+    var c = CAR[k], i = itemPorId(c.id); if (!i || !(c.qtd > 0)) return;
+    var outro = c.meio ? itemPorId(c.meio) : null, o = {tam: c.tam, meio: outro ? c.meio : '', adds: c.adds || []};
+    r.push({k: k, id: i.id, nome: nomeLinha(i, o, outro), preco: precoLinha(i, o, outro), qtd: c.qtd});
+  });
+  return r;
+}
 function subtotal(){ return itensCar().reduce(function(s, i){ return s + i.preco * i.qtd; }, 0); }
 function barra(){
   var n = itensCar().reduce(function(s, i){ return s + i.qtd; }, 0);
@@ -86,7 +140,8 @@ function desenhaCarrinho(){
   if (LJ.retirada === false && !LJ.semEntrega) EST.entrega = 'entrega';
   var t = calcTaxa(), sub = subtotal(), tot = sub + (t.taxa || 0), h = '';
   h += '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha" id="folhaCar"><button class="fecha" onclick="fechaModal()">✕</button><h2>🛒 Seu pedido</h2>';
-  its.forEach(function(i){ h += '<div class="linhaitem"><div><b>' + esc(i.nome) + '</b><div class="sub">' + brl(i.preco) + ' cada</div></div><span class="qtd"><button onclick="menos(\'' + i.id + '\')">−</button><b>' + i.qtd + '</b><button onclick="mais(\'' + i.id + '\')">+</button></span><b style="min-width:78px;text-align:right">' + brl(i.preco * i.qtd) + '</b></div>'; });
+  LINHAS = its.map(function(i){ return i.k; });
+  its.forEach(function(i, n){ h += '<div class="linhaitem"><div><b>' + esc(i.nome) + '</b><div class="sub">' + brl(i.preco) + ' cada</div></div><span class="qtd"><button onclick="menosL(' + n + ')">−</button><b>' + i.qtd + '</b><button onclick="maisL(' + n + ')">+</button></span><b style="min-width:78px;text-align:right">' + brl(i.preco * i.qtd) + '</b></div>'; });
   h += '<label>Alguma observação?</label><textarea id="cObs" placeholder="Ex.: sem cebola, maionese à parte" oninput="EST.obs=this.value">' + esc(EST.obs) + '</textarea>';
 
   h += '<div class="card"><h3>Seus dados</h3><p class="sub">Fica salvo neste celular para o próximo pedido.</p>' +
