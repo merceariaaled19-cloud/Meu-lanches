@@ -302,7 +302,7 @@ function lerJsonIA(t){
 /* ---------- planos e Pix (assinatura) ---------- */
 var PLANOS = [
   {id: 'mensal', nome: 'Mensal', dias: 30, valor: 19.90},
-  {id: 'semestral', nome: 'Semestral', dias: 180, valor: 99.90, selo: 'Economize 44%'},
+  {id: 'semestral', nome: 'Semestral', dias: 180, valor: 99.90, selo: 'Economize 16%'},
   {id: 'anual', nome: 'Anual', dias: 365, valor: 149.90, selo: 'Melhor preço'}
 ];
 var TESTE_HORAS = 24;
