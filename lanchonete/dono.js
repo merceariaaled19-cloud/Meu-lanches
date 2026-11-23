@@ -164,7 +164,7 @@ function abaPedidos(c){
       '<div style="margin:6px 0">' + (p.entrega === 'entrega' ? '🛵 ' + esc([c2.rua, c2.num].filter(Boolean).join(', ')) + (c2.bairro ? ' — ' + esc(c2.bairro) : '') + (c2.ref ? '<br><span class="sub">Ref.: ' + esc(c2.ref) + '</span>' : '') : '🛍️ Retirada no local') + '</div>' +
       '<div>' + ({dinheiro: '💵 Dinheiro' + (p.pag && p.pag.troco ? ' (troco p/ ' + brl(p.pag.troco) + ')' : ''), cartao: '💳 Cartão', pix: '💠 Pix'}[p.pag && p.pag.tipo] || '') + ' • <b style="color:var(--p);font-size:18px">' + brl(p.total) + '</b>' + (p.entrega === 'entrega' ? ' <span class="sub">(entrega ' + (p.taxaCombinar ? 'a combinar' : brl(p.taxa)) + ')</span>' : '') + '</div>' +
       '<div class="msgs">' + (LD.msgs || MSGS_PADRAO).map(function(m, mi){ return '<button class="mini btz" onclick="mandaMsg(' + i + ',' + mi + ')">' + esc(m.nome) + '</button>'; }).join('') + '</div>' +
-      '<div class="row" style="margin-top:8px"><button class="mini bt3" onclick="copiaPed(' + i + ')">📋 Copiar</button>' + (c2.lat != null ? '<a class="bt mini bt3" target="_blank" href="https://maps.google.com/?q=' + c2.lat + ',' + c2.lng + '">🗺️ Mapa</a>' : '') +
+      '<div class="row" style="margin-top:8px"><button class="mini bt3" onclick="escolheImp(' + i + ')">🖨️ Imprimir</button><button class="mini bt3" onclick="copiaPed(' + i + ')">📋 Copiar</button>' + (c2.lat != null ? '<a class="bt mini bt3" target="_blank" href="https://maps.google.com/?q=' + c2.lat + ',' + c2.lng + '">🗺️ Mapa</a>' : '') +
       '<select class="mini" style="padding:8px" onchange="mudaStatus(' + i + ',this.value)">' + Object.keys(STATUS).map(function(k){ return '<option value="' + k + '"' + (p.status === k ? ' selected' : '') + '>' + STATUS[k][0] + '</option>'; }).join('') + '</select><button class="mini btr" style="flex:0 0 auto" onclick="apagaPed(' + i + ')">🗑️</button></div></div>';
   });
   c.innerHTML = h; LISTA_PED = lista;
@@ -179,6 +179,57 @@ function mandaMsg(i, mi){
 function mudaStatus(i, v){ var p = LISTA_PED[i]; if (p) db.collection('ml_pedidos').doc(p.id).update({status: v}).then(function(){ toast('Situação atualizada'); }, function(e){ toast('Erro: ' + e.code); }); }
 function copiaPed(i){ var p = LISTA_PED[i]; if (p) copiar(textoPedido(p, LD), 'Pedido copiado!'); }
 function apagaPed(i){ var p = LISTA_PED[i]; if (p && confirm('Apagar o pedido nº ' + p.numero + '?')) db.collection('ml_pedidos').doc(p.id).delete().catch(function(e){ toast('Erro: ' + e.code); }); }
+
+/* ---------- impressão (impressora térmica 58/80 mm) ---------- */
+function impCfg(){ try { return JSON.parse(localStorage.getItem('mlImp') || '{}'); } catch(e){ return {}; } }
+function escolheImp(i){
+  var p = LISTA_PED[i]; if (!p) return; var c = impCfg(), larg = c.larg || 58;
+  $('modal').innerHTML = '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha"><button class="fecha" onclick="fechaModal()">✕</button><h2>🖨️ Imprimir pedido nº ' + esc(p.numero) + '</h2>' +
+    '<p class="sub">Tamanho da bobina da impressora:</p><div class="opc">' + [58, 80].map(function(l){ return '<label class="' + (larg === l ? 'on' : '') + '" onclick="var c=impCfg();c.larg=' + l + ';localStorage.setItem(\'mlImp\',JSON.stringify(c));escolheImp(' + i + ')">' + l + ' mm</label>'; }).join('') + '</div><p></p>' +
+    '<button class="full" onclick="imprimePed(' + i + ',\'cozinha\')">👨‍🍳 Comanda da cozinha</button><p class="sub" style="margin:4px 0 12px">Letra grande, só itens e observações, para o chapeiro.</p>' +
+    '<button class="full bt3" onclick="imprimePed(' + i + ',\'completo\')">🧾 Pedido completo</button><p class="sub" style="margin:4px 0 12px">Com cliente, endereço, valores e pagamento, para o entregador ou cliente.</p>' +
+    '<button class="full bt3" onclick="imprimePed(' + i + ',\'ambos\')">📄 Os dois</button>' +
+    '<p class="sub" style="margin-top:12px">Impressora Bluetooth no celular: instale o app <b>RawBT</b> (ou o app da sua impressora) e escolha ele na hora de imprimir.</p>' +
+    '</div></div>';
+}
+function htmlComanda(p, tipo){
+  var c = p.cliente || {}, d = new Date(p.t), hora = d.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}) + ' ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+  var h = '<div class="tk">';
+  if (tipo === 'cozinha'){
+    h += '<div class="c g">COZINHA</div><div class="c gg">Nº ' + esc(p.numero) + '</div><div class="c">' + hora + '</div><div class="c">' + (p.entrega === 'entrega' ? 'ENTREGA' : 'RETIRADA') + ' • ' + esc(c.nome || '') + '</div><hr>';
+    (p.itens || []).forEach(function(it){ h += '<div class="it"><b>' + it.qtd + 'x</b> ' + esc(it.nome) + '</div>'; });
+    if (p.obs) h += '<hr><div class="it"><b>OBS:</b> ' + esc(p.obs) + '</div>';
+    h += '<hr><div class="c">--- fim ---</div>';
+  } else {
+    h += '<div class="c g">' + esc(LD.nome || 'Meu Lanche') + '</div><div class="c gg">Pedido Nº ' + esc(p.numero) + '</div><div class="c">' + hora + '</div><hr>';
+    (p.itens || []).forEach(function(it){ h += '<div class="ln"><span>' + it.qtd + 'x ' + esc(it.nome) + '</span><span>' + brl(it.preco * it.qtd) + '</span></div>'; });
+    if (p.obs) h += '<div>Obs.: ' + esc(p.obs) + '</div>';
+    h += '<hr><div class="ln"><span>Subtotal</span><span>' + brl(p.subtotal) + '</span></div>';
+    if (p.entrega === 'entrega') h += '<div class="ln"><span>Entrega</span><span>' + (p.taxaCombinar ? 'a combinar' : brl(p.taxa)) + '</span></div>';
+    h += '<div class="ln g"><span>TOTAL</span><span>' + brl(p.total) + '</span></div><hr>';
+    var pg = p.pag || {}, pt = {dinheiro: 'Dinheiro', cartao: 'Cartão na entrega', pix: 'Pix'}[pg.tipo] || pg.tipo || '';
+    h += '<div>Pagamento: ' + esc(pt) + (pg.tipo === 'dinheiro' ? (pg.troco ? ' (troco p/ ' + brl(pg.troco) + ')' : ' (sem troco)') : '') + '</div><hr>';
+    h += '<div><b>' + esc(c.nome || '') + '</b> ' + esc(c.tel || '') + '</div>';
+    if (p.entrega === 'entrega'){ h += '<div>' + esc([c.rua, c.num].filter(Boolean).join(', ')) + (c.bairro ? ' - ' + esc(c.bairro) : '') + '</div>'; if (c.ref) h += '<div>Ref.: ' + esc(c.ref) + '</div>'; }
+    else h += '<div>Retirada no local</div>';
+    h += '<hr><div class="c">Obrigado pela preferência!</div>';
+  }
+  return h + '</div>';
+}
+function imprimePed(i, tipo){
+  var p = LISTA_PED[i]; if (!p) return; var larg = impCfg().larg || 58;
+  var corpo = tipo === 'ambos' ? htmlComanda(p, 'cozinha') + '<div class="corte"></div>' + htmlComanda(p, 'completo') : htmlComanda(p, tipo);
+  var css = '@page{size:' + larg + 'mm auto;margin:0}*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#000;width:' + larg + 'mm}' +
+    '.tk{padding:2mm 3mm 6mm;font-size:' + (larg === 80 ? 13 : 11) + 'px;line-height:1.3}.c{text-align:center}.g{font-weight:bold;font-size:1.25em}.gg{font-weight:bold;font-size:1.9em}' +
+    '.it{font-size:1.45em;margin:3px 0}.ln{display:flex;justify-content:space-between;gap:6px}.ln span:last-child{white-space:nowrap}hr{border:0;border-top:1px dashed #000;margin:4px 0}.corte{page-break-after:always;break-after:page;height:4mm}';
+  var f = document.getElementById('frImp'); if (f) f.remove();
+  f = document.createElement('iframe'); f.id = 'frImp'; f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+  document.body.appendChild(f);
+  var dd = f.contentWindow.document; dd.open(); dd.write('<!doctype html><html><head><meta charset="utf-8"><title>Pedido ' + esc(p.numero) + '</title><style>' + css + '</style></head><body>' + corpo + '</body></html>'); dd.close();
+  setTimeout(function(){ try { f.contentWindow.focus(); f.contentWindow.print(); } catch(e){ toast('Não deu para abrir a impressão.'); } }, 300);
+  fechaModal();
+  if (p.status === 'novo') db.collection('ml_pedidos').doc(p.id).update({status: 'preparo'}).catch(function(){});
+}
 
 /* ---------- cardápio ---------- */
 function catsLista(){ var c = catsDono(); catsDosTipos(LD.tipos).forEach(function(x){ if (c.indexOf(x) < 0) c.push(x); }); if (!c.length) c.push('Lanches'); return c; }
