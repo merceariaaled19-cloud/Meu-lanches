@@ -86,6 +86,7 @@ function textoPedido(p, loja){
   if (p.obs) L.push('📝 Obs.: ' + p.obs);
   L.push('');
   L.push('Subtotal: ' + brl(p.subtotal));
+  if (p.desconto) L.push('🎟️ Cupom ' + (p.cupom || '') + ': - ' + brl(p.desconto));
   if (p.entrega === 'entrega') L.push('Entrega: ' + (p.taxaCombinar ? 'a combinar' : brl(p.taxa)) + (p.dist != null ? ' (' + p.dist.toFixed(1).replace('.', ',') + ' km)' : ''));
   L.push('*Total: ' + brl(p.total) + '*');
   L.push('');
@@ -315,4 +316,13 @@ function pixCopiaCola(chave, nome, cidade, valor, txid){
   var p = f('00', '01') + f('26', f('00', 'br.gov.bcb.pix') + f('01', k)) + f('52', '0000') + f('53', '986') + (valor ? f('54', Number(valor).toFixed(2)) : '') +
     f('58', 'BR') + f('59', pixTxt(nome, 25) || 'RECEBEDOR') + f('60', pixTxt(cidade, 15) || 'MANAUS') + f('62', f('05', (pixTxt(txid, 25).replace(/[^A-Z0-9]/g, '') || '***'))) + '6304';
   return p + crc16(p);
+}
+
+function descCupom(loja, cod, sub){
+  cod = String(cod || '').trim().toUpperCase(); if (!cod) return {d: 0};
+  var c = (loja.cupons || []).filter(function(x){ return x.cod === cod && x.ativo !== false; })[0];
+  if (!c) return {d: 0, erro: 'Cupom não encontrado.'};
+  if (c.min && sub < c.min) return {d: 0, erro: 'Esse cupom vale para pedidos a partir de ' + brl(c.min) + '.'};
+  var d = c.tipo === 'pct' ? sub * c.valor / 100 : c.valor; d = Math.min(sub, Math.round(d * 100) / 100);
+  return {d: d, cod: cod, txt: c.tipo === 'pct' ? String(c.valor).replace('.', ',') + '%' : brl(c.valor)};
 }

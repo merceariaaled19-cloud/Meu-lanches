@@ -22,7 +22,8 @@ function telaLogin(){
   var h = '<div class="topo"><div class="lin"><img class="logo" src="icon-192.png" alt=""><div><h1>Meu Lanche</h1><small>Seu cardápio digital com pedidos no WhatsApp</small></div></div></div><div class="wrap">';
   h += '<div class="abas" style="position:static;padding:10px 0"><button class="' + (modoLogin === 'entrar' ? 'on' : '') + '" onclick="modoLogin=\'entrar\';telaLogin()">Já tenho cadastro</button><button class="' + (modoLogin === 'criar' ? 'on' : '') + '" onclick="modoLogin=\'criar\';telaLogin()">Quero me cadastrar</button></div><div class="card">';
   if (modoLogin === 'criar'){
-    h += '<h2>Cadastre sua lanchonete</h2><p class="sub">Depois do cadastro, a gente libera seu acesso rapidinho.</p>' +
+    h += '<p class="sub" style="margin:4px 0">▶️ Vídeo: como cadastrar e configurar</p><video controls preload="none" playsinline poster="videos/capa-cadastro.jpg" src="videos/tutorial-cadastro.mp4" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video>' +
+      '<h2>Cadastre sua lanchonete</h2><p class="sub">Depois do cadastro, a gente libera seu acesso rapidinho.</p>' +
       '<label>Seu nome</label><input id="lDono" placeholder="Seu nome">' +
       '<label>Nome da lanchonete</label><input id="lNome" placeholder="Ex.: Lanches do Zé">' +
       '<label>WhatsApp da lanchonete</label><input id="lZap" type="tel" placeholder="(92) 99999-9999">' + htmlTipos(TIPOS_SEL);
@@ -95,7 +96,7 @@ function criaLoja(dono, nome, zap, tipos){
   }).catch(function(e){ $('raiz').innerHTML = '<div class="wrap"><div class="aviso no">Não deu para criar o cadastro (' + esc(e.code || e.message) + ').</div><button onclick="location.reload()">Tentar de novo</button></div>'; });
 }
 function telaEspera(vencido){
-  if (vencido && LD.status === 'liberado'){ $('raiz').innerHTML = '<div class="wrap"><div class="hero"><div class="ico">⭐</div><h2>' + esc(LD.nome) + '</h2><p>' + (LD.plano === 'teste' ? 'Seu dia grátis acabou. Escolha um plano para continuar — tudo que você montou continua salvo.' : 'Seu plano venceu. Renove para continuar — tudo que você montou continua salvo.') + '</p></div><div id="planos"></div><p style="text-align:center"><a href="#" onclick="au.signOut();return false">Sair</a></p></div>'; return mostraPlanos(); }
+  if (vencido && LD.status === 'liberado'){ $('raiz').innerHTML = '<div class="wrap"><div class="hero"><div class="ico">⭐</div><h2>' + esc(LD.nome) + '</h2><p>' + (LD.plano === 'teste' ? 'Seu dia grátis acabou. Escolha um plano para continuar — tudo que você montou continua salvo.' : 'Seu plano venceu. Renove para continuar — tudo que você montou continua salvo.') + '</p></div><video controls preload="none" playsinline poster="videos/capa-pagamento.jpg" src="videos/tutorial-pagamento.mp4" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video><div id="planos"></div><p style="text-align:center"><a href="#" onclick="au.signOut();return false">Sair</a></p></div>'; return mostraPlanos(); }
   var bloq = LD.status === 'bloqueado', t;
   if (vencido) t = 'Seu acesso venceu. Fale com a gente para renovar.';
   else if (bloq) t = 'Seu acesso está pausado. Fale com a gente para saber mais.';
@@ -125,7 +126,7 @@ function iniciaPainel(){
   desenhaPainel();
 }
 function bip(){ try { var c = new (window.AudioContext || window.webkitAudioContext)(); [0, .18, .36].forEach(function(t, i){ var o = c.createOscillator(), g = c.createGain(); o.frequency.value = [880, 1175, 1568][i]; g.gain.setValueAtTime(.25, c.currentTime + t); g.gain.exponentialRampToValueAtTime(.001, c.currentTime + t + .16); o.connect(g); g.connect(c.destination); o.start(c.currentTime + t); o.stop(c.currentTime + t + .17); }); } catch (e) {} if (navigator.vibrate) navigator.vibrate([200, 100, 200]); }
-var ABAS = [['pedidos','🧾 Pedidos'],['cardapio','🍔 Cardápio'],['loja','🎨 Loja'],['entrega','🛵 Entrega'],['pagamento','💳 Pagamento'],['horario','🕒 Horário'],['mensagens','💬 Mensagens']];
+var ABAS = [['pedidos','🧾 Pedidos'],['cardapio','🍔 Cardápio'],['loja','🎨 Loja'],['entrega','🛵 Entrega'],['pagamento','💳 Pagamento'],['horario','🕒 Horário'],['cupons','🎟️ Cupons'],['mensagens','💬 Mensagens']];
 function desenhaPainel(){
   var h = '<div class="topo" id="topo"></div><div class="abas" id="abas">';
   ABAS.forEach(function(a){ h += '<button id="ab_' + a[0] + '" onclick="vaiAba(\'' + a[0] + '\')">' + a[1] + '</button>'; });
@@ -143,7 +144,7 @@ function atualizaContador(){ var b = $('ab_pedidos'); if (!b) return; var n = PE
 function vaiAba(a){ ABA = a; ABAS.forEach(function(x){ var b = $('ab_' + x[0]); if (b) b.className = x[0] === a ? 'on' : ''; }); atualizaContador(); desenhaAba(); }
 function desenhaAba(){
   var c = $('conteudo'); if (!c) return;
-  ({pedidos: abaPedidos, cardapio: abaCardapio, loja: abaLoja, entrega: abaEntrega, pagamento: abaPagamento, horario: abaHorario, mensagens: abaMensagens}[ABA] || abaPedidos)(c);
+  ({pedidos: abaPedidos, cardapio: abaCardapio, loja: abaLoja, entrega: abaEntrega, pagamento: abaPagamento, horario: abaHorario, cupons: abaCupons, mensagens: abaMensagens}[ABA] || abaPedidos)(c);
 }
 function salva(campos, msg){ return db.collection('ml_lojas').doc(U.uid).update(campos).then(function(){ toast(msg || 'Salvo! ✅'); }, function(e){ toast('Não salvou: ' + (e.code || e.message), 4000); }); }
 
@@ -158,7 +159,7 @@ function faixaPlano(){
     (LD.plano === 'teste' ? '🎁 Teste grátis até ' + quando : '⏳ Seu plano vence ' + quando) + '</span><button class="mini" style="flex:0 0 auto" onclick="abrePlanos()">⭐ Assinar</button></div>';
 }
 function abrePlanos(){
-  $('modal').innerHTML = '<div class="fundo" onclick="if(event.target===this)fechaPlanos()"><div class="folha"><button class="fecha" onclick="fechaPlanos()">✕</button><h2>⭐ Planos Meu Lanche</h2><p class="sub">O tempo do plano soma com o que ainda falta. Nada do que você montou se perde.</p><div id="planos"></div></div></div>';
+  $('modal').innerHTML = '<div class="fundo" onclick="if(event.target===this)fechaPlanos()"><div class="folha"><button class="fecha" onclick="fechaPlanos()">✕</button><h2>⭐ Planos Meu Lanche</h2><p class="sub">O tempo do plano soma com o que ainda falta. Nada do que você montou se perde.</p><p class="sub" style="margin:4px 0">▶️ Vídeo: como assinar e pagar</p><video controls preload="none" playsinline poster="videos/capa-pagamento.jpg" src="videos/tutorial-pagamento.mp4" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video><div id="planos"></div></div></div>';
   mostraPlanos();
 }
 function fechaPlanos(){ if (unPg){ unPg(); unPg = null; } fechaModal(); }
@@ -275,6 +276,7 @@ function htmlComanda(p, tipo){
     (p.itens || []).forEach(function(it){ h += '<div class="ln"><span>' + it.qtd + 'x ' + esc(it.nome) + '</span><span>' + brl(it.preco * it.qtd) + '</span></div>'; });
     if (p.obs) h += '<div>Obs.: ' + esc(p.obs) + '</div>';
     h += '<hr><div class="ln"><span>Subtotal</span><span>' + brl(p.subtotal) + '</span></div>';
+    if (p.desconto) h += '<div class="ln"><span>Cupom ' + esc(p.cupom || '') + '</span><span>- ' + brl(p.desconto) + '</span></div>';
     if (p.entrega === 'entrega') h += '<div class="ln"><span>Entrega</span><span>' + (p.taxaCombinar ? 'a combinar' : brl(p.taxa)) + '</span></div>';
     h += '<div class="ln g"><span>TOTAL</span><span>' + brl(p.total) + '</span></div><hr>';
     var pg = p.pag || {}, pt = {dinheiro: 'Dinheiro', cartao: 'Cartão na entrega', pix: 'Pix'}[pg.tipo] || pg.tipo || '';
@@ -302,6 +304,7 @@ function escposPed(p, tipo, larg){
     (p.itens || []).forEach(function(it){ t += ln(it.qtd + 'x ' + it.nome, brl(it.preco * it.qtd)); });
     if (p.obs) t += 'Obs.: ' + semAcento(p.obs) + '\n';
     t += tr + ln('Subtotal', brl(p.subtotal));
+    if (p.desconto) t += ln('Cupom ' + (p.cupom || ''), '- ' + brl(p.desconto));
     if (p.entrega === 'entrega') t += ln('Entrega', p.taxaCombinar ? 'a combinar' : brl(p.taxa));
     t += B + ln('TOTAL', brl(p.total)) + N + tr;
     var pg = p.pag || {}, pt = {dinheiro: 'Dinheiro', cartao: 'Cartao na entrega', pix: 'Pix'}[pg.tipo] || pg.tipo || '';
@@ -811,6 +814,38 @@ function salvaPag(){
   if (!p.dinheiro && !p.cartao && !p.pix) return toast('Deixe pelo menos uma forma de pagamento.');
   if (p.pix && !p.pixChave) return toast('Digite a chave Pix.');
   salva({pag: p});
+}
+
+
+/* ---------- cupons ---------- */
+var CUP = [];
+function abaCupons(c){
+  CUP = JSON.parse(JSON.stringify(LD.cupons || []));
+  var h = '<div class="card"><h3>🎟️ Cupons de desconto</h3><p class="sub">Crie um código (ex.: BEMVINDO10) e divulgue. O cliente digita no carrinho e o desconto entra no pedido.</p>';
+  if (!CUP.length) h += '<div class="vazio">Nenhum cupom ainda.</div>';
+  CUP.forEach(function(x, i){
+    h += '<div style="border-top:1px solid var(--linha);padding-top:8px;margin-top:8px">' +
+      '<label>Código</label><input id="cC' + i + '" value="' + esc(x.cod) + '" style="text-transform:uppercase" placeholder="BEMVINDO10">' +
+      '<div class="row"><div><label>Tipo</label><select id="cT' + i + '"><option value="pct"' + (x.tipo === 'pct' ? ' selected' : '') + '>% de desconto</option><option value="rs"' + (x.tipo === 'rs' ? ' selected' : '') + '>R$ de desconto</option></select></div>' +
+      '<div><label>Valor</label><input id="cV' + i + '" inputmode="decimal" value="' + (x.valor ? String(x.valor).replace('.', ',') : '') + '" placeholder="10"></div></div>' +
+      '<label>Pedido mínimo (opcional)</label><input id="cM' + i + '" inputmode="decimal" value="' + (x.min ? String(x.min).replace('.', ',') : '') + '" placeholder="Ex.: 30">' +
+      '<div class="switch"><span>Cupom ligado</span><input type="checkbox" id="cA' + i + '"' + (x.ativo !== false ? ' checked' : '') + '></div>' +
+      '<button class="mini btr" onclick="lerCup();CUP.splice(' + i + ',1);LD.cupons=CUP;abaCupons($(\'conteudo\'))">Apagar cupom</button></div>';
+  });
+  h += '<button class="bt2 full" style="margin-top:10px" onclick="lerCup();CUP.push({cod:\'\',tipo:\'pct\',valor:10,min:0,ativo:true});LD.cupons=CUP;abaCupons($(\'conteudo\'))">+ Novo cupom</button>' +
+    '<button class="full" style="margin-top:10px" onclick="salvaCup()">Salvar</button></div>';
+  c.innerHTML = h;
+}
+function lerCup(){ CUP.forEach(function(x, i){ if ($('cC' + i)){ x.cod = $('cC' + i).value.trim().toUpperCase().replace(/\s+/g, ''); x.tipo = $('cT' + i).value; x.valor = num($('cV' + i).value); x.min = num($('cM' + i).value); x.ativo = $('cA' + i).checked; } }); }
+function salvaCup(){
+  lerCup();
+  for (var i = 0; i < CUP.length; i++){ var x = CUP[i];
+    if (!x.cod) return toast('Digite o código do cupom.');
+    if (!(x.valor > 0)) return toast('Digite o valor do desconto do cupom ' + x.cod + '.');
+    if (x.tipo === 'pct' && x.valor > 100) return toast('O desconto não pode passar de 100%.');
+    for (var j = 0; j < i; j++) if (CUP[j].cod === x.cod) return toast('Tem dois cupons com o código ' + x.cod + '.');
+  }
+  LD.cupons = CUP; salva({cupons: CUP}, 'Cupons salvos! ✅');
 }
 
 /* ---------- horário ---------- */

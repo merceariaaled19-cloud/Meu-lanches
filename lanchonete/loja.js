@@ -179,7 +179,7 @@ function desenhaCarrinho(){
   if (!EST.pag) EST.pag = pg.pix ? 'pix' : pg.dinheiro ? 'dinheiro' : 'cartao';
   if (LJ.semEntrega) EST.entrega = 'retirada';
   if (LJ.retirada === false && !LJ.semEntrega) EST.entrega = 'entrega';
-  var t = calcTaxa(), sub = subtotal(), tot = sub + (t.taxa || 0), h = '';
+  var t = calcTaxa(), sub = subtotal(), cu = descCupom(LJ, EST.cupom, sub), tot = sub - cu.d + (t.taxa || 0), h = '';
   h += '<div class="fundo" onclick="if(event.target===this)fechaModal()"><div class="folha" id="folhaCar"><button class="fecha" onclick="fechaModal()">✕</button><h2>🛒 Seu pedido</h2>';
   LINHAS = its.map(function(i){ return i.k; });
   its.forEach(function(i, n){ h += '<div class="linhaitem"><div><b>' + esc(i.nome) + '</b><div class="sub">' + brl(i.preco) + ' cada</div></div><span class="qtd"><button onclick="menosL(' + n + ')">−</button><b>' + i.qtd + '</b><button onclick="maisL(' + n + ')">+</button></span><b style="min-width:78px;text-align:right">' + brl(i.preco * i.qtd) + '</b></div>'; });
@@ -214,7 +214,14 @@ function desenhaCarrinho(){
   if (EST.pag === 'cartao') h += '<p class="sub">O entregador leva a maquininha.</p>';
   h += '</div>';
 
+  if ((LJ.cupons || []).some(function(x){ return x.ativo !== false; })){
+    h += '<div class="card"><h3>🎟️ Tem cupom?</h3><div class="row"><input id="cCup" value="' + esc(EST.cupom || '') + '" placeholder="Digite o cupom" style="flex:2;text-transform:uppercase"><button class="bt2" onclick="aplicaCupom()">Aplicar</button></div>';
+    if (EST.cupom && cu.erro) h += '<div class="aviso no">' + esc(cu.erro) + '</div>';
+    else if (cu.d) h += '<div class="aviso ok">Cupom ' + esc(cu.cod) + ' aplicado: ' + cu.txt + ' de desconto 🎉</div>';
+    h += '</div>';
+  }
   h += '<div class="card"><div class="linhaitem"><span>Subtotal</span><b>' + brl(sub) + '</b></div>';
+  if (cu.d) h += '<div class="linhaitem"><span>Cupom ' + esc(cu.cod) + '</span><b style="color:#16a34a">- ' + brl(cu.d) + '</b></div>';
   if (EST.entrega === 'entrega') h += '<div class="linhaitem"><span>Entrega</span><b>' + (t.combinar ? 'a combinar' : t.fora ? '—' : brl(t.taxa)) + '</b></div>';
   h += '<div class="linhaitem" style="font-size:20px"><span>Total</span><b style="color:var(--p)">' + brl(tot) + '</b></div></div>';
   if (LJ.pedMin && sub < LJ.pedMin) h += '<div class="aviso no">Pedido mínimo: ' + brl(LJ.pedMin) + '</div>';
@@ -222,6 +229,7 @@ function desenhaCarrinho(){
   var y = $('folhaCar') ? $('folhaCar').scrollTop : 0;
   $('modal').innerHTML = h; $('folhaCar').scrollTop = y;
 }
+function aplicaCupom(){ guardaCampos(); EST.cupom = ($('cCup').value || '').trim().toUpperCase(); var r = descCupom(LJ, EST.cupom, subtotal()); if (r.erro) toast(r.erro); else if (r.d) toast('Cupom aplicado! 🎉'); desenhaCarrinho(); }
 function opc(g, v, t, on){ return '<label class="' + (on ? 'on' : '') + '" onclick="escolhe(\'' + g + '\',\'' + v + '\')">' + t + '</label>'; }
 function escolhe(g, v){ guardaCampos(); if (g === 'ent') EST.entrega = v; else EST.pag = v; desenhaCarrinho(); }
 function guardaCampos(){
@@ -248,7 +256,8 @@ function finaliza(){
   }
   if (!EST.pag) return toast('Escolha a forma de pagamento.');
   var troco = EST.pag === 'dinheiro' ? num(EST.troco) : 0;
-  var tot = sub + (t.taxa || 0);
+  var cu = descCupom(LJ, EST.cupom, sub); if (EST.cupom && cu.erro) return toast(cu.erro + ' Apague o cupom ou corrija.');
+  var tot = sub - cu.d + (t.taxa || 0);
   if (troco && troco < tot) return toast('O troco precisa ser maior que o total (' + brl(tot) + ').');
   var salvo = {nome: CLI.nome, tel: CLI.tel, rua: CLI.rua || '', num: CLI.num || '', bairro: CLI.bairro || '', ref: CLI.ref || ''};
   if (LOC){ salvo.lat = LOC.lat; salvo.lng = LOC.lng; }
@@ -257,7 +266,7 @@ function finaliza(){
   if (EST.entrega === 'entrega'){ cli.rua = CLI.rua; cli.num = CLI.num; cli.bairro = CLI.bairro; cli.ref = CLI.ref || ''; if (LOC){ cli.lat = LOC.lat; cli.lng = LOC.lng; } }
   var d = new Date(), numero = String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0') + String(Math.floor(Math.random() * 90 + 10));
   var p = {lojaId: LJID, numero: numero, itens: itensCar().map(function(i){ return {nome: i.nome, qtd: i.qtd, preco: i.preco}; }), obs: (EST.obs || '').trim(),
-    subtotal: sub, taxa: t.taxa || 0, taxaCombinar: !!t.combinar, dist: t.dist != null ? Math.round(t.dist * 10) / 10 : null, total: tot,
+    subtotal: sub, desconto: cu.d || 0, cupom: cu.d ? cu.cod : '', taxa: t.taxa || 0, taxaCombinar: !!t.combinar, dist: t.dist != null ? Math.round(t.dist * 10) / 10 : null, total: tot,
     entrega: EST.entrega, pag: {tipo: EST.pag, troco: troco || 0}, cliente: cli, status: 'novo', criadoEm: firebase.firestore.FieldValue.serverTimestamp()};
   var texto = textoPedido(p, LJ);
   $('btFin').disabled = true; $('btFin').textContent = 'Enviando…';
