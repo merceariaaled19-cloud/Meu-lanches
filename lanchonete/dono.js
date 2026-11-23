@@ -118,7 +118,7 @@ function iniciaPainel(){
     var novos = 0;
     if (pedVistos){ PEDS.forEach(function(p){ if (!pedVistos[p.id]){ novos++; p._novo = true; } }); }
     pedVistos = {}; PEDS.forEach(function(p){ pedVistos[p.id] = 1; });
-    if (novos){ bip(); toast('🔔 Novo pedido chegou!', 4000); }
+    if (novos){ bip(); toast('🔔 Novo pedido chegou!', 4000); autoImprime(PEDS.filter(function(p){ return p._novo && p.status === 'novo'; })); }
     atualizaContador(); if (ABA === 'pedidos') desenhaAba();
   }, function(e){ if (ABA === 'pedidos') $('conteudo').innerHTML = '<div class="aviso no">Não deu para ler os pedidos (' + esc(e.code) + ').</div>'; });
   desenhaPainel();
@@ -189,6 +189,11 @@ function escolheImp(i){
     '<button class="full" onclick="imprimePed(' + i + ',\'cozinha\')">👨‍🍳 Comanda da cozinha</button><p class="sub" style="margin:4px 0 12px">Letra grande, só itens e observações, para o chapeiro.</p>' +
     '<button class="full bt3" onclick="imprimePed(' + i + ',\'completo\')">🧾 Pedido completo</button><p class="sub" style="margin:4px 0 12px">Com cliente, endereço, valores e pagamento, para o entregador ou cliente.</p>' +
     '<button class="full bt3" onclick="imprimePed(' + i + ',\'ambos\')">📄 Os dois</button>' +
+    '<hr style="margin:14px 0"><h3>⚡ Direto na térmica (app RawBT)</h3><p class="sub">Imprime na hora, sem abrir a tela de impressão.</p>' +
+    '<button class="full btz" onclick="rawbtImprime(LISTA_PED[' + i + '],impCfg().via||\'ambos\');fechaModal()">⚡ Imprimir direto</button>' +
+    '<p class="sub" style="margin:10px 0 4px">O que sai no papel:</p><div class="opc">' + [['cozinha','Cozinha'],['completo','Completo'],['ambos','Os dois']].map(function(v){ return '<label class="' + ((c.via || 'ambos') === v[0] ? 'on' : '') + '" onclick="var c=impCfg();c.via=\'' + v[0] + '\';localStorage.setItem(\'mlImp\',JSON.stringify(c));escolheImp(' + i + ')">' + v[1] + '</label>'; }).join('') + '</div>' +
+    '<label style="display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" style="width:auto"' + (c.auto ? ' checked' : '') + ' onchange="var c=impCfg();c.auto=this.checked;localStorage.setItem(\'mlImp\',JSON.stringify(c));toast(this.checked?\'Impressão automática ligada\':\'Impressão automática desligada\')"> <b>Imprimir sozinho quando chegar pedido</b></label>' +
+    '<p class="sub">Deixe esta tela do Meu Lanche aberta, com o celular ligado e conectado na impressora pelo RawBT.</p>' +
     '<p class="sub" style="margin-top:12px">Impressora Bluetooth no celular: instale o app <b>RawBT</b> (ou o app da sua impressora) e escolha ele na hora de imprimir.</p>' +
     '</div></div>';
 }
@@ -215,6 +220,43 @@ function htmlComanda(p, tipo){
     h += '<hr><div class="c">Obrigado pela preferência!</div>';
   }
   return h + '</div>';
+}
+function semAcento(t){ return String(t == null ? '' : t).replace(/\u00a0/g, ' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\x20-\x7E\n]/g, ''); }
+function escposPed(p, tipo, larg){
+  var W = larg === 80 ? 48 : 32, E = '\x1b', G = '\x1d', B = E + '!\x08', N = E + '!\x00', DG = G + '!\x11', NN = G + '!\x00', C = E + 'a\x01', Lf = E + 'a\x00';
+  var c = p.cliente || {}, d = new Date(p.t), hora = d.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}) + ' ' + d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+  var tr = '-'.repeat(W) + '\n';
+  function ln(a, b){ a = semAcento(a); b = semAcento(b); var esp = W - a.length - b.length; if (esp < 1){ return a + '\n' + ' '.repeat(Math.max(0, W - b.length)) + b + '\n'; } return a + ' '.repeat(esp) + b + '\n'; }
+  var t = E + '@';
+  if (tipo === 'cozinha'){
+    t += C + DG + 'COZINHA\n' + 'N ' + p.numero + '\n' + NN + hora + '\n' + semAcento((p.entrega === 'entrega' ? 'ENTREGA' : 'RETIRADA') + ' - ' + (c.nome || '')) + '\n' + Lf + tr;
+    (p.itens || []).forEach(function(it){ t += DG + semAcento(it.qtd + 'x ' + it.nome) + '\n' + NN; });
+    if (p.obs) t += tr + B + 'OBS: ' + semAcento(p.obs) + N + '\n';
+  } else {
+    t += C + B + semAcento(LD.nome || 'Meu Lanche') + N + '\n' + DG + 'PEDIDO N ' + p.numero + '\n' + NN + hora + '\n' + Lf + tr;
+    (p.itens || []).forEach(function(it){ t += ln(it.qtd + 'x ' + it.nome, brl(it.preco * it.qtd)); });
+    if (p.obs) t += 'Obs.: ' + semAcento(p.obs) + '\n';
+    t += tr + ln('Subtotal', brl(p.subtotal));
+    if (p.entrega === 'entrega') t += ln('Entrega', p.taxaCombinar ? 'a combinar' : brl(p.taxa));
+    t += B + ln('TOTAL', brl(p.total)) + N + tr;
+    var pg = p.pag || {}, pt = {dinheiro: 'Dinheiro', cartao: 'Cartao na entrega', pix: 'Pix'}[pg.tipo] || pg.tipo || '';
+    t += semAcento('Pagamento: ' + pt + (pg.tipo === 'dinheiro' ? (pg.troco ? ' (troco p/ ' + brl(pg.troco) + ')' : ' (sem troco)') : '')) + '\n' + tr;
+    t += semAcento((c.nome || '') + ' ' + (c.tel || '')) + '\n';
+    if (p.entrega === 'entrega'){ t += semAcento([c.rua, c.num].filter(Boolean).join(', ') + (c.bairro ? ' - ' + c.bairro : '')) + '\n'; if (c.ref) t += semAcento('Ref.: ' + c.ref) + '\n'; }
+    else t += 'Retirada no local\n';
+    t += tr + C + 'Obrigado pela preferencia!\n' + Lf;
+  }
+  return t + '\n\n\n\n' + G + 'V\x42\x00';
+}
+function rawbtImprime(p, via){
+  if (!p) return; var larg = impCfg().larg || 58;
+  var t = via === 'ambos' ? escposPed(p, 'cozinha', larg) + escposPed(p, 'completo', larg) : escposPed(p, via || 'cozinha', larg);
+  location.href = 'rawbt:base64,' + btoa(t);
+  if (p.status === 'novo') db.collection('ml_pedidos').doc(p.id).update({status: 'preparo'}).catch(function(){});
+}
+function autoImprime(lista){
+  var c = impCfg(); if (!c.auto || !lista.length) return;
+  lista.slice().reverse().forEach(function(p, k){ setTimeout(function(){ rawbtImprime(p, c.via || 'ambos'); }, k * 4000); });
 }
 function imprimePed(i, tipo){
   var p = LISTA_PED[i]; if (!p) return; var larg = impCfg().larg || 58;
