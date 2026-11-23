@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gohan Import — Eletrônicos com frete grátis</title>
+<meta name="theme-color" content="#0b0f1a">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,Segoe UI,Roboto,sans-serif;background:#0b0f1a;color:#eef;min-height:100vh}
+a{color:inherit}
+#intro{position:fixed;inset:0;background:#0b0f1a;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s}
+#intro .logo{width:130px;height:130px;border-radius:30px;background:#ff6a00;display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:900;color:#0b0f1a;animation:pop 1s cubic-bezier(.2,1.6,.4,1)}
+#intro h1{margin-top:18px;font-size:28px;letter-spacing:2px;animation:sobe 1s .3s both}#intro p{opacity:.7;animation:sobe 1s .6s both}
+@keyframes pop{0%{transform:scale(0) rotate(-90deg)}100%{transform:scale(1)}}@keyframes sobe{0%{opacity:0;transform:translateY(20px)}}
+.box{position:absolute;font-size:30px;animation:cai 2s linear infinite;opacity:.8}@keyframes cai{0%{transform:translateY(-60vh) rotate(0)}100%{transform:translateY(60vh) rotate(360deg);opacity:0}}
+header{position:sticky;top:0;z-index:5;background:#0b0f1aee;backdrop-filter:blur(8px);display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #1e2640}
+header img{width:38px;height:38px;border-radius:10px}header b{font-size:19px;flex:1}header span{color:#ff6a00}
+#bcar{background:#ff6a00;color:#0b0f1a;border:0;border-radius:22px;padding:9px 14px;font-weight:800;font-size:15px}
+.hero{padding:26px 16px 10px;text-align:center}.hero h2{font-size:24px}.hero p{opacity:.75;margin-top:6px}
+.selos{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}.selos div{background:#151c30;border:1px solid #243052;border-radius:20px;padding:6px 12px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:12px 14px 120px;max-width:1100px;margin:auto}
+.card{background:#121829;border:1px solid #1f2842;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.foto{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:70px;position:relative}
+.foto .off{position:absolute;top:8px;left:8px;background:#22c55e;color:#04210f;font-weight:800;font-size:12px;border-radius:8px;padding:3px 7px}
+.foto .top{position:absolute;top:8px;right:8px;background:#0b0f1acc;font-size:11px;border-radius:8px;padding:3px 7px}
+.info{padding:10px;display:flex;flex-direction:column;gap:5px;flex:1}.info h3{font-size:14px;line-height:1.25}.info small{opacity:.65;font-size:12px}
+.de{text-decoration:line-through;opacity:.5;font-size:12px}.pr{font-size:20px;font-weight:800;color:#ffb070}
+.add{margin-top:auto;background:#ff6a00;color:#0b0f1a;border:0;border-radius:10px;padding:10px;font-weight:800;font-size:14px}
+#car{position:fixed;inset:0;background:#000a;z-index:20;display:none}#car.on{display:block}
+#car .p{position:absolute;right:0;top:0;bottom:0;width:min(440px,100%);background:#0f1424;padding:16px;overflow:auto}
+.it{display:flex;gap:10px;align-items:center;border-bottom:1px solid #1e2640;padding:10px 0}.it .e{font-size:34px}.it div{flex:1}
+.q{display:flex;gap:6px;align-items:center}.q button{width:30px;height:30px;border-radius:8px;border:0;background:#1e2640;color:#fff;font-size:18px}
+label{display:block;font-size:13px;margin-top:10px;opacity:.85}input{width:100%;padding:11px;border-radius:10px;border:1px solid #2a3558;background:#151c30;color:#fff;font-size:15px;margin-top:4px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.fin{width:100%;margin-top:16px;background:#22c55e;color:#04210f;border:0;border-radius:12px;padding:14px;font-weight:900;font-size:16px}
+.tot{display:flex;justify-content:space-between;font-size:18px;font-weight:800;margin-top:12px}
+footer{text-align:center;opacity:.5;font-size:12px;padding:20px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#22c55e;color:#04210f;padding:10px 16px;border-radius:20px;font-weight:700;display:none;z-index:30}
+</style></head><body>
+<div id="intro"><div class="logo">GI</div><h1>GOHAN IMPORT</h1><p>Eletrônicos com frete grátis</p></div>
+<header><img src="icon-192.png" alt=""><b>Gohan <span>Import</span></b><button id="bcar" onclick="abrir()">🛒 <span id="nc">0</span></button></header>
+<section class="hero"><h2>Os 10 eletrônicos que mais saem 🔥</h2><p>Preço baixo, entrega na sua casa.</p>
+<div class="selos"><div>🚚 Frete grátis</div><div>💬 Atendimento no WhatsApp</div><div>💳 Pix</div><div>📦 Rastreio do pedido</div></div></section>
+<main class="grid" id="grid"></main>
+<footer>Gohan Import · Manaus-AM · <span id="prazo"></span></footer>
+<div id="car" onclick="if(event.target===this)fechar()"><div class="p">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2>Seu carrinho</h2><button onclick="fechar()" style="background:none;border:0;color:#fff;font-size:26px">✕</button></div>
+<div id="itens"></div><div class="tot"><span>Total</span><span id="tt">R$ 0,00</span></div>
+<div id="form"><h3 style="margin-top:18px">Entrega</h3>
+<label>Nome completo<input id="nome" autocomplete="name"></label>
+<label>WhatsApp<input id="fone" inputmode="tel" autocomplete="tel" placeholder="(92) 9 0000-0000"></label>
+<label>CPF (para o envio)<input id="cpf" inputmode="numeric" placeholder="000.000.000-00"></label>
+<div class="row"><label>CEP<input id="cep" inputmode="numeric" maxlength="9" onblur="buscaCep()"></label><label>Número<input id="num"></label></div>
+<label>Rua<input id="rua"></label><label>Complemento<input id="comp" placeholder="Apto, bloco, referência"></label>
+<div class="row"><label>Bairro<input id="bairro"></label><label>Cidade/UF<input id="cidade"></label></div>
+<button class="fin" onclick="finalizar()">Finalizar pedido pelo WhatsApp</button>
+<p style="font-size:12px;opacity:.6;margin-top:8px">Você recebe a chave Pix no WhatsApp. Depois do pagamento o pedido é enviado e você recebe o rastreio.</p></div>
+</div></div>
+<div id="toast"></div>
+<script src="produtos.js"></script>
+<script>
+const R=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+let car=JSON.parse(localStorage.gi_car||'{}');
+setTimeout(()=>{const i=document.getElementById('intro');i.style.opacity=0;setTimeout(()=>i.remove(),600)},2200);
+(()=>{const i=document.getElementById('intro');["🎧","⌚","🔊","🔋","📦","⚡"].forEach((e,k)=>{const b=document.createElement('div');b.className='box';b.textContent=e;b.style.left=(8+k*16)+'%';b.style.animationDelay=(k*.3)+'s';i.appendChild(b)})})();
+document.getElementById('prazo').textContent=LOJA.prazo;
+document.getElementById('grid').innerHTML=PRODUTOS.map((p,i)=>`<div class="card"><div class="foto" style="background:radial-gradient(circle at 50% 40%,${p.cor}55,#121829 70%)">${p.emoji}<span class="off">-${Math.round((1-p.preco/p.de)*100)}%</span>${i<3?'<span class="top">🔥 Mais vendido</span>':''}</div>
+<div class="info"><h3>${p.nome}</h3><small>${p.desc}</small><span class="de">${R(p.de)}</span><span class="pr">${R(p.preco)}</span><button class="add" onclick="add('${p.id}')">Comprar</button></div></div>`).join('');
+function salva(){localStorage.gi_car=JSON.stringify(car);let n=0;for(const k in car)n+=car[k];document.getElementById('nc').textContent=n;render()}
+function add(id){car[id]=(car[id]||0)+1;salva();toast('Adicionado ao carrinho');abrir()}
+function mud(id,d){car[id]=(car[id]||0)+d;if(car[id]<=0)delete car[id];salva()}
+function total(){return PRODUTOS.reduce((s,p)=>s+(car[p.id]||0)*p.preco,0)}
+function render(){const el=document.getElementById('itens');const l=PRODUTOS.filter(p=>car[p.id]);
+el.innerHTML=l.length?l.map(p=>`<div class="it"><span class="e">${p.emoji}</span><div><b style="font-size:14px">${p.nome}</b><br>${R(p.preco)}</div><div class="q" style="flex:0"><button onclick="mud('${p.id}',-1)">−</button>${car[p.id]}<button onclick="mud('${p.id}',1)">+</button></div></div>`).join(''):'<p style="opacity:.6;padding:20px 0">Carrinho vazio.</p>';
+document.getElementById('tt').textContent=R(total());document.getElementById('form').style.display=l.length?'block':'none'}
+function abrir(){document.getElementById('car').classList.add('on');render()}function fechar(){document.getElementById('car').classList.remove('on')}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',1500)}
+const F=['nome','fone','cpf','cep','num','rua','comp','bairro','cidade'];const salvo=JSON.parse(localStorage.gi_cli||'{}');F.forEach(k=>{if(salvo[k])document.getElementById(k).value=salvo[k]});
+async function buscaCep(){const c=document.getElementById('cep').value.replace(/\D/g,'');if(c.length!==8)return;try{const j=await (await fetch('https://viacep.com.br/ws/'+c+'/json/')).json();if(j.erro)return;rua.value=j.logradouro||rua.value;bairro.value=j.bairro||bairro.value;cidade.value=(j.localidade||'')+'/'+(j.uf||'');num.focus()}catch(e){}}
+function finalizar(){const d={};for(const k of F)d[k]=document.getElementById(k).value.trim();
+for(const k of ['nome','fone','cep','num','rua','bairro','cidade'])if(!d[k]){toast('Preencha: '+k);document.getElementById(k).focus();return}
+localStorage.gi_cli=JSON.stringify(d);
+const itens=PRODUTOS.filter(p=>car[p.id]).map(p=>({id:p.id,q:car[p.id]}));
+const cod='GI'+Date.now().toString(36).toUpperCase().slice(-6);
+const pedido={c:cod,d,i:itens,t:total()};
+const b64=btoa(unescape(encodeURIComponent(JSON.stringify(pedido)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const painel=location.href.replace(/[^/]*(\?.*)?(#.*)?$/,'')+'painel.html#'+b64;
+let m=`🛒 *Pedido ${cod} — Gohan Import*\n\n`;PRODUTOS.filter(p=>car[p.id]).forEach(p=>m+=`• ${car[p.id]}x ${p.nome} — ${R(p.preco*car[p.id])}\n`);
+m+=`\n*Total: ${R(total())}* (frete grátis)\n\n👤 ${d.nome}\n📱 ${d.fone}\n📍 ${d.rua}, ${d.num} ${d.comp} - ${d.bairro}, ${d.cidade} - CEP ${d.cep}\n\nQuero pagar no Pix 👍\n\n(Painel da loja: ${painel})`;
+window.open('https://wa.me/'+LOJA.whatsapp+'?text='+encodeURIComponent(m),'_blank');car={};salva();fechar()}
+salva();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+</script></body></html>
