@@ -301,9 +301,9 @@ function lerJsonIA(t){
 
 /* ---------- planos e Pix (assinatura) ---------- */
 var PLANOS = [
-  {id: 'mensal', nome: 'Mensal', dias: 30, valor: 29.90},
+  {id: 'mensal', nome: 'Mensal', dias: 30, valor: 19.90},
   {id: 'semestral', nome: 'Semestral', dias: 180, valor: 99.90, selo: 'Economize 44%'},
-  {id: 'anual', nome: 'Anual', dias: 365, valor: 179.90, selo: 'Melhor preço'}
+  {id: 'anual', nome: 'Anual', dias: 365, valor: 149.90, selo: 'Melhor preço'}
 ];
 var TESTE_HORAS = 24;
 function planoPorId(id){ for (var i = 0; i < PLANOS.length; i++) if (PLANOS[i].id === id) return PLANOS[i]; return null; }
