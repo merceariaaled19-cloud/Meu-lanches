@@ -7,7 +7,7 @@ window.LOJA = {
   prazo: "Entrega de 7 a 20 dias úteis",
 };
 // Ranking: categoria Eletrônicos do AliExpress por mais pedidos (22/11/2026).
-// fornecedores[0] = o recomendado (mais rápido/barato no Brasil). custo = preço dele em 22/11/2026.
+// fama = nota/vendas NO FORNECEDOR (verdadeiras, 22/11/2026). fornecedores[0] = o recomendado (mais rápido/barato no Brasil). custo = preço dele em 22/11/2026.
 window.PRODUTOS = [
  {
   "id": "proj",
@@ -38,7 +38,8 @@ window.PRODUTOS = [
     "info": "4,9 · 50.000+ vendidos",
     "url": "https://pt.aliexpress.com/item/1005006967585012.html"
    }
-  ]
+  ],
+  "fama": "4,9 · 50 mil+ vendidos"
  },
  {
   "id": "fonefio",
@@ -69,7 +70,8 @@ window.PRODUTOS = [
     "info": "4,9 · 10.000+ vendidos",
     "url": "https://pt.aliexpress.com/item/1005008830702538.html"
    }
-  ]
+  ],
+  "fama": "4,9 · 10 mil+ vendidos"
  },
  {
   "id": "mic",
@@ -100,7 +102,8 @@ window.PRODUTOS = [
     "info": "4,9 · 10.000+ vendidos",
     "url": "https://pt.aliexpress.com/item/1005007635109339.html"
    }
-  ]
+  ],
+  "fama": "4,9 · 10 mil+ vendidos"
  },
  {
   "id": "central",
@@ -131,7 +134,8 @@ window.PRODUTOS = [
     "info": "4,9 · 10.000+ vendidos",
     "url": "https://pt.aliexpress.com/item/1005007171105815.html"
    }
-  ]
+  ],
+  "fama": "4,9 · 10 mil+ vendidos"
  },
  {
   "id": "oculos",
@@ -162,7 +166,8 @@ window.PRODUTOS = [
     "info": "4,9 · 10.000+ vendidos",
     "url": "https://pt.aliexpress.com/item/1005010439268790.html"
    }
-  ]
+  ],
+  "fama": "4,9 · 10 mil+ vendidos"
  },
  {
   "id": "headset",
@@ -193,7 +198,8 @@ window.PRODUTOS = [
     "info": "5,0 · outro modelo, mais simples",
     "url": "https://www.amazon.com.br/Bluetooth-Lat%C3%AAncia-Microfone-envolvente-indicador/dp/B0HGJVMSP5"
    }
-  ]
+  ],
+  "fama": "4,9 · 5 mil+ vendidos"
  },
  {
   "id": "carplay",
@@ -224,7 +230,8 @@ window.PRODUTOS = [
     "info": "4,9 · 5.000+ vendidos",
     "url": "https://pt.aliexpress.com/item/1005010114751081.html"
    }
-  ]
+  ],
+  "fama": "4,9 · 5 mil+ vendidos"
  },
  {
   "id": "sensor",
@@ -255,7 +262,8 @@ window.PRODUTOS = [
     "info": "4,7 · 5.000+ vendidos",
     "url": "https://pt.aliexpress.com/item/1005004167209387.html"
    }
-  ]
+  ],
+  "fama": "4,7 · 5 mil+ vendidos"
  },
  {
   "id": "watch",
@@ -286,7 +294,8 @@ window.PRODUTOS = [
     "info": "4,9 · 5.000+ vendidos",
     "url": "https://pt.aliexpress.com/item/1005006997324750.html"
    }
-  ]
+  ],
+  "fama": "4,9 · 5 mil+ vendidos"
  },
  {
   "id": "robo",
@@ -317,9 +326,237 @@ window.PRODUTOS = [
     "info": "4,9 · 5.000+ vendidos",
     "url": "https://pt.aliexpress.com/item/1005007345315606.html"
    }
+  ],
+  "fama": "4,9 · 5 mil+ vendidos"
+ },
+ {
+  "id": "carreg",
+  "nome": "Carregador Turbo Fast Plug + Cabo USB‑C",
+  "desc": "Carrega rápido Samsung, Motorola e Xiaomi. Cabo reforçado.",
+  "preco": 49.9,
+  "de": 69.9,
+  "custo": 24.99,
+  "foto": "img/carreg.webp",
+  "emoji": "🔌",
+  "busca": "carregador turbo 25w usb c",
+  "fama": "4,7 · mais vendido",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 24.99,
+    "info": "4,7 · Full, chega amanhã",
+    "url": "https://www.mercadolivre.com.br/carregador-super-rapido-25w-para-samsung-galaxy-s24-s23-s22-s21-s20-fe-ultra-motorola-m22-m31-m32-m62-m63-m64-g15-xiaomi-redmi-note-12-13-14-15-lg-super-fast-cabo-blindado-tipo-usb-c-fast-plug/p/MLB80706033"
+   },
+   {
+    "loja": "AliExpress",
+    "preco": 12.84,
+    "info": "reserva",
+    "url": "https://pt.aliexpress.com/item/1005007580277409.html"
+   }
+  ]
+ },
+ {
+  "id": "power",
+  "nome": "Power Bank 10.000 mAh Turbo",
+  "desc": "Bateria extra no bolso: carrega o celular mais de 2 vezes.",
+  "preco": 99.9,
+  "de": 139.9,
+  "custo": 57.71,
+  "foto": "img/power.webp",
+  "emoji": "🔋",
+  "busca": "power bank 10000 mah",
+  "fama": "4,9",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 57.71,
+    "info": "4,9 · Full, chega amanhã",
+    "url": "https://www.mercadolivre.com.br/power-bank-hardline-10000-mah-turbo-carregador-portatil-para-celular-e-tablet/p/MLB80705322"
+   },
+   {
+    "loja": "AliExpress",
+    "preco": 60.69,
+    "info": "reserva",
+    "url": "https://pt.aliexpress.com/item/1005010051122475.html"
+   }
+  ]
+ },
+ {
+  "id": "tws",
+  "nome": "Fone Bluetooth Sem Fio KD780",
+  "desc": "Bluetooth 5.4, grave forte e estojo carregador.",
+  "preco": 79.9,
+  "de": 109.9,
+  "custo": 40.49,
+  "foto": "img/tws.webp",
+  "emoji": "🎧",
+  "busca": "fone bluetooth sem fio tws",
+  "fama": "4,8 · 10 mil+ avaliações",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 40.49,
+    "info": "4,8 · Full, chega amanhã",
+    "url": "https://www.mercadolivre.com.br/fone-bluetooth-54-sem-fio-tws-kaidi-kd780-graves-potentes/up/MLBU3739968160"
+   }
+  ]
+ },
+ {
+  "id": "caixa",
+  "nome": "Caixinha de Som Bluetooth Mini",
+  "desc": "Pequena e potente, cabe na mão. Ótima pra levar pra todo lado.",
+  "preco": 89.9,
+  "de": 119.9,
+  "custo": 47.99,
+  "foto": "img/caixa.webp",
+  "emoji": "🔊",
+  "busca": "caixa de som bluetooth portatil pequena",
+  "fama": "4,8",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 47.99,
+    "info": "4,8 · Full, chega amanhã",
+    "url": "https://www.mercadolivre.com.br/caixa-caixinha-bluetooth-portatil-pequena-potente-preto-mini/up/MLBU3503362571"
+   }
+  ]
+ },
+ {
+  "id": "led",
+  "nome": "Fita LED RGB 5 m com Controle",
+  "desc": "Muda de cor pelo controle. À prova d'água, com fonte.",
+  "preco": 79.9,
+  "de": 99.9,
+  "custo": 40.6,
+  "foto": "img/led.webp",
+  "emoji": "🌈",
+  "busca": "fita led rgb 5 metros com controle",
+  "fama": "4,7",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 40.6,
+    "info": "4,7 · Full, chega amanhã",
+    "url": "https://www.mercadolivre.com.br/fita-led-dcorium-5m-rgb-5050-prova-dagua-ip65-silicone-com-fonte-e-controle/p/MLB28882470"
+   },
+   {
+    "loja": "AliExpress",
+    "preco": 19.18,
+    "info": "reserva",
+    "url": "https://pt.aliexpress.com/item/32906423190.html"
+   }
+  ]
+ },
+ {
+  "id": "suporte",
+  "nome": "Suporte Veicular Magnético",
+  "desc": "Gruda o celular no painel com ímã. Firme na estrada.",
+  "preco": 59.9,
+  "de": 79.9,
+  "custo": 30.9,
+  "foto": "img/suporte.webp",
+  "emoji": "🚗",
+  "busca": "suporte veicular magnetico celular",
+  "fama": "4,5",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 30.9,
+    "info": "4,5 · Full, chega amanhã",
+    "url": "https://www.mercadolivre.com.br/suporte-veicular-magnetico-magsafe-p-iphone-12-13-14-15-16-cor-preto/p/MLB41701376"
+   },
+   {
+    "loja": "AliExpress",
+    "preco": 11.84,
+    "info": "reserva",
+    "url": "https://pt.aliexpress.com/item/1005009384397085.html"
+   }
+  ]
+ },
+ {
+  "id": "mouse",
+  "nome": "Mouse Sem Fio Recarregável RGB",
+  "desc": "Bluetooth e sem fio, bateria recarregável, luz colorida.",
+  "preco": 44.9,
+  "de": 69.9,
+  "custo": 21.9,
+  "foto": "img/mouse.webp",
+  "emoji": "🖱️",
+  "busca": "mouse sem fio recarregavel",
+  "fama": "4,8",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 21.9,
+    "info": "4,8 · Full, chega amanhã",
+    "url": "https://www.mercadolivre.com.br/mouse-sem-fio-recarregavel-bluetooth-wireless-optico-ergonomico-sem-fio-led-rgb-gamer-para-notebook-pc-tablet-smartphone-preto-nixzen/p/MLB56669422"
+   }
+  ]
+ },
+ {
+  "id": "vent",
+  "nome": "Mini Ventilador Portátil Recarregável",
+  "desc": "Ventinho de mão pro calor de Manaus. Carrega no USB.",
+  "preco": 59.9,
+  "de": 79.9,
+  "custo": 29.07,
+  "foto": "img/vent.webp",
+  "emoji": "🌀",
+  "busca": "mini ventilador portatil recarregavel",
+  "fama": "4,5",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 29.07,
+    "info": "4,5 · Full, chega amanhã",
+    "url": "https://produto.mercadolivre.com.br/MLB-3354946424-mini-ventilador-de-mo-portatil-recarregavel-para-extenso-_JM"
+   }
+  ]
+ },
+ {
+  "id": "ring",
+  "nome": "Ring Light 10\" com Tripé 2,10 m",
+  "desc": "Luz pra vídeo, live e maquiagem, com suporte pro celular.",
+  "preco": 99.9,
+  "de": 139.9,
+  "custo": 52.42,
+  "foto": "img/ring.webp",
+  "emoji": "💡",
+  "busca": "ring light 10 polegadas tripe",
+  "fama": "4,7 · mais vendido",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 52.42,
+    "info": "4,7 · Full, frete grátis",
+    "url": "https://www.mercadolivre.com.br/ring-light-10-polegadas-com-tripe-210m-profissional-video-maker-suporte-celular-e-led-3-cores-iluminacao-maquiagem-e-gravacoes-luxside/p/MLB62053405"
+   }
+  ]
+ },
+ {
+  "id": "t900",
+  "nome": "Smartwatch T900 Ultra 49 mm",
+  "desc": "Chamadas, notificações e treino, com bateria que dura.",
+  "preco": 99.9,
+  "de": 139.9,
+  "custo": 52.13,
+  "foto": "img/t900.webp",
+  "emoji": "⌚",
+  "busca": "smartwatch t900 ultra",
+  "fama": "4,6",
+  "fornecedores": [
+   {
+    "loja": "Mercado Livre",
+    "preco": 52.13,
+    "info": "4,6 · Full, chega amanhã",
+    "url": "https://www.mercadolivre.com.br/relogio-inteligente-smartwatch-t900-s10-ultra-pro-longa-bateria-treino-smartwatch-49mm-bluetooth-chamadas-notificacoes-saude/p/MLB75012346"
+   }
   ]
  }
 ];
+
+// Avaliações REAIS de clientes. Exemplo: {produto:"tws", nome:"Maria, Manaus", nota:5, texto:"Chegou rápido!"}
+window.AVALIACOES = [];
 window.FORNECEDORES = [
   {nome:"Mercado Livre", cor:"#2d3277", url:t=>"https://lista.mercadolivre.com.br/"+encodeURIComponent(t.replace(/ /g,'-'))},
   {nome:"Shopee", cor:"#ee4d2d", url:t=>"https://shopee.com.br/search?keyword="+encodeURIComponent(t)+"&sortBy=sales"},

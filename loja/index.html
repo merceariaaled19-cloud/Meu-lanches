@@ -38,10 +38,10 @@ footer{text-align:center;opacity:.5;font-size:12px;padding:20px}
 </style></head><body>
 <div id="intro"><div class="logo">GI</div><h1>GOHAN IMPORT</h1><p>Eletrônicos com frete grátis</p></div>
 <header><img src="icon-192.png" alt=""><b>Gohan <span>Import</span></b><button id="bcar" onclick="abrir()">🛒 <span id="nc">0</span></button></header>
-<section class="hero"><h2>Os 10 eletrônicos mais vendidos 🔥</h2><p>Preço baixo, entrega na sua casa.</p>
+<section class="hero"><h2>Os eletrônicos mais vendidos 🔥</h2><p>Preço baixo, entrega na sua casa.</p>
 <div class="selos"><div>🚚 Frete grátis</div><div>💬 Atendimento no WhatsApp</div><div>💳 Pix</div><div>📦 Rastreio do pedido</div></div></section>
 <main class="grid" id="grid"></main>
-<footer>Gohan Import · Manaus-AM · <span id="prazo"></span></footer>
+<footer>Gohan Import · Manaus-AM · <span id="prazo"></span><br><a style="color:#facc15" href="https://wa.me/5592995015662?text=Oi!%20Quero%20avaliar%20minha%20compra%20na%20Gohan%20Import:%20" target="_blank">Já comprou? Mande sua avaliação ⭐</a></footer>
 <div id="car" onclick="if(event.target===this)fechar()"><div class="p">
 <div style="display:flex;justify-content:space-between;align-items:center"><h2>Seu carrinho</h2><button onclick="fechar()" style="background:none;border:0;color:#fff;font-size:26px">✕</button></div>
 <div id="itens"></div><div class="tot"><span>Total</span><span id="tt">R$ 0,00</span></div>
@@ -64,7 +64,7 @@ setTimeout(()=>{const i=document.getElementById('intro');i.style.opacity=0;setTi
 (()=>{const i=document.getElementById('intro');["🎧","⌚","🔊","🔋","📦","⚡"].forEach((e,k)=>{const b=document.createElement('div');b.className='box';b.textContent=e;b.style.left=(8+k*16)+'%';b.style.animationDelay=(k*.3)+'s';i.appendChild(b)})})();
 document.getElementById('prazo').textContent=LOJA.prazo;
 document.getElementById('grid').innerHTML=PRODUTOS.map((p,i)=>`<div class="card"><div class="foto" style="background:#fff">${p.foto?`<img src="${p.foto}" alt="${p.nome}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:p.emoji}<span class="off">-${Math.round((1-p.preco/p.de)*100)}%</span>${i<3?'<span class="top">🔥 Mais vendido</span>':''}</div>
-<div class="info"><h3>${p.nome}</h3><small>${p.desc}</small><span class="de">${R(p.de)}</span><span class="pr">${R(p.preco)}</span><button class="add" onclick="add('${p.id}')">Comprar</button></div></div>`).join('');
+<div class="info"><h3>${p.nome}</h3><small>${p.desc}</small><small style="display:block;color:#facc15;margin-top:4px">⭐ ${p.fama} no fornecedor</small>${AVALIACOES.filter(a=>a.produto===p.id).map(a=>`<small style="display:block;margin-top:4px;opacity:.85">💬 “${a.texto}” — ${a.nome} ${"⭐".repeat(a.nota)}</small>`).join("")}<span class="de">${R(p.de)}</span><span class="pr">${R(p.preco)}</span><button class="add" onclick="add('${p.id}')">Comprar</button></div></div>`).join('');
 function salva(){localStorage.gi_car=JSON.stringify(car);let n=0;for(const k in car)n+=car[k];document.getElementById('nc').textContent=n;render()}
 function add(id){car[id]=(car[id]||0)+1;salva();toast('Adicionado ao carrinho');abrir()}
 function mud(id,d){car[id]=(car[id]||0)+d;if(car[id]<=0)delete car[id];salva()}
