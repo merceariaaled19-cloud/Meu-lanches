@@ -63,14 +63,14 @@ let car=JSON.parse(localStorage.gi_car||'{}');
 setTimeout(()=>{const i=document.getElementById('intro');i.style.opacity=0;setTimeout(()=>i.remove(),600)},2200);
 (()=>{const i=document.getElementById('intro');["🎧","⌚","🔊","🔋","📦","⚡"].forEach((e,k)=>{const b=document.createElement('div');b.className='box';b.textContent=e;b.style.left=(8+k*16)+'%';b.style.animationDelay=(k*.3)+'s';i.appendChild(b)})})();
 document.getElementById('prazo').textContent=LOJA.prazo;
-document.getElementById('grid').innerHTML=PRODUTOS.map((p,i)=>`<div class="card"><div class="foto" style="background:radial-gradient(circle at 50% 40%,${p.cor}55,#121829 70%)">${p.emoji}<span class="off">-${Math.round((1-p.preco/p.de)*100)}%</span>${i<3?'<span class="top">🔥 Mais vendido</span>':''}</div>
+document.getElementById('grid').innerHTML=PRODUTOS.map((p,i)=>`<div class="card"><div class="foto" style="background:#fff">${p.foto?`<img src="${p.foto}" alt="${p.nome}" loading="lazy" style="width:100%;height:100%;object-fit:cover">`:p.emoji}<span class="off">-${Math.round((1-p.preco/p.de)*100)}%</span>${i<3?'<span class="top">🔥 Mais vendido</span>':''}</div>
 <div class="info"><h3>${p.nome}</h3><small>${p.desc}</small><span class="de">${R(p.de)}</span><span class="pr">${R(p.preco)}</span><button class="add" onclick="add('${p.id}')">Comprar</button></div></div>`).join('');
 function salva(){localStorage.gi_car=JSON.stringify(car);let n=0;for(const k in car)n+=car[k];document.getElementById('nc').textContent=n;render()}
 function add(id){car[id]=(car[id]||0)+1;salva();toast('Adicionado ao carrinho');abrir()}
 function mud(id,d){car[id]=(car[id]||0)+d;if(car[id]<=0)delete car[id];salva()}
 function total(){return PRODUTOS.reduce((s,p)=>s+(car[p.id]||0)*p.preco,0)}
 function render(){const el=document.getElementById('itens');const l=PRODUTOS.filter(p=>car[p.id]);
-el.innerHTML=l.length?l.map(p=>`<div class="it"><span class="e">${p.emoji}</span><div><b style="font-size:14px">${p.nome}</b><br>${R(p.preco)}</div><div class="q" style="flex:0"><button onclick="mud('${p.id}',-1)">−</button>${car[p.id]}<button onclick="mud('${p.id}',1)">+</button></div></div>`).join(''):'<p style="opacity:.6;padding:20px 0">Carrinho vazio.</p>';
+el.innerHTML=l.length?l.map(p=>`<div class="it">${p.foto?`<img src="${p.foto}" style="width:48px;height:48px;border-radius:8px;object-fit:cover">`:`<span class="e">${p.emoji}</span>`}<div><b style="font-size:14px">${p.nome}</b><br>${R(p.preco)}</div><div class="q" style="flex:0"><button onclick="mud('${p.id}',-1)">−</button>${car[p.id]}<button onclick="mud('${p.id}',1)">+</button></div></div>`).join(''):'<p style="opacity:.6;padding:20px 0">Carrinho vazio.</p>';
 document.getElementById('tt').textContent=R(total());document.getElementById('form').style.display=l.length?'block':'none'}
 function abrir(){document.getElementById('car').classList.add('on');render()}function fechar(){document.getElementById('car').classList.remove('on')}
 function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',1500)}
