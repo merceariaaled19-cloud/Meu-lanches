@@ -241,12 +241,12 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
   <button class="sec" onclick="regras()">📖 Regras</button>
   <div id="lobby" class="esc" style="margin-top:10px"></div>
  </div>
- <div id="verTag" style="font-size:11px;opacity:.6">versão 43</div>
+ <div id="verTag" style="font-size:11px;opacity:.6">versão 56</div>
 </div>
 
 <div id="escolha" class="esc"><h2 style="color:#fbbf24">Escolha seu duelista</h2><div id="persGrid"></div><button class="sec" onclick="voltaMenu()">⬅ Voltar</button></div>
 <div id="jogo" class="esc">
- <div id="topo"><button class="sec esc" id="btMic" onclick="toggleMic()">🎤 Mic ligado</button><button class="esc" id="vozBt" onclick="liberaVoz()">🔈 Ouvir amigo</button><span id="vozSt" style="font-size:12px;align-self:center"></span><button class="sec" onclick="verLog()">📜</button><button class="sec" id="btSom" onclick="trocaSom()">🔊</button><button class="sec" onclick="sairJogo()">Sair</button></div>
+ <div id="topo"><button class="sec esc" id="btMic" onclick="toggleMic()">🎤 Mic ligado</button><button class="esc" id="vozBt" onclick="liberaVoz()">🔈 Ouvir amigo</button><span id="vozSt" style="font-size:12px;align-self:center"></span><button class="sec" onclick="verLog()">📜</button><button class="sec" id="btMus" onclick="trocaMus()">🎵</button><button class="sec" id="btSom" onclick="trocaSom()">🔊</button><button class="sec" onclick="sairJogo()">Sair</button></div>
  <div class="barra"><img class="av esc" id="opAv" alt=""><video id="opVid" class="vid esc" autoplay playsinline muted onclick="this.classList.toggle('big')"></video><span class="nome" id="opNome">Computador</span><span class="mini" id="opDeck">🂠 0</span><span class="mini" id="opGy" onclick="verCemiterio(1-ME)">🪦 0</span><span class="lp" id="opLp">8000</span></div>
  <div class="lpbar"><div id="opBar" style="width:100%"></div></div>
  <div id="maoOp"></div>
@@ -335,7 +335,7 @@ var C={
  n27:{n:"Rainha Harpia",e:"👸",t:"M",lv:7,a:2500,d:2000,im:"a_n27",x:"Comanda os raios da tempestade."},
  n28:{n:"Arara Guerreira",e:"🦜",t:"M",lv:4,a:1500,d:1100,im:"a_n28",x:"Guerreira de penas vermelhas, azuis e amarelas."},
  n29:{n:"Coruja Guardiã",e:"🦉",t:"M",lv:4,a:900,d:2000,im:"a_n29",x:"Vigia as ruínas antigas à noite."},
- n30:{n:"Ninho Celeste",e:"🪺",t:"S",f:"campo",im:"a_n30",x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
+ n30:{n:"Ninho Celeste",e:"🪺",t:"S",f:"campo",tp:"ave",im:"a_n30",x:"Muda a arena: seus aves ganham +700 de ataque e os outros monstros +200."},
  g1:{n:"Barreira Arcana",e:"🔰",t:"T",f:"anular",x:"Quando o adversário atacar: anula o ataque e acaba a fase de batalha dele."},
  g2:{n:"Prisma Refletor",e:"💠",t:"T",f:"cilindro",x:"Quando o adversário atacar: anula o ataque e ele leva o dano do próprio monstro."},
  g3:{n:"Areia Movediça",e:"⏳",t:"T",f:"armadilha",x:"Quando o adversário invocar um monstro com 1000 ou mais de ataque: destrói ele."},
@@ -392,7 +392,7 @@ var C={
  pi6:{n:"Mariposa Colossal",e:"🦋",t:"M",lv:7,a:2500,d:2000,im:"a_pi6",x:"Pó das asas deixa o inimigo tonto."},
  pi7:{n:"Escorpião do Deserto",e:"🦂",t:"M",lv:5,a:2000,d:1400,im:"a_pi7",x:"Ferrão venenoso na cauda."},
  pi8:{n:"Lagarta Gulosa",e:"🐛",t:"M",lv:2,a:700,d:1200,im:"a_pi8",x:"Come tudo e um dia vira algo enorme."},
- pi9:{n:"Colmeia Gigante",e:"🍯",t:"S",f:"campo",im:"a_pi9",x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
+ pi9:{n:"Colmeia Gigante",e:"🍯",t:"S",f:"campo",tp:"inseto",im:"a_pi9",x:"Muda a arena: seus insetos ganham +700 de ataque e os outros monstros +200."},
  pi10:{n:"Ferrão Venenoso",e:"💉",t:"S",f:"fogo",im:"a_pi10",x:"Causa 800 de dano ao adversário."},
  pi11:{n:"Teia Pegajosa",e:"🕸️",t:"T",f:"anular",im:"a_pi11",x:"Quando o adversário atacar: anula o ataque e acaba a fase de batalha dele."},
  pi12:{n:"Enxame Ladrão",e:"🪰",t:"S",f:"descarte",im:"a_pi12",x:"O adversário descarta 1 carta aleatória da mão."},
@@ -404,7 +404,7 @@ var C={
  te6:{n:"Braquiossauro Gigante",e:"🦕",t:"M",lv:8,a:2800,d:2500,im:"a_te6",x:"Tão alto que encosta nas nuvens."},
  te7:{n:"Filhote de Raptor",e:"🥚",t:"M",lv:2,a:900,d:600,im:"a_te7",x:"Acabou de sair do ovo, já mordendo."},
  te8:{n:"Anquilossauro Marreta",e:"🦴",t:"M",lv:4,a:1200,d:2000,im:"a_te8",x:"Cauda que parece uma marreta."},
- te9:{n:"Selva Pré-Histórica",e:"🌋",t:"S",f:"campo",im:"a_te9",x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
+ te9:{n:"Selva Pré-Histórica",e:"🌋",t:"S",f:"campo",tp:"dino",im:"a_te9",x:"Muda a arena: seus dinossauros ganham +700 de ataque e os outros monstros +200."},
  te10:{n:"Chuva de Meteoros",e:"☄️",t:"S",f:"buraco",im:"a_te10",x:"Destrói TODOS os monstros do campo, os seus também."},
  te11:{n:"Fóssil Vivo",e:"🦴",t:"S",f:"resgate",im:"a_te11",x:"Volta o monstro mais forte do SEU cemitério pra sua mão."},
  te12:{n:"Rugido Ancestral",e:"📣",t:"S",f:"forca",v:600,im:"a_te12",x:"Equipa um monstro seu: +600 de ataque."},
@@ -416,7 +416,7 @@ var C={
  du6:{n:"Helicóptero Dourado",e:"🚁",t:"M",lv:4,a:1700,d:1100,im:"a_du6",x:"Pousa no topo do prédio dele."},
  du7:{n:"Drone Paparazzi",e:"📸",t:"M",lv:3,a:1100,d:900,im:"a_du7",x:"Flagra todas as jogadas do rival."},
  du8:{n:"Limusine Tanque",e:"🚙",t:"M",lv:5,a:1900,d:2000,im:"a_du8",x:"Luxo por dentro, blindagem por fora."},
- du9:{n:"Garagem de Luxo",e:"🏢",t:"S",f:"campo",im:"a_du9",x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
+ du9:{n:"Garagem de Luxo",e:"🏢",t:"S",f:"campo",tp:"robo",im:"a_du9",x:"Muda a arena: seus máquinas de metal ganham +700 de ataque e os outros monstros +200."},
  du10:{n:"Nitro Turbo",e:"🔥",t:"S",f:"forca",v:600,im:"a_du10",x:"Equipa um monstro seu: +600 de ataque."},
  du11:{n:"Cartão Ilimitado",e:"💳",t:"S",f:"pote",im:"a_du11",x:"Compre 2 cartas."},
  du12:{n:"Advogado Caro",e:"💼",t:"T",f:"anular",im:"a_du12",x:"Quando o adversário atacar: anula o ataque e acaba a fase de batalha dele."},
@@ -428,7 +428,7 @@ var C={
  sn6:{n:"Boto Encantado",e:"🐬",t:"M",lv:4,a:1500,d:1400,im:"a_sn6",x:"O protetor dos rios da Amazônia."},
  sn7:{n:"Peixe-Boi Guardião",e:"🦭",t:"M",lv:4,a:900,d:2100,im:"a_sn7",x:"Calmo, mas ninguém passa por ele."},
  sn8:{n:"Baleia Ancestral",e:"🐋",t:"M",lv:8,a:2700,d:2600,im:"a_sn8",x:"Vem das profundezas mais escuras."},
- sn9:{n:"Maré Alta",e:"🌊",t:"S",f:"campo",im:"a_sn9",x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
+ sn9:{n:"Maré Alta",e:"🌊",t:"S",f:"campo",tp:"agua",im:"a_sn9",x:"Muda a arena: seus bichos da água ganham +700 de ataque e os outros monstros +200."},
  sn10:{n:"Redemoinho",e:"🌀",t:"S",f:"alvo",im:"a_sn10",x:"Destrói 1 monstro do adversário à sua escolha."},
  sn11:{n:"Arpão de Ferro",e:"🔱",t:"S",f:"forca",v:500,im:"a_sn11",x:"Equipa um monstro seu: +500 de ataque."},
  sn12:{n:"Rede de Pesca",e:"🥅",t:"T",f:"laco",im:"a_sn12",x:"Quando o adversário atacar: destrói o monstro que atacou."},
@@ -440,7 +440,7 @@ var C={
  ca6:{n:"Dragão de Pixel",e:"🐉",t:"M",lv:5,a:2000,d:1500,im:"a_ca6",x:"O chefão da fase do castelo."},
  ca7:{n:"Fantasma do Lag",e:"👻",t:"M",lv:3,a:1000,d:1300,im:"a_ca7",x:"Aparece quando a internet cai."},
  ca8:{n:"Chefão da Última Fase",e:"👹",t:"M",lv:5,a:1900,d:1700,im:"a_ca8",x:"Barra de vida gigante."},
- ca9:{n:"Modo Turbo",e:"🎮",t:"S",f:"campo",im:"a_ca9",x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
+ ca9:{n:"Modo Turbo",e:"🎮",t:"S",f:"campo",im:"a_ca9",x:"Muda a arena pra fase gamer: todos os seus monstros ganham +400 de ataque."},
  ca10:{n:"Lag no Adversário",e:"📶",t:"S",f:"descarte",im:"a_ca10",x:"O adversário descarta 1 carta aleatória da mão."},
  ca11:{n:"Tiro na Cabeça",e:"🎯",t:"S",f:"alvo",im:"a_ca11",x:"Destrói 1 monstro do adversário à sua escolha."},
  ca12:{n:"Bug no Sistema",e:"🐞",t:"T",f:"laco",im:"a_ca12",x:"Quando o adversário atacar: destrói o monstro que atacou."},
@@ -452,28 +452,33 @@ var C={
  ne6:{n:"Guardião do Templo",e:"🛕",t:"M",lv:4,a:1100,d:2000,im:"a_ne6",x:"Treinou mil anos pra defender."},
  ne7:{n:"Aprendiz Ágil",e:"🤸",t:"M",lv:3,a:1200,d:900,im:"a_ne7",x:"Pula, gira e já tá atrás de você."},
  ne8:{n:"Tigre Acrobata",e:"🐅",t:"M",lv:6,a:2200,d:1600,im:"a_ne8",x:"Salta de parede em parede."},
- ne9:{n:"Dojô Sagrado",e:"🏯",t:"S",f:"campo",im:"a_ne9",x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
+ ne9:{n:"Dojô Sagrado",e:"🏯",t:"S",f:"campo",tp:"guerreiro",im:"a_ne9",x:"Muda a arena: seus guerreiros ganham +700 de ataque e os outros monstros +200."},
  ne10:{n:"Chute Giratório",e:"🦵",t:"S",f:"alvo",im:"a_ne10",x:"Destrói 1 monstro do adversário à sua escolha."},
  ne11:{n:"Faixa Preta",e:"🥋",t:"S",f:"forca",v:600,im:"a_ne11",x:"Equipa um monstro seu: +600 de ataque."},
  ne12:{n:"Contra-Ataque",e:"🔄",t:"T",f:"cilindro",im:"a_ne12",x:"Quando o adversário atacar: anula o ataque e ele leva o dano do próprio monstro."},
  b1:{n:"Quimera de Tinta Dourada",e:"🐉",t:"M",lv:8,a:2800,d:2300,dir:1,im:"a_b1",x:"Criação-prima do Conde. Pode atacar DIRETO mesmo com monstros no caminho."},
  b2:{n:"Espelho do Criador",e:"🪞",t:"T",f:"laco",im:"a_b2",x:"Quando o adversário atacar: destrói o monstro que atacou."},
- b3:{n:"Teatro das Ilusões",e:"🎪",t:"S",f:"campo",im:"a_b3",x:"Fica no campo: seus monstros ganham +400 de ataque enquanto ela estiver lá."},
+ b3:{n:"Teatro das Ilusões",e:"🎪",t:"S",f:"campo",tp:"mago",im:"a_b3",x:"Muda a arena: seus magos ganham +700 de ataque e os outros monstros +200."},
  b4:{n:"Lente Prismática",e:"🔍",t:"S",f:"alvo",im:"a_b4",x:"Destrói 1 monstro do adversário à sua escolha."},
  b5:{n:"Arlequim de Vidro",e:"🃏",t:"M",lv:4,a:1700,d:1400,dir:1,im:"a_b5",x:"Ilusão viva. Pode atacar DIRETO mesmo com monstros no caminho."},
  b6:{n:"Marionete Encantada",e:"🎎",t:"M",lv:5,a:2100,d:1700,dir:1,im:"a_b6",x:"Ilusão viva. Pode atacar DIRETO mesmo com monstros no caminho."},
- b7:{n:"Dragão de Aquarela",e:"🎨",t:"M",lv:7,a:2600,d:2000,dir:1,im:"a_b7",x:"Ilusão viva. Pode atacar DIRETO mesmo com monstros no caminho."}
+ b7:{n:"Dragão de Aquarela",e:"🎨",t:"M",lv:7,a:2600,d:2000,dir:1,im:"a_b7",x:"Ilusão viva. Pode atacar DIRETO mesmo com monstros no caminho."},
+ ar1:{n:"Fortaleza de Metal",e:"🏭",t:"S",f:"campo",tp:"robo",im:"a_ar1",x:"Muda a arena: seus máquinas de metal ganham +700 de ataque e os outros monstros +200."},
+ ar2:{n:"Cemitério Assombrado",e:"🪦",t:"S",f:"campo",tp:"morto",im:"a_ar2",x:"Muda a arena: seus mortos-vivos ganham +700 de ataque e os outros monstros +200."},
+ ar3:{n:"Torre Arcana",e:"🗼",t:"S",f:"campo",tp:"mago",im:"a_ar3",x:"Muda a arena: seus magos ganham +700 de ataque e os outros monstros +200."},
+ ar4:{n:"Floresta Selvagem",e:"🌳",t:"S",f:"campo",tp:"fera",im:"a_ar4",x:"Muda a arena: seus feras ganham +700 de ataque e os outros monstros +200."},
+ ar5:{n:"Mata Fechada",e:"🌿",t:"S",f:"campo",tp:"inseto",im:"a_ar5",x:"Muda a arena: seus insetos ganham +700 de ataque e os outros monstros +200."}
 };
 var LISTA=["m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","m21","e1","e2","e3","e4","e5","s1","s2","s3","s4","s5","s6","s7","s8","s9","t1","t2","t3","t4","n24"];
 var CONDEIMG="data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="40%"><stop offset="0" stop-color="#a855f7"/><stop offset="1" stop-color="#1e0538"/></radialGradient></defs><rect width="100" height="100" fill="url(#g)"/><text x="50" y="62" font-size="54" text-anchor="middle">🎩</text><circle cx="50" cy="78" r="9" fill="#fde047" stroke="#7c3aed" stroke-width="3"/><circle cx="50" cy="78" r="4" fill="#4c1d95"/></svg>');
 var PERS={
- caio:{n:"Gohan Gog",img:"p_caio",x:"Mestre dos feiticeiros e guardião do Colosso Selado.",d:["m1","m6","n1","n2","m14","m19","m11","m13","m10","n17","m20","e1","e2","e3","e4","e5","c1","c2","c3","c4","c5","s1","s3","s4","s5","s6","s7","s8","s9","n3","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
- otavio:{n:"Protas",img:"p_otavio",x:"CEO frio com dragões de platina e máquinas de guerra.",d:["m2","n6","n4","n5","m12","m18","m15","m13","m16","m8","n17","m10","m11","m3","o1","o2","o3","o4","o5","o6","n7","s8","s3","s1","s7","s4","s9","s5","s2","t1","t2","t3","t4","g1","g2","g3","g4","g5","g6","g7"]},
- tiao:{n:"Bebinho",img:"p_tiao",x:"Brigão de rua com guerreiros, feras e muita sorte.",d:["n8","n9","n10","m5","m7","m8","m9","m10","m16","m15","m20","m13","h1","h2","h3","h4","h5","h6","n11","n12","s8","s4","s5","s3","s7","s9","h7","h8","t1","t2","t3","t4","g1","g2","g3","g4","g5","g6","g7","g8"]},
+ caio:{n:"Gohan Gog",img:"p_caio",x:"Mestre dos feiticeiros e guardião do Colosso Selado.",d:["m1","m6","n1","n2","m14","m19","m11","m13","m10","n17","m20","e1","e2","e3","e4","e5","c1","c2","c3","c4","c5","s1","s3","s4","s5","s6","s7","s8","ar3","n3","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
+ otavio:{n:"Protas",img:"p_otavio",x:"CEO frio com dragões de platina e máquinas de guerra.",d:["m2","n6","n4","n5","m12","m18","m15","m13","m16","m8","n17","m10","m11","m3","o1","o2","o3","o4","o5","o6","n7","s8","s3","s1","s7","s4","s9","s5","ar1","t1","t2","t3","t4","g1","g2","g3","g4","g5","g6","g7"]},
+ tiao:{n:"Bebinho",img:"p_tiao",x:"Brigão de rua com guerreiros, feras e muita sorte.",d:["n8","n9","n10","m5","m7","m8","m9","m10","m16","m15","m20","m13","h1","h2","h3","h4","h5","h6","n11","n12","s8","s4","s5","s3","s7","ar4","h7","h8","t1","t2","t3","t4","g1","g2","g3","g4","g5","g6","g7","g8"]},
  zeca:{n:"Sukita",img:"p_zeca",x:"Desenhista maluco: seus monstros atacam direto.",d:["n13","n14","n15","n16","n17","m20","m19","m18","m21","m16","m13","z1","z2","z3","z4","z5","s5","s4","s3","s8","s6","s9","n12","s7","n18","z6","z7","t1","t2","t3","t4","z8","g1","g2","g3","g4","g5","g6","g7","g8"]},
- nando:{n:"Nio",img:"p_nando",x:"Mestre dos demônios e mortos-vivos do cemitério.",d:["m4","n19","n21","m17","m21","m3","m9","m15","m13","m14","m20","m16","d1","d2","d3","d4","d5","n22","n20","n23","s7","s2","s3","s5","s8","s4","n24","t1","t2","t3","t4","d6","g1","g2","g3","g4","g5","g6","g7","g8"]},
+ nando:{n:"Nio",img:"p_nando",x:"Mestre dos demônios e mortos-vivos do cemitério.",d:["m4","n19","n21","m17","m21","m3","m9","m15","m13","m14","m20","m16","d1","d2","d3","d4","d5","n22","n20","n23","s7","ar2","s3","s5","s8","s4","n24","t1","t2","t3","t4","d6","g1","g2","g3","g4","g5","g6","g7","g8"]},
  iara:{n:"Deborah",img:"p_iara",x:"Comandante das harpias e feras aladas.",d:["n25","n26","n27","n28","n29","m7","m17","m19","m11","m14","m20","m16","i1","i2","i3","i4","i5","n30","s9","s8","s3","s4","s5","s7","s6","i6","i7","t1","t2","t3","t4","n24","g1","g2","g3","g4","g5","g6","g7","g8"]},
- pimp:{n:"Pimp",img:"p_pimp",x:"Esperto e trapaceiro, comanda um enxame de insetos.",d:["pi1","pi2","pi3","pi4","pi5","pi6","pi7","pi8","pi9","pi10","pi11","pi12","m21","m17","m13","m20","m16","m19","s3","s4","s5","s8","s9","s7","n23","g6","g8","n24","s2","m10","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
+ pimp:{n:"Pimp",img:"p_pimp",x:"Esperto e trapaceiro, comanda um enxame de insetos.",d:["pi1","pi2","pi3","pi4","pi5","pi6","pi7","pi8","pi9","pi10","pi11","pi12","m21","m17","m13","m20","m16","m19","s3","s4","s5","s8","s9","s7","n23","g6","g8","n24","ar5","m10","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
  telo:{n:"Teló",img:"p_telo",x:"Aventureiro loiro que acordou os dinossauros.",d:["te1","te2","te3","te4","te5","te6","te7","te8","te9","te10","te11","te12","m18","m3","m8","m15","m13","m16","m9","m20","s1","s3","s4","s5","s8","s7","g6","g8","n24","m7","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
  dudu:{n:"Dudu",img:"p_dudu",x:"Playboy rico com máquinas de luxo e muito dinheiro.",d:["du1","du2","du3","du4","du5","du6","du7","du8","du9","du10","du11","du12","m12","n4","n5","o2","o3","o4","m13","m20","s3","s4","s5","s8","s9","s7","n7","g6","n11","s2","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
  snaf:{n:"Snaf",img:"p_snaf",x:"Pescador fortão que domina os bichos dos rios e mares.",d:["sn1","sn2","sn3","sn4","sn5","sn6","sn7","sn8","sn9","sn10","sn11","sn12","m21","m15","m13","m16","m20","m9","z3","h4","s3","s4","s5","s8","s7","s9","g6","g8","n24","s2","t1","t2","t3","t4","g1","g2","g3","g4","g5","g7"]},
@@ -495,7 +500,7 @@ function fim(w,why){ if(S.win!==null) return; S.win=w; S.why=why; ev(why); }
 function checar(){ for(var p=0;p<2;p++){ var ids=S.p[p].hand.map(function(c){return c.id}); if(["e1","e2","e3","e4","e5"].every(function(x){return ids.indexOf(x)>=0})) fim(p,"COLOSSO SELADO COMPLETO! "+S.p[p].nome+" venceu na hora!"); } for(p=0;p<2;p++) if(S.p[p].lp<=0){ S.p[p].lp=0; fim(1-p,S.p[p].nome+" ficou sem pontos de vida!"); } }
 function donoDe(m){ for(var p=0;p<2;p++) if(S.p[p].mz.indexOf(m)>=0) return p; return -1; }
 function temCampo(p){ return S.p[p].st.some(function(c){ return c&&C[c.id].f==="campo"&&!c.down; }); }
-function atk(m){ var p=S?donoDe(m):-1; return C[m.id].a+(m.buff||0)+(p>=0&&temCampo(p)?400:0); }
+function atk(m){ var p=S?donoDe(m):-1; return C[m.id].a+(m.buff||0)+(p>=0?bonusCampo(m,p):0); }
 function destroiM(p,s){ var m=S.p[p].mz[s]; if(!m) return; S.p[p].gy.push({u:m.u,id:m.id}); S.p[p].mz[s]=null; }
 function destroiST(p,s){ var c=S.p[p].st[s]; if(!c) return; S.p[p].gy.push({u:c.u,id:c.id}); S.p[p].st[s]=null; }
 function livre(a){ return a.indexOf(null); }
@@ -698,6 +703,57 @@ var FXPRE={}; function fxPre(){ [S.p[ME].hand,S.p[0].mz,S.p[1].mz,S.p[0].deck||[
 function fxTipo(id){ var n=(C[id]&&C[id].n||"").toLowerCase();
  var T=[["dino",/tiranoss|tricerat|velocirr|pteross|estegos|braquios|raptor|anquilos/],["dragao",/drag[aã]o|dragãozinho|serpente|fênix|fenix|quimera/],["robo",/rob[oô]|drone|tit[aã] de a|canh[aã]o|esportivo|moto |jato|iate|helic|limusine|mec[aâ]nic|golem|fliperama|colosso/],["fera",/le[aã]o|tigre|lobo|urso|on[cç]a|javali|gorila|c[aã]o espectral|gato/],["ave",/harpia|arara|coruja|gavi|tucano|grifo|falc|galo|pato|morcego/],["inseto",/besouro|louva|vespa|aranha|formiga|mariposa|escorpi|lagarta/],["agua",/polvo|tubar|piranha|caranguejo|enguia|boto|peixe|baleia/],["morto",/caveira|esqueleto|lich|zumbi|vampir|espectral|morto-vivo|m[uú]mia|fantasma/],["mago",/feiti|mago|maga|bruxa|or[aá]culo|grim[oó]rio|aprendiz (de|rubi)|pupila|fada|elfa|mímico|mimico|arlequim|marionete|fantoche/],["guerreiro",/cavaleir|guerreir|sentinela|lutador|lutadora|boxeador|capoeir|ninja|campe|ladr|guardi|arqueira|mestre|corredor|chef|goblin|segura|escudeiro|soldado/]];
  for(var i=0;i<T.length;i++) if(T[i][1].test(n)) return T[i][0]; return "fera"; }
+// ===== MÚSICA DE BATALHA (original, gerada no aparelho) + ARENAS =====
+var TEMAS={
+ caio:{bpm:118,root:50,sc:[0,2,3,5,7,8,11],prog:[0,5,3,4],lead:"triangle",bass:"sawtooth",dr:"rock",nm:"Feitiço Ancestral"},
+ otavio:{bpm:140,root:45,sc:[0,2,3,5,7,8,10],prog:[0,5,6,4],lead:"sawtooth",bass:"sawtooth",dr:"fast",nm:"Império de Platina"},
+ tiao:{bpm:126,root:47,sc:[0,3,5,6,7,10],prog:[0,0,3,4],lead:"square",bass:"square",dr:"rock",nm:"Briga de Rua"},
+ zeca:{bpm:150,root:55,sc:[0,2,4,7,9],prog:[0,3,1,4],lead:"sine",bass:"triangle",dr:"chip",nm:"Rabisco Maluco"},
+ nando:{bpm:96,root:40,sc:[0,1,3,5,7,8,10],prog:[0,1,0,6],lead:"sawtooth",bass:"sawtooth",dr:"dark",nm:"Cemitério Proibido"},
+ iara:{bpm:132,root:52,sc:[0,2,3,5,7,9,10],prog:[0,6,3,4],lead:"triangle",bass:"triangle",dr:"rock",nm:"Voo das Harpias"},
+ pimp:{bpm:160,root:49,sc:[0,1,3,4,7,8,10],prog:[0,1,0,4],lead:"square",bass:"sawtooth",dr:"fast",nm:"Enxame"},
+ telo:{bpm:108,root:43,sc:[0,3,5,7,10],prog:[0,2,3,0],lead:"triangle",bass:"sawtooth",dr:"tribal",nm:"Terra dos Dinossauros"},
+ dudu:{bpm:122,root:48,sc:[0,2,4,5,7,9,11],prog:[0,5,3,4],lead:"square",bass:"sawtooth",dr:"disco",nm:"Ostentação"},
+ snaf:{bpm:110,root:46,sc:[0,2,4,6,7,9,11],prog:[0,1,4,3],lead:"sine",bass:"triangle",dr:"calm",nm:"Maré Brava"},
+ cabeca:{bpm:150,root:51,sc:[0,2,4,7,9,11],prog:[0,3,4,3],lead:"square",bass:"square",dr:"chip",arp:1,nm:"Fase Final"},
+ neri:{bpm:170,root:53,sc:[0,3,5,7,10],prog:[0,4,2,3],lead:"triangle",bass:"square",dr:"fast",nm:"Vento Cortante"},
+ conde:{bpm:90,root:41,sc:[0,2,3,5,7,8,11],prog:[0,3,6,4],lead:"sawtooth",bass:"sawtooth",dr:"dark",arp:1,nm:"O Criador"},
+ _:{bpm:130,root:48,sc:[0,2,4,5,7,9,10],prog:[0,3,4,0],lead:"square",bass:"triangle",dr:"rock",nm:"Duelo"}
+};
+var DR={rock:{k:[0,8,10],s:[4,12],h:[0,2,4,6,8,10,12,14]},fast:{k:[0,4,8,10,12],s:[4,12],h:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]},tribal:{k:[0,3,6,10,12],s:[],h:[],t:[8,14,15]},disco:{k:[0,4,8,12],s:[4,12],h:[2,6,10,14]},calm:{k:[0],s:[8],h:[4,12]},chip:{k:[0,8],s:[4,12],h:[0,2,4,6,8,10,12,14]},dark:{k:[0,10],s:[8],h:[],t:[14]}};
+var MUS={on:true,ch:null,tm:null,nx:0,st:0,g:null,pat:null,nb:null};
+try{ MUS.on=localStorage.getItem("duelo_mus")!=="0"; }catch(e){}
+function musRnd(s){ return function(){ s=(s*16807)%2147483647; return (s-1)/2147483646; }; }
+function musPat(ch,T){ var h=7; for(var i=0;i<ch.length;i++) h=(h*31+ch.charCodeAt(i))%2147483647; var r=musRnd(h||1), mel=[];
+ for(var b=0;b<4;b++){ var g=T.prog[b]; for(var s=0;s<16;s++){ var forte=s%4===0, p=forte?.8:(s%2===0?.45:.22); mel.push(r()<p?(g+[0,2,4,0,2,4,7,5][Math.floor(r()*8)]):null); } }
+ return mel; }
+function musNota(deg,T,oit){ var n=T.sc.length, o=Math.floor(deg/n), i=((deg%n)+n)%n; return 440*Math.pow(2,(T.root+12*(o+oit)+T.sc[i]-69)/12); }
+function musTom(f,t,d,w,v){ var a=ac(); var o=a.createOscillator(),g=a.createGain(); o.type=w; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(MUS.g); o.start(t); o.stop(t+d+.02); }
+function musRuido(t,d,v,hp){ var a=ac(); if(!MUS.nb){ MUS.nb=a.createBuffer(1,a.sampleRate*.5,a.sampleRate); var x=MUS.nb.getChannelData(0); for(var i=0;i<x.length;i++) x[i]=Math.random()*2-1; } var s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain(); s.buffer=MUS.nb; f.type="highpass"; f.frequency.value=hp; g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+d); s.connect(f); f.connect(g); g.connect(MUS.g); s.start(t); s.stop(t+d+.02); }
+function musBumbo(t,f0){ var a=ac(); var o=a.createOscillator(),g=a.createGain(); o.frequency.setValueAtTime(f0||130,t); o.frequency.exponentialRampToValueAtTime(40,t+.18); g.gain.setValueAtTime(.9,t); g.gain.exponentialRampToValueAtTime(.0001,t+.25); o.connect(g); g.connect(MUS.g); o.start(t); o.stop(t+.3); }
+function musPasso(T,s,t,dur){ var bar=Math.floor(s/16)%4, i=s%16, g=T.prog[bar], d=DR[T.dr]||DR.rock;
+ if(d.k.indexOf(i)>=0) musBumbo(t); if(d.s.indexOf(i)>=0) musRuido(t,.16,.5,1500); if(d.h.indexOf(i)>=0) musRuido(t,.04,.18,7000); if(d.t&&d.t.indexOf(i)>=0) musBumbo(t,220);
+ if(T.dr==="dark"&&i===0) musTom(musNota(g,T,-1),t,dur*16,"sawtooth",.05);
+ if(i%4===0||(T.dr==="disco"&&i%2===0)) musTom(musNota(g,T,i%8===4&&T.dr!=="dark"?1:0),t,dur*(T.dr==="disco"?1.5:3),T.bass,.16);
+ if(T.arp){ musTom(musNota(g+[0,2,4,7][i%4],T,2),t,dur*.9,T.lead,.07); }
+ var m=MUS.pat[(s%64)]; if(m!==null&&!(T.arp&&i%2)) musTom(musNota(m,T,2),t,dur*(i%4===0?2.2:1.2),T.lead,T.arp?.06:.09); }
+function musStart(ch){ var a=ac(); if(!a) return; var T=TEMAS[ch]||TEMAS._; MUS.ch=ch; MUS.pat=musPat(ch,T); MUS.g=a.createGain(); MUS.g.gain.setValueAtTime(.0001,a.currentTime); MUS.g.gain.exponentialRampToValueAtTime(.32,a.currentTime+1.5); var cp=a.createDynamicsCompressor(); MUS.g.connect(cp); cp.connect(a.destination); MUS.nx=a.currentTime+.1; MUS.st=0; var dur=60/T.bpm/4;
+ MUS.tm=setInterval(function(){ var a=ac(); while(MUS.nx<a.currentTime+.25){ try{ musPasso(T,MUS.st,MUS.nx,dur); }catch(e){} MUS.nx+=dur; MUS.st++; } },60); }
+function musStop(){ if(MUS.tm){ clearInterval(MUS.tm); MUS.tm=null; } if(MUS.g){ var g=MUS.g,a=ac(); try{ g.gain.cancelScheduledValues(a.currentTime); g.gain.setValueAtTime(g.gain.value||.3,a.currentTime); g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+.6); setTimeout(function(){ try{g.disconnect();}catch(e){} },800); }catch(e){} MUS.g=null; } MUS.ch=null; }
+function musicaCheck(){ var deve=MUS.on&&SOM&&S&&S.win===null&&!jogo.classList.contains("esc")&&!document.hidden; if(!deve){ if(MUS.ch!==null) musStop(); return; } var ch=S.p[1-ME].ch||"_"; if(MUS.ch!==ch){ musStop(); musStart(ch); } }
+function trocaMus(){ MUS.on=!MUS.on; try{ localStorage.setItem("duelo_mus",MUS.on?"1":"0"); }catch(e){} var b=document.getElementById("btMus"); if(b) b.innerText=MUS.on?"🎵":"🎵̸"; if(b) b.style.opacity=MUS.on?1:.45; musicaCheck(); }
+setInterval(function(){ try{ musicaCheck(); arenaCheck(); }catch(e){} },800);
+document.addEventListener("visibilitychange",function(){ try{ musicaCheck(); }catch(e){} });
+
+var TPN={dino:"dinossauros",dragao:"dragões",robo:"máquinas de metal",fera:"feras",ave:"aves",inseto:"insetos",agua:"bichos da água",morto:"mortos-vivos",mago:"magos",guerreiro:"guerreiros"};
+var ARENA={dino:["#9a3412","#1c0a03","🌋🦴🌿"],robo:["#64748b","#0b1220","⚙️🔩⚡"],inseto:["#15803d","#031a0c","🍃🐞🌿"],ave:["#0ea5e9","#0c1e3a","☁️🪶✨"],agua:["#0369a1","#03142b","🫧🌊🐚"],morto:["#52525b","#050505","👻🪦🌫️"],mago:["#9333ea","#1e0538","✨🔮⭐"],guerreiro:["#c2410c","#1c1003","🏯🔥⚔️"],fera:["#4d7c0f","#0f1a03","🌳🐾🍃"],todos:["#db2777","#1e0a2e","🎮⭐⚡"]};
+function campoDe(p){ if(!S) return null; for(var i=0;i<5;i++){ var c=S.p[p].st[i]; if(c&&C[c.id]&&C[c.id].f==="campo"&&!c.down) return C[c.id]; } return null; }
+function bonusCampo(m,p){ var k=campoDe(p); if(!k) return 0; if(!k.tp) return 400; return fxTipo(m.id)===k.tp?700:200; }
+var ARV=null;
+function arenaCheck(){ var k=null; if(S&&!jogo.classList.contains("esc")) k=campoDe(ME)||campoDe(1-ME); var key=k?k.n:""; if(key===ARV) return; ARV=key; var L=document.getElementById("arenaFx"); if(!L){ L=document.createElement("div"); L.id="arenaFx"; L.style.cssText="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;transition:opacity 1s"; document.body.insertBefore(L,document.body.firstChild); var st=document.createElement("style"); st.textContent="#jogo{position:relative;z-index:1}@keyframes arSobe{0%{transform:translateY(0) rotate(0);opacity:0}15%{opacity:.55}100%{transform:translateY(-110vh) rotate(200deg);opacity:0}}#arenaFx span{position:absolute;bottom:-40px;font-size:26px;animation:arSobe linear infinite}"; document.head.appendChild(st); }
+ if(!k){ L.style.opacity=0; document.body.style.background=""; return; } var a=ARENA[k.tp||"todos"]; document.body.style.background="radial-gradient(circle at 50% 45%,"+a[0]+","+a[1]+")"; var em=Array.from(a[2]); var h=""; for(var i=0;i<14;i++) h+='<span style="left:'+(Math.random()*95)+'%;animation-duration:'+(7+Math.random()*7)+'s;animation-delay:'+(-Math.random()*12)+'s">'+em[i%em.length]+'</span>'; L.innerHTML=h; L.style.opacity=1;
+ var b=document.createElement("div"); b.style.cssText="position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(.6);z-index:70;background:#000c;border:2px solid "+a[0]+";color:#fff;border-radius:16px;padding:12px 18px;font-weight:900;text-align:center;font-size:18px;transition:all .4s;opacity:0;pointer-events:none;max-width:86%"; b.innerHTML=k.e+" Arena: "+k.n+"<br><small style='font-weight:700;color:#fde047'>"+(k.tp?TPN[k.tp]+" +700 de ataque":"todos +400 de ataque")+"</small>"; document.body.appendChild(b); setTimeout(function(){ b.style.opacity=1; b.style.transform="translate(-50%,-50%) scale(1)"; },30); setTimeout(function(){ b.style.opacity=0; },2200); setTimeout(function(){ b.remove(); },2800); }
+
 function fxRonco(f0,f1,d,vol,q,tipo){ var a=ac(); if(!a) return; var t=a.currentTime+(q||0); var o=a.createOscillator(),o2=a.createOscillator(),g=a.createGain(),fl=a.createBiquadFilter(),lfo=a.createOscillator(),lg=a.createGain(); o.type=tipo||"sawtooth"; o2.type="square"; o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(f1,t+d); o2.frequency.setValueAtTime(f0*1.02,t); o2.frequency.exponentialRampToValueAtTime(f1*1.01,t+d); lfo.frequency.value=28; lg.gain.value=f0*.25; lfo.connect(lg); lg.connect(o.frequency); fl.type="lowpass"; fl.frequency.setValueAtTime(1600,t); fl.frequency.exponentialRampToValueAtTime(380,t+d); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+.08); g.gain.exponentialRampToValueAtTime(.001,t+d); o.connect(fl); o2.connect(fl); fl.connect(g); g.connect(a.destination); [o,o2,lfo].forEach(function(x){ x.start(t); x.stop(t+d+.05); }); }
 function fxEspada(q){ tom(2600,.35,"triangle",.12,1800,q); tom(3900,.25,"sine",.08,3000,q); ruido(.12,.25,q,6000); }
 function fxSom(id,k){ if(typeof SOM!=="undefined"&&!SOM) return; try{ var tp=fxTipo(id);
