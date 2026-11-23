@@ -241,7 +241,7 @@ input{font-size:18px;padding:10px;border-radius:10px;border:0;width:100%;text-al
   <button class="sec" onclick="regras()">📖 Regras</button>
   <div id="lobby" class="esc" style="margin-top:10px"></div>
  </div>
- <div id="verTag" style="font-size:11px;opacity:.6">versão 56</div>
+ <div id="verTag" style="font-size:11px;opacity:.6">versão 57</div>
 </div>
 
 <div id="escolha" class="esc"><h2 style="color:#fbbf24">Escolha seu duelista</h2><div id="persGrid"></div><button class="sec" onclick="voltaMenu()">⬅ Voltar</button></div>
@@ -615,7 +615,7 @@ var SONS={
  colosso:function(){ tom(55,2,"sawtooth",.2,110); ruido(1.5,.3,0,300); [262,330,392,523,659,784].forEach(function(f,i){ tom(f,.6,"triangle",.12,0,.3+i*.15); }); }
 };
 function som(n){ if(SOM&&SONS[n]) try{ SONS[n](); }catch(e){} }
-function somEvento(m){ if(/COLOSSO SELADO/.test(m)) return som("colosso"); if(/🪞|🎩|🪤|➰|🛡️ .* ativou/.test(m)) return som("armadilha"); if(/Poção/.test(m)) return som("cura"); if(/Bola de Fogo/.test(m)) return som("fogo"); if(/🪙|🎲/.test(m)) { som("compra"); return setTimeout(function(){ som("dano"); },300); } if(/🎯/.test(m)) return som("vira"); if(/Jarro dos Desejos|Livro dos Segredos/.test(m)) { som("magia"); return setTimeout(function(){ som("compra"); },350); } if(/✨|voltou do cemitério/.test(m)) return som("magia"); if(/⚔️/.test(m)) return som("ataque"); if(/destruído|Empate/.test(m)) return som("explosao"); if(/💥/.test(m)) return som("dano"); if(/🛡️|Ninguém/.test(m)) return som("defesa"); if(/invocou/.test(m)) return som("invoca"); if(/baixou/.test(m)) return som("baixa"); if(/virou|foi pra/.test(m)) return som("vira"); if(/Vez de|começou/.test(m)) return som("turno"); }
+function somEvento(m){ try{ if(/⚔️|destruído|💥|COLOSSO/.test(m)) musPico(); }catch(e){} if(/COLOSSO SELADO/.test(m)) return som("colosso"); if(/🪞|🎩|🪤|➰|🛡️ .* ativou/.test(m)) return som("armadilha"); if(/Poção/.test(m)) return som("cura"); if(/Bola de Fogo/.test(m)) return som("fogo"); if(/🪙|🎲/.test(m)) { som("compra"); return setTimeout(function(){ som("dano"); },300); } if(/🎯/.test(m)) return som("vira"); if(/Jarro dos Desejos|Livro dos Segredos/.test(m)) { som("magia"); return setTimeout(function(){ som("compra"); },350); } if(/✨|voltou do cemitério/.test(m)) return som("magia"); if(/⚔️/.test(m)) return som("ataque"); if(/destruído|Empate/.test(m)) return som("explosao"); if(/💥/.test(m)) return som("dano"); if(/🛡️|Ninguém/.test(m)) return som("defesa"); if(/invocou/.test(m)) return som("invoca"); if(/baixou/.test(m)) return som("baixa"); if(/virou|foi pra/.test(m)) return som("vira"); if(/Vez de|começou/.test(m)) return som("turno"); }
 var VOZCONT={inicio:1,inv:5,atk:5,magia:4,pass:4,dano:6,reage:8,ganhei:1,perdi:2,susto:4}, FALA=null, FALAT=0, FALAUSO={};
 function fala(cat,forca){ try{ if(MODO!=="cpu"||!SOM||!S) return; var ch=S.p[1].ch; if(!ch||!VOZCONT[cat]) return; var ag=Date.now(); if(!forca&&FALA&&!FALA.paused&&!FALA.ended) return; if(!forca&&ag-FALAT<1200) return; if(FALA&&forca){ try{FALA.pause();}catch(e){} } FALAT=ag; var us=FALAUSO[cat]||(FALAUSO[cat]=[]), n=VOZCONT[cat], ix, tent=0; do{ ix=Math.floor(Math.random()*n); tent++; }while(us.indexOf(ix)>=0&&tent<20); us.push(ix); if(us.length>Math.floor(n/2)) us.shift(); FALA=new Audio("voz/"+ch+"/"+cat+ix+".mp3"); var p=FALA.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
 function falaArq(ch,arq){ try{ if(MODO!=="cpu"||!SOM||!ch) return; if(FALA){ try{FALA.pause();}catch(e){} } FALAT=Date.now(); FALA=new Audio("voz/"+ch+"/"+arq+".mp3"); var p=FALA.play(); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
@@ -705,39 +705,48 @@ function fxTipo(id){ var n=(C[id]&&C[id].n||"").toLowerCase();
  for(var i=0;i<T.length;i++) if(T[i][1].test(n)) return T[i][0]; return "fera"; }
 // ===== MÚSICA DE BATALHA (original, gerada no aparelho) + ARENAS =====
 var TEMAS={
- caio:{bpm:118,root:50,sc:[0,2,3,5,7,8,11],prog:[0,5,3,4],lead:"triangle",bass:"sawtooth",dr:"rock",nm:"Feitiço Ancestral"},
- otavio:{bpm:140,root:45,sc:[0,2,3,5,7,8,10],prog:[0,5,6,4],lead:"sawtooth",bass:"sawtooth",dr:"fast",nm:"Império de Platina"},
- tiao:{bpm:126,root:47,sc:[0,3,5,6,7,10],prog:[0,0,3,4],lead:"square",bass:"square",dr:"rock",nm:"Briga de Rua"},
- zeca:{bpm:150,root:55,sc:[0,2,4,7,9],prog:[0,3,1,4],lead:"sine",bass:"triangle",dr:"chip",nm:"Rabisco Maluco"},
- nando:{bpm:96,root:40,sc:[0,1,3,5,7,8,10],prog:[0,1,0,6],lead:"sawtooth",bass:"sawtooth",dr:"dark",nm:"Cemitério Proibido"},
- iara:{bpm:132,root:52,sc:[0,2,3,5,7,9,10],prog:[0,6,3,4],lead:"triangle",bass:"triangle",dr:"rock",nm:"Voo das Harpias"},
- pimp:{bpm:160,root:49,sc:[0,1,3,4,7,8,10],prog:[0,1,0,4],lead:"square",bass:"sawtooth",dr:"fast",nm:"Enxame"},
- telo:{bpm:108,root:43,sc:[0,3,5,7,10],prog:[0,2,3,0],lead:"triangle",bass:"sawtooth",dr:"tribal",nm:"Terra dos Dinossauros"},
- dudu:{bpm:122,root:48,sc:[0,2,4,5,7,9,11],prog:[0,5,3,4],lead:"square",bass:"sawtooth",dr:"disco",nm:"Ostentação"},
- snaf:{bpm:110,root:46,sc:[0,2,4,6,7,9,11],prog:[0,1,4,3],lead:"sine",bass:"triangle",dr:"calm",nm:"Maré Brava"},
- cabeca:{bpm:150,root:51,sc:[0,2,4,7,9,11],prog:[0,3,4,3],lead:"square",bass:"square",dr:"chip",arp:1,nm:"Fase Final"},
- neri:{bpm:170,root:53,sc:[0,3,5,7,10],prog:[0,4,2,3],lead:"triangle",bass:"square",dr:"fast",nm:"Vento Cortante"},
- conde:{bpm:90,root:41,sc:[0,2,3,5,7,8,11],prog:[0,3,6,4],lead:"sawtooth",bass:"sawtooth",dr:"dark",arp:1,nm:"O Criador"},
- _:{bpm:130,root:48,sc:[0,2,4,5,7,9,10],prog:[0,3,4,0],lead:"square",bass:"triangle",dr:"rock",nm:"Duelo"}
+ caio:{bpm:76,root:50,sc:[0,2,3,5,7,8,11],prog:[0,5,3,4],lead:"triangle",pad:"sawtooth",cut:900,dr:"marcha",nm:"Feitiço Ancestral"},
+ otavio:{bpm:84,root:45,sc:[0,1,3,5,7,8,10],prog:[0,6,5,1],lead:"sawtooth",pad:"sawtooth",cut:700,dr:"pesado",nm:"Império de Platina"},
+ tiao:{bpm:88,root:47,sc:[0,3,5,6,7,10],prog:[0,0,3,2],lead:"square",pad:"square",cut:600,dr:"marcha",nm:"Briga de Rua"},
+ zeca:{bpm:80,root:52,sc:[0,1,4,5,7,8,10],prog:[0,1,5,4],lead:"sine",pad:"triangle",cut:1400,dr:"relogio",nm:"Rabisco Maluco"},
+ nando:{bpm:66,root:38,sc:[0,1,3,5,6,8,10],prog:[0,1,0,4],lead:"sawtooth",pad:"sawtooth",cut:500,dr:"coracao",nm:"Cemitério Proibido"},
+ iara:{bpm:78,root:52,sc:[0,2,3,5,7,8,10],prog:[0,5,6,4],lead:"triangle",pad:"triangle",cut:1600,dr:"relogio",nm:"Voo das Harpias"},
+ pimp:{bpm:90,root:49,sc:[0,1,3,4,7,8,10],prog:[0,1,0,6],lead:"square",pad:"sawtooth",cut:800,dr:"relogio",trem:1,nm:"Enxame"},
+ telo:{bpm:72,root:41,sc:[0,3,5,7,10],prog:[0,2,3,0],lead:"triangle",pad:"sawtooth",cut:500,dr:"tribal",nm:"Terra dos Dinossauros"},
+ dudu:{bpm:82,root:48,sc:[0,2,3,5,7,8,11],prog:[0,3,5,4],lead:"square",pad:"sawtooth",cut:1100,dr:"pesado",nm:"Ostentação"},
+ snaf:{bpm:70,root:43,sc:[0,2,3,5,7,9,10],prog:[0,6,3,4],lead:"sine",pad:"triangle",cut:900,dr:"coracao",nm:"Maré Brava"},
+ cabeca:{bpm:86,root:51,sc:[0,1,3,5,7,8,10],prog:[0,1,6,5],lead:"square",pad:"square",cut:1000,dr:"relogio",arp:1,nm:"Fase Final"},
+ neri:{bpm:92,root:53,sc:[0,3,5,6,7,10],prog:[0,4,2,3],lead:"triangle",pad:"square",cut:1200,dr:"marcha",nm:"Vento Cortante"},
+ conde:{bpm:62,root:41,sc:[0,1,4,5,7,8,11],prog:[0,1,6,4],lead:"sawtooth",pad:"sawtooth",cut:700,dr:"coracao",arp:1,nm:"O Criador"},
+ _:{bpm:78,root:48,sc:[0,2,3,5,7,8,10],prog:[0,5,6,4],lead:"triangle",pad:"sawtooth",cut:900,dr:"marcha",nm:"Duelo"}
 };
-var DR={rock:{k:[0,8,10],s:[4,12],h:[0,2,4,6,8,10,12,14]},fast:{k:[0,4,8,10,12],s:[4,12],h:[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]},tribal:{k:[0,3,6,10,12],s:[],h:[],t:[8,14,15]},disco:{k:[0,4,8,12],s:[4,12],h:[2,6,10,14]},calm:{k:[0],s:[8],h:[4,12]},chip:{k:[0,8],s:[4,12],h:[0,2,4,6,8,10,12,14]},dark:{k:[0,10],s:[8],h:[],t:[14]}};
+var DR={marcha:{k:[0,8],s:[12],h:[4,12],t:[14]},pesado:{k:[0,3,8],s:[12],h:[],t:[6,14]},relogio:{k:[0,8],s:[],h:[0,4,8,12],t:[]},tribal:{k:[0,6,8],s:[],h:[],t:[10,12,14]},coracao:{k:[0,2],s:[],h:[],t:[]}};
 var MUS={on:true,ch:null,tm:null,nx:0,st:0,g:null,pat:null,nb:null};
 try{ MUS.on=localStorage.getItem("duelo_mus")!=="0"; }catch(e){}
 function musRnd(s){ return function(){ s=(s*16807)%2147483647; return (s-1)/2147483646; }; }
 function musPat(ch,T){ var h=7; for(var i=0;i<ch.length;i++) h=(h*31+ch.charCodeAt(i))%2147483647; var r=musRnd(h||1), mel=[];
- for(var b=0;b<4;b++){ var g=T.prog[b]; for(var s=0;s<16;s++){ var forte=s%4===0, p=forte?.8:(s%2===0?.45:.22); mel.push(r()<p?(g+[0,2,4,0,2,4,7,5][Math.floor(r()*8)]):null); } }
+ for(var b=0;b<4;b++){ var g=T.prog[b]; for(var s=0;s<16;s++){ var forte=s%8===0, p=forte?.6:(s%4===0?.3:0); mel.push(r()<p?(g+[0,2,4,0,2,4,7,5][Math.floor(r()*8)]):null); } }
  return mel; }
 function musNota(deg,T,oit){ var n=T.sc.length, o=Math.floor(deg/n), i=((deg%n)+n)%n; return 440*Math.pow(2,(T.root+12*(o+oit)+T.sc[i]-69)/12); }
 function musTom(f,t,d,w,v){ var a=ac(); var o=a.createOscillator(),g=a.createGain(); o.type=w; o.frequency.value=f; g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g); g.connect(MUS.g); o.start(t); o.stop(t+d+.02); }
 function musRuido(t,d,v,hp){ var a=ac(); if(!MUS.nb){ MUS.nb=a.createBuffer(1,a.sampleRate*.5,a.sampleRate); var x=MUS.nb.getChannelData(0); for(var i=0;i<x.length;i++) x[i]=Math.random()*2-1; } var s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain(); s.buffer=MUS.nb; f.type="highpass"; f.frequency.value=hp; g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+d); s.connect(f); f.connect(g); g.connect(MUS.g); s.start(t); s.stop(t+d+.02); }
 function musBumbo(t,f0){ var a=ac(); var o=a.createOscillator(),g=a.createGain(); o.frequency.setValueAtTime(f0||130,t); o.frequency.exponentialRampToValueAtTime(40,t+.18); g.gain.setValueAtTime(.9,t); g.gain.exponentialRampToValueAtTime(.0001,t+.25); o.connect(g); g.connect(MUS.g); o.start(t); o.stop(t+.3); }
-function musPasso(T,s,t,dur){ var bar=Math.floor(s/16)%4, i=s%16, g=T.prog[bar], d=DR[T.dr]||DR.rock;
- if(d.k.indexOf(i)>=0) musBumbo(t); if(d.s.indexOf(i)>=0) musRuido(t,.16,.5,1500); if(d.h.indexOf(i)>=0) musRuido(t,.04,.18,7000); if(d.t&&d.t.indexOf(i)>=0) musBumbo(t,220);
- if(T.dr==="dark"&&i===0) musTom(musNota(g,T,-1),t,dur*16,"sawtooth",.05);
- if(i%4===0||(T.dr==="disco"&&i%2===0)) musTom(musNota(g,T,i%8===4&&T.dr!=="dark"?1:0),t,dur*(T.dr==="disco"?1.5:3),T.bass,.16);
- if(T.arp){ musTom(musNota(g+[0,2,4,7][i%4],T,2),t,dur*.9,T.lead,.07); }
- var m=MUS.pat[(s%64)]; if(m!==null&&!(T.arp&&i%2)) musTom(musNota(m,T,2),t,dur*(i%4===0?2.2:1.2),T.lead,T.arp?.06:.09); }
-function musStart(ch){ var a=ac(); if(!a) return; var T=TEMAS[ch]||TEMAS._; MUS.ch=ch; MUS.pat=musPat(ch,T); MUS.g=a.createGain(); MUS.g.gain.setValueAtTime(.0001,a.currentTime); MUS.g.gain.exponentialRampToValueAtTime(.32,a.currentTime+1.5); var cp=a.createDynamicsCompressor(); MUS.g.connect(cp); cp.connect(a.destination); MUS.nx=a.currentTime+.1; MUS.st=0; var dur=60/T.bpm/4;
+function musFiltro(f,t,d,w,v,cut){ var a=ac(); var o=a.createOscillator(),o2=a.createOscillator(),fl=a.createBiquadFilter(),g=a.createGain(); o.type=w; o2.type=w; o.frequency.value=f; o2.frequency.value=f*1.006; fl.type="lowpass"; fl.frequency.value=cut; g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(v,t+d*.35); g.gain.linearRampToValueAtTime(.0001,t+d); o.connect(fl); o2.connect(fl); fl.connect(g); g.connect(MUS.g); o.start(t); o2.start(t); o.stop(t+d+.05); o2.stop(t+d+.05); }
+function musInt(){ if(!S) return 0; var a=S.p[0],b=S.p[1], lp=Math.min(a.lp,b.lp), n=a.mz.concat(b.mz).filter(function(x){return x}).length, v=0; if(S.tn>=3||n>=2) v=1; if(n>=4||lp<=5000) v=2; if(lp<=2500) v=3; if(MUS.pico&&Date.now()<MUS.pico) v=Math.min(3,v+1); return v; }
+function musPasso(T,s,t,dur){ var bar=Math.floor(s/16)%4, i=s%16, g=T.prog[bar], d=DR[T.dr]||DR.marcha, I=MUS.I;
+ if(i===0){ MUS.I=I=musInt(); musFiltro(musNota(g,T,0),t,dur*16,T.pad,.07,T.cut*(1+I*.25)); musFiltro(musNota(g+2,T,0),t,dur*16,T.pad,.05,T.cut*(1+I*.25)); musFiltro(musNota(g,T,-1),t,dur*16,"sawtooth",.06,260); }
+ if(d.k.indexOf(i)>=0&&(I>=1||i===0)) musBumbo(t,T.dr==="coracao"?90:110);
+ if(I>=2&&d.s.indexOf(i)>=0) musRuido(t,.25,.28,900);
+ if(I>=1&&d.h.indexOf(i)>=0) musRuido(t,.05,.08,7000);
+ if(I>=2&&d.t&&d.t.indexOf(i)>=0) musBumbo(t,180);
+ if(I>=3&&i%2===0) musRuido(t,.03,.06,8000);
+ if(I>=1&&i%4===2) musTom(musNota(g,T,-1),t,dur*1.6,"triangle",.12);
+ if(T.trem&&I>=1&&i%2===0) musTom(musNota(g+1,T,1),t,dur*.8,"square",.025);
+ if(T.arp&&I>=2) musTom(musNota(g+[0,2,4,2][i%4],T,1),t,dur*.9,T.lead,.04);
+ var m=MUS.pat[(s%64)]; if(m!==null&&(I>=1||i===0)) musFiltro(musNota(m,T,1+(I>=3?1:0)),t,dur*(i%8===0?6:3),T.lead,.07,T.cut*2);
+ if(I>=3&&i===15&&bar===3) musFiltro(musNota(g+4,T,1),t,dur*4,"sawtooth",.05,2500); }
+function musPico(){ MUS.pico=Date.now()+9000; }
+function musStart(ch){ var a=ac(); if(!a) return; var T=TEMAS[ch]||TEMAS._; MUS.ch=ch; MUS.pat=musPat(ch,T); MUS.g=a.createGain(); MUS.g.gain.setValueAtTime(.0001,a.currentTime); MUS.g.gain.exponentialRampToValueAtTime(.3,a.currentTime+3); var cp=a.createDynamicsCompressor(); MUS.g.connect(cp); cp.connect(a.destination); MUS.nx=a.currentTime+.1; MUS.st=0; MUS.I=0; var dur=60/T.bpm/4;
  MUS.tm=setInterval(function(){ var a=ac(); while(MUS.nx<a.currentTime+.25){ try{ musPasso(T,MUS.st,MUS.nx,dur); }catch(e){} MUS.nx+=dur; MUS.st++; } },60); }
 function musStop(){ if(MUS.tm){ clearInterval(MUS.tm); MUS.tm=null; } if(MUS.g){ var g=MUS.g,a=ac(); try{ g.gain.cancelScheduledValues(a.currentTime); g.gain.setValueAtTime(g.gain.value||.3,a.currentTime); g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+.6); setTimeout(function(){ try{g.disconnect();}catch(e){} },800); }catch(e){} MUS.g=null; } MUS.ch=null; }
 function musicaCheck(){ var deve=MUS.on&&SOM&&S&&S.win===null&&!jogo.classList.contains("esc")&&!document.hidden; if(!deve){ if(MUS.ch!==null) musStop(); return; } var ch=S.p[1-ME].ch||"_"; if(MUS.ch!==ch){ musStop(); musStart(ch); } }
