@@ -1,0 +1,112 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TudoOkê TV • Teste grátis e planos</title>
+<meta name="theme-color" content="#2b0a4f"><link rel="icon" href="icon-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:radial-gradient(circle at 50% 0,#3a0f73,#0b0418 60%) fixed;color:#fff}
+header{padding:18px 16px 8px;text-align:center}header h1{margin:0;font-size:26px;color:#ffd54a}header p{margin:6px 0 0;opacity:.85}
+main{padding:12px;max-width:560px;margin:auto}.card{background:#1a0636;border:1px solid #3d1a6e;border-radius:16px;padding:16px;margin-bottom:14px}
+h2{font-size:18px;margin:0 0 10px;color:#ffd54a}
+input{width:100%;padding:13px;font-size:16px;border-radius:10px;border:2px solid #4a2380;background:#0f0322;color:#fff;margin:6px 0}
+button,.bt{display:block;width:100%;padding:14px;font-size:16px;border:0;border-radius:12px;background:#ff3fa4;color:#fff;font-weight:bold;margin:8px 0;text-align:center;text-decoration:none}
+.bt2{background:#3a1a66}.verde{background:#16a34a}.mut{opacity:.75;font-size:14px}.e{color:#ff8a8a;min-height:18px}
+.cod{font-size:32px;letter-spacing:5px;color:#ffd54a;text-align:center;font-weight:bold;margin:8px 0}
+.lic{border-top:1px solid #33175c;padding:10px 0}.tag{font-size:12px;padding:3px 9px;border-radius:9px;margin-left:6px}.novo{background:#2563eb}.ok{background:#16a34a}.venc{background:#b91c1c}.ag{background:#b45309}
+.planos{display:grid;gap:10px}.pl{border:2px solid #4a2380;border-radius:14px;padding:12px;cursor:pointer;position:relative}.pl.sel{border-color:#ffd54a;background:#2b0a4f}
+.pl b{font-size:18px}.pl .v{float:right;font-size:20px;color:#ffd54a;font-weight:bold}.selo{position:absolute;top:-10px;right:12px;background:#16a34a;font-size:11px;padding:2px 8px;border-radius:8px}
+textarea{width:100%;height:84px;font-size:12px;border-radius:10px;background:#0f0322;color:#fff;border:2px solid #4a2380;padding:8px}
+ol{padding-left:20px;margin:6px 0}li{margin:4px 0}
+</style></head><body>
+<header><h1>🎤 TudoOkê TV</h1><p>Karaokê com nota na sua TV Box</p></header>
+<main>
+<div class="card" id="vLogin" style="display:none">
+ <h2>Teste 1 dia grátis</h2>
+ <p class="mut">Crie sua conta para ganhar o teste. Seus dados ficam salvos aqui.</p>
+ <button id="bG" style="background:#fff;color:#222">Entrar com Google</button>
+ <p class="mut" style="text-align:center">ou com e-mail</p>
+ <input id="em" type="email" placeholder="Seu e-mail" autocomplete="email"><input id="se" type="password" placeholder="Senha (mínimo 6)" autocomplete="current-password">
+ <button id="bCria">Criar conta</button><button id="bEnt" class="bt2">Já tenho conta, entrar</button>
+ <p class="e" id="eLog"></p>
+</div>
+<div class="card" id="vDados" style="display:none">
+ <h2>Quase lá!</h2>
+ <input id="nome" placeholder="Seu nome" maxlength="40"><input id="zap" type="tel" placeholder="WhatsApp com DDD. Ex.: 92991234567" maxlength="20">
+ <button id="bTeste">🎁 Ganhar meu teste grátis</button><p class="e" id="eDad"></p>
+</div>
+<div id="vApp" style="display:none">
+ <div class="card" id="cNovo" style="display:none"></div>
+ <div class="card"><h2>📺 Seus códigos</h2><div id="lics" class="mut">Carregando…</div></div>
+ <div class="card"><h2>⬇️ Instalar na TV Box</h2>
+  <ol><li>Na TV Box, abra o navegador e baixe o app pelo botão abaixo (ou mande este link para a TV).</li><li>Instale e abra o <b>TudoOkê TV</b>.</li><li>Digite o seu código. Ele fica preso a esse aparelho.</li></ol>
+  <a class="bt bt2" href="TudoOkeTV.apk" download>Baixar o app TudoOkê TV</a>
+ </div>
+ <div class="card" id="cPag"><h2>⭐ Assinar</h2><p class="mut">Escolha o plano, pague no Pix e mande o comprovante. Assim que o pagamento for confirmado, o seu código aparece aqui.</p>
+  <div class="planos" id="planos"></div>
+  <div id="pixBox" style="display:none"><p style="margin:12px 0 4px"><b>Pix copia e cola</b> <span class="mut" id="pixVal"></span></p><textarea id="pixTxt" readonly></textarea>
+   <button id="bCopia" class="bt2">Copiar código Pix</button>
+   <p class="mut" id="pixQuem"></p>
+   <label class="bt verde" for="foto">📎 Já paguei, mandar comprovante</label><input id="foto" type="file" accept="image/*" style="display:none">
+   <p class="e" id="ePag"></p></div>
+  <div id="pags"></div>
+ </div>
+ <p class="mut" style="text-align:center"><span id="quem"></span> • <a href="#" id="sair" style="color:#ffd54a">Sair</a></p>
+</div>
+</main>
+<script>
+var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)},TS=function(){return firebase.firestore.FieldValue.serverTimestamp()};
+var PLANOS=[{id:'mensal',nome:'Mensal',dias:30,valor:29.90},{id:'semestral',nome:'Semestral',dias:180,valor:99.90,selo:'Economize 44%'},{id:'anual',nome:'Anual',dias:365,valor:199.90,selo:'Melhor preço'}];
+var U=null,CLI=null,PIX=null,SEL=null,unL,unP;
+function vis(v){['vLogin','vDados','vApp'].forEach(function(x){$(x).style.display=x==v?'block':'none'})}
+function reais(v){return 'R$ '+Number(v).toFixed(2).replace('.',',')}
+function fmt(c){return c.slice(0,4)+'-'+c.slice(4)}
+function dt(ms){return new Date(ms).toLocaleDateString('pt-BR')}
+function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
+function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(8);crypto.getRandomValues(r);for(var i=0;i<8;i++)s+=a[r[i]%a.length];return s}
+function erroTxt(e){var c=e&&e.code||'';return {'auth/email-already-in-use':'Esse e-mail já tem conta. Toque em "Já tenho conta".','auth/invalid-credential':'E-mail ou senha errados.','auth/wrong-password':'Senha errada.','auth/user-not-found':'Conta não encontrada. Toque em "Criar conta".','auth/weak-password':'A senha precisa de 6 letras ou números.','auth/invalid-email':'E-mail inválido.'}[c]||('Não deu certo ('+c+'). Tente de novo.')}
+function copia(t,b){function ok(){var o=b.textContent;b.textContent='Copiado! ✅';setTimeout(function(){b.textContent=o},1800)}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,velho);else velho();
+ function velho(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){prompt('Copie:',t)}a.remove()}}
+/* Pix copia e cola (BR Code) */
+function pixTxt(t,m){return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9 .\-]/g,'').toUpperCase().slice(0,m)}
+function crc16(s){var c=0xFFFF;for(var i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(var j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return('0000'+c.toString(16).toUpperCase()).slice(-4)}
+function pixCC(ch,no,ci,v,tx){function f(i,x){return i+('0'+x.length).slice(-2)+x}var k=String(ch||'').trim();if(/^[\d.\-\/ ]+$/.test(k))k=k.replace(/\D/g,'');
+ var p=f('00','01')+f('26',f('00','br.gov.bcb.pix')+f('01',k))+f('52','0000')+f('53','986')+(v?f('54',Number(v).toFixed(2)):'')+f('58','BR')+f('59',pixTxt(no,25)||'RECEBEDOR')+f('60',pixTxt(ci,15)||'MANAUS')+f('62',f('05',pixTxt(tx,25).replace(/[^A-Z0-9]/g,'')||'***'))+'6304';return p+crc16(p)}
+$('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});au.signInWithPopup(p).catch(function(e){if(/popup|not-supported/.test(e.code))au.signInWithRedirect(p);else $('eLog').textContent=erroTxt(e)})};
+$('bCria').onclick=function(){$('eLog').textContent='';au.createUserWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){$('eLog').textContent=erroTxt(e)})};
+$('bEnt').onclick=function(){$('eLog').textContent='';au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){$('eLog').textContent=erroTxt(e)})};
+$('sair').onclick=function(e){e.preventDefault();au.signOut()};au.getRedirectResult().catch(function(){});
+au.onAuthStateChanged(function(u){U=u;if(unL){unL();unL=null}if(unP){unP();unP=null}
+ if(!u){vis('vLogin');return}
+ db.collection('tk_clientes').doc(u.uid).get().then(function(d){if(d.exists){CLI=d.data();app()}else{if(u.displayName)$('nome').value=u.displayName;vis('vDados')}}).catch(function(e){vis('vLogin');$('eLog').textContent='Erro: '+e.code})});
+$('bTeste').onclick=function(){var n=$('nome').value.trim(),z=nz($('zap').value),b=this;if(n.length<2){$('eDad').textContent='Digite seu nome.';return}if(z.length<12){$('eDad').textContent='Digite o WhatsApp com DDD.';return}
+ b.disabled=true;$('eDad').textContent='Gerando seu teste…';var c=gcod(),bt=db.batch();
+ bt.set(db.collection('licencas').doc(c),{dias:1,plano:'Teste 1 dia',cliente:n,zap:z,device:'',ativadoEm:null,criadoEm:TS(),dono:U.uid,email:U.email||''});
+ bt.set(db.collection('tk_clientes').doc(U.uid),{nome:n,zap:z,email:U.email||'',teste:c,criadoEm:TS()});
+ bt.commit().then(function(){CLI={nome:n,zap:z,teste:c};app(c)}).catch(function(e){$('eDad').textContent='Não deu certo ('+e.code+'). Esta conta já usou o teste?'}).finally(function(){b.disabled=false})};
+function app(novo){vis('vApp');$('quem').textContent=(CLI.nome||'')+' • '+(U.email||'');
+ if(novo){$('cNovo').style.display='block';$('cNovo').innerHTML='<h2>🎁 Seu teste grátis</h2><div class="cod">'+fmt(novo)+'</div><p class="mut">Vale 1 dia a partir de quando você digitar na TV Box.</p>'}
+ unL=db.collection('licencas').where('dono','==',U.uid).onSnapshot(pintaL,function(e){$('lics').textContent='Erro: '+e.code});
+ unP=db.collection('tk_pagamentos').where('uid','==',U.uid).onSnapshot(pintaP,function(){});
+ db.collection('ml_publico').doc('pix').get().then(function(d){PIX=d.exists?d.data():null;desenhaPlanos()}).catch(function(){desenhaPlanos()})}
+function pintaL(s){var L=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=x.criadoEm&&x.criadoEm.toMillis?x.criadoEm.toMillis():Date.now();return x}).sort(function(a,b){return b.t-a.t}),ag=Date.now();
+ if(!L.length){$('lics').textContent='Nenhum código ainda.';return}$('lics').innerHTML='';
+ L.forEach(function(x){var ve=x.ativadoEm?x.ativadoEm.toMillis()+x.dias*864e5:0,st=!x.device?'novo':ve>ag?'ok':'venc';
+  var d=document.createElement('div');d.className='lic';d.innerHTML='<div class="cod" style="font-size:24px;text-align:left">'+fmt(x.id)+'<span class="tag '+st+'">'+(st=='novo'?'Pronto para usar':st=='ok'?'Ativo':'Vencido')+'</span></div><div class="mut">'+(x.plano||x.dias+' dias')+(st=='ok'?' • vale até '+dt(ve):st=='venc'?' • venceu em '+dt(ve):' • digite na TV Box')+'</div>';
+  var b=document.createElement('button');b.className='bt2';b.textContent='Copiar código';b.style.padding='9px';b.onclick=function(){copia(fmt(x.id),b)};d.appendChild(b);$('lics').appendChild(d)})}
+function desenhaPlanos(){var P=$('planos');P.innerHTML='';
+ if(!PIX||!PIX.chave){P.innerHTML='<p class="mut">Pagamento ainda não configurado. Fale com quem te mandou o link.</p>';return}
+ PLANOS.forEach(function(p){var d=document.createElement('div');d.className='pl';d.innerHTML=(p.selo?'<span class="selo">'+p.selo+'</span>':'')+'<span class="v">'+reais(p.valor)+'</span><b>'+p.nome+'</b><div class="mut">'+p.dias+' dias</div>';
+  d.onclick=function(){SEL=p;[].forEach.call(P.children,function(c){c.classList.remove('sel')});d.classList.add('sel');var t=pixCC(PIX.chave,PIX.nome,PIX.cidade,p.valor,'TK'+p.id);$('pixTxt').value=t;$('pixVal').textContent='• '+p.nome+' '+reais(p.valor);$('pixQuem').textContent='Vai aparecer no banco: '+(PIX.nome||'');$('pixBox').style.display='block'};P.appendChild(d)})}
+$('bCopia').onclick=function(){copia($('pixTxt').value,this)};
+function comprime(f,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var lim=1100,w=im.width,h=im.height,k=Math.min(1,lim/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);var q=.8,u=c.toDataURL('image/jpeg',q);while(u.length>700000&&q>.3){q-=.1;u=c.toDataURL('image/jpeg',q)}cb(u)};im.onerror=function(){cb(null)};im.src=r.result};r.readAsDataURL(f)}
+$('foto').onchange=function(){var f=this.files[0];this.value='';if(!f||!SEL)return;$('ePag').textContent='Enviando comprovante…';
+ comprime(f,function(u){if(!u){$('ePag').textContent='Não consegui ler a foto. Mande um print do comprovante.';return}
+  db.collection('tk_pagamentos').add({uid:U.uid,nome:CLI.nome||'',zap:CLI.zap||'',email:U.email||'',plano:SEL.id,planoNome:SEL.nome,dias:SEL.dias,valor:SEL.valor,comprovante:u,status:'aguardando',criadoEm:TS()})
+  .then(function(){$('ePag').textContent='';$('pixBox').style.display='none';[].forEach.call($('planos').children,function(c){c.classList.remove('sel')});alert('Comprovante enviado! Assim que for confirmado, seu código aparece aqui.')})
+  .catch(function(e){$('ePag').textContent='Não enviou ('+e.code+'). Tente de novo.'})})};
+function pintaP(s){var L=s.docs.map(function(d){var x=d.data();x.t=x.criadoEm&&x.criadoEm.toMillis?x.criadoEm.toMillis():Date.now();return x}).sort(function(a,b){return b.t-a.t});var B=$('pags');B.innerHTML=L.length?'<p style="margin:14px 0 4px"><b>Seus pagamentos</b></p>':'';
+ L.forEach(function(x){var d=document.createElement('div');d.className='lic';var st=x.status=='aprovado'?'<span class="tag ok">Confirmado</span>':x.status=='recusado'?'<span class="tag venc">Não confirmado</span>':'<span class="tag ag">Esperando confirmação</span>';
+  d.innerHTML='<b>'+(x.planoNome||x.plano)+'</b> '+reais(x.valor)+st+'<div class="mut">'+dt(x.t)+(x.status=='aprovado'&&x.codigo?' • seu código: <b style="color:#ffd54a;letter-spacing:2px">'+fmt(x.codigo)+'</b>':x.status=='recusado'?' • o pagamento não apareceu. Fale com o vendedor.':'')+'</div>';B.appendChild(d)})}
+</script></body></html>

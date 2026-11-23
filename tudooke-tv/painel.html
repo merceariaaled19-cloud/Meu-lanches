@@ -28,6 +28,9 @@ button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;ga
  <button id="bE" style="width:100%">Entrar</button><p id="msg"></p>
 </div>
 <div id="app" style="display:none">
+ <div class="card"><b>🔗 Link para seus clientes</b><p class="mut">A pessoa abre, faz o cadastro, ganha 1 dia grátis e o app. Depois compra pelo Pix lá mesmo.</p>
+  <div class="row"><button class="s" id="lkCp" style="flex:1">Copiar link</button><button class="s" id="lkWa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
+ <div class="card"><b>💰 Pagamentos a confirmar (<span id="nPag">0</span>)</b><p class="mut">Olhe no seu banco. Se caiu, toque em "Caiu, liberar": o código é criado e aparece sozinho para o cliente.</p><div id="pags"></div></div>
  <div class="card">
   <div class="planos">
    <label><input type="radio" name="pl" value="1"><span>Teste<br>1 dia</span></label>
@@ -52,7 +55,7 @@ function msg(t){$('msg').textContent=t}
 $('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});au.signInWithPopup(p).catch(function(e){if(e.code=='auth/popup-blocked'||e.code=='auth/operation-not-supported-in-this-environment')au.signInWithRedirect(p);else msg('Não entrou: '+e.code)})};
 $('bE').onclick=function(){au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){msg('Não entrou: '+e.code)})};
 $('sair').onclick=function(){au.signOut()};au.getRedirectResult().catch(function(){});
-au.onAuthStateChanged(function(u){$('login').style.display=u?'none':'block';$('app').style.display=u?'block':'none';$('sair').style.display=u?'block':'none';if(u)escuta();});
+au.onAuthStateChanged(function(u){$('login').style.display=u?'none':'block';$('app').style.display=u?'block':'none';$('sair').style.display=u?'block':'none';if(u){escuta();escutaPag();}});
 function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(8);crypto.getRandomValues(r);for(var i=0;i<8;i++)s+=a[r[i]%a.length];return s}
 function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
 function zapUrl(n,t){if(/Android/i.test(navigator.userAgent))return 'intent://send?'+(n?'phone='+n+'&':'')+'text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;end';return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(t)}
@@ -90,5 +93,23 @@ function pinta(){var q=$('bus').value.trim().toUpperCase().replace('-',''),n=0,a
   bt('Apagar',function(){if(confirm('Apagar '+fmt(x.id)+'? O box para de funcionar.'))db.collection('licencas').doc(x.id).delete()},'#7f1d1d');
   d.appendChild(r);L.appendChild(d)});
  $('tN').textContent=n;$('tA').textContent=a;$('tV').textContent=v}
+
+/* ---- assinaturas pelo link ---- */
+var LINK=location.href.replace(/painel\.html.*$/,'assinar.html'),TXTL='🎤 TudoOkê TV: karaokê com nota na sua TV Box! Teste 1 dia grátis: '+LINK;
+$('lkCp').onclick=function(){copia(LINK,this)};$('lkWa').onclick=function(){location.href=zapUrl('',TXTL)};
+var PLN={30:'Mensal',180:'Semestral',365:'Anual'},unPg,PG0=-1;
+function reais(v){return 'R$ '+Number(v).toFixed(2).replace('.',',')}
+function escutaPag(){if(unPg)return;unPg=db.collection('tk_pagamentos').where('status','==','aguardando').onSnapshot(function(s){var L=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=x.criadoEm&&x.criadoEm.toMillis?x.criadoEm.toMillis():Date.now();return x}).sort(function(a,b){return a.t-b.t});
+ if(PG0>=0&&L.length>PG0){try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}}PG0=L.length;$('nPag').textContent=L.length;var B=$('pags');B.innerHTML=L.length?'':'<p class="mut">Nenhum comprovante esperando.</p>';
+ L.forEach(function(x){var d=document.createElement('div');d.className='it';var h=document.createElement('div');h.innerHTML='<b></b> <span class="mut"></span>';h.firstChild.textContent=(x.nome||'Cliente')+' • '+(x.planoNome||x.plano)+' '+reais(x.valor);h.lastChild.textContent=new Date(x.t).toLocaleString('pt-BR')+(x.zap?' • '+x.zap.slice(2):'');d.appendChild(h);
+  if(x.comprovante){var im=document.createElement('img');im.src=x.comprovante;im.style.cssText='max-width:100%;max-height:260px;border-radius:10px;margin:6px 0;display:block';im.onclick=function(){var w=window.open();if(w)w.document.write('<img src="'+x.comprovante+'" style="width:100%">')};d.appendChild(im)}
+  var r=document.createElement('div');r.className='row';function bt(t,f,c){var e=document.createElement('button');e.className='s';e.textContent=t;if(c)e.style.background=c;e.onclick=f;r.appendChild(e);return e}
+  bt('✅ Caiu, liberar',function(){var b=this;if(!confirm('Confirmou no banco que caiu '+reais(x.valor)+' de '+(x.nome||'cliente')+'?'))return;b.disabled=true;var c=gcod(),dias=+x.dias||30,bat=db.batch();
+   bat.set(db.collection('licencas').doc(c),{dias:dias,plano:PLN[dias]||x.planoNome||'Plano',cliente:x.nome||'',zap:x.zap||'',device:'',ativadoEm:null,criadoEm:firebase.firestore.FieldValue.serverTimestamp(),dono:x.uid,pagamento:x.id});
+   bat.update(db.collection('tk_pagamentos').doc(x.id),{status:'aprovado',codigo:c,aprovadoEm:firebase.firestore.FieldValue.serverTimestamp()});
+   bat.commit().then(function(){var t=(x.nome?'Olá, '+x.nome+'! ':'')+'Pagamento confirmado ✅ Seu código do TudoOkê TV ('+(PLN[dias]||x.planoNome)+'): '+fmt(c)+'\nAbra o app na TV Box e digite o código. Ele também aparece no seu cadastro: '+LINK;
+    if(confirm('Liberado! Código '+fmt(c)+' já aparece para o cliente. Mandar também no WhatsApp?'))location.href=zapUrl(x.zap,t)}).catch(function(e){b.disabled=false;alert('Erro: '+e.code)})},'#16a34a');
+  bt('❌ Não caiu',function(){if(confirm('Marcar que o pagamento não caiu?'))db.collection('tk_pagamentos').doc(x.id).update({status:'recusado'})},'#7f1d1d');
+  d.appendChild(r);B.appendChild(d)})},function(e){$('pags').innerHTML='<p class="mut">Erro: '+e.code+'</p>'})}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('painel-sw.js',{scope:'./'}).catch(function(){});
 </script></body></html>
