@@ -37,11 +37,18 @@ ol{padding-left:20px;margin:6px 0}li{margin:4px 0}
 <div id="vApp" style="display:none">
  <div class="card" id="cNovo" style="display:none"></div>
  <div class="card"><h2>📺 Seus códigos</h2><div id="lics" class="mut">Carregando…</div></div>
- <div class="card"><h2>⬇️ Instalar na TV Box</h2>
-  <ol><li>Na TV Box, abra o navegador e baixe o app pelo botão abaixo (ou mande este link para a TV).</li><li>Instale e abra o <b>TudoOkê TV</b>.</li><li>Digite o seu código. Ele fica preso a esse aparelho.</li></ol>
-  <a class="bt bt2" id="bApk" href="https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeTV.apk" target="_blank" rel="noopener">⬇️ Baixar o app TudoOkê TV</a>
-  <button class="bt2" id="bApkCp">Copiar link do app</button>
-  <p class="mut">Se não baixar, toque em "Copiar link do app" e cole no Chrome. Na TV Box, digite o link no navegador dela. Se o Android perguntar, permita "instalar apps desconhecidos".</p>
+ <div class="card"><h2>⬇️ Baixar o app</h2>
+  <p class="mut">Escolha onde você vai cantar. Seu código funciona em um aparelho só.</p>
+  <p style="margin:12px 0 2px"><b>📦 Tem TV Box?</b></p>
+  <ol><li>Na TV Box, abra o navegador e baixe o app (ou digite o link nela).</li><li>Instale e abra o <b>TudoOkê TV</b> e digite seu código.</li></ol>
+  <a class="bt bt2 apk" data-f="TudoOkeTV.apk" href="https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeTV.apk" target="_blank" rel="noopener">⬇️ TudoOkê para TV Box</a>
+  <a class="bt bt2 apk" data-f="TudoOkeLauncher.apk" href="https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeLauncher.apk" target="_blank" rel="noopener" style="background:#4a2380">🏠 Tela inicial TudoOkê (opcional)</a>
+  <p class="mut">A tela inicial deixa a TV Box com cara de karaokê: ao instalar, aperte o botão Home do controle e escolha <b>TudoOkê Launcher</b> → <b>Sempre</b>.</p>
+  <p style="margin:16px 0 2px"><b>📱 Tem TV smart?</b></p>
+  <ol><li>Baixe no celular e digite seu código.</li><li>Toque em <b>📺 Espelhar na TV</b> e escolha sua TV (mesmo Wi-Fi).</li></ol>
+  <a class="bt bt2 apk" data-f="TudoOkeSmart.apk" href="https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeSmart.apk" target="_blank" rel="noopener">⬇️ TudoOkê para celular (Smart TV)</a>
+  <button class="bt2" id="bApkCp">Copiar link da página</button>
+  <p class="mut">Se não baixar, copie o link e abra no Chrome. Se o Android perguntar, permita "instalar apps desconhecidos".</p>
  </div>
  <div class="card" id="cPag"><h2>⭐ Assinar</h2><p class="mut">Escolha o plano, pague no Pix e mande o comprovante. Assim que o pagamento for confirmado, o seu código aparece aqui.</p>
   <div class="planos" id="planos"></div>
@@ -101,9 +108,9 @@ function desenhaPlanos(){var P=$('planos');P.innerHTML='';
  if(!PIX||!PIX.chave){P.innerHTML='<p class="mut">Pagamento ainda não configurado. Fale com quem te mandou o link.</p>';return}
  PLANOS.forEach(function(p){var d=document.createElement('div');d.className='pl';d.innerHTML=(p.selo?'<span class="selo">'+p.selo+'</span>':'')+'<span class="v">'+reais(p.valor)+'</span><b>'+p.nome+'</b><div class="mut">'+p.dias+' dias</div>';
   d.onclick=function(){SEL=p;[].forEach.call(P.children,function(c){c.classList.remove('sel')});d.classList.add('sel');var t=pixCC(PIX.chave,PIX.nome,PIX.cidade,p.valor,'TK'+p.id);$('pixTxt').value=t;$('pixVal').textContent='• '+p.nome+' '+reais(p.valor);$('pixQuem').textContent='Vai aparecer no banco: '+(PIX.nome||'');$('pixBox').style.display='block'};P.appendChild(d)})}
-var APK='https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeTV.apk';
-$('bApkCp').onclick=function(){copia(APK,this)};
-$('bApk').onclick=function(e){if(/Android/i.test(navigator.userAgent)&&!/Chrome\/[\d.]+ Mobile Safari/.test(navigator.userAgent)||/; wv\)/.test(navigator.userAgent)){e.preventDefault();location.href='intent://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeTV.apk#Intent;scheme=https;action=android.intent.action.VIEW;S.browser_fallback_url='+encodeURIComponent(APK)+';end'}};
+var BASEA='https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/';
+$('bApkCp').onclick=function(){copia(location.href.split('#')[0].split('?')[0],this)};
+[].forEach.call(document.querySelectorAll('a.apk'),function(a){a.onclick=function(e){if(/; wv\)/.test(navigator.userAgent)){e.preventDefault();location.href='intent://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/'+a.dataset.f+'#Intent;scheme=https;action=android.intent.action.VIEW;S.browser_fallback_url='+encodeURIComponent(BASEA+a.dataset.f)+';end'}}});
 $('bCopia').onclick=function(){copia($('pixTxt').value,this)};
 function comprime(f,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var lim=1100,w=im.width,h=im.height,k=Math.min(1,lim/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);var q=.8,u=c.toDataURL('image/jpeg',q);while(u.length>700000&&q>.3){q-=.1;u=c.toDataURL('image/jpeg',q)}cb(u)};im.onerror=function(){cb(null)};im.src=r.result};r.readAsDataURL(f)}
 $('foto').onchange=function(){var f=this.files[0];this.value='';if(!f||!SEL)return;$('ePag').textContent='Enviando comprovante…';
