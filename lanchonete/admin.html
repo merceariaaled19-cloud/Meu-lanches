@@ -27,6 +27,20 @@
   <button class="full" id="bR" style="margin-top:8px;background:#eee;color:#333">Criar ou trocar senha (manda e-mail)</button>
  </div>
  <div id="app" style="display:none">
+  <div class="card" id="cPags">
+   <h3>💰 Pagamentos a confirmar <span id="nPags" class="tag esp">0</span></h3>
+   <p class="sub">Confira no seu banco se o Pix caiu. Se caiu, toque em "Caiu, liberar" e a loja da pessoa abre sozinha.</p>
+   <div id="listaPags"></div>
+  </div>
+  <div class="card">
+   <h3>💠 Pix para receber as assinaturas</h3>
+   <p class="sub">Aparece para o cliente na hora de pagar o plano (Mensal R$ 29,90 • Semestral R$ 99,90 • Anual R$ 199,90).</p>
+   <label>Chave Pix</label><input id="pxChave" autocomplete="off" placeholder="CPF, celular, e-mail ou chave aleatória">
+   <label>Nome de quem recebe (como no banco)</label><input id="pxNome" autocomplete="off">
+   <label>Cidade</label><input id="pxCid" autocomplete="off" value="Manaus">
+   <button style="margin-top:10px" id="pxSalva">Salvar Pix</button>
+   <p id="pxMsg" class="sub"></p>
+  </div>
   <div class="card">
    <h3>🤖 Leitura de cardápio por foto</h3>
    <p class="sub">Chave da API Google Gemini (pegue grátis em aistudio.google.com → Get API key). Só as lanchonetes liberadas conseguem usar.</p>
@@ -44,7 +58,7 @@
  </div>
 </div>
 <div id="modal"></div>
-<script src="comum.js?v=4"></script>
-<script src="admin.js?v=5"></script>
+<script src="comum.js?v=5"></script>
+<script src="admin.js?v=6"></script>
 </body>
 </html>

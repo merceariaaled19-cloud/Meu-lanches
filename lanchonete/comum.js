@@ -298,3 +298,21 @@ function lerJsonIA(t){
   if (a >= 0 && u > a){ try { return JSON.parse(t.slice(a, u + 1) + ']}'); } catch (e) {} }
   return null;
 }
+
+/* ---------- planos e Pix (assinatura) ---------- */
+var PLANOS = [
+  {id: 'mensal', nome: 'Mensal', dias: 30, valor: 29.90},
+  {id: 'semestral', nome: 'Semestral', dias: 180, valor: 99.90, selo: 'Economize 44%'},
+  {id: 'anual', nome: 'Anual', dias: 365, valor: 199.90, selo: 'Melhor preço'}
+];
+var TESTE_HORAS = 24;
+function planoPorId(id){ for (var i = 0; i < PLANOS.length; i++) if (PLANOS[i].id === id) return PLANOS[i]; return null; }
+function pixTxt(t, max){ return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9 .\-]/g, '').toUpperCase().slice(0, max); }
+function crc16(s){ var c = 0xFFFF; for (var i = 0; i < s.length; i++){ c ^= s.charCodeAt(i) << 8; for (var j = 0; j < 8; j++) c = (c & 0x8000) ? ((c << 1) ^ 0x1021) & 0xFFFF : (c << 1) & 0xFFFF; } return ('0000' + c.toString(16).toUpperCase()).slice(-4); }
+function pixCopiaCola(chave, nome, cidade, valor, txid){
+  function f(id, v){ return id + ('0' + v.length).slice(-2) + v; }
+  var k = String(chave || '').trim(); if (/^[\d.\-\/ ]+$/.test(k)) k = soNum(k);
+  var p = f('00', '01') + f('26', f('00', 'br.gov.bcb.pix') + f('01', k)) + f('52', '0000') + f('53', '986') + (valor ? f('54', Number(valor).toFixed(2)) : '') +
+    f('58', 'BR') + f('59', pixTxt(nome, 25) || 'RECEBEDOR') + f('60', pixTxt(cidade, 15) || 'MANAUS') + f('62', f('05', (pixTxt(txid, 25).replace(/[^A-Z0-9]/g, '') || '***'))) + '6304';
+  return p + crc16(p);
+}

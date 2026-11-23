@@ -13,15 +13,29 @@
     }
     match /ml_lojas/{uid} {
       allow read: if true;
-      allow create: if request.auth != null && request.auth.uid == uid && request.resource.data.status == 'pendente';
+      allow create: if request.auth != null && request.auth.uid == uid
+        && (request.resource.data.status == 'pendente'
+            || (request.resource.data.status == 'liberado' && request.resource.data.plano == 'teste'
+                && request.resource.data.validade is timestamp && request.resource.data.validade < request.time + duration.value(26, 'h')));
       allow update: if mlAdmin() || (request.auth != null && request.auth.uid == uid
         && request.resource.data.status == resource.data.status
-        && request.resource.data.get('validade', null) == resource.data.get('validade', null));
+        && request.resource.data.get('validade', null) == resource.data.get('validade', null)
+        && request.resource.data.get('plano', null) == resource.data.get('plano', null));
       allow delete: if mlAdmin();
       match /itens/{i} {
         allow read: if true;
         allow write: if mlAdmin() || (request.auth != null && request.auth.uid == uid && mlLib(uid));
       }
+    }
+    match /ml_publico/{d} {
+      allow read: if true;
+      allow write: if mlAdmin();
+    }
+    match /ml_pagamentos/{p} {
+      allow create: if request.auth != null && request.resource.data.lojaId == request.auth.uid
+        && request.resource.data.status == 'aguardando' && request.resource.data.valor is number;
+      allow read: if mlAdmin() || (request.auth != null && resource.data.lojaId == request.auth.uid);
+      allow update, delete: if mlAdmin();
     }
     match /ml_pedidos/{p} {
       allow create: if request.resource.data.lojaId is string && request.resource.data.total is number;

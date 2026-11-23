@@ -4,7 +4,7 @@ var U = null, LD = null, IT = [], PEDS = [], ABA = 'pedidos', CFG = null, unL = 
 function abreDono(){
   aplicaTema('laranja');
   au.onAuthStateChanged(function(u){
-    U = u; [unL, unI, unP].forEach(function(f){ if (f) f(); }); unL = unI = unP = null; LD = null; pedVistos = null;
+    U = u; [unL, unI, unP, unPg].forEach(function(f){ if (f) f(); }); unPg = null; PAGS = []; PLANO_SEL = null; unL = unI = unP = null; LD = null; pedVistos = null;
     if (!u) return telaLogin();
     unL = db.collection('ml_lojas').doc(u.uid).onSnapshot(function(d){
       if (!d.exists) return telaNovaLoja();
@@ -86,7 +86,7 @@ function criaLoja(dono, nome, zap, tipos){
   $('raiz').innerHTML = '<div class="hero"><div class="ico">🍔</div><p class="sub">Criando seu cadastro…</p></div>';
   slugLivre(slugify(nome), U.uid).then(function(slug){
     return db.collection('ml_lojas').doc(U.uid).set({
-      status: 'pendente', validade: null, email: U.email || '', dono: dono, nome: nome, slug: slug, zap: zap, logo: '', tema: 'laranja', layout: 'grade',
+      status: 'liberado', plano: 'teste', validade: firebase.firestore.Timestamp.fromMillis(Date.now() + TESTE_HORAS * 36e5), email: U.email || '', dono: dono, nome: nome, slug: slug, zap: zap, logo: '', tema: 'laranja', layout: 'grade',
       endereco: '', lat: null, lng: null, aviso: '', pedMin: 0, horario: horarioPadrao(),
       faixas: [{km: 2, valor: 3}, {km: 3, valor: 5}, {km: 5, valor: 8}], retirada: true, semEntrega: false,
       pag: {dinheiro: true, cartao: true, pix: false, pixTipo: 'Celular', pixChave: '', pixNome: ''},
@@ -95,6 +95,7 @@ function criaLoja(dono, nome, zap, tipos){
   }).catch(function(e){ $('raiz').innerHTML = '<div class="wrap"><div class="aviso no">Não deu para criar o cadastro (' + esc(e.code || e.message) + ').</div><button onclick="location.reload()">Tentar de novo</button></div>'; });
 }
 function telaEspera(vencido){
+  if (vencido && LD.status === 'liberado'){ $('raiz').innerHTML = '<div class="wrap"><div class="hero"><div class="ico">⭐</div><h2>' + esc(LD.nome) + '</h2><p>' + (LD.plano === 'teste' ? 'Seu dia grátis acabou. Escolha um plano para continuar — tudo que você montou continua salvo.' : 'Seu plano venceu. Renove para continuar — tudo que você montou continua salvo.') + '</p></div><div id="planos"></div><p style="text-align:center"><a href="#" onclick="au.signOut();return false">Sair</a></p></div>'; return mostraPlanos(); }
   var bloq = LD.status === 'bloqueado', t;
   if (vencido) t = 'Seu acesso venceu. Fale com a gente para renovar.';
   else if (bloq) t = 'Seu acesso está pausado. Fale com a gente para saber mais.';
@@ -135,7 +136,7 @@ function atualizaTopo(){
   if (!$('topo')) return;
   var link = linkLoja(LD.slug);
   $('topo').innerHTML = '<div class="lin">' + (LD.logo ? '<img class="logo" src="' + LD.logo + '">' : '<img class="logo" src="icon-192.png">') + '<div style="flex:1;min-width:0"><h1>' + esc(LD.nome) + '</h1><small>' + (abertoAgora(LD.horario) ? '🟢 Aberto agora' : '🔴 Fechado agora') + '</small></div><button class="mini bt3" onclick="if(confirm(\'Sair da conta?\'))au.signOut()">Sair</button></div>' +
-    '<div style="max-width:760px;margin:12px auto 0"><div class="linkbox" style="background:rgba(255,255,255,.95);color:#222">🔗 <span style="flex:1">' + esc(link) + '</span></div>' +
+    faixaPlano() + '<div style="max-width:760px;margin:12px auto 0"><div class="linkbox" style="background:rgba(255,255,255,.95);color:#222">🔗 <span style="flex:1">' + esc(link) + '</span></div>' +
     '<div class="row" style="margin-top:8px"><button class="mini bt3" onclick="copiar(linkLoja(LD.slug),\'Link copiado!\')">📋 Copiar link</button><button class="mini btz" onclick="abreZap(\'\',\'Peça seu lanche aqui: \'+linkLoja(LD.slug))">📲 Compartilhar</button><a class="bt mini bt3" href="' + esc(link) + '" target="_blank">👀 Ver loja</a></div></div>';
 }
 function atualizaContador(){ var b = $('ab_pedidos'); if (!b) return; var n = PEDS.filter(function(p){ return p.status === 'novo'; }).length; b.textContent = '🧾 Pedidos' + (n ? ' (' + n + ')' : ''); }
@@ -145,6 +146,70 @@ function desenhaAba(){
   ({pedidos: abaPedidos, cardapio: abaCardapio, loja: abaLoja, entrega: abaEntrega, pagamento: abaPagamento, horario: abaHorario, mensagens: abaMensagens}[ABA] || abaPedidos)(c);
 }
 function salva(campos, msg){ return db.collection('ml_lojas').doc(U.uid).update(campos).then(function(){ toast(msg || 'Salvo! ✅'); }, function(e){ toast('Não salvou: ' + (e.code || e.message), 4000); }); }
+
+/* ---------- assinatura: planos, Pix e comprovante ---------- */
+var unPg = null, PIXCFG = null, PLANO_SEL = null, PAGS = [];
+function faixaPlano(){
+  var v = LD.validade && LD.validade.toDate ? LD.validade.toDate() : null; if (!v) return '';
+  var resta = v - new Date(), dias = Math.ceil(resta / 864e5);
+  if (LD.plano !== 'teste' && dias > 5) return '';
+  var quando = v.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}) + ' às ' + v.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+  return '<div style="max-width:760px;margin:10px auto 0;background:#fff3cd;color:#5c4400;border-radius:12px;padding:8px 10px;display:flex;gap:8px;align-items:center"><span style="flex:1">' +
+    (LD.plano === 'teste' ? '🎁 Teste grátis até ' + quando : '⏳ Seu plano vence ' + quando) + '</span><button class="mini" style="flex:0 0 auto" onclick="abrePlanos()">⭐ Assinar</button></div>';
+}
+function abrePlanos(){
+  $('modal').innerHTML = '<div class="fundo" onclick="if(event.target===this)fechaPlanos()"><div class="folha"><button class="fecha" onclick="fechaPlanos()">✕</button><h2>⭐ Planos Meu Lanche</h2><p class="sub">O tempo do plano soma com o que ainda falta. Nada do que você montou se perde.</p><div id="planos"></div></div></div>';
+  mostraPlanos();
+}
+function fechaPlanos(){ if (unPg){ unPg(); unPg = null; } fechaModal(); }
+function mostraPlanos(){
+  if (!PIXCFG) db.collection('ml_publico').doc('pix').get().then(function(d){ PIXCFG = d.exists ? d.data() : {}; desenhaPlanos(); }, function(){ PIXCFG = {}; desenhaPlanos(); });
+  if (unPg) unPg();
+  unPg = db.collection('ml_pagamentos').where('lojaId', '==', U.uid).onSnapshot(function(s){
+    PAGS = s.docs.map(function(d){ var x = d.data(); x.id = d.id; x.t = x.criadoEm && x.criadoEm.toMillis ? x.criadoEm.toMillis() : Date.now(); return x; }).sort(function(a, b){ return b.t - a.t; });
+    desenhaPlanos();
+  }, function(){ PAGS = []; desenhaPlanos(); });
+  desenhaPlanos();
+}
+function desenhaPlanos(){
+  var c = $('planos'); if (!c) return;
+  var esp = PAGS.filter(function(p){ return p.status === 'aguardando'; })[0], ult = PAGS[0];
+  if (esp){
+    var pl = planoPorId(esp.plano) || {};
+    c.innerHTML = '<div class="card" style="text-align:center"><div style="font-size:46px">⏳</div><h3>Comprovante enviado!</h3><p>Plano ' + esc(pl.nome || esp.plano) + ' • ' + brl(esp.valor) + '</p><p class="sub">Assim que o pagamento for confirmado, seu acesso libera sozinho nesta tela. Normalmente leva poucos minutos no horário comercial.</p>' +
+      '<a class="bt btz full" target="_blank" href="' + zapLink(ZAP_ADMIN, 'Olá! Paguei o plano ' + (pl.nome || '') + ' (' + brl(esp.valor) + ') do Meu Lanche e enviei o comprovante. Lanchonete: ' + LD.nome + ' • ' + (LD.email || '')) + '">💬 Avisar no WhatsApp</a></div>';
+    return;
+  }
+  if (!PIXCFG){ c.innerHTML = '<p class="sub" style="text-align:center">Carregando…</p>'; return; }
+  var h = (ult && ult.status === 'recusado') ? '<div class="aviso no">O último comprovante não foi confirmado. Confira o pagamento e envie de novo, ou fale com a gente no WhatsApp.</div>' : '';
+  if (!PLANO_SEL){
+    PLANOS.forEach(function(p){
+      h += '<div class="card" style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="PLANO_SEL=\'' + p.id + '\';desenhaPlanos()"><div style="flex:1"><b style="font-size:18px">' + p.nome + '</b>' + (p.selo ? ' <span class="tag ok">' + p.selo + '</span>' : '') + '<div class="sub">' + p.dias + ' dias de acesso</div></div><div style="text-align:right"><b style="color:var(--p);font-size:20px">' + brl(p.valor) + '</b><div class="sub">' + (p.dias > 30 ? brl(p.valor / (p.dias / 30)) + '/mês' : 'por mês') + '</div></div></div>';
+    });
+    c.innerHTML = h; return;
+  }
+  var pl = planoPorId(PLANO_SEL);
+  if (!PIXCFG.chave){ c.innerHTML = h + '<div class="card"><p>Pagamento ainda não configurado. Fale com a gente:</p><a class="bt btz full" target="_blank" href="' + zapLink(ZAP_ADMIN, 'Olá! Quero assinar o plano ' + pl.nome + ' do Meu Lanche (' + LD.nome + ').') + '">💬 WhatsApp</a></div>'; return; }
+  var cc = pixCopiaCola(PIXCFG.chave, PIXCFG.nome, PIXCFG.cidade, pl.valor, 'ML' + U.uid.slice(0, 10));
+  window._PIXCC = cc;
+  h += '<div class="card"><button class="mini bt3" onclick="PLANO_SEL=null;desenhaPlanos()">← Trocar plano</button><h3 style="margin-top:10px">Plano ' + pl.nome + ' — ' + brl(pl.valor) + '</h3>' +
+    '<p><b>1.</b> Pague pelo Pix no app do seu banco:</p>' +
+    '<button class="full" onclick="copiar(window._PIXCC,\'Pix copia e cola copiado! Cole no app do banco.\')">📋 Copiar Pix copia e cola</button>' +
+    '<p class="sub" style="margin:8px 0">Ou use a chave Pix: <b>' + esc(PIXCFG.chave) + '</b> <a href="#" onclick="copiar(' + esc(JSON.stringify(PIXCFG.chave)) + ',\'Chave copiada!\');return false">copiar</a>' + (PIXCFG.nome ? '<br>Em nome de: ' + esc(PIXCFG.nome) : '') + '<br>Valor: <b>' + brl(pl.valor) + '</b></p>' +
+    '<p><b>2.</b> Depois de pagar, mande o comprovante (foto ou print):</p>' +
+    '<input type="file" id="arqComp" accept="image/*" class="esc" onchange="enviaComprovante(this.files[0])"><button class="full btz" id="btComp" onclick="$(\'arqComp\').click()">📎 Enviar comprovante</button>' +
+    '<p class="sub" id="compMsg"></p></div>';
+  c.innerHTML = h;
+}
+function enviaComprovante(f){
+  if (!f) return; var pl = planoPorId(PLANO_SEL); if (!pl) return;
+  var b = $('btComp'); if (b){ b.disabled = true; b.textContent = 'Enviando…'; }
+  arquivoParaCanvas(f, 1100).then(function(cv){
+    var q = 0.7, img = cv.toDataURL('image/jpeg', q);
+    while (img.length > 700000 && q > 0.3){ q -= 0.15; img = cv.toDataURL('image/jpeg', q); }
+    return db.collection('ml_pagamentos').add({lojaId: U.uid, loja: LD.nome || '', email: LD.email || '', zap: LD.zap || '', plano: pl.id, dias: pl.dias, valor: pl.valor, comprovante: img, status: 'aguardando', criadoEm: firebase.firestore.FieldValue.serverTimestamp()});
+  }).then(function(){ PLANO_SEL = null; toast('Comprovante enviado! ✅', 4000); }, function(e){ if (b){ b.disabled = false; b.textContent = '📎 Enviar comprovante'; } if ($('compMsg')) $('compMsg').textContent = 'Não enviou: ' + (e.code || e.message) + '. Tente de novo.'; });
+}
 
 /* ---------- pedidos ---------- */
 var filtroPed = 'hoje';
