@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=179bbd33-17a2-44b7-9b6c-39e1d03229ac
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TudoOkê TV</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>
+/* TudoOkê na TV smart (navegador): busca passa pelo proxy */
+window.TK_BUSCA='https://script.google.com/macros/s/AKfycbxgCpwpJJWMRUVvQBq4d4mkWO6qbDDFX0wP-7XfMfWtxBX4ziM1aob3HYkaD5XrNW-J2g/exec';
+(function(){var of=window.fetch;window.fetch=function(u,o){if(typeof u==='string'&&u.indexOf('/api/buscar')===0)u=TK_BUSCA+u.slice(u.indexOf('?'));return of.call(window,u,o);};})();
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#0a0a14;color:#fff;font-family:Arial;overflow:hidden}
+#topo{padding:12px;background:#111;display:flex;gap:8px;align-items:center;border-bottom:2px solid #ff0040}
+#topo form{flex:1;display:flex;gap:8px}
+#topo input{flex:1;padding:14px;border-radius:10px;border:2px solid #ff0040;background:#000;color:#fff;font-size:16px}
+.btn{background:#ff0040;color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:bold;cursor:pointer}
+.btn:focus-visible,.item:focus-visible,#topo input:focus-visible{outline:4px solid #ffaa00;outline-offset:2px}
+#layout{display:flex;height:calc(100vh - 70px)}
+#lista{width:35%;background:#111;overflow:auto;padding:8px;border-right:2px solid #222}
+.aviso{padding:20px;opacity:0.6}
+.item{padding:12px;background:#1a1a2a;border-radius:10px;margin-bottom:8px;cursor:pointer;display:flex;gap:10px;align-items:center}
+.item:hover,.item:focus,.item.ativo{background:#2a2a4a} .item img{width:80px;height:50px;border-radius:6px;object-fit:cover;flex-shrink:0}
+.item .meta{font-size:11px;opacity:0.6}
+#player-area{flex:1;display:flex;flex-direction:column;background:#000;position:relative}
+#player{width:100%;height:65%;background:#000}
+#letra-box{height:20%;background:linear-gradient(#000,#1a0010);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;text-align:center;padding:10px;text-shadow:0 0 10px #ff0040}
+#placar{height:15%;background:#111;display:flex;justify-content:space-around;align-items:center;border-top:2px solid #ff0040}
+.score{font-size:32px;color:#ff0040;font-weight:bold}
+.barra-voz{width:60%;height:20px;background:#333;border-radius:10px;overflow:hidden}
+#voz-fill{height:100%;width:0%;background:linear-gradient(90deg,#ff0040,#ffaa00);transition:0.1s}
+#tv-aviso{position:absolute;top:10px;right:10px;background:#ff0040;padding:6px 10px;border-radius:20px;font-size:12px;display:none}
+@media(max-width:800px){#layout{flex-direction:column}#lista{width:100%;height:35%}#player{height:55%}#letra-box{font-size:20px}}
+</style>
+</head>
+<body>
+<div id="topo">
+<form id="form-busca">
+<input id="busca" placeholder="Digite: Zezé - É o amor karaoke" value="karaoke sertanejo" aria-label="Buscar música">
+<button class="btn" type="submit">🔍 BUSCAR</button>
+</form>
+<button class="btn" style="background:#00d4ff" onclick="iniciarMic()">🎤 ATIVAR MICROFONE</button>
+<span id="statusMic" style="font-size:12px">Mic off</span>
+</div>
+<div id="layout">
+<div id="lista"><div class="aviso">Digite uma música e clique em BUSCAR. O app vai buscar só versões KARAOKE do YouTube.</div></div>
+<div id="player-area">
+<div id="player"></div>
+<div id="letra-box">ELO KARAOKE - Aguardando música...</div>
+<div id="placar">
+<div>PONTUAÇÃO: <span class="score" id="pontos">0</span></div>
+<div class="barra-voz"><div id="voz-fill"></div></div>
+<div>NOTA: <span class="score" id="nota">--</span></div>
+</div>
+<div id="tv-aviso">MODO TV BOX ATIVO - Use controle remoto</div>
+</div>
+</div>
+
+<script>
+let player, playerPronto=false, videoPendente=null, micAtivo=false, audioCtx, analyser, pontos=0, vozLevel=0, ultimoPonto=0;
+let resultados=[], atual=-1;
+
+function onYouTubeIframeAPIReady(){
+ player = new YT.Player('player',{height:'100%',width:'100%',playerVars:{playsinline:1, origin: window.location.origin},
+  events:{onReady: ()=>{ playerPronto=true; if(videoPendente!==null) tocar(videoPendente); }, onStateChange: onPlayerState, onError: onPlayerError}});
+}
+function onPlayerState(e){ if(e.data==1) iniciarPontuacao(); }
+function onPlayerError(e){
+ // 101/150: o dono do vídeo não permite tocar fora do YouTube - pula pro próximo
+ if((e.data==101||e.data==150) && atual+1<resultados.length){ log("Esse vídeo não permite tocar aqui. Pulando pro próximo..."); setTimeout(()=>tocar(atual+1),1500); }
+ else log("Não foi possível tocar esse vídeo. Escolha outro da lista.");
+}
+
+document.getElementById('form-busca').addEventListener('submit', e=>{ e.preventDefault(); buscar(); });
+
+async function buscar(){
+ let termo = document.getElementById('busca').value.trim();
+ if(!termo) return;
+ if(!/karaok/i.test(termo)) termo += " karaoke";
+ let listaDiv = document.getElementById('lista');
+ listaDiv.innerHTML = '<div class="aviso">Buscando karaokes reais do YouTube...</div>';
+ try{
+  let res = await fetch('/api/buscar?q=' + encodeURIComponent(termo));
+  let data = await res.json();
+  if(!res.ok) throw new Error(data.error || 'Erro na busca');
+  resultados = data.videos || [];
+ } catch(e){
+  listaDiv.innerHTML = '<div class="aviso">Não foi possível buscar agora. Tente de novo em instantes.</div>';
+  return;
+ }
+ listaDiv.innerHTML = "";
+ if(!resultados.length){ listaDiv.innerHTML = '<div class="aviso">Nenhum karaoke encontrado. Tente outro nome.</div>'; return; }
+ resultados.forEach((v,i)=>{
+  let div = document.createElement('div');
+  div.className='item'; div.tabIndex=0; div.setAttribute('role','button');
+  let img = document.createElement('img'); img.src=v.thumb; img.alt=""; img.loading="lazy";
+  let txt = document.createElement('div');
+  let b = document.createElement('b'); b.textContent = v.titulo;
+  let meta = document.createElement('div'); meta.className='meta';
+  meta.textContent = [v.canal, v.duracao].filter(Boolean).join(' • ');
+  txt.append(b, meta); div.append(img, txt);
+  div.onclick=()=>tocar(i);
+  div.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tocar(i); } };
+  listaDiv.appendChild(div);
+ });
+}
+
+function tocar(i){
+ if(!playerPronto){ videoPendente=i; log("Carregando player..."); return; }
+ videoPendente=null; atual=i;
+ let v = resultados[i];
+ document.querySelectorAll('.item').forEach((el,j)=>el.classList.toggle('ativo', j===i));
+ player.loadVideoById(v.id);
+ log("🎤 Cantando: " + v.titulo);
+ pontos=0; document.getElementById('pontos').innerText="0"; document.getElementById('nota').innerText="--";
+}
+
+function log(t){ document.getElementById('letra-box').innerText = t; }
+
+// --- PONTUAÇÃO COM MICROFONE ---
+async function iniciarMic(){
+ if(micAtivo) return;
+ try{
+  let stream = await navigator.mediaDevices.getUserMedia({audio:true});
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  let source = audioCtx.createMediaStreamSource(stream);
+  analyser = audioCtx.createAnalyser(); analyser.fftSize=256;
+  source.connect(analyser);
+  micAtivo=true; document.getElementById('statusMic').innerText="Mic ON - Cantando!";
+  document.getElementById('tv-aviso').style.display='block';
+  setTimeout(()=>document.getElementById('tv-aviso').style.display='none',3000);
+  analisarVoz();
+ } catch(e){ alert("Precisa permitir microfone. Na TV Box, conecte um microfone USB."); }
+}
+
+function analisarVoz(agora=0){
+ if(!micAtivo) return;
+ let data = new Uint8Array(analyser.frequencyBinCount);
+ analyser.getByteFrequencyData(data);
+ let media = data.reduce((a,b)=>a+b,0)/data.length;
+ vozLevel = media;
+ document.getElementById('voz-fill').style.width = Math.min(100, vozLevel) + "%";
+ // pontua no máximo 10x por segundo, pra não depender da taxa de quadros da tela
+ if(vozLevel>20 && agora-ultimoPonto>100 && player && player.getPlayerState && player.getPlayerState()==1){
+  ultimoPonto = agora;
+  pontos += Math.floor(vozLevel/10);
+  document.getElementById('pontos').innerText = pontos;
+  let nota = vozLevel>70?"A+ - SHOW!":vozLevel>40?"B - Boa!":"C - Canta mais alto!";
+  document.getElementById('nota').innerText=nota;
+ }
+ requestAnimationFrame(analisarVoz);
+}
+
+function iniciarPontuacao(){
+ if(!micAtivo) document.getElementById('statusMic').innerText="Dica: Ative o microfone pra pontuar!";
+}
+
+// detectar TV Box
+if(navigator.userAgent.includes('TV') || window.innerWidth>1200){
+ document.getElementById('tv-aviso').style.display='block';
+ document.getElementById('tv-aviso').innerText="MODO TV BOX - Navegue com controle";
+}
+
+buscar();
+</script>
+<script>try{sessionStorage.tkIntro=sessionStorage.tkIntro||""}catch(e){}var _s=document.createElement("script");_s.src="../elo/tv.js?t="+Date.now();document.body.appendChild(_s);</script>
+</body>
+</html>
+<script async src="/.netlify/scripts/ar" data-netlify-deploy-id="6ae0d0bfcf4044d48d782a7a" data-netlify-site-id="179bbd33-17a2-44b7-9b6c-39e1d03229ac" data-agent-runner-id="6ae0cfad75321955ab79e341"></script>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="179bbd33-17a2-44b7-9b6c-39e1d03229ac" data-app-host="app.netlify.com" data-account-tier="free"></script>
