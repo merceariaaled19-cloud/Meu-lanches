@@ -59,7 +59,7 @@
  '#topo input{border-color:#7c3aed!important;background:#12052a!important}',
  '.btn{background:#ff3fa4!important;color:#fff!important}',
  'button[onclick*="iniciarMic"]{background:#7c3aed!important;min-width:56px}',
- '#lista{background:rgba(20,6,40,.85)!important;border-right:2px solid #3b1a6e!important}',
+ '#lista{width:24%!important;min-width:0!important}#player{height:70%!important}#lista{background:rgba(20,6,40,.85)!important;border-right:2px solid #3b1a6e!important}',
  '.item{background:#1e0b3d!important;border:1px solid #3b1a6e}.item.ativo,.item:focus{background:#4a1d8a!important;border-color:#ff3fa4}',
  '#letra-box{background:linear-gradient(#0b0418,#2a0a55)!important;color:#ffd54a;text-shadow:none!important}',
  '#placar{background:#14062b!important;border-top:3px solid #ff3fa4!important}.score{color:#ffd54a!important}',
