@@ -33,7 +33,8 @@ function telaLogin(){
     '<p id="lMsg" style="color:var(--erro);min-height:18px"></p>' +
     '<button class="full" id="lBt" onclick="' + (modoLogin === 'criar' ? 'criaConta()' : 'entra()') + '">' + (modoLogin === 'criar' ? 'Fazer meu cadastro' : 'Entrar') + '</button>';
   if (modoLogin === 'entrar') h += '<p style="text-align:center"><a href="#" onclick="esqueci();return false">Esqueci minha senha</a></p>';
-  h += '</div><p class="sub" style="text-align:center">É cliente e quer fazer pedido? Peça o link do cardápio para a lanchonete. 😉</p></div>';
+  h += '</div><div class="card" style="text-align:center"><h3>📲 App no celular</h3><p class="sub">Baixe o Meu Lanche e use direto pelo ícone na tela do celular (Android).</p><a class="bt btz full" href="MeuLanchePro.apk" download target="_blank">⬇️ Baixar o aplicativo</a><p class="sub" style="margin-top:8px">Se o celular perguntar, permita instalar apps desta fonte.</p></div>';
+  h += '<p class="sub" style="text-align:center">É cliente e quer fazer pedido? Peça o link do cardápio para a lanchonete. 😉</p></div>';
   $('raiz').innerHTML = h;
 }
 function erroAuth(e){
