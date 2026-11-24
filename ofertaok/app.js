@@ -314,41 +314,73 @@ function hash(s){ var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5)
 
 /* ---------- gerar vídeo ---------- */
 function st(t, p){ $('gSt').textContent = t; if (p != null) $('gPr').style.width = Math.round(p * 100) + '%'; }
-$('bGerar').onclick = async function(){
+function etapa(n, txt){ $('gEt').innerHTML = ['Voz do locutor', 'Juntar voz e música', 'Montar o vídeo'].map(function(e, i){ return '<span class="' + (i < n ? 'ok' : i == n ? 'ag' : '') + '">' + (i < n ? '✅' : i == n ? '⏳' : '⚪') + ' ' + e + '</span>'; }).join(''); }
+function acoes(h){ $('gAc').innerHTML = h || ''; }
+function comTempo(pr, ms, erro){ return Promise.race([pr, new Promise(function(_, ruim){ setTimeout(function(){ ruim(new Error(erro)); }, ms); })]); }
+function respira(){ return new Promise(function(r){ setTimeout(r, 30); }); }
+var GERA = null;
+$('bGerar').onclick = function(){ gerar({}); };
+var ULT_O = {};
+window.gerarDeNovo = function(o){ gerar(o || ULT_O); };
+window.cancelaGerar = function(){ if (!GERA) return; GERA.cancelado = true; if (window.cancelaEspera) window.cancelaEspera('cancelado'); if (window.cancelaGravacao) window.cancelaGravacao('cancelado'); };
+function outraVoz(id){ var i = 0; for (; i < VOZES.length; i++) if (VOZES[i].id == id) break; return VOZES[(i + 1) % VOZES.length]; }
+function msgErro(m){
+  return {'sem-chave': 'A chave da IA (Gemini) não está salva no ADM do Meu Lanche.', 'limite': 'A voz grátis chegou no limite agora (muita gente usando).', 'tempo': 'A voz demorou demais para responder.', 'sem internet': 'Sem internet na hora de gerar a voz.',
+    'som-parado': 'O som do celular não começou a tocar.', 'tempo-video': 'O vídeo demorou demais para ficar pronto.', 'tempo-mix': 'Juntar voz e música demorou demais.', 'gravador': 'O celular não conseguiu gravar o vídeo.', 'sem-gravador': 'Este navegador não grava vídeo. Use o Chrome.'}[m] || ('Deu um erro (' + m + ').');
+}
+async function gerar(o){
+  if (GERA) return;
   var e = valida(); if (e){ toast(e, '#b91c1c', 4000); return; }
   var fmts = []; if ($('fV').checked) fmts.push({nome: 'vertical', w: 720, h: 1280, bits: 2200000}); if ($('fH').checked) fmts.push({nome: 'horizontal', w: 1280, h: 720, bits: 2400000});
   if (!fmts.length){ toast('Marque pelo menos um tipo de vídeo.', '#b91c1c'); return; }
-  var ac = audioCtx(), b = this; b.disabled = true; GRAVANDO = true; $('gerando').classList.remove('oculto'); $('vids').innerHTML = '';
+  ULT_O = o;
+  if (o.vozId){ OF.voz = o.vozId; sujo = true; pintaVozes(); }
+  var ac = audioCtx(), b = $('bGerar'), G = GERA = {cancelado: false}; b.disabled = true; GRAVANDO = true; $('gerando').classList.remove('oculto'); $('gAv').classList.remove('oculto'); $('vids').innerHTML = '';
+  acoes('<button class="bt cz peq" onclick="cancelaGerar()">✖️ Cancelar</button>'); $('gerando').scrollIntoView({block: 'center', behavior: 'smooth'});
+  var voz = vozPorId(OF.voz), wav = null;
   try {
-    var voz = vozPorId(OF.voz), r = OF.roteiro, partes = [r.abre].concat(r.itens).concat([r.fecha]), texto = partes.join('\n\n'), mix;
-    st('🎙️ ' + voz.nome + ' está gravando a voz…', 0.05);
-    var ck = voz.id + '|' + hash(texto), wav = await idbGet(ck);
-    if (!wav){
-      var key = await pegaChave();
-      try { wav = await geraFala(texto, voz, key, function(m){ st('⏳ ' + m, 0.08); }); idbPut(ck, wav); }
-      catch (x) {
-        if (x.message == 'oculto') throw x;
-        var m2 = x.message == 'sem-chave' ? 'A chave da IA (Gemini) não está salva no ADM do Meu Lanche.' : (x.message == 'limite' ? 'A voz grátis chegou no limite agora.' : 'A voz não respondeu (' + x.message + ').');
-        if (!confirm(m2 + '\n\nQuer fazer o vídeo só com música (sem locutor)? Você pode tentar a voz de novo mais tarde.')) throw new Error('cancelado');
-        wav = null;
+    var r = OF.roteiro, partes = [r.abre].concat(r.itens).concat([r.fecha]), texto = partes.join('\n\n'), mix;
+    etapa(0); st('🎙️ Gerando a voz de ' + voz.nome + '…', 0.03); await respira();
+    if (!o.semVoz){
+      var ck = voz.id + '|' + hash(texto); wav = await idbGet(ck);
+      if (!wav){
+        G.t0v = Date.now(); var key = await comTempo(pegaChave(), 15000, 'sem-chave');
+        wav = await geraFala(texto, voz, key, function(m){ st(m, 0.03 + Math.min(0.2, (Date.now() - G.t0v) / 150000 * 0.2)); });
+        idbPut(ck, wav);
       }
     }
-    st('🎵 Juntando voz, música e efeitos…', 0.15);
-    mix = wav ? await mixar(wav, voz, partes, OF.produtos.length) : await mixarSemVoz(OF.produtos.length);
-    st('🖼️ Preparando as fotos…', 0.2);
-    var imgs = []; for (var i = 0; i < OF.produtos.length; i++){ var f = OF.produtos[i].foto; imgs.push(f ? await carregaImg(f).catch(function(){ return null; }) : null); }
-    var logo = OF.logo ? await carregaImg(OF.logo).catch(function(){ return null; }) : null;
+    if (G.cancelado) throw new Error('cancelado');
+    etapa(1); st('🎵 Juntando voz, música e efeitos…', 0.25); await respira();
+    mix = await comTempo(wav ? mixar(wav, voz, partes, OF.produtos.length) : mixarSemVoz(OF.produtos.length), 90000, 'tempo-mix');
+    if (G.cancelado) throw new Error('cancelado');
+    etapa(2); st('🖼️ Preparando as fotos…', 0.3); await respira();
+    var imgs = []; for (var i = 0; i < OF.produtos.length; i++){ var f = OF.produtos[i].foto; imgs.push(f ? await comTempo(carregaImg(f), 15000, 'img').catch(function(){ return null; }) : null); }
+    var logo = OF.logo ? await comTempo(carregaImg(OF.logo), 15000, 'img').catch(function(){ return null; }) : null;
+    if (G.cancelado) throw new Error('cancelado');
     var P = {of: OF, imgs: imgs, logo: logo, cenas: mix.plano.cenas, total: mix.plano.total};
-    var res = await gravaVideos(ac, P, mix.buf, fmts, function(p){ st('🎬 Gravando o vídeo… ' + Math.round(p * 100) + '% (' + Math.round(P.total) + ' s)', 0.2 + p * 0.78); });
-    VID = res.videos; VID.tipo = res.tipo; st('✅ Pronto!', 1);
+    var res = await gravaVideos(ac, P, mix.buf, fmts, function(p, n, tot, f){
+      var qual = f.nome == 'vertical' ? '📱 celular' : '📺 TV', fal = Math.max(0, Math.ceil(P.total * (1 - p)));
+      st('🎬 Montando vídeo' + (tot > 1 ? ' ' + (n + 1) + ' de ' + tot : '') + ' (' + qual + ')… ' + Math.round(p * 100) + '% — falta ~' + fal + ' s', 0.3 + 0.7 * (n + p) / tot); });
+    VID = res.videos; VID.tipo = res.tipo; etapa(3); st('✅ Pronto!', 1); acoes('');
     mostraVideos(); toast('Vídeo pronto! 🎉');
     if (!wav) $('vids').insertAdjacentHTML('afterbegin', '<div class="aviso">Este vídeo saiu sem locutor (só música).</div>');
     salvar(true);
   } catch (x) {
-    if (/^oculto|^saiu/.test(x.message)){ toast('A gravação foi cancelada porque o app saiu da tela. Toque em 🎬 Gerar o vídeo de novo e deixe a tela aberta até terminar.', '#b45309', 7000); $('vids').innerHTML = '<div class="aviso">⚠️ A gravação foi cancelada porque o app saiu da tela (ou o celular apagou a tela). Toque em <b>🎬 Gerar o vídeo</b> de novo e deixe esta tela aberta até terminar.</div>'; }
-    else if (x.message != 'cancelado'){ console.error(x); toast('Não deu para gerar: ' + (x.message == 'sem-gravador' ? 'este navegador não grava vídeo. Use o Chrome.' : x.message), '#b91c1c', 5000); } st('', 0); }
-  GRAVANDO = false; b.disabled = false; setTimeout(function(){ $('gerando').classList.add('oculto'); }, 1500);
-};
+    var m = x && x.message || 'falhou';
+    if (/^oculto|^saiu/.test(m)){ st('⚠️ Cancelado: o app saiu da tela.', 0); toast('A gravação foi cancelada porque o app saiu da tela. Deixe a tela aberta até terminar.', '#b45309', 7000);
+      acoes('<div class="aviso">⚠️ Parou porque o app saiu da tela (ou a tela apagou). Deixe esta tela aberta até terminar.</div><button class="bt peq" onclick="gerarDeNovo()">🔄 Tentar de novo</button>'); }
+    else if (m == 'cancelado'){ st('Cancelado.', 0); acoes('<button class="bt peq" onclick="gerarDeNovo()">🔄 Gerar de novo</button>'); }
+    else {
+      console.error(x);
+      var naVoz = !wav && !o.semVoz, ov = outraVoz(voz.id);
+      st('❌ ' + msgErro(m), 0); var ag = $('gEt').querySelector('.ag'); if (ag){ ag.className = 'er'; ag.textContent = ag.textContent.replace('⏳', '❌'); }
+      acoes('<button class="bt peq" onclick="gerarDeNovo()">🔄 Tentar de novo</button>' +
+        (naVoz && m != 'sem-chave' ? '<button class="bt az peq" onclick="gerarDeNovo({vozId:\'' + ov.id + '\'})">🎙️ Tentar com outro locutor (' + ov.nome + ')</button>' : '') +
+        (naVoz ? '<button class="bt cz peq" onclick="gerarDeNovo({semVoz:true})">🎵 Fazer só com música (sem locutor)</button>' : '') +
+        (!naVoz && fmts.length > 1 ? '<div class="aviso">Dica: marque só um tipo de vídeo (📱 ou 📺) para ficar mais leve.</div>' : ''));
+    }
+  } finally { GERA = null; GRAVANDO = false; b.disabled = false; $('gAv').classList.add('oculto'); }
+}
 function nomeArq(fmt){ var ext = /mp4/.test(VID.tipo) ? 'mp4' : 'webm'; return 'oferta-' + (OF.loja || 'loja').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + (fmt == 'vertical' ? 'celular' : 'tv') + '.' + ext; }
 function mostraVideos(){
   var h = ''; ['vertical', 'horizontal'].forEach(function(f){ var bl = VID[f]; if (!bl) return; var u = URL.createObjectURL(bl);

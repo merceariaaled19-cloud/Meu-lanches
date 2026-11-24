@@ -10,12 +10,17 @@ function quebra(g, txt, maxW){ var p = String(txt).split(/\s+/), l = [], a = '';
 function textoContorno(g, txt, x, y, cor, contorno, lw){ g.lineJoin = 'round'; if (contorno){ g.lineWidth = lw; g.strokeStyle = contorno; g.strokeText(txt, x, y); } g.fillStyle = cor; g.fillText(txt, x, y); }
 
 /* fundo: vermelho com raios girando, faixas e brilhos */
+var FUNDO_CACHE = {};
+function fundoBase(W, H){
+  var k = W + 'x' + H; if (FUNDO_CACHE[k]) return FUNDO_CACHE[k];
+  var c = novaTela(W, H), g = c.getContext('2d'), gr = g.createRadialGradient(W / 2, H * 0.45, 10, W / 2, H * 0.45, Math.max(W, H) * 0.8); gr.addColorStop(0, '#ff3b3b'); gr.addColorStop(0.55, '#d0101f'); gr.addColorStop(1, '#7a0010');
+  g.fillStyle = gr; g.fillRect(0, 0, W, H); FUNDO_CACHE = {}; FUNDO_CACHE[k] = c; return c;
+}
 function fundo(g, W, H, t, S){
-  var gr = g.createRadialGradient(W / 2, H * 0.45, 10, W / 2, H * 0.45, Math.max(W, H) * 0.8); gr.addColorStop(0, '#ff3b3b'); gr.addColorStop(0.55, '#d0101f'); gr.addColorStop(1, '#7a0010');
-  g.fillStyle = gr; g.fillRect(0, 0, W, H);
-  g.save(); g.translate(W / 2, H * 0.45); g.rotate(t * 0.15); g.fillStyle = 'rgba(255,214,0,.10)';
-  for (var i = 0; i < 16; i++){ g.beginPath(); g.moveTo(0, 0); var a = i * Math.PI / 8; g.arc(0, 0, Math.max(W, H), a, a + Math.PI / 16); g.closePath(); g.fill(); }
-  g.restore();
+  g.drawImage(fundoBase(W, H), 0, 0);
+  g.save(); g.translate(W / 2, H * 0.45); g.rotate(t * 0.15); g.fillStyle = 'rgba(255,214,0,.10)'; g.beginPath();
+  for (var i = 0; i < 16; i++){ g.moveTo(0, 0); var a = i * Math.PI / 8; g.arc(0, 0, Math.max(W, H), a, a + Math.PI / 16); g.closePath(); }
+  g.fill(); g.restore();
   for (var k = 0; k < 18; k++){ var sx = (k * 197 % 100) / 100 * W, sy = ((k * 131 % 100) / 100 * H + t * 30 * (1 + k % 3)) % H, a2 = 0.3 + 0.3 * Math.sin(t * 3 + k);
     g.fillStyle = 'rgba(255,255,255,' + a2.toFixed(2) + ')'; estrela(g, sx, sy, 6 * S, 2 * S, 4, t + k); g.fill(); }
 }
@@ -52,7 +57,7 @@ function seloDe(g, x, y, S, p, ap){
   g.fillStyle = '#333'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = Math.round(30 * S) + 'px ' + FONTE; var tx = 'DE R$ ' + precoBR(p.de); cabeTexto(g, tx, w - 20 * S, 30 * S); g.fillText(tx, 0, 2 * S);
   g.strokeStyle = '#d0101f'; g.lineWidth = 5 * S; g.beginPath(); g.moveTo(-w * 0.42, h * 0.18); g.lineTo(w * 0.42, -h * 0.18); g.stroke(); g.restore();
 }
-function cartaoProduto(g, x, y, w, h, img, tipo, S, t){
+function cartaoProdutoCru(g, x, y, w, h, img, tipo, S, t){
   g.save(); g.shadowColor = 'rgba(0,0,0,.4)'; g.shadowBlur = 30 * S; g.shadowOffsetY = 12 * S; g.fillStyle = '#fff'; rr(g, x, y, w, h, 28 * S); g.fill(); g.restore();
   g.save(); rr(g, x + 8 * S, y + 8 * S, w - 16 * S, h - 16 * S, 22 * S); g.clip();
   var gr = g.createRadialGradient(x + w / 2, y + h * 0.42, 10, x + w / 2, y + h / 2, Math.max(w, h) * 0.7); gr.addColorStop(0, '#fff'); gr.addColorStop(1, '#e8eef6'); g.fillStyle = gr; g.fillRect(x, y, w, h);
@@ -63,6 +68,18 @@ function cartaoProduto(g, x, y, w, h, img, tipo, S, t){
       g.drawImage(img, dx, dy, dw, dh); } }
   g.restore();
 }
+/* o cartão é desenhado uma vez numa tela guardada e depois só copiado (bem mais leve no celular) */
+var CARTAO_CACHE = [], CARTAO_ID = 0;
+function cartaoProduto(g, x, y, w, h, img, tipo, S, t){
+  if (img && !img.__okid) img.__okid = ++CARTAO_ID;
+  var k = (img ? img.__okid : 0) + '|' + Math.round(w) + 'x' + Math.round(h) + '|' + tipo, c = null;
+  for (var i = 0; i < CARTAO_CACHE.length; i++) if (CARTAO_CACHE[i].k == k){ c = CARTAO_CACHE[i].c; break; }
+  var pad = Math.ceil(50 * S);
+  if (!c){ c = novaTela(w + pad * 2, h + pad * 2); cartaoProdutoCru(c.getContext("2d"), pad, pad, w, h, img, tipo, S, 0); CARTAO_CACHE.push({k: k, c: c}); if (CARTAO_CACHE.length > 14) CARTAO_CACHE.shift(); }
+  var z = 1 + 0.015 * Math.sin(t * 2), cx = x + w / 2, cy = y + h / 2;
+  g.drawImage(c, cx - (w / 2 + pad) * z, cy - (h / 2 + pad) * z, c.width * z, c.height * z);
+}
+function limpaCacheVideo(){ CARTAO_CACHE = []; FUNDO_CACHE = {}; }
 function faixaNome(g, cx, cy, maxW, S, nome, ap){
   if (ap <= 0) return; var a = eOut(ap); g.save(); g.globalAlpha = a; g.translate(0, (1 - a) * 40 * S);
   g.textAlign = 'center'; g.textBaseline = 'middle'; var tam = cabeTexto(g, nome.toUpperCase(), maxW - 50 * S, 50 * S); var linhas = [nome.toUpperCase()];
@@ -126,44 +143,66 @@ function tipoGravacao(){
   return '';
 }
 async function carregaFontes(){ try { await Promise.all([document.fonts.load('80px Anton'), document.fonts.load('bold 30px Poppins')]); } catch (e) {} }
-/* grava os formatos pedidos ao mesmo tempo. formatos: [{nome:'vertical',w:720,h:1280}, ...] */
+/* celular / aparelho fraco: menos quadros por segundo e menos bits (o vídeo continua 720p) */
+function aparelhoFraco(){ var ua = navigator.userAgent || ''; return /Android|iPhone|iPad|Mobile/i.test(ua) || (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4; }
+function ateQuadro(){ return new Promise(function(r){ var feito = false; function v(){ if (!feito){ feito = true; r(); } } requestAnimationFrame(v); setTimeout(v, 120); }); }
+function demora(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+/* grava UM formato por vez (o celular não aguenta 2 gravadores ao mesmo tempo).
+   formatos: [{nome:'vertical',w:720,h:1280}, ...]; prog(p, n, total, formato, info) */
 async function gravaVideos(ac, P, audio, formatos, prog){
-  await carregaFontes();
+  await Promise.race([carregaFontes(), demora(4000)]);
   var tipo = tipoGravacao(); if (!tipo) throw new Error('sem-gravador');
-  if (ac.state == 'suspended') try { await ac.resume(); } catch (e) {}
-  var dest = ac.createMediaStreamDestination(), src = ac.createBufferSource(); src.buffer = audio; src.connect(dest);
-  var trilha = dest.stream.getAudioTracks()[0], grav = formatos.map(function(f){
-    var c = novaTela(f.w, f.h), g = c.getContext('2d'); desenhaQuadro(g, f.w, f.h, 0, P);
-    var st = c.captureStream(30); st.addTrack(trilha);
-    var rec = new MediaRecorder(st, {mimeType: tipo, videoBitsPerSecond: f.bits || 2200000, audioBitsPerSecond: 128000}), pedacos = [];
-    rec.ondataavailable = function(e){ if (e.data && e.data.size) pedacos.push(e.data); };
-    var pronto = new Promise(function(ok){ rec.onstop = function(){ ok(new Blob(pedacos, {type: tipo.split(';')[0]})); }; });
-    return {f: f, c: c, g: g, rec: rec, pronto: pronto};
-  });
+  var fraco = aparelhoFraco(), fps = fraco ? 24 : 30;
   var trava = null; try { if (navigator.wakeLock) trava = await navigator.wakeLock.request('screen'); } catch (e) {}
-  var cancelado = '', acaba = null;
-  function limpa(){ grav.forEach(function(x){ try { if (x.rec.state != 'inactive') x.rec.stop(); } catch (e) {} });
-    try { src.stop(); } catch (e) {} try { trilha.stop(); } catch (e) {}
-    if (trava){ try { trava.release(); } catch (e) {} trava = null; } window.cancelaGravacao = null; }
-  /* app escondido / saiu da tela no meio do vídeo: para tudo e avisa */
-  window.cancelaGravacao = function(motivo){ cancelado = motivo || 'oculto'; limpa(); if (acaba) acaba(); };
-  grav.forEach(function(x){ x.rec.start(1000); });
-  var t0 = ac.currentTime + 0.15; src.start(t0);
-  await new Promise(function(fim){
-    acaba = fim;
-    function passo(){
-      if (cancelado) return;
-      var t = ac.currentTime - t0;
-      grav.forEach(function(x){ desenhaQuadro(x.g, x.f.w, x.f.h, Math.max(0, t), P); });
-      if (prog) prog(Math.min(1, Math.max(0, t / P.total)));
-      if (t >= P.total + 0.25){ fim(); return; }
-      requestAnimationFrame(passo);
+  var out = {}, medidas = [];
+  try {
+    for (var n = 0; n < formatos.length; n++){
+      var r = await gravaUm(ac, P, audio, formatos[n], tipo, fps, fraco, function(p, info){ if (prog) prog(p, n, formatos.length, formatos[n], info); });
+      out[formatos[n].nome] = r.blob; medidas.push(r.medida);
+      limpaCacheVideo(); await demora(300);
     }
-    requestAnimationFrame(passo);
-  });
-  if (cancelado) throw new Error(cancelado);
+  } finally { if (trava){ try { trava.release(); } catch (e) {} } window.cancelaGravacao = null; }
+  window.OK_MEDIDAS = medidas;
+  return {videos: out, tipo: tipo, medidas: medidas};
+}
+async function gravaUm(ac, P, audio, f, tipo, fps, fraco, prog){
+  /* o som do app precisa estar rodando; se não começar em 5 s, avisa em vez de ficar parado */
+  if (ac.state != 'running'){ try { await Promise.race([ac.resume(), demora(5000)]); } catch (e) {} }
+  if (ac.state != 'running') throw new Error('som-parado');
+  var dest = ac.createMediaStreamDestination(), src = ac.createBufferSource(); src.buffer = audio; src.connect(dest);
+  var trilha = dest.stream.getAudioTracks()[0], c = novaTela(f.w, f.h), g = c.getContext('2d', {alpha: false});
+  desenhaQuadro(g, f.w, f.h, 0, P);
+  var st = c.captureStream(fps); st.addTrack(trilha);
+  var bits = Math.round((f.bits || 2200000) * (fraco ? 0.8 : 1)), rec = new MediaRecorder(st, {mimeType: tipo, videoBitsPerSecond: bits, audioBitsPerSecond: 96000}), pedacos = [], erroRec = null;
+  rec.ondataavailable = function(e){ if (e.data && e.data.size) pedacos.push(e.data); };
+  rec.onerror = function(e){ erroRec = (e && e.error && e.error.name) || 'gravador'; };
+  var pronto = new Promise(function(ok){ rec.onstop = function(){ ok(new Blob(pedacos, {type: tipo.split(';')[0]})); }; });
+  var cancelado = '';
+  function limpa(){ try { if (rec.state != 'inactive') rec.stop(); } catch (e) {} try { src.stop(); } catch (e) {} try { trilha.stop(); } catch (e) {} st.getVideoTracks().forEach(function(t){ try { t.stop(); } catch (e) {} }); }
+  window.cancelaGravacao = function(motivo){ cancelado = motivo || 'oculto'; };
+  rec.start(1000);
+  var t0 = ac.currentTime + 0.15; src.start(t0);
+  var passo = 1 / fps, ultimoT = -1, quadros = 0, desenhoMs = 0, inicioReal = performance.now(), ultimoSom = ac.currentTime, ultimoSomReal = performance.now(), limiteReal = (P.total * 2.5 + 30) * 1000;
+  try {
+    while (true){
+      await ateQuadro();
+      if (cancelado) throw new Error(cancelado);
+      if (erroRec) throw new Error('gravador');
+      var agora = performance.now(), ct = ac.currentTime;
+      if (ct > ultimoSom + 0.01){ ultimoSom = ct; ultimoSomReal = agora; }
+      else if (agora - ultimoSomReal > 5000) throw new Error('som-parado');
+      if (agora - inicioReal > limiteReal) throw new Error('tempo-video');
+      var t = ct - t0;
+      if (t >= P.total + 0.25) break;
+      if (t - ultimoT < passo * 0.9) continue; /* não desenha mais que o necessário */
+      var a = performance.now(); desenhaQuadro(g, f.w, f.h, Math.max(0, t), P); desenhoMs += performance.now() - a; quadros++; ultimoT = t;
+      if (prog) prog(Math.min(1, Math.max(0, t / P.total)));
+      /* sempre devolve a vez para a tela (botões e números continuam respondendo) */
+    }
+  } catch (x) { limpa(); throw x; }
   limpa();
-  var out = {};
-  for (var i = 0; i < grav.length; i++) out[grav[i].f.nome] = await grav[i].pronto;
-  return {videos: out, tipo: tipo};
+  var blob = await Promise.race([pronto, demora(20000).then(function(){ return null; })]);
+  if (!blob || blob.size < 20000) throw new Error('gravador');
+  var med = {formato: f.nome, w: f.w, h: f.h, fps: fps, quadros: quadros, fpsReal: +(quadros / P.total).toFixed(1), desenhoMedioMs: Math.round(desenhoMs / Math.max(1, quadros)), mb: +(blob.size / 1048576).toFixed(2)};
+  return {blob: blob, medida: med};
 }

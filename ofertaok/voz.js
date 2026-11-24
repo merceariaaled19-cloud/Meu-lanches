@@ -94,33 +94,52 @@ function wavDePcm(u8, rate){
   var o = new Uint8Array(44 + n); o.set(new Uint8Array(h), 0); o.set(u8, 44); return o.buffer;
 }
 function b64u8(b){ var s = atob(b), u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
-function espera(ms){ return new Promise(function(r, ruim){ var t = setTimeout(function(){ window.cancelaEspera = null; r(); }, ms); window.cancelaEspera = function(){ clearTimeout(t); window.cancelaEspera = null; ruim(new Error('oculto')); }; }); }
-/* devolve ArrayBuffer de um WAV */
-async function geraFala(texto, voz, key, avisa){
+/* base64 -> bytes sem travar a tela (o navegador decodifica por dentro) */
+async function b64Bytes(b){ try { var r = await fetch('data:application/octet-stream;base64,' + b); return new Uint8Array(await r.arrayBuffer()); } catch (e) { return b64u8(b); } }
+function espera(ms, conta){ return new Promise(function(r, ruim){ var fim = Date.now() + ms, iv = setInterval(function(){ if (conta) conta(Math.max(0, Math.ceil((fim - Date.now()) / 1000))); }, 1000), t = setTimeout(function(){ clearInterval(iv); window.cancelaEspera = null; r(); }, ms);
+  window.cancelaEspera = function(motivo){ clearTimeout(t); clearInterval(iv); window.cancelaEspera = null; ruim(new Error(motivo || 'oculto')); }; }); }
+/* um pedido ao Gemini com tempo limite; cancelável (sair da tela / botão Cancelar) */
+function pedeGemini(url, corpo, ms){
+  var ctl = window.AbortController ? new AbortController() : null, motivo = '';
+  var t = setTimeout(function(){ motivo = 'tempo'; if (ctl) ctl.abort(); }, ms);
+  window.cancelaEspera = function(m){ motivo = m || 'oculto'; if (ctl) ctl.abort(); };
+  return fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: corpo, signal: ctl ? ctl.signal : undefined})
+    .then(function(r){ return r.status == 200 ? r.json().then(function(j){ return {status: 200, j: j}; }) : {status: r.status}; })
+    .catch(function(e){ if (motivo == 'tempo') return {status: 'tempo'}; if (motivo) throw new Error(motivo); return {status: 'rede'}; })
+    .finally(function(){ clearTimeout(t); window.cancelaEspera = null; });
+}
+/* devolve ArrayBuffer de um WAV. avisa(texto) mostra o que está acontecendo.
+   Limites: cada pedido no máx. 45 s; tudo junto no máx. ~2 min 30 s. */
+var TTS_TEMPO_PEDIDO = 45000, TTS_TEMPO_TOTAL = 150000, TTS_ESPERA_429 = 40000;
+async function geraFala(texto, voz, key, avisa, modelos){
   if (!key) throw new Error('sem-chave');
-  var corpo = {contents: [{parts: [{text: voz.prompt + ':\n' + texto}]}], generationConfig: {responseModalities: ['AUDIO'], speechConfig: {voiceConfig: {prebuiltVoiceConfig: {voiceName: voz.gem}}}}};
-  var ultimo = '';
+  modelos = modelos || TTS_MODELOS;
+  var corpo = JSON.stringify({contents: [{parts: [{text: voz.prompt + ':\n' + texto}]}], generationConfig: {responseModalities: ['AUDIO'], speechConfig: {voiceConfig: {prebuiltVoiceConfig: {voiceName: voz.gem}}}}});
+  var ultimo = '', inicio = Date.now();
   for (var volta = 0; volta < 3; volta++){
     var todos429 = true;
-    for (var i = 0; i < TTS_MODELOS.length; i++){
-      var m = TTS_MODELOS[i], r;
-      try {
-        r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(key), {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(corpo)});
-      } catch (e) { ultimo = 'sem internet'; todos429 = false; continue; }
-      if (r.status == 429){ ultimo = 'limite'; continue; }
+    for (var i = 0; i < modelos.length; i++){
+      var resta = TTS_TEMPO_TOTAL - (Date.now() - inicio); if (resta < 5000){ ultimo = 'tempo'; break; }
+      var m = modelos[i], t0 = Date.now(), tic = null;
+      if (avisa){ var rot = function(){ avisa('🎙️ Gerando a voz de ' + voz.nome + '… ' + Math.round((Date.now() - t0) / 1000) + ' s' + (i ? ' (tentativa ' + (i + 1) + ')' : '')); }; rot(); tic = setInterval(rot, 1000); }
+      var r = await pedeGemini('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(key), corpo, Math.min(TTS_TEMPO_PEDIDO, resta)).finally(function(){ clearInterval(tic); });
+      if (r.status == 429){ ultimo = ultimo == 'tempo' ? 'tempo' : 'limite'; continue; }
       todos429 = false;
-      if (!r.ok){ ultimo = 'erro ' + r.status; continue; }
-      var j = await r.json(), part = j && j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts && j.candidates[0].content.parts[0];
+      if (r.status == 'tempo'){ ultimo = 'tempo'; continue; }
+      if (r.status == 'rede'){ ultimo = 'sem internet'; continue; }
+      if (r.status != 200){ ultimo = 'erro ' + r.status; continue; }
+      var j = r.j, part = j && j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts && j.candidates[0].content.parts[0];
       if (!part || !part.inlineData){ ultimo = 'resposta vazia'; continue; }
-      var mime = part.inlineData.mimeType || '', u8 = b64u8(part.inlineData.data);
+      if (avisa) avisa('🎙️ Voz recebida! Preparando o áudio…');
+      var mime = part.inlineData.mimeType || '', u8 = await b64Bytes(part.inlineData.data);
       window.OK_MODELO_TTS = m;
       if (/wav/i.test(mime) || (u8[0] == 82 && u8[1] == 73 && u8[2] == 70 && u8[3] == 70)) return u8.buffer;
       var rate = +((mime.match(/rate=(\d+)/) || [])[1] || 24000);
       return wavDePcm(u8, rate);
     }
-    if (!todos429) break;
-    if (avisa) avisa('A voz está ocupada (limite grátis por minuto). Esperando 40 segundos…');
-    await espera(40000);
+    if (!todos429 || ultimo == 'tempo') break;
+    if (TTS_TEMPO_TOTAL - (Date.now() - inicio) < TTS_ESPERA_429 + 10000) break;
+    await espera(TTS_ESPERA_429, function(s){ if (avisa) avisa('⏳ A voz grátis está ocupada (limite por minuto). Tentando de novo em ' + s + ' s…'); });
   }
   throw new Error(ultimo == 'limite' ? 'limite' : (ultimo || 'falhou'));
 }
