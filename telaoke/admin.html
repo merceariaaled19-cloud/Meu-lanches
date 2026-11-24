@@ -1,114 +1,360 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ADM TelaOkê Publicidades</title><meta name="robots" content="noindex"><meta name="theme-color" content="#120a2e">
 <link rel="manifest" href="admin.webmanifest"><link rel="icon" href="adm-192.png"><link rel="apple-touch-icon" href="adm-192.png">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0a0620;color:#fff}
-header{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,#1d1145,#3b1680);border-bottom:3px solid #ff3fa4;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-header img{width:36px;height:36px;border-radius:9px}h1{font-size:18px;margin:0;flex:1}main{padding:12px;max-width:760px;margin:auto}
-.card{background:#1d1145;border:1px solid #352170;border-radius:16px;padding:14px;margin-bottom:14px}.card h3{margin:0 0 8px;color:#ffd54a;font-size:17px}
-input{width:100%;padding:12px;font-size:16px;border-radius:10px;border:2px solid #4a2e8f;background:#0d0726;color:#fff;margin:5px 0}
-button,.bt{padding:12px 14px;font-size:15px;border:0;border-radius:10px;background:linear-gradient(90deg,#ff3fa4,#c026d3);color:#fff;font-weight:bold;cursor:pointer;text-align:center;text-decoration:none;display:inline-block}
-.s{background:#352170;padding:8px 10px;font-size:13px}.v{background:#16a34a}.x{background:#7f1d1d}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
-.mut{opacity:.75;font-size:13px;margin:4px 0}#msg{color:#ff8a8a;min-height:18px}
-.it{border-top:1px solid #33205f;padding:10px 0}.it b{color:#fff}.tag{font-size:12px;padding:2px 8px;border-radius:9px;margin-left:6px;font-weight:bold}
-.ok{background:#16a34a}.venc{background:#b91c1c}.tes{background:#2563eb}.ag{background:#b45309}
-.tot{display:flex;gap:8px;text-align:center}.tot div{flex:1;background:#0d0726;border-radius:10px;padding:8px;font-size:13px}.tot b{display:block;font-size:22px;color:#ffd54a}
-.fil{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.fil span{padding:7px 12px;border-radius:16px;background:#0d0726;border:1px solid #4a2e8f;font-size:13px;cursor:pointer}.fil span.on{background:#22d3ee;color:#06202a;font-weight:bold}
-#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#16a34a;padding:12px 18px;border-radius:12px;font-weight:bold;display:none;z-index:9}
+:root{--ci:#22d3ee;--ro:#ff3fa4;--am:#ffd54a;--er:#ff8a8a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0a0620;color:#fff}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(90deg,#1d1145,#3b1680);border-bottom:3px solid var(--ro);padding:10px 12px;display:flex;align-items:center;gap:10px}
+header img{width:36px;height:36px;border-radius:9px}h1{font-size:17px;margin:0;flex:1}main{padding:12px 12px 96px;max-width:760px;margin:auto}
+.card{background:#1d1145;border:1px solid #352170;border-radius:16px;padding:14px;margin-bottom:14px}.card h3{margin:0 0 8px;color:var(--am);font-size:17px}
+h2{font-size:19px;margin:0 0 10px;color:var(--am)}
+input,select,textarea{width:100%;padding:12px;font-size:16px;border-radius:10px;border:2px solid #4a2e8f;background:#0d0726;color:#fff;margin:5px 0;font-family:inherit}
+textarea{min-height:120px;resize:vertical}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ci)}
+label.rt{display:block;font-size:14px;font-weight:bold;margin-top:10px;opacity:.9}
+button,.bt{padding:12px 14px;font-size:15px;border:0;border-radius:10px;background:linear-gradient(90deg,#ff3fa4,#c026d3);color:#fff;font-weight:bold;cursor:pointer;text-align:center;text-decoration:none;display:inline-block;font-family:inherit}
+button:disabled{opacity:.5}.w{width:100%;display:block;margin:8px 0}
+.s{background:#352170;padding:9px 11px;font-size:14px}.v{background:#16a34a}.x{background:#7f1d1d}.az{background:linear-gradient(90deg,#06b6d4,#3b82f6)}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+.mut{opacity:.78;font-size:13px;margin:4px 0;line-height:1.4}.e{color:var(--er);min-height:18px;font-size:14px}
+.tag{display:inline-block;font-size:12px;padding:3px 9px;border-radius:9px;margin:3px 4px 0 0;font-weight:bold}
+.tOk{background:#16a34a}.tAv{background:#ca8a04;color:#1a1300}.tVe{background:#dc2626}.tFo{background:#7f1d1d;border:1px solid #f87171}.tCz{background:#4b5563}.tGr{background:#2563eb}
+.dash{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.dash div{background:#1d1145;border:1px solid #352170;border-radius:12px;padding:8px 4px;text-align:center;font-size:12px;line-height:1.2}
+.dash b{display:block;font-size:20px;color:var(--am);margin-bottom:2px}.dash .rd b{color:#f87171}
+@media(max-width:420px){.dash b{font-size:17px}.dash div{font-size:11px}}
+.it{border-top:1px solid #33205f;padding:12px 0}.it:first-child{border-top:0}.it .nm{font-size:16px;font-weight:bold}
+.it .bts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.it .bts button{flex:1 1 auto}
+.ad{display:flex;gap:10px;align-items:center;border-top:1px solid #33205f;padding:10px 0}.ad .th{flex:0 0 86px;height:58px;border-radius:8px;background:#000 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer}
+.ad .tx{flex:1;min-width:0;cursor:pointer}.ad .tx b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fil{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.fil span{padding:7px 12px;border-radius:16px;background:#0d0726;border:1px solid #4a2e8f;font-size:13px;cursor:pointer}.fil span.on{background:var(--ci);color:#06202a;font-weight:bold}
+.abas{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#0d0726;border-top:1px solid #352170;display:flex;padding-bottom:env(safe-area-inset-bottom)}
+.abas button{flex:1;margin:0;border-radius:0;background:none;padding:8px 2px 7px;font-size:11px;font-weight:bold;opacity:.65;position:relative}.abas button i{display:block;font-style:normal;font-size:21px}
+.abas button.on{opacity:1;color:var(--am);box-shadow:inset 0 3px 0 var(--am)}.abas .bd{position:absolute;top:3px;right:18%;background:#dc2626;color:#fff;border-radius:9px;font-size:10px;padding:1px 5px;display:none}
+.seg{display:flex;gap:8px;margin:6px 0}.seg label{flex:1;text-align:center;padding:12px 6px;border-radius:12px;border:2px solid #4a2e8f;background:#0d0726;cursor:pointer;font-weight:bold}.seg label.on{border-color:var(--am);background:#2a1660;color:var(--am)}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#0d0726;border-radius:12px;padding:12px;margin:8px 0;cursor:pointer}.sw input{width:auto;transform:scale(1.5);margin:0 6px}
+.prev{width:100%;max-height:240px;object-fit:contain;border-radius:12px;background:#000;margin-top:6px;display:none}
+.ckl label{display:flex;align-items:center;gap:10px;padding:8px;border-bottom:1px solid #2a1a5c}.ckl input{width:auto;transform:scale(1.4)}
+#modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center}
+#modal.on{display:flex}#mBox{background:#1d1145;border-top:3px solid var(--ro);border-radius:22px 22px 0 0;width:100%;max-width:640px;max-height:92vh;overflow:auto;padding:18px 16px 26px;position:relative}
+#mFecha{position:absolute;top:10px;right:10px;width:40px;height:40px;padding:0;border-radius:50%;background:#352170}
+.dica{background:#0d0726;border-left:4px solid var(--ci);border-radius:10px;padding:10px 12px;font-size:14px;margin:8px 0;line-height:1.4}
+.msgbox{white-space:pre-wrap;background:#0d0726;border:1px dashed #4a2e8f;border-radius:12px;padding:12px;font-size:14px;line-height:1.45}
+details summary{cursor:pointer;font-weight:bold;padding:8px 0;color:var(--ci)}
+.cod{font-size:26px;letter-spacing:5px;color:var(--am);font-weight:bold;font-family:monospace}
+#toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#16a34a;padding:12px 18px;border-radius:12px;font-weight:bold;display:none;z-index:90;max-width:90%;text-align:center}
+.vazio{text-align:center;padding:18px 8px;opacity:.8}.vazio i{display:block;font-size:40px;font-style:normal;margin-bottom:6px}
 </style></head><body>
-<header><img src="adm-192.png" alt=""><h1>ADM TelaOkê Publicidades</h1><button class="s" id="sair" style="display:none">Sair</button></header>
+<header><img src="adm-192.png" alt=""><h1>TelaOkê Publicidades • ADM</h1><button class="s" id="sair" style="display:none">Sair</button></header>
 <main>
-<div class="card" id="login" style="display:none"><h3>Entrar (conta de administrador)</h3>
- <button id="bG" style="width:100%;background:#fff;color:#222">Entrar com Google</button><p class="mut" style="text-align:center">ou</p>
- <input id="em" type="email" placeholder="E-mail" autocomplete="username"><input id="se" type="password" placeholder="Senha" autocomplete="current-password">
- <button id="bE" style="width:100%">Entrar</button><p id="msg"></p></div>
+<div class="card" id="login" style="display:none;text-align:center"><img src="icon-192.png" alt="" style="width:76px;height:76px;border-radius:18px;margin-top:6px">
+ <h2 style="margin-top:10px">Painel do operador</h2><p class="mut">Entre com a sua conta Google de administrador.</p>
+ <button id="bG" class="w" style="background:#fff;color:#222;font-size:18px;padding:16px">🔐 Entrar com Google</button>
+ <details style="text-align:left;margin-top:10px"><summary>Outra forma de entrar</summary>
+  <input id="em" type="email" placeholder="E-mail" autocomplete="username"><input id="se" type="password" placeholder="Senha" autocomplete="current-password">
+  <button id="bE" class="w s">Entrar com e-mail e senha</button></details><p id="msg" class="e"></p></div>
 <div id="app" style="display:none">
- <div class="card"><h3>📣 Link para seus clientes se cadastrarem</h3><p class="mut">A pessoa abre, vê os vídeos, cria a conta e já ganha 7 dias grátis. Depois paga o plano pelo Pix lá mesmo.</p>
-  <input id="lk" readonly value="https://is.gd/telaoke" onclick="this.select()">
-  <div class="row" style="margin-top:6px"><button class="s" id="lkCp">📋 Copiar link</button><button class="s" id="lkMsg">📋 Copiar mensagem</button><button class="s v" id="lkWa">💬 Mandar no WhatsApp</button></div>
-  <p class="mut">Link para abrir na TV: <b style="color:#ffd54a">is.gd/telaoketv</b></p></div>
- <div class="card"><h3>💰 Pagamentos a confirmar <span class="tag ag" id="nPag">0</span></h3><p class="mut">Olhe no seu banco. Se o Pix caiu, toque em "Caiu, liberar": os dias somam sozinhos na conta do cliente e as TVs dele voltam a passar.</p><div id="pags"></div></div>
- <div class="card"><div class="tot"><div><b id="tT">0</b>Em teste</div><div><b id="tA">0</b>Pagantes</div><div><b id="tV">0</b>Vencidos</div><div><b id="tTv">0</b>TVs</div></div>
-  <input id="bus" placeholder="Buscar nome, e-mail ou WhatsApp" style="margin-top:10px"><div class="fil" id="fil"></div><div id="lista"><p class="mut">Carregando…</p></div></div>
- <div class="card"><h3>🏷️ Preços dos planos</h3><p class="mut">Mude aqui o valor e os dias de cada plano e do teste grátis. Vale na hora para clientes novos e para quem for pagar (o Pix já sai com o valor novo).</p>
-  <div id="prc"></div><label class="mut" style="display:block;margin-top:8px"><b>🎁 Teste grátis (dias)</b></label><input id="prT" type="number" min="1" max="60" inputmode="numeric">
-  <button id="prSalva" style="width:100%;margin-top:6px">💾 Salvar preços</button><p class="mut" id="prMsg"></p></div>
- <div class="card"><h3>💠 Pix para receber</h3><p class="mut">É o mesmo Pix do Meu Lanche e do TudoOkê. Os valores do TelaOkê ficam no card Preços dos planos.</p>
-  <input id="pxChave" placeholder="Chave Pix" autocomplete="off"><input id="pxNome" placeholder="Nome de quem recebe (como no banco)" autocomplete="off"><input id="pxCid" placeholder="Cidade" value="Manaus" autocomplete="off">
-  <button id="pxSalva">Salvar Pix</button><p class="mut" id="pxMsg"></p></div>
-</div></main><div id="toast"></div>
+ <div class="dash"><div><b id="dAt">0</b>Anunciantes ativos</div><div><b id="dRe">R$ 0</b>A receber este mês</div><div id="dVeBx"><b id="dVe">0</b>Vencidos</div><div><b id="dTv">0</b>TVs ligadas</div></div>
+ <p id="aviso" class="dica" style="display:none;border-color:#dc2626"></p>
+
+ <!-- ANUNCIANTES -->
+ <section class="tab" id="tLojas">
+  <div class="card"><div class="row" style="align-items:center"><h3 style="margin:0">🏪 Anunciantes</h3><button style="flex:0 0 auto" onclick="editaLoja()">➕ Novo anunciante</button></div>
+   <input id="bus" placeholder="🔎 Buscar nome, categoria ou WhatsApp" style="margin-top:10px"><div class="fil" id="fil"></div><div id="lLojas"><p class="mut">Carregando…</p></div></div>
+ </section>
+
+ <!-- ANÚNCIOS -->
+ <section class="tab" id="tAnun" style="display:none">
+  <div class="card"><div class="row" style="align-items:center"><h3 style="margin:0">🖼️ Anúncios</h3><button style="flex:0 0 auto" onclick="editaAnun()">➕ Novo anúncio</button></div>
+   <div class="fil" id="fAnun"></div><div id="lAnun"></div></div>
+ </section>
+
+ <!-- TVs -->
+ <section class="tab" id="tTvs" style="display:none">
+  <div class="card"><div class="row" style="align-items:center"><h3 style="margin:0">📺 Minhas TVs</h3><button style="flex:0 0 auto" onclick="novaTela()">➕ Adicionar TV</button></div>
+   <p class="mut">Na TV abra <b style="color:var(--am)">is.gd/telaoketv</b> (ou o app TelaOkê TV). Aparece um código de 6 letras: toque em Adicionar TV e digite.</p><div id="lTelas"></div></div>
+ </section>
+
+ <!-- CAPTAR -->
+ <section class="tab" id="tCapta" style="display:none">
+  <div class="card"><h3>📣 Mensagem para oferecer a TV</h3>
+   <label class="rt">Nome da loja ou da pessoa</label><input id="cNome" maxlength="60" placeholder="Ex.: Padaria Pão Quente">
+   <label class="rt">WhatsApp (opcional)</label><input id="cZap" inputmode="tel" maxlength="20" placeholder="(92) 99999-9999">
+   <div class="msgbox" id="cMsg" style="margin-top:8px"></div>
+   <div class="row" style="margin-top:8px"><button class="s" id="cCp">📋 Copiar</button><button class="v" id="cWa">💬 Mandar no WhatsApp</button></div>
+   <div id="cVids"></div>
+   <p class="mut">O texto da mensagem e os links dos vídeos você muda em ⚙️ Config.</p></div>
+  <div class="card"><h3>🙋 Interessados <span class="tag tVe" id="nLeads" style="display:none">0</span></h3><p class="mut">Quem pediu para anunciar pelo site <b>is.gd/telaoke</b>.</p><div id="lLeads"><p class="mut">Nenhum ainda.</p></div></div>
+ </section>
+
+ <!-- CONFIG -->
+ <section class="tab" id="tCfg" style="display:none">
+  <div class="card"><h3>⚙️ Cobrança</h3>
+   <label class="rt">Mensalidade padrão (R$)</label><input id="gPreco" inputmode="decimal" placeholder="49,99">
+   <label class="sw"><span>🎁 1º mês grátis para anunciante novo</span><input type="checkbox" id="gGratis"></label>
+   <label class="rt">Dias de tolerância depois do vencimento</label><input id="gCar" type="number" min="0" max="30" inputmode="numeric">
+   <p class="mut">Passou disso sem pagar, os anúncios da loja saem das TVs sozinhos. Pagou, voltam na hora.</p>
+   <label class="rt">Texto da mensagem para oferecer a TV</label><textarea id="gOferta" style="min-height:220px"></textarea>
+   <p class="mut">Use <b>[nome]</b> para o nome da loja e <b>[valor]</b> para a mensalidade.</p><button class="s" id="gPadrao">↩️ Voltar ao texto padrão</button>
+   <label class="rt">Link do vídeo comercial (opcional)</label><input id="gVidC" inputmode="url" placeholder="https://…">
+   <label class="rt">Link do vídeo da TV funcionando (opcional)</label><input id="gVidT" inputmode="url" placeholder="https://…">
+   <button id="gSalva" class="w">💾 Salvar configurações</button><p class="mut" id="gMsg"></p></div>
+  <div class="card"><h3>💠 Pix para receber</h3><p class="mut">O mesmo Pix do Meu Lanche e do TudoOkê. Vai junto na mensagem de cobrança.</p>
+   <input id="pxChave" placeholder="Chave Pix" autocomplete="off"><input id="pxNome" placeholder="Nome de quem recebe (como no banco)" autocomplete="off"><input id="pxCid" placeholder="Cidade" value="Manaus" autocomplete="off">
+   <button id="pxSalva" class="w">Salvar Pix</button><p class="mut" id="pxMsg"></p></div>
+  <div class="card"><h3>🔗 Links</h3><p class="mut">Site para lojas (anuncie): <b style="color:var(--am)">is.gd/telaoke</b><br>Abrir na TV: <b style="color:var(--am)">is.gd/telaoketv</b><br>App da TV Box: <b style="color:var(--am)">is.gd/telaoketvapk</b></p></div>
+ </section>
+</div></main>
+<nav class="abas" id="abas" style="display:none">
+ <button data-t="tLojas" class="on"><i>🏪</i>Anunciantes</button><button data-t="tAnun"><i>🖼️</i>Anúncios</button><button data-t="tTvs"><i>📺</i>TVs</button><button data-t="tCapta"><i>📣</i>Captar<span class="bd" id="bdLeads"></span></button><button data-t="tCfg"><i>⚙️</i>Config</button></nav>
+<div id="modal"><div id="mBox"><button id="mFecha" onclick="fechaM()">✕</button><div id="mCont"></div></div></div><div id="toast"></div>
 <script>
-var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
-firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)},TS=function(){return firebase.firestore.FieldValue.serverTimestamp()};
-var ADMINS=['alexprotasgohan@gmail.com','merceariaaled19@gmail.com','alexprotasioficial@gmail.com'];
-var PLN={mensal:'Mensal',semestral:'Semestral',anual:'Anual',teste:'Teste grátis'},CLI=[],VAL={},TVS={},FIL='todos',UNS=[],PG0=-1;
+/* ================= utilidades puras (testáveis) ================= */
+var OFERTA_PADRAO="Olá, [nome]! Tudo bem? Aqui é o Alex, da TelaOkê Publicidades.\n\nTenho uma TV na loja aqui do bairro que passa anúncios o dia todo pra quem vem comprar. Quero colocar a sua loja nela!\n\n• Seu anúncio com foto ou vídeo passando o dia inteiro\n• A arte eu faço pra você, sem custo\n• O 1º mês é grátis\n• Depois, só R$ [valor] por mês, sem fidelidade\n\nTe mandei um vídeo da TV funcionando. Posso colocar a sua loja essa semana?";
+var CFG_PADRAO={preco:49.99,gratis:true,carencia:3,oferta:OFERTA_PADRAO,videoComercial:'',videoTv:''};
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function ms(t){return t&&t.toMillis?t.toMillis():0}function dt(m){return new Date(m).toLocaleDateString('pt-BR')}
-function dth(m){var d=new Date(m);return d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
-function reais(v){return 'R$ '+Number(v).toFixed(2).replace('.',',')}
-function toast(t){var e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none'},2500)}
-function zapUrl(n,t){if(/Android/i.test(navigator.userAgent))return 'intent://send?'+(n?'phone='+n+'&':'')+'text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;end';return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(t)}
-function copia(t,b){function ok(){if(!b)return toast('Copiado!');var o=b.textContent;b.textContent='Copiado! ✅';setTimeout(function(){b.textContent=o},1500)}
+function hoje(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function addD(s,n){var d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+function difD(a,b){return Math.round((Date.parse(b+'T12:00:00Z')-Date.parse(a+'T12:00:00Z'))/864e5)}
+function br(s){return s?s.split('-').reverse().join('/'):''}
+function brC(s){return s?br(s).slice(0,5):''}
+function val(v){return Number(v||0).toFixed(2).replace('.',',')}
+function reais(v){return 'R$ '+val(v)}
+function num(v){v=String(v==null?'':v).replace(/[^\d,.]/g,'');if(v.indexOf(',')>=0)v=v.replace(/\./g,'').replace(',','.');return +v}
+function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
+function zapBr(z){z=String(z||'').replace(/\D/g,'');if(z.indexOf('55')===0&&z.length>=12)z=z.slice(2);return z.length==11?'('+z.slice(0,2)+') '+z.slice(2,7)+'-'+z.slice(7):z.length==10?'('+z.slice(0,2)+') '+z.slice(2,6)+'-'+z.slice(6):z}
+function wa(n,t){return 'https://wa.me/'+(n?nz(n):'')+'?text='+encodeURIComponent(t)}
+/* vencimento inicial: com 1º mês grátis vence 30 dias depois do início; sem, vence no próprio início */
+function vencInicial(inicio,gratis){return gratis?addD(inicio,30):inicio}
+/* situação do anunciante */
+function situacao(l,car,h){h=h||hoje();car=car==null?3:+car;if(l.pausado)return{k:'pausa',txt:'⏸️ Pausado',cl:'tCz',naTv:false,d:null};
+ if(!l.venc)return{k:'ok',txt:'Em dia',cl:'tOk',naTv:true,d:null};var d=difD(h,l.venc);
+ if(d>5)return{k:'ok',txt:'✅ Em dia',cl:'tOk',naTv:true,d:d};
+ if(d>0)return{k:'avisa',txt:'⚠️ Vence em '+d+(d>1?' dias':' dia'),cl:'tAv',naTv:true,d:d};
+ if(d==0)return{k:'avisa',txt:'⚠️ Vence hoje',cl:'tAv',naTv:true,d:0};
+ var a=-d;if(a<=car)return{k:'venc',txt:'❌ Vencido há '+a+(a>1?' dias':' dia'),cl:'tVe',naTv:true,d:d};
+ return{k:'fora',txt:'⛔ Vencido há '+a+' dias • fora da TV',cl:'tFo',naTv:false,d:d}}
+/* soma do mês: mensalidade de quem não está pausado e vence até o fim deste mês (inclui atrasados) */
+function aReceberMes(L,h){h=h||hoje();var fim=h.slice(0,8)+'31';return L.reduce(function(s,l){return s+(!l.pausado&&l.venc&&l.venc<=fim?(+l.preco||0):0)},0)}
+function recebeu(venc,h){return addD(venc||h||hoje(),30)}
+function textoOferta(t,nome,preco){return String(t||OFERTA_PADRAO).replace(/\[nome\]/g,(nome||'').trim()||'tudo bem').replace(/\[valor\]/g,val(preco))}
+function pixTxt(t,m){return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9 .\-]/g,'').toUpperCase().slice(0,m)}
+function crc16(s){var c=0xFFFF;for(var i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(var j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return('0000'+c.toString(16).toUpperCase()).slice(-4)}
+function pixCC(ch,no,ci,v,tx){function f(i,x){return i+('0'+x.length).slice(-2)+x}var k=String(ch||'').trim();if(/^[\d.\-\/ ]+$/.test(k))k=k.replace(/\D/g,'');
+ var p=f('00','01')+f('26',f('00','br.gov.bcb.pix')+f('01',k))+f('52','0000')+f('53','986')+(v?f('54',Number(v).toFixed(2)):'')+f('58','BR')+f('59',pixTxt(no,25)||'RECEBEDOR')+f('60',pixTxt(ci,15)||'MANAUS')+f('62',f('05',pixTxt(tx,25).replace(/[^A-Z0-9]/g,'')||'***'))+'6304';return p+crc16(p)}
+function textoCobranca(l,pix,h){h=h||hoje();var d=l.venc?difD(h,l.venc):0,q=l.venc?(d>0?'com vencimento em '+br(l.venc):d==0?'que vence hoje ('+br(l.venc)+')':'que venceu em '+br(l.venc)):'';
+ var t='Olá, '+(l.nome||'')+'! Tudo bem? Aqui é o Alex, da TelaOkê Publicidades. 😊\n\nPassando para lembrar da mensalidade do seu anúncio na TV: '+reais(l.preco)+(q?', '+q:'')+'.';
+ if(pix&&pix.chave)t+='\n\nPode pagar pelo Pix copia e cola:\n'+pixCC(pix.chave,pix.nome,pix.cidade,l.preco,'TELAOKE')+'\n\nOu pela chave Pix: '+pix.chave+(pix.nome?' ('+pix.nome+')':'');
+ return t+'\n\nAssim que cair eu confirmo aqui. Obrigado pela parceria! 🙏'}
+function ytId(u){var m=String(u||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/))([A-Za-z0-9_-]{11})/);return m?m[1]:''}
+function ehVideoDireto(u){return /^https?:\/\/.+\.(mp4|webm|m4v|mov)(\?.*)?$/i.test(String(u||'').trim())}
+function hhmm(v,d){return /^\d\d:\d\d$/.test(v||'')?v:d}
+function ms(t){return t&&t.toMillis?t.toMillis():(t&&t.seconds?t.seconds*1000:(+t||0))}
+function ligada(t,agora){return ms(t.visto)>(agora||Date.now())-11*60000}
+
+/* ================= Firebase ================= */
+var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+var $=function(i){return document.getElementById(i)};
+var db,au,TS;
+if(!window.TO_TESTE){firebase.initializeApp(FB);db=firebase.firestore();au=firebase.auth();TS=function(){return firebase.firestore.FieldValue.serverTimestamp()}}
+var ADMINS=['alexprotasgohan@gmail.com','merceariaaled19@gmail.com','alexprotasioficial@gmail.com'];
+var U=null,UNS=[],LOJAS=[],ANUN=[],TELAS=[],LEADS=[],CFG=JSON.parse(JSON.stringify(CFG_PADRAO)),PIX={},FIL='todos',FA='',LEADS0=-1;
+var Q=new URLSearchParams(location.search),PAREAR=(Q.get('parear')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+function toast(t,cor){var e=$('toast');e.textContent=t;e.style.background=cor||'#16a34a';e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none'},2600)}
+function erroTxt(e){var c=e&&e.code||String(e);return c=='permission-denied'?'Sem permissão (as regras do Firestore ainda não foram publicadas para isto).':c=='unavailable'?'Sem internet. Tente de novo.':'Erro: '+c}
+function copia(t,b){function ok(){if(!b)return toast('Copiado! ✅');var o=b.textContent;b.textContent='Copiado! ✅';setTimeout(function(){b.textContent=o},1500)}
  function velho(){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity=0;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand('copy')}catch(e){}a.remove();if(r)ok();else prompt('Copie:',t)}
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,velho);else velho()}
+function abre(u){location.href=u}
+function abreM(h){$('mCont').innerHTML=h;$('modal').classList.add('on');$('mBox').scrollTop=0}
+function fechaM(){$('modal').classList.remove('on');$('mCont').innerHTML=''}
+function aba(t){[].forEach.call(document.querySelectorAll('.tab'),function(s){s.style.display=s.id==t?'block':'none'});[].forEach.call(document.querySelectorAll('.abas button'),function(b){b.classList.toggle('on',b.getAttribute('data-t')==t)});window.scrollTo(0,0)}
+[].forEach.call(document.querySelectorAll('.abas button'),function(b){b.onclick=function(){aba(b.getAttribute('data-t'))}});
+
+/* ---------- login ---------- */
 function msg(t){$('msg').textContent=t}
+if(!window.TO_TESTE){
 $('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});if(/Android|iPhone/i.test(navigator.userAgent)){au.signInWithRedirect(p);return}au.signInWithPopup(p).catch(function(e){if(/popup|not-supported|cancelled/.test(e.code))au.signInWithRedirect(p);else msg('Não entrou: '+e.code)})};
 $('bE').onclick=function(){au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){msg('Não entrou: '+e.code)})};
 $('sair').onclick=function(){au.signOut()};au.getRedirectResult().catch(function(e){msg('Não entrou: '+e.code)});
-au.onAuthStateChanged(function(u){UNS.forEach(function(f){f()});UNS=[];var adm=u&&ADMINS.indexOf((u.email||'').toLowerCase())>=0;
- $('login').style.display=adm?'none':'block';$('app').style.display=adm?'block':'none';$('sair').style.display=u?'block':'none';
- if(u&&!adm)msg('A conta '+u.email+' não é de administrador. Saia e entre com a conta certa.');if(adm)inicia()});
-var TXT='📺 TelaOkê Publicidades: transforme qualquer TV em painel de anúncios para padarias, lojas e salões! Fotos e vídeos passando sozinhos, tudo pelo celular. Teste 7 dias grátis: https://is.gd/telaoke';
-$('lkCp').onclick=function(){copia($('lk').value,this)};$('lkMsg').onclick=function(){copia(TXT,this)};$('lkWa').onclick=function(){location.href=zapUrl('',TXT)};
+au.onAuthStateChanged(function(u){UNS.forEach(function(f){f()});UNS=[];U=u;var adm=u&&ADMINS.indexOf((u.email||'').toLowerCase())>=0;
+ $('login').style.display=adm?'none':'block';$('app').style.display=adm?'block':'none';$('abas').style.display=adm?'flex':'none';$('sair').style.display=u?'block':'none';
+ if(u&&!adm)msg('A conta '+u.email+' não é de administrador. Toque em Sair e entre com a conta certa.');if(adm)inicia()});
+}
+function dono(){return U?U.uid:'teste'}
 function inicia(){
- UNS.push(db.collection('to_clientes').onSnapshot(function(s){CLI=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pinta()},function(e){$('lista').innerHTML='<p class="mut">Erro: '+e.code+'</p>'}));
- UNS.push(db.collection('to_validade').onSnapshot(function(s){VAL={};s.docs.forEach(function(d){VAL[d.id]=d.data()});pinta()},function(){}));
- UNS.push(db.collection('to_telas').onSnapshot(function(s){TVS={};s.docs.forEach(function(d){var x=d.data();(TVS[x.dono]=TVS[x.dono]||[]).push(x)});$('tTv').textContent=s.size;pinta()},function(){}));
- UNS.push(db.collection('to_pagamentos').where('status','==','aguardando').onSnapshot(pags,function(e){$('pags').innerHTML='<p class="mut">Erro: '+e.code+'</p>'}));
- escutaPrecos();
- db.collection('ml_publico').doc('pix').get().then(function(d){var c=d.exists?d.data():{};$('pxChave').value=c.chave||'';$('pxNome').value=c.nome||'';if(c.cidade)$('pxCid').value=c.cidade;$('pxMsg').textContent=c.chave?'✅ Pix configurado.':'⚠️ Ainda não configurado: o cliente não consegue pagar.'})}
-$('pxSalva').onclick=function(){db.collection('ml_publico').doc('pix').set({chave:$('pxChave').value.trim(),nome:$('pxNome').value.trim(),cidade:$('pxCid').value.trim()||'Manaus',atualizadoEm:TS()},{merge:true}).then(function(){$('pxMsg').textContent='✅ Pix salvo.'},function(e){$('pxMsg').textContent='Erro: '+e.code})};
-/* ---------- preços (to_config/precos) ---------- */
-var PADRAO={testeDias:7,planos:{mensal:{valor:39.90,dias:30},semestral:{valor:199.90,dias:180},anual:{valor:359.90,dias:365}}},PRECOS=PADRAO,PRC_NOMES=[['mensal','Mensal'],['semestral','Semestral'],['anual','Anual']];
-function num(v){return +String(v||'').replace(/[^\d,.]/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.')}
-function pintaPrecos(){var pl=PRECOS.planos||{};$('prc').innerHTML=PRC_NOMES.map(function(x){var o=pl[x[0]]||PADRAO.planos[x[0]];return '<div class="row" style="align-items:center;margin-top:6px"><b style="flex:0 0 92px">'+x[1]+'</b><div><small class="mut">Valor (R$)</small><input id="pv_'+x[0]+'" inputmode="decimal" value="'+Number(o.valor).toFixed(2).replace('.',',')+'"></div><div><small class="mut">Dias</small><input id="pd_'+x[0]+'" type="number" min="1" inputmode="numeric" value="'+(o.dias)+'"></div><label class="mut" style="flex:0 0 70px;text-align:center"><input type="checkbox" id="pa_'+x[0]+'" style="width:auto;transform:scale(1.4)"'+(o.ativo!==false?' checked':'')+'><br>Mostrar</label></div>'}).join('');$('prT').value=PRECOS.testeDias||7}
-function escutaPrecos(){UNS.push(db.collection('to_config').doc('precos').onSnapshot(function(d){PRECOS=d.exists?d.data():PADRAO;if(!PRECOS.planos)PRECOS.planos=PADRAO.planos;pintaPrecos();$('prMsg').textContent=d.exists?'✅ Preços salvos no sistema.':'Usando os preços padrão (ainda não salvos). Toque em Salvar para fixar.'},function(e){$('prMsg').textContent='Erro: '+e.code}))}
-$('prSalva').onclick=function(){var o={testeDias:Math.round(+$('prT').value),planos:{},atualizadoEm:TS()},er='';if(!(o.testeDias>=1&&o.testeDias<=60))er='Teste grátis: de 1 a 60 dias.';
- PRC_NOMES.forEach(function(x){var v=num($('pv_'+x[0]).value),d=Math.round(+$('pd_'+x[0]).value);if(!(v>0&&v<100000))er=er||'Valor do '+x[1]+' inválido.';if(!(d>=1&&d<=3660))er=er||'Dias do '+x[1]+' inválidos.';o.planos[x[0]]={valor:Math.round(v*100)/100,dias:d,ativo:$('pa_'+x[0]).checked}});
- if(!PRC_NOMES.some(function(x){return o.planos[x[0]].ativo}))er=er||'Deixe pelo menos um plano aparecendo.';if(er){$('prMsg').textContent='⚠️ '+er;return}
- db.collection('to_config').doc('precos').set(o).then(function(){toast('Preços salvos ✅')},function(e){$('prMsg').textContent='Erro: '+e.code})};
-function diasDoPlano(x){var o=(PRECOS.planos||{})[x.plano];return o&&o.dias?+o.dias:(+x.dias||30)}
-function sit(id){var v=VAL[id];if(!v)return['venc','Sem plano',0];var m=ms(v.validade);if(m<Date.now())return['venc','Vencido',m];return v.plano=='teste'?['tes','Teste grátis',m]:['ok',PLN[v.plano]||v.plano,m]}
-$('bus').oninput=pinta;
-function pinta(){var c={tes:0,ok:0,venc:0};CLI.forEach(function(x){c[sit(x.id)[0]]++});$('tT').textContent=c.tes;$('tA').textContent=c.ok;$('tV').textContent=c.venc;
- $('fil').innerHTML=[['todos','Todos ('+CLI.length+')'],['tes','Em teste'],['ok','Pagantes'],['venc','Vencidos']].map(function(f){return '<span class="'+(FIL==f[0]?'on':'')+'" onclick="FIL=\''+f[0]+'\';pinta()">'+f[1]+'</span>'}).join('');
- var q=$('bus').value.trim().toLowerCase(),L=CLI.filter(function(x){return (FIL=='todos'||sit(x.id)[0]==FIL)&&(!q||[x.nome,x.email,x.zap].join(' ').toLowerCase().indexOf(q)>=0)});
- if(!L.length){$('lista').innerHTML='<p class="mut">Nenhum cliente aqui.</p>';return}
- $('lista').innerHTML=L.map(function(x){var s=sit(x.id),tv=(TVS[x.id]||[]),on=tv.filter(function(t){return ms(t.visto)>Date.now()-11*60000}).length;
-  return '<div class="it"><b>'+esc(x.nome)+'</b><span class="tag '+s[0]+'">'+s[1]+'</span><div class="mut">'+esc(x.email||'')+(x.zap?' • 📱 '+esc(x.zap.slice(2)):'')+'<br>🕒 Cadastro: '+(x.t?dth(x.t):'—')+(s[2]?'<br>📅 '+(s[0]=='venc'?'Venceu em ':'Vale até ')+dt(s[2]):'')+'<br>📺 '+tv.length+' TV(s)'+(tv.length?' • '+on+' ligada(s) agora':'')+'</div>'+
-  '<div class="row" style="margin-top:6px"><button class="s v" onclick="dias(\''+x.id+'\')">➕ Dar dias</button><button class="s" onclick="zap(\''+x.id+'\')">💬 WhatsApp</button><button class="s x" onclick="exclui(\''+x.id+'\')">🗑️ Excluir conta</button></div></div>'}).join('')}
-function acha(id){return CLI.filter(function(x){return x.id==id})[0]||{}}
-function somaDias(uid,dias,plano){var v=VAL[uid],base=Math.max(Date.now(),v?ms(v.validade):0);return db.collection('to_validade').doc(uid).set({validade:firebase.firestore.Timestamp.fromMillis(base+dias*864e5),plano:plano,atualizadoEm:TS()},{merge:true}).then(function(){return base+dias*864e5})}
-function dias(id){var x=acha(id),p=prompt('Quantos dias dar para '+(x.nome||'o cliente')+'? (soma com o que falta)\n30 = mensal • 180 = semestral • 365 = anual','30');p=+p;if(!p||p<1)return;
- var pl=p>=365?'anual':p>=180?'semestral':p>=30?'mensal':'teste';somaDias(id,p,pl).then(function(fim){toast('Liberado até '+dt(fim)+' ✅');if(x.zap&&confirm('Mandar aviso no WhatsApp?'))location.href=zapUrl(x.zap,'Olá, '+(x.nome||'')+'! Seu TelaOkê Publicidades está liberado até '+dt(fim)+' ✅ Suas TVs já voltam a passar os anúncios.')}).catch(function(e){alert('Erro: '+e.code)})}
-function zap(id){var x=acha(id);location.href=zapUrl(x.zap,'Olá, '+(x.nome||'')+'! Aqui é do TelaOkê Publicidades. ')}
-function exclui(id){var x=acha(id);if(!confirm('Excluir a conta de '+(x.nome||x.email)+'? Apaga lojas, anúncios, TVs e pagamentos. Não tem volta.'))return;if(prompt('Para confirmar, digite EXCLUIR')!=='EXCLUIR')return;
- var cols=[['to_lojas','dono'],['to_anuncios','dono'],['to_telas','dono'],['to_pagamentos','uid']];
- Promise.all(cols.map(function(c){return db.collection(c[0]).where(c[1],'==',id).get().then(function(s){return Promise.all(s.docs.map(function(d){return d.ref.delete()}))})}))
- .then(function(){return Promise.all([db.collection('to_validade').doc(id).delete(),db.collection('to_clientes').doc(id).delete()])}).then(function(){toast('Conta excluída')}).catch(function(e){alert('Erro: '+e.code)})}
-function pags(s){var L=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=ms(x.criadoEm)||Date.now();return x}).sort(function(a,b){return a.t-b.t});
- if(PG0>=0&&L.length>PG0){toast('💰 Chegou comprovante!');try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}}PG0=L.length;$('nPag').textContent=L.length;var B=$('pags');B.innerHTML=L.length?'':'<p class="mut">Nenhum comprovante esperando.</p>';
- L.forEach(function(x){var d=document.createElement('div');d.className='it';var h=document.createElement('div');h.innerHTML='<b></b><div class="mut"></div>';h.firstChild.textContent=(x.nome||'Cliente')+' • '+(x.planoNome||x.plano)+' '+reais(x.valor);h.lastChild.textContent=dth(x.t)+(x.zap?' • '+x.zap.slice(2):'')+(x.email?' • '+x.email:'');d.appendChild(h);
-  if(x.comprovante){var im=document.createElement('img');im.src=x.comprovante;im.style.cssText='max-width:100%;max-height:280px;border-radius:10px;margin:6px 0;display:block;cursor:zoom-in';im.onclick=function(){var w=window.open();if(w)w.document.write('<img src="'+x.comprovante+'" style="width:100%">')};d.appendChild(im)}
-  var r=document.createElement('div');r.className='row';function bt(t,f,c){var e=document.createElement('button');e.className='s '+(c||'');e.textContent=t;e.onclick=f;r.appendChild(e);return e}
-  bt('✅ Caiu, liberar',function(){var b=this;var dias=diasDoPlano(x),atual=(PRECOS.planos||{})[x.plano],dif=atual&&Math.abs(atual.valor-x.valor)>0.009?'\n⚠️ Atenção: o preço atual deste plano é '+reais(atual.valor)+'.':'';if(!confirm('Confirmou no banco que caiu '+reais(x.valor)+' de '+(x.nome||'cliente')+'?\nVai liberar '+dias+' dias.'+dif))return;b.disabled=true;
-   somaDias(x.uid,dias,x.plano||'mensal').then(function(fim){return db.collection('to_pagamentos').doc(x.id).update({status:'aprovado',aprovadoEm:TS(),ate:firebase.firestore.Timestamp.fromMillis(fim)}).then(function(){return fim})})
-   .then(function(fim){toast('Liberado até '+dt(fim)+' ✅');if(confirm('Liberado até '+dt(fim)+'. Mandar aviso no WhatsApp do cliente?'))location.href=zapUrl(x.zap,'Olá, '+(x.nome||'')+'! Pagamento confirmado ✅ Seu TelaOkê Publicidades ('+(x.planoNome||'')+') está liberado até '+dt(fim)+'. As TVs já voltam a passar os anúncios.')})
-   .catch(function(e){b.disabled=false;alert('Erro: '+e.code)})},'v');
-  bt('❌ Não caiu',function(){if(confirm('Marcar que o pagamento não caiu?'))db.collection('to_pagamentos').doc(x.id).update({status:'recusado'})},'x');
-  d.appendChild(r);B.appendChild(d)})}
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+ /* compatível com as regras antigas: o operador ganha uma "validade" longa para poder criar lojas/anúncios/TVs */
+ db.collection('to_validade').doc(U.uid).set({validade:firebase.firestore.Timestamp.fromMillis(Date.parse('2099-12-31T00:00:00Z')),plano:'operador'},{merge:true}).catch(function(){});
+ UNS.push(db.collection('to_config').doc('operacao').onSnapshot(function(d){var c=d.exists?d.data():{};CFG={};for(var k in CFG_PADRAO)CFG[k]=c[k]!=null&&c[k]!==''?c[k]:CFG_PADRAO[k];pintaCfg();pintaTudo()},function(){}));
+ UNS.push(db.collection('to_lojas').onSnapshot(function(s){LOJAS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return String(a.nome).localeCompare(String(b.nome),'pt')});pintaTudo();sincroniza()},function(e){$('lLojas').innerHTML='<p class="e">'+erroTxt(e)+'</p>'}));
+ UNS.push(db.collection('to_anuncios').onSnapshot(function(s){ANUN=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return ms(a.criadoEm)-ms(b.criadoEm)});pintaTudo();sincroniza()},function(e){$('lAnun').innerHTML='<p class="e">'+erroTxt(e)+'</p>'}));
+ UNS.push(db.collection('to_telas').onSnapshot(function(s){TELAS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return ms(a.criadoEm)-ms(b.criadoEm)});pintaTudo()},function(e){$('lTelas').innerHTML='<p class="e">'+erroTxt(e)+'</p>'}));
+ UNS.push(db.collection('to_interessados').onSnapshot(function(s){LEADS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return ms(b.criadoEm)-ms(a.criadoEm)});
+  if(LEADS0>=0&&LEADS.length>LEADS0){toast('🙋 Nova loja interessada!');try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}}LEADS0=LEADS.length;pintaLeads()},
+  function(e){$('lLeads').innerHTML='<p class="mut">'+(e.code=='permission-denied'?'Aparece aqui depois que as regras novas do Firestore forem publicadas.':erroTxt(e))+'</p>'}));
+ db.collection('ml_publico').doc('pix').get().then(function(d){PIX=d.exists?d.data():{};$('pxChave').value=PIX.chave||'';$('pxNome').value=PIX.nome||'';if(PIX.cidade)$('pxCid').value=PIX.cidade;$('pxMsg').textContent=PIX.chave?'✅ Pix configurado.':'⚠️ Ainda não configurado: a cobrança vai sem Pix.'}).catch(function(){});
+ setInterval(pintaTudo,60000);
+ if(PAREAR){aba('tTvs');setTimeout(function(){novaTela(PAREAR);PAREAR='';history.replaceState(null,'',location.pathname)},400)}}
+
+/* ---------- painel ---------- */
+function pintaTudo(){pintaDash();pintaLojas();pintaAnun();pintaTelas();pintaOferta()}
+function pintaDash(){var car=CFG.carencia,at=0,ve=0;LOJAS.forEach(function(l){var s=situacao(l,car);if(!l.pausado)at++;if(s.k=='venc'||s.k=='fora')ve++});
+ $('dAt').textContent=at;$('dRe').textContent=reais(aReceberMes(LOJAS)).replace(',00','');$('dVe').textContent=ve;$('dVeBx').className=ve?'rd':'';
+ $('dTv').textContent=TELAS.filter(function(t){return ligada(t)}).length+'/'+TELAS.length}
+$('bus').oninput=pintaLojas;
+function nAnunLoja(id){return ANUN.filter(function(a){return a.lojaId==id}).length}
+function pintaLojas(){var car=CFG.carencia,q=$('bus').value.trim().toLowerCase(),c={todos:LOJAS.length,ok:0,avisa:0,venc:0,pausa:0};
+ LOJAS.forEach(function(l){var k=situacao(l,car).k;if(k=='fora')k='venc';c[k]++});
+ $('fil').innerHTML=[['todos','Todos'],['avisa','Vencendo'],['venc','Vencidos'],['ok','Em dia'],['pausa','Pausados']].map(function(f){return '<span class="'+(FIL==f[0]?'on':'')+'" onclick="FIL=\''+f[0]+'\';pintaLojas()">'+f[1]+' ('+c[f[0]]+')</span>'}).join('');
+ var L=LOJAS.filter(function(l){var k=situacao(l,car).k;if(k=='fora')k='venc';return (FIL=='todos'||k==FIL)&&(!q||[l.nome,l.categoria,l.zap,l.obs].join(' ').toLowerCase().indexOf(q)>=0)});
+ /* vencidos primeiro, depois quem vence antes */
+ L.sort(function(a,b){return String(a.pausado?'9':a.venc||'8').localeCompare(String(b.pausado?'9':b.venc||'8'))});
+ if(!LOJAS.length){$('lLojas').innerHTML='<div class="vazio"><i>🏪</i>Nenhum anunciante ainda.<br>Toque em <b>➕ Novo anunciante</b>.</div>';return}
+ if(!L.length){$('lLojas').innerHTML='<p class="mut">Ninguém aqui.</p>';return}
+ $('lLojas').innerHTML=L.map(function(l){var s=situacao(l,car),n=nAnunLoja(l.id),gr=l.gratis&&!(l.pags||[]).length&&l.venc&&l.venc>=hoje();
+  return '<div class="it"><div class="nm">'+esc(l.nome)+'</div><span class="tag '+s.cl+'">'+s.txt+'</span>'+(gr?'<span class="tag tGr">🎁 1º mês grátis</span>':'')+
+  '<div class="mut">'+(l.categoria?esc(l.categoria)+' • ':'')+reais(l.preco)+'/mês'+(l.venc?' • vence '+br(l.venc):'')+(l.zap?' • 📱 '+esc(zapBr(l.zap)):'')+'<br>🖼️ '+n+' anúncio(s)'+(!s.naTv&&n?' • <b style="color:#f87171">não está passando</b>':'')+(l.obs?'<br>📝 '+esc(l.obs):'')+'</div>'+
+  '<div class="bts"><button class="s v" onclick="recebi(\''+l.id+'\')">💰 Recebi o pagamento</button><button class="s" onclick="cobrar(\''+l.id+'\')">💬 Cobrar no WhatsApp</button>'+
+  '<button class="s" onclick="pausaLoja(\''+l.id+'\','+(!l.pausado)+')">'+(l.pausado?'▶️ Ativar':'⏸️ Pausar')+'</button><button class="s" onclick="editaLoja(\''+l.id+'\')">✏️ Editar</button></div></div>'}).join('')}
+function acha(L,id){return L.filter(function(x){return x.id==id})[0]}
+
+/* ---------- anunciante ---------- */
+function editaLoja(id,pre){var l=id?acha(LOJAS,id):{nome:'',zap:'',categoria:'',obs:'',preco:CFG.preco,inicio:hoje(),gratis:!!CFG.gratis};pre=pre||{};if(!id){if(pre.nome)l.nome=pre.nome;if(pre.zap)l.zap=pre.zap}
+ var v=l.venc||vencInicial(l.inicio,l.gratis),pg=(l.pags||[]).slice().reverse();
+ abreM('<h2>'+(id?'✏️ Editar anunciante':'➕ Novo anunciante')+'</h2>'+
+ '<label class="rt">Nome da loja *</label><input id="lNome" maxlength="60" value="'+esc(l.nome)+'" placeholder="Ex.: Padaria Pão Quente">'+
+ '<div class="row"><div><label class="rt">WhatsApp</label><input id="lZap" inputmode="tel" maxlength="20" value="'+esc(zapBr(l.zap))+'" placeholder="(92) 99999-9999"></div><div><label class="rt">Categoria</label><input id="lCat" maxlength="40" list="cats" value="'+esc(l.categoria||'')+'" placeholder="Ex.: Padaria"></div></div>'+
+ '<datalist id="cats"><option>Padaria<option>Mercadinho<option>Salão de beleza<option>Barbearia<option>Lanchonete<option>Restaurante<option>Farmácia<option>Açaí<option>Loja de roupas<option>Oficina<option>Pet shop<option>Serviços</datalist>'+
+ '<label class="rt">Observações</label><input id="lObs" maxlength="200" value="'+esc(l.obs||'')+'" placeholder="Ex.: fala com a Dona Maria">'+
+ '<div class="row"><div><label class="rt">Mensalidade (R$)</label><input id="lPreco" inputmode="decimal" value="'+val(l.preco)+'"></div><div><label class="rt">Começou em</label><input id="lIni" type="date" value="'+esc(l.inicio||hoje())+'"></div></div>'+
+ '<label class="sw"><span>🎁 1º mês grátis</span><input type="checkbox" id="lGr"'+(l.gratis?' checked':'')+'></label>'+
+ '<label class="rt">Vencimento</label><input id="lVenc" type="date" value="'+esc(v)+'"><p class="mut" id="lVencD">'+(id?'Mude só se precisar corrigir.':'Calculado sozinho: com 1º mês grátis, vence 30 dias depois do começo.')+'</p>'+
+ '<button id="lSalva" class="w" onclick="salvaLoja(\''+(id||'')+'\','+(pre.lead?'\''+pre.lead+'\'':'null')+')">💾 Salvar</button><p class="e" id="eL"></p>'+
+ (id?'<details><summary>💰 Pagamentos recebidos ('+pg.length+')</summary>'+(pg.length?pg.map(function(p){return '<div class="mut">• '+br(p.em)+' — '+reais(p.valor)+(p.ate?' (venc. passou para '+br(p.ate)+')':'')+'</div>'}).join(''):'<p class="mut">Nenhum ainda.</p>')+'</details>'+
+  '<button class="w s x" onclick="apagaLoja(\''+id+'\')">🗑️ Excluir anunciante</button>':''));
+ if(!id){var auto=function(){$('lVenc').value=vencInicial($('lIni').value||hoje(),$('lGr').checked)};$('lIni').onchange=auto;$('lGr').onchange=auto}}
+function salvaLoja(id,lead){var e=$('eL'),n=$('lNome').value.trim(),p=num($('lPreco').value),ini=$('lIni').value||hoje(),vc=$('lVenc').value;
+ if(n.length<2){e.textContent='Digite o nome da loja.';return}if(!(p>=0&&p<100000)){e.textContent='Mensalidade inválida.';return}if(!vc){e.textContent='Escolha o vencimento.';return}
+ var o={nome:n,zap:nz($('lZap').value),categoria:$('lCat').value.trim(),obs:$('lObs').value.trim(),preco:Math.round(p*100)/100,inicio:ini,gratis:$('lGr').checked,venc:vc,atualizadoEm:TS()};
+ var b=$('lSalva');b.disabled=true;b.textContent='Salvando…';var r;
+ if(id)r=db.collection('to_lojas').doc(id).set(o,{merge:true});else{o.dono=dono();o.pausado=false;o.pags=[];o.criadoEm=TS();r=db.collection('to_lojas').add(o)}
+ r.then(function(ref){if(lead)db.collection('to_interessados').doc(lead).delete().catch(function(){});fechaM();toast('Salvo ✅');
+  if(!id&&ref&&ref.id&&confirm('Anunciante salvo! Quer cadastrar o anúncio dele agora?')){aba('tAnun');editaAnun(null,ref.id)}})
+ .catch(function(x){b.disabled=false;b.textContent='💾 Salvar';e.textContent=erroTxt(x)})}
+function apagaLoja(id){var l=acha(LOJAS,id),n=nAnunLoja(id);if(!confirm('Excluir '+l.nome+(n?' e os '+n+' anúncio(s) dele':'')+'? Não tem volta.'))return;
+ var bt=db.batch();ANUN.forEach(function(a){if(a.lojaId==id)bt.delete(db.collection('to_anuncios').doc(a.id))});bt.delete(db.collection('to_lojas').doc(id));
+ bt.commit().then(function(){fechaM();toast('Anunciante excluído')}).catch(function(e){alert(erroTxt(e))})}
+function recebi(id){var l=acha(LOJAS,id),h=hoje(),nv=recebeu(l.venc,h);
+ var v=prompt('Quanto '+l.nome+' pagou? (R$)\nO vencimento passa de '+br(l.venc)+' para '+br(nv)+'.',val(l.preco));if(v===null)return;v=num(v);if(!(v>0)){alert('Valor inválido.');return}
+ var pags=(l.pags||[]).concat([{em:h,valor:Math.round(v*100)/100,de:l.venc||'',ate:nv}]).slice(-60);
+ db.collection('to_lojas').doc(id).update({venc:nv,pags:pags,atualizadoEm:TS()}).then(function(){toast('💰 Pago! Vence agora em '+br(nv));
+  if(l.zap&&confirm('Mandar recibo no WhatsApp de '+l.nome+'?'))abre(wa(l.zap,'Olá, '+l.nome+'! Recebi o pagamento de '+reais(v)+' ✅ Obrigado! Seu anúncio na TelaOkê segue no ar. Próximo vencimento: '+br(nv)+'.'))}).catch(function(e){alert(erroTxt(e))})}
+function cobrar(id){var l=acha(LOJAS,id);if(!l.zap){alert('Cadastre o WhatsApp de '+l.nome+' primeiro (✏️ Editar).');return}abre(wa(l.zap,textoCobranca(l,PIX)))}
+function pausaLoja(id,v){var l=acha(LOJAS,id);if(v&&!confirm('Pausar '+l.nome+'? Os anúncios dele saem das TVs até você ativar de novo.'))return;
+ db.collection('to_lojas').doc(id).update({pausado:v,atualizadoEm:TS()}).then(function(){toast(v?'⏸️ Pausado':'▶️ Ativado')}).catch(function(e){alert(erroTxt(e))})}
+/* copia nome/vencimento/pausa da loja para os anúncios (a TV lê só os anúncios, sem login) */
+var SYNC_T=null;function sincroniza(){clearTimeout(SYNC_T);SYNC_T=setTimeout(function(){if(!LOJAS.length&&!ANUN.length)return;var bt=db.batch(),n=0;
+ ANUN.forEach(function(a){var l=acha(LOJAS,a.lojaId);if(!l)return;var o={};if(a.lojaNome!==l.nome)o.lojaNome=l.nome;if((a.lojaVenc||'')!==(l.venc||''))o.lojaVenc=l.venc||'';if(!!a.lojaPausada!==!!l.pausado)o.lojaPausada=!!l.pausado;
+  if(Object.keys(o).length&&n<450){bt.update(db.collection('to_anuncios').doc(a.id),o);n++}});if(n)bt.commit().catch(function(e){console.log('sync',e)})},800)}
+
+/* ---------- anúncios ---------- */
+function stAnun(a){var l=acha(LOJAS,a.lojaId);if(!a.ativo)return['⏸️ Desligado','tCz'];if(l){var s=situacao(l,CFG.carencia);if(!s.naTv)return[l.pausado?'Loja pausada':'Loja vencida','tFo']}return['▶️ Passando','tOk']}
+function thumb(a){if(a.tipo=='foto'&&a.img)return 'background-image:url('+a.img+')';if(a.tipo=='youtube'&&a.yt)return 'background-image:url(https://img.youtube.com/vi/'+a.yt+'/mqdefault.jpg)';return ''}
+function telasTxt(a){var t=a.telas||[];if(!t.length)return 'Todas as TVs';return t.map(function(c){var x=acha(TELAS,c);return x?x.nome||c:c}).join(', ')}
+function pintaAnun(){if(FA&&!acha(LOJAS,FA))FA='';
+ $('fAnun').innerHTML=LOJAS.length>1?'<span class="'+(FA?'':'on')+'" onclick="FA=\'\';pintaAnun()">Todos ('+ANUN.length+')</span>'+LOJAS.map(function(l){return '<span class="'+(FA==l.id?'on':'')+'" onclick="FA=\''+l.id+'\';pintaAnun()">'+esc(l.nome)+' ('+nAnunLoja(l.id)+')</span>'}).join(''):'';
+ var A=ANUN.filter(function(a){return !FA||a.lojaId==FA});
+ if(!A.length){$('lAnun').innerHTML='<div class="vazio"><i>🖼️</i>Nenhum anúncio'+(FA?' deste anunciante':'')+' ainda.<br>Toque em <b>➕ Novo anúncio</b>.</div>';return}
+ $('lAnun').innerHTML=A.map(function(a){var s=stAnun(a),t=a.tipo=='foto'?(a.tempo||10)+' s':(a.tempo?a.tempo+' s':'até o fim');
+  return '<div class="ad"><div class="th" style="'+thumb(a)+'" onclick="editaAnun(\''+a.id+'\')">'+(a.tipo=='mp4'?'🎬':'')+'</div><div class="tx" onclick="editaAnun(\''+a.id+'\')"><b>'+esc(a.titulo||a.lojaNome||'Anúncio')+'</b><small class="mut">🏪 '+esc(a.lojaNome||'')+' • '+(a.tipo=='foto'?'📷':'▶️')+' '+t+' • 📺 '+esc(telasTxt(a))+'</small><br><span class="tag '+s[1]+'">'+s[0]+'</span></div>'+
+  '<button class="s '+(a.ativo?'':'v')+'" style="flex:0 0 auto" onclick="ligaAnun(\''+a.id+'\','+(!a.ativo)+')">'+(a.ativo?'⏸️':'▶️')+'</button></div>'}).join('')}
+function ligaAnun(id,v){db.collection('to_anuncios').doc(id).update({ativo:v,atualizadoEm:TS()}).then(function(){toast(v?'▶️ Ligado':'⏸️ Desligado')}).catch(function(e){alert(erroTxt(e))})}
+var NOVA_IMG=null,TIPO='foto',MODO_TV=1;
+function editaAnun(id,lojaId){var a=id?acha(ANUN,id):{ativo:true,tipo:'foto',tempo:10,lojaId:lojaId||FA||(LOJAS.length==1?LOJAS[0].id:''),telas:[]};
+ if(!LOJAS.length){abreM('<h2>Primeiro, cadastre o anunciante</h2><p class="mut">Todo anúncio é de uma loja que anuncia com você.</p><button class="w" onclick="fechaM();aba(\'tLojas\');editaLoja()">➕ Novo anunciante</button>');return}
+ NOVA_IMG=null;TIPO=a.tipo=='foto'?'foto':'video';var sel=a.telas||[];MODO_TV=sel.length?0:1;
+ abreM('<h2>'+(id?'✏️ Editar anúncio':'➕ Novo anúncio')+'</h2>'+
+ '<label class="rt">Anunciante *</label><select id="aLoja"><option value="">Escolha…</option>'+LOJAS.map(function(l){return '<option value="'+l.id+'"'+(l.id==a.lojaId?' selected':'')+'>'+esc(l.nome)+'</option>'}).join('')+'</select>'+
+ '<label class="rt">Nome do anúncio (opcional)</label><input id="aTit" maxlength="60" placeholder="Ex.: Promoção do pão" value="'+esc(a.titulo||'')+'">'+
+ '<label class="rt">O que vai passar?</label><div class="seg"><label id="sgF" onclick="tipoA(\'foto\')">📷 Foto</label><label id="sgV" onclick="tipoA(\'video\')">▶️ Vídeo</label></div>'+
+ '<div id="bxFoto"><label class="bt az w" for="aArq">📷 Escolher ou tirar foto</label><input id="aArq" type="file" accept="image/*" style="display:none"><p class="mut" id="aInfo">Dica: foto deitada enche a TV.</p><img id="aPrev" class="prev"></div>'+
+ '<div id="bxVid"><label class="rt">Link do vídeo</label><input id="aUrl" inputmode="url" placeholder="Link do YouTube ou de um .mp4" value="'+esc(a.url||'')+'"><p class="mut">YouTube: Compartilhar → Copiar link, e cole aqui.</p><img id="aYt" class="prev"></div>'+
+ '<label class="rt">Tempo na tela (segundos)</label><input id="aTempo" type="number" min="0" max="600" inputmode="numeric" value="'+(a.tempo==null?'':a.tempo)+'"><p class="mut" id="aTmpD"></p>'+
+ '<label class="rt">Em quais TVs passa?</label><div class="seg"><label id="sgT" onclick="modoTv(1)">Todas</label><label id="sgE" onclick="modoTv(0)">Escolher</label></div>'+
+ '<div id="bxTv" class="ckl">'+(TELAS.length?TELAS.map(function(t){return '<label><input type="checkbox" value="'+t.id+'"'+(sel.indexOf(t.id)>=0?' checked':'')+'><span>📺 '+esc(t.nome||'TV')+(t.local?' <small class="mut">• '+esc(t.local)+'</small>':'')+'</span></label>'}).join(''):'<p class="mut">Nenhuma TV ainda.</p>')+'</div>'+
+ '<label class="sw"><span>▶️ Ligado (passando)</span><input type="checkbox" id="aAtv"'+(a.ativo!==false?' checked':'')+'></label>'+
+ '<button id="aSalva" class="w" onclick="salvaAnun(\''+(id||'')+'\')">💾 Salvar anúncio</button>'+(id?'<button class="w s x" onclick="apagaAnun(\''+id+'\')">🗑️ Apagar anúncio</button>':'')+'<p class="e" id="eA"></p>');
+ if(a.tipo=='foto'&&a.img){$('aPrev').src=a.img;$('aPrev').style.display='block'}
+ $('aArq').onchange=function(){var f=this.files[0];this.value='';if(!f)return;$('aInfo').textContent='Preparando a foto…';comprime(f,150000,1280,function(u){if(!u){$('aInfo').textContent='Não consegui ler esta foto. Tente outra.';return}NOVA_IMG=u;$('aPrev').src=u;$('aPrev').style.display='block';$('aInfo').textContent='✅ Foto pronta ('+Math.round(u.length*0.75/1024)+' KB)'})};
+ $('aUrl').oninput=function(){var y=ytId(this.value);if(y){$('aYt').src='https://img.youtube.com/vi/'+y+'/mqdefault.jpg';$('aYt').style.display='block'}else $('aYt').style.display='none'};$('aUrl').oninput.call($('aUrl'));
+ tipoA(TIPO,!!id);modoTv(MODO_TV)}
+function modoTv(v){MODO_TV=v;$('sgT').classList.toggle('on',!!v);$('sgE').classList.toggle('on',!v);$('bxTv').style.display=v?'none':'block'}
+function tipoA(t,manter){TIPO=t;$('sgF').classList.toggle('on',t=='foto');$('sgV').classList.toggle('on',t!='foto');$('bxFoto').style.display=t=='foto'?'block':'none';$('bxVid').style.display=t=='foto'?'none':'block';
+ if(!manter){$('aTempo').value=t=='foto'?10:''}$('aTmpD').textContent=t=='foto'?'Padrão: 10 segundos.':'Deixe vazio para passar o vídeo até o fim.'}
+function comprime(f,alvo,lim,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var w=im.width,h=im.height,k=Math.min(1,lim/Math.max(w,h)),c=document.createElement('canvas');
+ function des(k){c.width=Math.round(w*k);c.height=Math.round(h*k);var g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height)}
+ des(k);var q=.85,u=c.toDataURL('image/jpeg',q),lado=lim;while(u.length*0.75>alvo&&q>.4){q-=.08;u=c.toDataURL('image/jpeg',q)}
+ while(u.length*0.75>alvo&&lado>640){lado-=160;k=Math.min(1,lado/Math.max(w,h));des(k);u=c.toDataURL('image/jpeg',.7)}cb(u)};im.onerror=function(){cb(null)};im.src=r.result};r.onerror=function(){cb(null)};r.readAsDataURL(f)}
+function salvaAnun(id){var lid=$('aLoja').value,l=acha(LOJAS,lid),e=$('eA');if(!l){e.textContent='Escolha o anunciante.';return}
+ var ant=id?acha(ANUN,id):null,t=$('aTempo').value.trim(),tv=MODO_TV?[]:[].map.call(document.querySelectorAll('#bxTv input:checked'),function(i){return i.value});
+ if(!MODO_TV&&!tv.length){e.textContent='Marque pelo menos uma TV, ou escolha Todas.';return}
+ var o={lojaId:lid,lojaNome:l.nome,lojaVenc:l.venc||'',lojaPausada:!!l.pausado,titulo:$('aTit').value.trim(),ativo:$('aAtv').checked,telas:tv,inicio:'',fim:'',atualizadoEm:TS()};
+ if(TIPO=='foto'){var img=NOVA_IMG||(ant&&ant.tipo=='foto'?ant.img:'');if(!img){e.textContent='Escolha a foto do anúncio.';return}o.tipo='foto';o.img=img;o.url='';o.yt='';o.tempo=Math.max(3,Math.min(600,+t||10))}
+ else{var u=$('aUrl').value.trim(),y=ytId(u);if(!y&&!ehVideoDireto(u)){e.textContent='Cole um link do YouTube ou um link que termina em .mp4.';return}o.tipo=y?'youtube':'mp4';o.url=u;o.yt=y;o.img='';o.tempo=t?Math.max(3,Math.min(600,+t)):0}
+ var b=$('aSalva');b.disabled=true;b.textContent='Salvando…';var r;if(id)r=db.collection('to_anuncios').doc(id).set(o,{merge:true});else{o.dono=dono();o.criadoEm=TS();r=db.collection('to_anuncios').add(o)}
+ r.then(function(){fechaM();toast('Anúncio salvo ✅ Já vai aparecer nas TVs.')}).catch(function(x){b.disabled=false;b.textContent='💾 Salvar anúncio';e.textContent=erroTxt(x)})}
+function apagaAnun(id){if(!confirm('Apagar este anúncio?'))return;db.collection('to_anuncios').doc(id).delete().then(function(){fechaM();toast('Anúncio apagado')}).catch(function(e){alert(erroTxt(e))})}
+
+/* ---------- TVs ---------- */
+function pintaTelas(){var L=$('lTelas');if(!TELAS.length){L.innerHTML='<div class="vazio"><i>📺</i>Nenhuma TV ainda.</div>';return}
+ L.innerHTML=TELAS.map(function(t){var on=ligada(t),n=ANUN.filter(function(a){return a.ativo&&(!(a.telas||[]).length||(a.telas||[]).indexOf(t.id)>=0)}).length;
+  return '<div class="it" onclick="editaTela(\''+t.id+'\')" style="cursor:pointer"><div class="nm">📺 '+esc(t.nome||'TV')+'</div><span class="tag '+(on?'tOk':'tCz')+'">'+(on?'🟢 Ligada agora':(t.visto?'Desligada • visto '+new Date(ms(t.visto)).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Esperando a TV abrir'))+'</span>'+
+  '<div class="mut">'+(t.local?'📍 '+esc(t.local)+' • ':'')+'Código '+t.id+' • ⏰ '+(t.sempre?'24h':esc(hhmm(t.horaIni,'06:00')+'–'+hhmm(t.horaFim,'22:00')))+' • '+n+' anúncio(s) ligado(s) para ela • ✏️ toque para editar</div></div>'}).join('')}
+function novaTela(cod){abreM('<h2>📺 Adicionar TV</h2><div class="dica">1. Na TV, abra <b style="color:var(--am)">is.gd/telaoketv</b> (ou o app TelaOkê TV).<br>2. Aparece um código grande. Digite aqui:</div>'+
+ '<label class="rt">Código que aparece na TV</label><input id="tCod" maxlength="7" autocapitalize="characters" autocomplete="off" placeholder="Ex.: K7M2QX" style="font-size:26px;letter-spacing:6px;text-transform:uppercase;text-align:center" value="'+esc(cod||'')+'">'+
+ '<label class="rt">Nome da TV</label><input id="tNome" maxlength="40" placeholder="Ex.: TV da Taberna">'+
+ '<label class="rt">Onde ela fica (opcional)</label><input id="tLocal" maxlength="80" placeholder="Ex.: Balcão da taberna, Cidade Nova">'+
+ '<button class="w" onclick="salvaNovaTela()">📺 Ligar esta TV</button><p class="e" id="eT"></p>');setTimeout(function(){$(cod?'tNome':'tCod').focus()},150)}
+function salvaNovaTela(){var c=$('tCod').value.toUpperCase().replace(/[^A-Z0-9]/g,''),n=$('tNome').value.trim()||'TV '+(TELAS.length+1),e=$('eT');if(c.length!=6){e.textContent='O código tem 6 letras/números. Confira na TV.';return}
+ var ref=db.collection('to_telas').doc(c);e.textContent='Ligando…';
+ db.runTransaction(function(tx){return tx.get(ref).then(function(d){if(d.exists)throw{code:'ja-tem'};tx.set(ref,{dono:dono(),nome:n,local:$('tLocal').value.trim(),todos:true,anuncios:[],relogio:true,som:false,texto:'',sempre:false,horaIni:'06:00',horaFim:'22:00',criadoEm:TS()})})})
+ .then(function(){fechaM();toast('📺 TV ligada! Em alguns segundos ela começa a passar os anúncios.')}).catch(function(x){e.textContent=x.code=='ja-tem'?'Essa TV já está na sua lista.':erroTxt(x)})}
+function editaTela(id){var t=acha(TELAS,id);if(!t)return;
+ abreM('<h2>📺 '+esc(t.nome||'TV')+'</h2><p class="mut">Código desta TV: <b class="cod">'+t.id+'</b></p>'+
+ '<label class="rt">Nome da TV</label><input id="eNome" maxlength="40" value="'+esc(t.nome||'')+'">'+
+ '<label class="rt">Onde ela fica</label><input id="eLocal" maxlength="80" value="'+esc(t.local||'')+'" placeholder="Ex.: Balcão da taberna">'+
+ '<label class="sw"><span>🕒 Mostrar hora no rodapé</span><input type="checkbox" id="eRel"'+(t.relogio!==false?' checked':'')+'></label>'+
+ '<label class="sw"><span>🔊 Vídeos com som</span><input type="checkbox" id="eSom"'+(t.som?' checked':'')+'></label>'+
+ '<label class="rt">⏰ Horário de funcionamento</label><label class="sw"><span>Ligada 24h (sem horário)</span><input type="checkbox" id="eSempre" onchange="$(\'bxHora\').style.display=this.checked?\'none\':\'flex\'"'+(t.sempre?' checked':'')+'></label>'+
+ '<div id="bxHora" style="display:'+(t.sempre?'none':'flex')+';gap:10px;align-items:center"><div style="flex:1"><small class="mut">Liga às</small><input type="time" id="eIni" value="'+esc(hhmm(t.horaIni,'06:00'))+'"></div><div style="flex:1"><small class="mut">Desliga às</small><input type="time" id="eFim" value="'+esc(hhmm(t.horaFim,'22:00'))+'"></div></div>'+
+ '<p class="mut">Fora do horário a TV fica com a tela preta e volta sozinha.</p>'+
+ '<label class="rt">Frase passando no rodapé (opcional)</label><input id="eTxt" maxlength="120" placeholder="Ex.: Anuncie aqui! (92) 99501-5662" value="'+esc(t.texto||'')+'">'+
+ '<button class="w" onclick="salvaTela(\''+id+'\')">💾 Salvar</button><button class="w s x" onclick="apagaTela(\''+id+'\')">🗑️ Remover esta TV</button><p class="e" id="eE"></p>')}
+function salvaTela(id){db.collection('to_telas').doc(id).update({nome:$('eNome').value.trim()||'TV',local:$('eLocal').value.trim(),todos:true,relogio:$('eRel').checked,som:$('eSom').checked,texto:$('eTxt').value.trim(),sempre:$('eSempre').checked,horaIni:hhmm($('eIni').value,'06:00'),horaFim:hhmm($('eFim').value,'22:00')})
+ .then(function(){fechaM();toast('Salvo ✅ A TV atualiza sozinha.')}).catch(function(e){$('eE').textContent=erroTxt(e)})}
+function apagaTela(id){if(!confirm('Remover esta TV? Ela volta a mostrar o código.'))return;db.collection('to_telas').doc(id).delete().then(function(){fechaM();toast('TV removida')}).catch(function(e){alert(erroTxt(e))})}
+
+/* ---------- captar ---------- */
+function ofertaAtual(){return textoOferta(CFG.oferta,$('cNome').value,CFG.preco)}
+function pintaOferta(){$('cMsg').textContent=ofertaAtual();var h='';
+ if(CFG.videoComercial)h+='<button class="s w" onclick="mandaVid(\'videoComercial\')">🎬 Mandar vídeo comercial</button>';
+ if(CFG.videoTv)h+='<button class="s w" onclick="mandaVid(\'videoTv\')">📺 Mandar vídeo da TV funcionando</button>';$('cVids').innerHTML=h}
+$('cNome').oninput=pintaOferta;$('cCp').onclick=function(){copia(ofertaAtual(),this)};$('cWa').onclick=function(){abre(wa($('cZap').value,ofertaAtual()))};
+function mandaVid(k){abre(wa($('cZap').value,(k=='videoTv'?'📺 Olha a TV funcionando: ':'🎬 Conheça a TelaOkê Publicidades: ')+CFG[k]))}
+function pintaLeads(){var n=LEADS.length;$('nLeads').textContent=n;$('nLeads').style.display=n?'inline-block':'none';$('bdLeads').textContent=n;$('bdLeads').style.display=n?'block':'none';
+ $('lLeads').innerHTML=n?LEADS.map(function(x){return '<div class="it"><div class="nm">🙋 '+esc(x.loja||'Loja')+'</div><div class="mut">📱 '+esc(zapBr(x.zap))+(x.criadoEm?' • '+new Date(ms(x.criadoEm)).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'')+'</div>'+
+ '<div class="bts"><button class="s v" onclick="leadZap(\''+x.id+'\')">💬 Chamar no WhatsApp</button><button class="s" onclick="leadVira(\''+x.id+'\')">➕ Virar anunciante</button><button class="s x" onclick="leadApaga(\''+x.id+'\')">🗑️</button></div></div>'}).join(''):'<p class="mut">Nenhum ainda.</p>'}
+function leadZap(id){var x=acha(LEADS,id);abre(wa(x.zap,textoOferta(CFG.oferta,x.loja,CFG.preco)))}
+function leadVira(id){var x=acha(LEADS,id);aba('tLojas');editaLoja(null,{nome:x.loja,zap:x.zap,lead:id})}
+function leadApaga(id){if(confirm('Apagar este interessado?'))db.collection('to_interessados').doc(id).delete().catch(function(e){alert(erroTxt(e))})}
+
+/* ---------- config ---------- */
+function pintaCfg(){if(document.activeElement&&/^g/.test(document.activeElement.id||''))return;$('gPreco').value=val(CFG.preco);$('gGratis').checked=!!CFG.gratis;$('gCar').value=CFG.carencia;$('gOferta').value=CFG.oferta;$('gVidC').value=CFG.videoComercial||'';$('gVidT').value=CFG.videoTv||''}
+$('gPadrao').onclick=function(){$('gOferta').value=OFERTA_PADRAO};
+$('gSalva').onclick=function(){var p=num($('gPreco').value),c=Math.round(+$('gCar').value);if(!(p>0&&p<100000)){$('gMsg').textContent='⚠️ Mensalidade inválida.';return}if(!(c>=0&&c<=30)){$('gMsg').textContent='⚠️ Tolerância: de 0 a 30 dias.';return}
+ var o={preco:Math.round(p*100)/100,gratis:$('gGratis').checked,carencia:c,oferta:$('gOferta').value.trim()||OFERTA_PADRAO,videoComercial:$('gVidC').value.trim(),videoTv:$('gVidT').value.trim(),atualizadoEm:TS()};
+ db.collection('to_config').doc('operacao').set(o,{merge:true}).then(function(){$('gMsg').textContent='✅ Salvo.';toast('Configurações salvas ✅')},function(e){$('gMsg').textContent=erroTxt(e)})};
+$('pxSalva').onclick=function(){var o={chave:$('pxChave').value.trim(),nome:$('pxNome').value.trim(),cidade:$('pxCid').value.trim()||'Manaus'};db.collection('ml_publico').doc('pix').set({chave:o.chave,nome:o.nome,cidade:o.cidade,atualizadoEm:TS()},{merge:true}).then(function(){PIX=o;$('pxMsg').textContent='✅ Pix salvo.'},function(e){$('pxMsg').textContent=erroTxt(e)})};
+if('serviceWorker' in navigator&&!window.TO_TESTE)navigator.serviceWorker.register('sw.js').catch(function(){});
 </script></body></html>

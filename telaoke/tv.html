@@ -38,48 +38,52 @@
 </style></head><body>
 <div id="par" class="tela"><div class="pw"><div class="pe"><h1>📺 TelaOkê</h1><h2>Publicidades</h2>
  <p>Código desta TV:</p><div id="cod">······</div>
- <p>1. No celular, abra <b class="am">is.gd/telaoke</b> e entre na sua conta</p>
- <p>2. Vá em <b class="am">📺 Telas → Adicionar TV</b> e digite o código</p>
+ <p>1. No celular, abra o painel <b class="am">is.gd/telaokeadm</b></p>
+ <p>2. Vá em <b class="am">📺 TVs → Adicionar TV</b> e digite o código</p>
  <p style="opacity:.8">Ou leia o QR com a câmera do celular 👉</p><p style="font-size:1.5vw;opacity:.75">📦 App para TV Box: <b class="am">is.gd/telaoketvapk</b></p><div id="novoCod">Precisa de outro código? Aperte OK no controle 3 vezes.</div></div>
  <div class="qrb"><img id="qr" alt="QR">Leia com a câmera</div></div></div>
 <div id="ply" class="tela" style="display:none"><div class="cam" id="c0"></div><div class="cam" id="c1"></div></div>
 <div id="rod"><div id="rLoja"></div><div id="rTxt"><span id="rTxtS"></span></div><div id="rLogo">📺 TelaOkê Publicidades</div><div id="rHora"></div></div>
-<div id="venc" class="tela msg"><div class="ic">⛔</div><h1>Assinatura vencida</h1><p>Os anúncios desta TV estão pausados.</p><p>O dono da TV precisa renovar o plano em <b style="color:#ffd54a">is.gd/telaoke</b>.</p><p style="opacity:.6;font-size:1.6vw" id="vCod"></p></div>
-<div id="vazio" class="tela msg"><div class="ic">📢</div><h1 id="vzT">TV ligada! ✅</h1><p id="vzP">Ainda não tem anúncio ativo para esta TV.</p><p>No celular: <b style="color:#ffd54a">is.gd/telaoke → 🖼️ Anúncios → Novo anúncio</b></p><p style="opacity:.6;font-size:1.6vw" id="vzCod"></p></div>
+<div id="venc" class="tela msg"><p id="vCod"></p></div>
+<div id="vazio" class="tela msg"><div class="ic">📢</div><h1 id="vzT">TV ligada! ✅</h1><p id="vzP">Ainda não tem anúncio ativo para esta TV.</p><p>Anuncie aqui! Fale com a <b style="color:#ffd54a">TelaOkê Publicidades</b>: <b style="color:#ffd54a">(92) 99501-5662</b></p><p style="opacity:.6;font-size:1.6vw" id="vzCod"></p></div>
 <div id="dorme" class="tela"><div class="h" id="dmH"></div><div class="v" id="dmV"></div></div>
 <div id="carr" class="tela msg" style="display:flex"><div class="ic">📺</div><h1>TelaOkê Publicidades</h1><p>Carregando…</p></div>
 <div id="info"></div><div id="dica">Aperte OK para tela cheia</div><div id="rede">📶 Sem internet: passando o que está salvo</div>
 <script>
 var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
-firebase.initializeApp(FB);var db=firebase.firestore();
-try{db.enablePersistence({synchronizeTabs:true}).catch(function(){})}catch(e){}
+var db=null;if(!window.TO_TESTE){firebase.initializeApp(FB);db=firebase.firestore();
+try{db.enablePersistence({synchronizeTabs:true}).catch(function(){})}catch(e){}}
 function $(i){return document.getElementById(i)}
-var BASE=location.href.split('#')[0].split('?')[0].replace(/tv\.html$/,'');
+var BASE=location.href.split('#')[0].split('?')[0].replace(/tv\.html$/,'');var ADM=BASE+'admin.html';
 var Q={};location.search.replace(/[?&]([^=&]+)=([^&]*)/g,function(a,k,v){Q[k]=decodeURIComponent(v)});
 function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(6);(window.crypto||window.msCrypto).getRandomValues(r);for(var i=0;i<6;i++)s+=a[r[i]%a.length];return s}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
 var COD=(Q.c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(COD.length==6)ls('to_tv_cod',COD);else COD=ls('to_tv_cod');if(!COD||COD.length!=6){COD=gcod();ls('to_tv_cod',COD)}
-var TELA=null,DONO=null,VALID=null,ADS=[],LISTA=[],POS=-1,CAM=0,TIMER=null,SEGURA=null,FALHAS=0,ESTADO='',unT=null,unV=null,unA=null,YTOK=false,YTFILA=[],ADS_OK=false;
+var TELA=null,CAR=3,ADS=[],LISTA=[],POS=-1,CAM=0,TIMER=null,SEGURA=null,FALHAS=0,ESTADO='',unT=null,unC=null,unA=null,YTOK=false,YTFILA=[],ADS_OK=false;
 function mostra(id){['par','ply','venc','vazio','carr','dorme'].forEach(function(x){$(x).style.display=x==id?(x=='ply'?'block':'flex'):'none'});ESTADO=id;var r=(id=='ply'&&TELA&&(TELA.relogio!==false||TELA.texto));$('rod').style.display=r?'flex':'none';$('ply').style.bottom=r?'7vh':'0'}
 function msOf(t){return t&&t.toMillis?t.toMillis():(t&&t.seconds?t.seconds*1000:(t||0))}
 /* ---------- pareamento ---------- */
-function telaPar(){$('cod').textContent=COD;$('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=6&data='+encodeURIComponent(BASE+'?parear='+COD);mostra('par');pararTudo()}
+function telaPar(){$('cod').textContent=COD;$('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=6&data='+encodeURIComponent(ADM+'?parear='+COD);mostra('par');pararTudo()}
 function escutaTela(){if(unT)unT();unT=db.collection('to_telas').doc(COD).onSnapshot(function(d){
-  if(!d.exists){TELA=null;DONO=null;if(unV){unV();unV=null}if(unA){unA();unA=null}ls('to_tv_cache',null);telaPar();return}
-  var era=!!TELA;TELA=d.data();if(!era&&!d.metadata.fromCache)setTimeout(visto,1500);if(TELA.dono!==DONO){DONO=TELA.dono;escutaDono()}$('vCod').textContent=$('vzCod').textContent='TV: '+(TELA.nome||'')+' • código '+COD;rodape();montaLista()
+  if(!d.exists){TELA=null;if(unA){unA();unA=null}if(unC){unC();unC=null}ADS_OK=false;ls('to_tv_cache',null);telaPar();return}
+  var era=!!TELA;TELA=d.data();if(!era&&!d.metadata.fromCache)setTimeout(visto,1500);if(!unA)escutaAds();$('vCod').textContent=$('vzCod').textContent='TV: '+(TELA.nome||'')+' • código '+COD;rodape();montaLista()
  },function(e){console.log('tela',e);if(!TELA)usaCache()})}
-function escutaDono(){if(unV)unV();if(unA)unA();ADS_OK=false;
- unV=db.collection('to_validade').doc(DONO).onSnapshot(function(d){VALID=d.exists?msOf(d.data().validade):0;montaLista()},function(){});
- unA=db.collection('to_anuncios').where('dono','==',DONO).where('ativo','==',true).onSnapshot(function(s){ADS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});ADS_OK=true;$('rede').style.display=s.metadata.fromCache&&!navigator.onLine?'block':'none';salvaCache();montaLista()},function(e){console.log('anuncios',e)})}
+/* TVs são do operador: lê todos os anúncios ligados (sem login) + tolerância de vencimento */
+function escutaAds(){
+ unC=db.collection('to_config').doc('operacao').onSnapshot(function(d){var c=d.exists?d.data():{};CAR=c.carencia!=null&&c.carencia!==''?+c.carencia:3;salvaCache();montaLista()},function(){});
+ unA=db.collection('to_anuncios').where('ativo','==',true).onSnapshot(function(s){ADS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});ADS_OK=true;$('rede').style.display=s.metadata.fromCache&&!navigator.onLine?'block':'none';salvaCache();montaLista()},function(e){console.log('anuncios',e)})}
 /* cache leve (além do cache do Firestore) */
-function salvaCache(){try{ls('to_tv_cache',JSON.stringify({tela:TELA,dono:DONO,val:VALID,ads:ADS}))}catch(e){try{ls('to_tv_cache',JSON.stringify({tela:TELA,dono:DONO,val:VALID,ads:ADS.filter(function(a){return a.tipo!='foto'})}))}catch(e2){}}}
-function usaCache(){try{var c=JSON.parse(ls('to_tv_cache')||'null');if(!c||!c.tela)return telaPar();TELA=c.tela;DONO=c.dono;VALID=c.val;ADS=c.ads||[];ADS_OK=true;$('rede').style.display='block';rodape();montaLista()}catch(e){telaPar()}}
+function salvaCache(){try{ls('to_tv_cache',JSON.stringify({tela:TELA,car:CAR,ads:ADS}))}catch(e){try{ls('to_tv_cache',JSON.stringify({tela:TELA,car:CAR,ads:ADS.filter(function(a){return a.tipo!='foto'})}))}catch(e2){}}}
+function usaCache(){try{var c=JSON.parse(ls('to_tv_cache')||'null');if(!c||!c.tela)return telaPar();TELA=c.tela;if(c.car!=null)CAR=+c.car;ADS=c.ads||[];ADS_OK=true;$('rede').style.display='block';rodape();montaLista()}catch(e){telaPar()}}
 function hoje(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
-function montaLista(){if(!TELA)return;if(!ADS_OK&&!(VALID!==null&&VALID<Date.now()))return;
- if(VALID!==null&&VALID<Date.now()){pararTudo();mostra('venc');return}
+function addD(s,n){var d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+/* regra do que passa nesta TV: anúncio ligado, marcado para esta TV (vazio = todas), loja não pausada e não vencida além da tolerância */
+function lojaNoAr(a,car,h){if(a.lojaPausada)return false;if(!a.lojaVenc)return true;return h<=addD(a.lojaVenc,Math.max(0,+car||0))}
+function filtraAds(ads,cod,car,h){return ads.filter(function(a){var t=a.telas||[];return a.ativo&&(!t.length||t.indexOf(cod)>=0)&&lojaNoAr(a,car,h)&&(!a.inicio||a.inicio<=h)&&(!a.fim||a.fim>=h)&&(a.tipo=='foto'?!!a.img:(a.tipo=='youtube'?!!a.yt:!!a.url))})}
+function montaLista(){if(!TELA||!ADS_OK)return;
  if(!noHorario()){pararTudo();mostra('dorme');dorme();return}
- var h=hoje(),esc=TELA.todos===false?(TELA.anuncios||[]):null;
- var L=ADS.filter(function(a){return a.ativo&&(!a.inicio||a.inicio<=h)&&(!a.fim||a.fim>=h)&&(!esc||esc.indexOf(a.id)>=0)&&(a.tipo=='foto'?!!a.img:(a.tipo=='youtube'?!!a.yt:!!a.url))});
+ var h=hoje(),esc=null;
+ var L=filtraAds(ADS,COD,CAR,h);
  /* ordem: escolhida pelo dono, senão mistura as lojas (uma de cada) */
  if(esc)L.sort(function(a,b){return esc.indexOf(a.id)-esc.indexOf(b.id)});
  else{L.sort(function(a,b){return msOf(a.criadoEm)-msOf(b.criadoEm)});var por={},ordem=[];L.forEach(function(a){if(!por[a.lojaId]){por[a.lojaId]=[];ordem.push(a.lojaId)}por[a.lojaId].push(a)});var M=[],k=0,tem=true;while(tem){tem=false;ordem.forEach(function(l){if(por[l][k]){M.push(por[l][k]);tem=true}});k++}L=M}
@@ -140,12 +144,12 @@ setTimeout(function(){if(!document.fullscreenElement&&!document.webkitFullscreen
 var WL=null;function acorda(){try{if(navigator.wakeLock&&!WL)navigator.wakeLock.request('screen').then(function(w){WL=w;w.addEventListener('release',function(){WL=null})}).catch(function(){})}catch(e){}}
 acorda();document.addEventListener('visibilitychange',function(){if(document.visibilityState=='visible')acorda()});
 /* avisa o painel que a TV está ligada */
-function visto(){if(TELA&&navigator.onLine)db.collection('to_telas').doc(COD).update({visto:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){})}
+function visto(){if(db&&TELA&&navigator.onLine)db.collection('to_telas').doc(COD).update({visto:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){})}
 setInterval(visto,5*60000);setTimeout(visto,8000);
 setInterval(function(){if(TELA)montaLista()},30000); /* vira o dia / vence */
 window.addEventListener('online',function(){$('rede').style.display='none'});window.addEventListener('offline',function(){if(ESTADO=='ply')$('rede').style.display='block'});
 /* recarrega 1x por dia de madrugada para pegar versão nova */
 setInterval(function(){var d=new Date();if(d.getHours()==4&&d.getMinutes()<2&&navigator.onLine)location.reload()},60000);
-escutaTela();setTimeout(function(){if(ESTADO=='carr'){if(!navigator.onLine)usaCache();}},6000);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+if(db){escutaTela();setTimeout(function(){if(ESTADO=='carr'){if(!navigator.onLine)usaCache();}},6000)}
+if('serviceWorker' in navigator&&!window.TO_TESTE)navigator.serviceWorker.register('sw.js').catch(function(){});
 </script></body></html>
