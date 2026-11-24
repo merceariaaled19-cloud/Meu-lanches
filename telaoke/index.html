@@ -1,0 +1,342 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TelaOkê Publicidades • Sua TV vira painel de anúncios</title>
+<meta name="description" content="Coloque TVs em padarias, lojas e salões passando anúncios em loop. Fotos e vídeos, tudo pelo celular. Teste grátis.">
+<meta name="theme-color" content="#120a2e"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+:root{--fu:#120a2e;--ca:#1d1145;--bo:#352170;--ci:#22d3ee;--ro:#ff3fa4;--am:#ffd54a;--ve:#16a34a;--er:#ff8a8a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0}
+body{font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 50% -10%,#3b1680,#120a2e 55%,#07041a) fixed;color:#fff;min-height:100vh}
+a{color:var(--am)}main{max-width:620px;margin:auto;padding:12px 12px 90px}
+.card{background:rgba(29,17,69,.92);border:1px solid var(--bo);border-radius:18px;padding:16px;margin-bottom:14px}
+h2{font-size:19px;margin:0 0 10px;color:var(--am)}h3{margin:0 0 8px;font-size:17px}
+.mut{opacity:.78;font-size:14px;line-height:1.4}.e{color:var(--er);min-height:18px;font-size:14px}
+input,select,textarea{width:100%;padding:13px;font-size:16px;border-radius:12px;border:2px solid #4a2e8f;background:#0d0726;color:#fff;margin:6px 0;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ci)}
+label.rt{display:block;font-size:14px;font-weight:bold;margin-top:10px;opacity:.9}
+button,.bt{display:block;width:100%;padding:14px;font-size:16px;border:0;border-radius:14px;background:linear-gradient(90deg,#ff3fa4,#c026d3);color:#fff;font-weight:bold;margin:8px 0;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit}
+button:disabled{opacity:.5}.b2{background:#352170}.bv{background:#16a34a}.bc{background:linear-gradient(90deg,#06b6d4,#3b82f6)}.bx{background:#7f1d1d}
+.mini{display:inline-block;width:auto;padding:9px 12px;font-size:14px;margin:4px 4px 0 0;border-radius:10px}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+.tag{display:inline-block;font-size:12px;padding:3px 9px;border-radius:9px;margin-left:6px;vertical-align:middle;font-weight:bold}
+.ok{background:#16a34a}.venc{background:#b91c1c}.ag{background:#b45309}.az{background:#2563eb}.cz{background:#4b5563}
+/* abertura */
+#intro{position:fixed;inset:0;z-index:999;background:radial-gradient(circle at 50% 45%,#3b1680,#07041a 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .6s}
+#intro.sai{opacity:0;pointer-events:none}
+.iTv{width:200px;height:130px;border:8px solid #e5e7eb;border-radius:16px;background:#000;position:relative;box-shadow:0 0 50px rgba(34,211,238,.35);overflow:hidden}
+.iTv:after{content:'';position:absolute;left:50%;bottom:-30px;width:60px;height:22px;margin-left:-30px;background:#e5e7eb;border-radius:0 0 8px 8px}
+.iLiga{position:absolute;left:0;right:0;top:50%;height:2px;background:#fff;transform:scaleX(0);animation:liga 1s ease-out .2s forwards}
+@keyframes liga{0%{transform:scaleX(0)}45%{transform:scaleX(1);height:2px;top:50%}100%{transform:scaleX(1);height:100%;top:0;background:linear-gradient(135deg,#ff3fa4,#7c3aed,#22d3ee)}}
+.iAd{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px;opacity:0;animation:ad 2.4s 1.2s forwards}
+@keyframes ad{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.1)}35%{transform:scale(1)}100%{opacity:1}}
+#iTit{font-size:46px;font-weight:900;margin-top:46px;letter-spacing:1px;opacity:0;animation:sobe .8s 1.3s forwards;background:linear-gradient(90deg,#ffd54a,#ff3fa4,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+#iSub{font-size:18px;opacity:0;animation:sobe .8s 1.7s forwards;letter-spacing:6px;text-transform:uppercase;color:#a5f3fc}
+@keyframes sobe{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.iEst{position:absolute;font-size:22px;animation:voa 3s linear forwards;opacity:.9}@keyframes voa{from{transform:translateY(110vh) rotate(0)}to{transform:translateY(-20vh) rotate(360deg)}}
+#iPula{position:absolute;bottom:22px;right:18px;width:auto;background:rgba(255,255,255,.15);font-size:14px;padding:8px 14px}
+/* landing */
+.hero{text-align:center;padding:26px 8px 8px}.logo{width:84px;height:84px;border-radius:22px;box-shadow:0 6px 30px rgba(255,63,164,.4)}
+.hero h1{font-size:30px;margin:12px 0 6px;line-height:1.15}.hero h1 span{color:var(--am)}.hero p{font-size:17px;opacity:.9;margin:0 0 14px}
+.passos{display:grid;gap:10px}.ps{display:flex;gap:12px;align-items:center;background:#0d0726;border-radius:14px;padding:12px}.ps b.n{flex:0 0 42px;height:42px;border-radius:50%;background:var(--ro);display:flex;align-items:center;justify-content:center;font-size:20px}
+.vant{display:grid;grid-template-columns:1fr 1fr;gap:8px}.vant div{background:#0d0726;border-radius:12px;padding:10px;font-size:14px}
+.vid{width:100%;border-radius:14px;background:#000;margin:6px 0 12px}
+.planos{display:grid;gap:10px}.pl{border:2px solid #4a2e8f;border-radius:16px;padding:14px;cursor:pointer;position:relative;background:#0d0726}.pl.sel{border-color:var(--am);background:#2a1660}
+.pl b{font-size:18px}.pl .v{float:right;font-size:21px;color:var(--am);font-weight:bold}.selo{position:absolute;top:-10px;right:12px;background:#16a34a;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:bold}
+/* app */
+.topo{position:sticky;top:0;z-index:20;background:rgba(18,10,46,.96);backdrop-filter:blur(6px);border-bottom:2px solid var(--ro);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.topo img{width:38px;height:38px;border-radius:10px}.topo .nm{flex:1;min-width:0}.topo .nm b{display:block;font-size:16px}.topo .nm small{opacity:.75;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.abas{position:fixed;bottom:0;left:0;right:0;z-index:30;background:#0d0726;border-top:1px solid var(--bo);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+.abas button{flex:1;margin:0;border-radius:0;background:none;padding:9px 2px 8px;font-size:12px;font-weight:bold;opacity:.65}.abas button i{display:block;font-style:normal;font-size:22px}
+.abas button.on{opacity:1;color:var(--am);box-shadow:inset 0 3px 0 var(--am)}
+.faixa{border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:15px;display:flex;gap:10px;align-items:center}.faixa b{color:var(--am)}
+.fT{background:linear-gradient(90deg,#1e3a8a,#5b21b6)}.fV{background:linear-gradient(90deg,#7f1d1d,#9d174d)}.fO{background:linear-gradient(90deg,#065f46,#1e3a8a)}
+.faixa button{width:auto;margin:0;padding:9px 12px;font-size:14px;white-space:nowrap}
+.it{display:flex;gap:12px;align-items:center;background:#0d0726;border-radius:14px;padding:10px;margin-bottom:10px}
+.it .th{flex:0 0 86px;height:60px;border-radius:10px;background:#000 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:26px;position:relative}
+.it .th em{position:absolute;bottom:3px;right:3px;font-style:normal;font-size:11px;background:rgba(0,0,0,.7);padding:1px 5px;border-radius:5px}
+.it .tx{flex:1;min-width:0}.it .tx b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.it .tx small{opacity:.75;font-size:13px}
+.vazio{text-align:center;padding:22px 10px;opacity:.8}.vazio i{display:block;font-size:44px;font-style:normal;margin-bottom:6px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px}.chips span{flex:0 0 auto;padding:8px 12px;border-radius:20px;background:#0d0726;border:1px solid #4a2e8f;font-size:14px;cursor:pointer}.chips span.on{background:var(--ci);color:#06202a;font-weight:bold;border-color:var(--ci)}
+.seg{display:flex;gap:8px;margin:6px 0}.seg label{flex:1;text-align:center;padding:12px 6px;border-radius:12px;border:2px solid #4a2e8f;background:#0d0726;cursor:pointer;font-weight:bold}.seg input{display:none}.seg label.on{border-color:var(--am);background:#2a1660;color:var(--am)}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#0d0726;border-radius:12px;padding:12px;margin:8px 0;cursor:pointer}.sw input{width:auto;transform:scale(1.5);margin:0 6px}
+.prev{width:100%;max-height:240px;object-fit:contain;border-radius:12px;background:#000;margin-top:6px;display:none}
+.cod{font-size:30px;letter-spacing:6px;color:var(--am);font-weight:bold;font-family:monospace}
+#modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center}
+#modal.on{display:flex}#mBox{background:#1d1145;border-top:3px solid var(--ro);border-radius:22px 22px 0 0;width:100%;max-width:620px;max-height:92vh;overflow:auto;padding:18px 16px 26px;position:relative}
+#mFecha{position:absolute;top:10px;right:10px;width:40px;height:40px;padding:0;border-radius:50%;background:#352170;margin:0}
+.ckl label{display:flex;align-items:center;gap:10px;padding:8px;border-bottom:1px solid #2a1a5c}.ckl input{width:auto;transform:scale(1.4)}
+.ckl img{width:54px;height:38px;object-fit:cover;border-radius:6px;background:#000}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#16a34a;color:#fff;padding:12px 18px;border-radius:14px;font-weight:bold;z-index:80;display:none;max-width:90%;text-align:center}
+ol{padding-left:20px;margin:6px 0}li{margin:5px 0}
+.dica{background:#0d0726;border-left:4px solid var(--ci);border-radius:10px;padding:10px 12px;font-size:14px;margin:8px 0}
+details summary{cursor:pointer;font-weight:bold;padding:6px 0;color:var(--ci)}
+</style></head><body>
+<div id="intro" onclick="fimIntro()"><div class="iTv"><div class="iLiga"></div><div class="iAd">📢</div></div><div id="iTit">TelaOkê</div><div id="iSub">Publicidades</div><button id="iPula" onclick="fimIntro()">Pular ⏭</button></div>
+
+<!-- ===== LANDING ===== -->
+<main id="vHome" style="display:none">
+ <div class="hero"><img class="logo" src="icon-192.png" alt=""><h1>Sua TV vira um<br><span>painel de anúncios</span></h1>
+  <p>Coloque TVs em padarias, lojas e salões passando propaganda o dia todo. Fotos e vídeos, tudo pelo celular.</p>
+  <button onclick="vaiLogin()">🎁 Testar <span class="tDias">7 dias</span> grátis</button><button class="b2" onclick="vaiLogin(1)">Já tenho conta, entrar</button></div>
+ <div class="card"><h2>Como funciona</h2><div class="passos">
+  <div class="ps"><b class="n">1</b><div><b>Cadastre as lojas</b><div class="mut">Quem anuncia com você: padaria, salão, mercadinho…</div></div></div>
+  <div class="ps"><b class="n">2</b><div><b>Coloque os anúncios</b><div class="mut">Foto tirada no celular ou vídeo do YouTube.</div></div></div>
+  <div class="ps"><b class="n">3</b><div><b>Ligue a TV</b><div class="mut">No navegador da TV digite <b style="color:var(--am)">is.gd/telaoketv</b> e pareie com um código.</div></div></div>
+  <div class="ps"><b class="n">4</b><div><b>Pronto!</b><div class="mut">A TV passa tudo sozinha, em tela cheia, sem parar.</div></div></div></div></div>
+ <div class="card"><h2>Por que é bom</h2><div class="vant">
+  <div>📺 Funciona em TV smart e TV Box</div><div>🔄 Muda o anúncio na hora, de longe</div><div>📶 Se cair a internet, continua passando</div><div>⏸️ Pausa ou põe data para sair</div><div>🏪 Várias lojas e várias TVs</div><div>💰 Você cobra dos anunciantes</div></div></div>
+ <div class="card"><h2>▶️ Veja como é fácil</h2>
+  <p class="mut">1. Cadastro e teste grátis</p><video class="vid" controls preload="none" playsinline poster="videos/capa-cadastro.jpg" src="videos/tutorial-cadastro.mp4"></video>
+  <p class="mut">2. Cadastrar loja, anúncio e TV</p><video class="vid" controls preload="none" playsinline poster="videos/capa-anuncios.jpg" src="videos/tutorial-anuncios.mp4"></video>
+  <p class="mut">3. Ligar a TV e assinar</p><video class="vid" controls preload="none" playsinline poster="videos/capa-tv.jpg" src="videos/tutorial-tv.mp4"></video></div>
+ <div class="card"><h2>⭐ Planos</h2><p class="mut">Comece com <span class="tDias">7 dias</span> grátis, sem cartão. Depois escolha um plano e pague no Pix.</p>
+  <div class="planos" id="plHome"></div><button onclick="vaiLogin()" style="margin-top:14px">🎁 Começar meu teste grátis</button></div>
+ <p class="mut" style="text-align:center">TelaOkê Publicidades • da família TudoOkê</p>
+</main>
+
+<!-- ===== LOGIN ===== -->
+<main id="vLogin" style="display:none">
+ <div class="hero" style="padding-top:14px"><img class="logo" src="icon-192.png" alt="" style="width:64px;height:64px"><h1 style="font-size:24px">TelaOkê <span>Publicidades</span></h1></div>
+ <div class="card"><h2 id="lTit">Crie sua conta: teste grátis</h2>
+  <p class="mut">Use sua conta Google ou um e-mail com senha.</p>
+  <button id="bG" style="background:#fff;color:#222">Entrar com Google</button>
+  <p class="mut" style="text-align:center">ou com e-mail</p>
+  <input id="em" type="email" placeholder="Seu e-mail" autocomplete="email"><input id="se" type="password" placeholder="Senha (mínimo 6)" autocomplete="current-password">
+  <button id="bCria">Criar conta</button><button id="bEnt" class="b2">Já tenho conta, entrar</button>
+  <a href="#" id="bEsq" class="mut" style="display:block;text-align:center">Esqueci minha senha</a>
+  <p class="e" id="eLog"></p>
+  <button class="b2" onclick="vis('vHome')" style="background:none;border:1px solid #4a2e8f">← Voltar</button>
+ </div>
+</main>
+
+<!-- ===== DADOS ===== -->
+<main id="vDados" style="display:none">
+ <div class="card" style="margin-top:20px"><h2>Quase lá! 🎉</h2><p class="mut">Só falta seu nome e WhatsApp.</p>
+  <input id="nome" placeholder="Seu nome" maxlength="40"><input id="zap" type="tel" placeholder="WhatsApp com DDD. Ex.: 92991234567" maxlength="20">
+  <button id="bTeste">🎁 Ganhar meu teste grátis (<span class="tDias">7 dias</span>)</button><p class="e" id="eDad"></p>
+  <p class="mut" style="text-align:center"><a href="#" onclick="au.signOut();return false">Sair</a></p></div>
+</main>
+
+<!-- ===== APP ===== -->
+<div id="vApp" style="display:none">
+ <div class="topo"><img src="icon-192.png" alt=""><div class="nm"><b>TelaOkê Publicidades</b><small id="quem"></small></div><button class="mini b2" id="sair" style="margin:0">Sair</button></div>
+ <main>
+  <div id="faixa"></div>
+  <!-- LOJAS -->
+  <section id="tLojas" class="tab">
+   <div class="card"><h2>🏪 Lojas</h2><p class="mut">Quem anuncia na sua TV. Ex.: Padaria Pão Quente, Salão Bela.</p>
+    <button class="bc" onclick="editaLoja()">➕ Nova loja</button><div id="lLojas"></div></div>
+  </section>
+  <!-- ANUNCIOS -->
+  <section id="tAnun" class="tab" style="display:none">
+   <div class="card"><h2>🖼️ Anúncios</h2><p class="mut">Foto ou vídeo que passa na TV. Toque no anúncio para mudar.</p>
+    <button class="bc" onclick="editaAnun()">➕ Novo anúncio</button>
+    <div class="chips" id="fLojas"></div><div id="lAnun"></div>
+    <details><summary>▶️ Vídeo: como cadastrar loja, anúncio e TV</summary><video class="vid" controls preload="none" playsinline poster="videos/capa-anuncios.jpg" src="videos/tutorial-anuncios.mp4"></video></details></div>
+  </section>
+  <!-- TELAS -->
+  <section id="tTelas" class="tab" style="display:none">
+   <div class="card"><h2>📺 Telas (TVs)</h2><p class="mut">Cada TV mostra um código. Digite aqui para ligar ela na sua conta.</p>
+    <button class="bc" onclick="novaTela()">➕ Adicionar TV</button><div id="lTelas"></div>
+    <div class="dica"><b>Como ligar a TV:</b><ol><li>Na TV smart ou TV Box, abra o <b>Navegador / Internet</b>.</li><li>Digite <b style="color:var(--am);font-size:1.15em">is.gd/telaoketv</b></li><li>Aparece um <b>código</b> grande. Toque em <b>Adicionar TV</b> aqui e digite ele.</li></ol></div>
+    <details><summary>▶️ Vídeo: como ligar a TV</summary><video class="vid" controls preload="none" playsinline poster="videos/capa-tv.jpg" src="videos/tutorial-tv.mp4"></video></details></div>
+  </section>
+  <!-- PLANOS -->
+  <section id="tPlanos" class="tab" style="display:none">
+   <div class="card"><h2>⭐ Meu plano</h2><div id="stPlano" class="mut"></div></div>
+   <div class="card"><h2>Assinar ou renovar</h2><p class="mut">Escolha o plano, pague no Pix e mande o comprovante. Quando o pagamento for confirmado, os dias entram sozinhos (somam com o que falta).</p>
+    <div class="planos" id="planos"></div>
+    <div id="pixBox" style="display:none"><p style="margin:12px 0 4px"><b>Pix copia e cola</b> <span class="mut" id="pixVal"></span></p><textarea id="pixTxt" readonly style="height:84px;font-size:12px"></textarea>
+     <button id="bCopia" class="b2">📋 Copiar código Pix</button><p class="mut" id="pixQuem"></p>
+     <label class="bt bv" for="foto">📎 Já paguei, mandar comprovante</label><input id="foto" type="file" accept="image/*" style="display:none"><p class="e" id="ePag"></p></div>
+    <div id="pags"></div>
+    <details><summary>▶️ Vídeo: como ligar a TV e pagar</summary><video class="vid" controls preload="none" playsinline poster="videos/capa-tv.jpg" src="videos/tutorial-tv.mp4"></video></details></div>
+   <div class="card"><h2>❓ Ajuda</h2><details><summary>Vídeo: cadastro e teste grátis</summary><video class="vid" controls preload="none" playsinline poster="videos/capa-cadastro.jpg" src="videos/tutorial-cadastro.mp4"></video></details>
+    <details><summary>Vídeo: loja, anúncio e TV</summary><video class="vid" controls preload="none" playsinline poster="videos/capa-anuncios.jpg" src="videos/tutorial-anuncios.mp4"></video></details></div>
+  </section>
+ </main>
+ <nav class="abas"><button data-t="tLojas" class="on"><i>🏪</i>Lojas</button><button data-t="tAnun"><i>🖼️</i>Anúncios</button><button data-t="tTelas"><i>📺</i>Telas</button><button data-t="tPlanos"><i>⭐</i>Planos</button></nav>
+</div>
+<div id="modal"><div id="mBox"><button id="mFecha" onclick="fechaM()">✕</button><div id="mCont"></div></div></div>
+<div id="toast"></div>
+<script>
+var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)},TS=function(){return firebase.firestore.FieldValue.serverTimestamp()};
+var TESTE_DIAS=7,LINK_TV='is.gd/telaoketv',BASE=location.href.split('#')[0].split('?')[0].replace(/index\.html$/,'');
+/* preços: padrão só se o doc to_config/precos não existir (o ADM muda lá) */
+var PADRAO={testeDias:7,planos:{mensal:{valor:39.90,dias:30},semestral:{valor:199.90,dias:180},anual:{valor:359.90,dias:365}}},PLANOS=[],PRECOS_OK=false;
+function aplicaPrecos(c){c=c||{};var pl=c.planos||{};TESTE_DIAS=Math.max(1,Math.min(60,+c.testeDias||PADRAO.testeDias));
+ PLANOS=[['mensal','Mensal'],['semestral','Semestral'],['anual','Anual']].map(function(x){var o=pl[x[0]]||PADRAO.planos[x[0]];return {id:x[0],nome:x[1],dias:+o.dias||PADRAO.planos[x[0]].dias,valor:+o.valor||PADRAO.planos[x[0]].valor,ativo:o.ativo!==false}}).filter(function(p){return p.ativo});
+ var m=PLANOS.filter(function(p){return p.id=='mensal'})[0];PLANOS.forEach(function(p){if(m&&p.id!='mensal'){var e=Math.round((1-(p.valor/p.dias)/(m.valor/m.dias))*100);if(e>=3)p.selo=(p.id=='anual'?'Melhor preço • ':'')+'Economize '+e+'%'}});
+ [].forEach.call(document.querySelectorAll('.tDias'),function(e){e.textContent=TESTE_DIAS+(TESTE_DIAS>1?' dias':' dia')});planosHome();if(typeof desenhaPlanos=='function'&&U)desenhaPlanos();if(VAL)stPlano()}
+aplicaPrecos(null);
+var Q=new URLSearchParams(location.search),PAREAR=(Q.get('parear')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
+var U=null,CLI=null,VAL=null,PIX=null,SEL=null,LOJAS=[],ANUN=[],TELAS=[],FL='',UNS=[];
+/* ---------- util ---------- */
+function vis(v){['vHome','vLogin','vDados','vApp'].forEach(function(x){$(x).style.display=x==v?'block':'none'});window.scrollTo(0,0)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function reais(v){return 'R$ '+Number(v).toFixed(2).replace('.',',')}
+function dt(ms){return new Date(ms).toLocaleDateString('pt-BR')}
+function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
+function ms(t){return t&&t.toMillis?t.toMillis():(t||0)}
+function toast(t,cor){var e=$('toast');e.textContent=t;e.style.background=cor||'#16a34a';e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none'},2600)}
+function erroTxt(e){var c=e&&e.code||'';return {'auth/email-already-in-use':'Esse e-mail já tem conta. Toque em "Já tenho conta, entrar".','auth/invalid-credential':'E-mail ou senha errados.','auth/wrong-password':'Senha errada.','auth/user-not-found':'Conta não encontrada. Toque em "Criar conta".','auth/weak-password':'A senha precisa ter 6 letras ou números.','auth/invalid-email':'E-mail inválido.','auth/missing-password':'Digite a senha.','permission-denied':'Sem permissão. Sua assinatura pode estar vencida.'}[c]||('Não deu certo ('+c+'). Tente de novo.')}
+function copia(t,b){function ok(){if(!b)return toast('Copiado! ✅');var o=b.textContent;b.textContent='Copiado! ✅';setTimeout(function(){b.textContent=o},1800)}
+ function velho(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){prompt('Copie:',t)}a.remove()}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,velho);else velho()}
+function abreM(h){$('mCont').innerHTML=h;$('modal').classList.add('on');$('mBox').scrollTop=0}
+function fechaM(){$('modal').classList.remove('on');$('mCont').innerHTML=''}
+$('modal').onclick=function(e){if(e.target===this)fechaM()};
+function ativo(){return VAL&&ms(VAL.validade)>Date.now()}
+function precisaPlano(){if(ativo())return false;toast('Sua assinatura venceu. Escolha um plano para continuar.','#b91c1c');aba('tPlanos');return true}
+/* ---------- abertura ---------- */
+var INTRO=false;function fimIntro(){if(INTRO)return;INTRO=true;var i=$('intro');i.classList.add('sai');setTimeout(function(){i.remove()},700)}
+(function(){var i=$('intro'),n=['📺','📢','⭐','🛍️','🍞','💈','🎬'];var t=setInterval(function(){if(INTRO){clearInterval(t);return}var e=document.createElement('div');e.className='iEst';e.textContent=n[Math.random()*n.length|0];e.style.left=(Math.random()*92)+'%';e.style.animationDuration=(2+Math.random()*1.6)+'s';i.appendChild(e);setTimeout(function(){e.remove()},3800)},200);setTimeout(fimIntro,3400)})();
+/* ---------- planos na landing ---------- */
+function planosHome(){var P=$('plHome');if(!P)return;P.innerHTML='';PLANOS.forEach(function(p){var d=document.createElement('div');d.className='pl';d.innerHTML=(p.selo?'<span class="selo">'+p.selo+'</span>':'')+'<span class="v">'+reais(p.valor)+'</span><b>'+p.nome+'</b><div class="mut">'+p.dias+' dias • TVs e anúncios à vontade</div>';d.onclick=function(){vaiLogin()};P.appendChild(d)})}
+db.collection('to_config').doc('precos').onSnapshot(function(d){PRECOS_OK=true;aplicaPrecos(d.exists?d.data():null)},function(){PRECOS_OK=true;aplicaPrecos(null)});
+function vaiLogin(ja){$('lTit').textContent=ja?'Entrar na minha conta':'Crie sua conta: '+TESTE_DIAS+(TESTE_DIAS>1?' dias':' dia')+' grátis';vis('vLogin')}
+/* ---------- login ---------- */
+$('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});$('eLog').textContent='Abrindo o Google…';
+ if(/Android|iPhone|iPad/i.test(navigator.userAgent)){au.signInWithRedirect(p).catch(function(e){$('eLog').textContent=erroTxt(e)});return}
+ au.signInWithPopup(p).catch(function(e){if(/popup|not-supported|cancelled/.test(e.code))au.signInWithRedirect(p);else $('eLog').textContent=erroTxt(e)})};
+$('bCria').onclick=function(){$('eLog').textContent='';au.createUserWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){$('eLog').textContent=erroTxt(e)})};
+$('bEnt').onclick=function(){$('eLog').textContent='';au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){$('eLog').textContent=erroTxt(e)})};
+$('bEsq').onclick=function(e){e.preventDefault();var m=$('em').value.trim();if(!m){$('eLog').textContent='Digite seu e-mail acima e toque de novo.';return}au.sendPasswordResetEmail(m).then(function(){$('eLog').textContent='Mandamos um e-mail para trocar a senha. Olhe também no spam.'}).catch(function(e){$('eLog').textContent=erroTxt(e)})};
+$('sair').onclick=function(){if(confirm('Sair da conta?'))au.signOut()};au.getRedirectResult().catch(function(e){$('eLog').textContent=erroTxt(e)});
+var PRIMEIRO=true;
+au.onAuthStateChanged(function(u){U=u;UNS.forEach(function(f){try{f()}catch(e){}});UNS=[];
+ if(!u){if(PRIMEIRO&&!(Q.get('cad')||PAREAR))vis('vHome');else vaiLogin(PAREAR?1:0);PRIMEIRO=false;return}PRIMEIRO=false;
+ db.collection('to_clientes').doc(u.uid).get().then(function(d){if(d.exists){CLI=d.data();app()}else{if(u.displayName)$('nome').value=u.displayName;vis('vDados')}}).catch(function(e){vaiLogin(1);$('eLog').textContent='Erro: '+e.code})});
+$('bTeste').onclick=function(){var n=$('nome').value.trim(),z=nz($('zap').value),b=this;if(n.length<2){$('eDad').textContent='Digite seu nome.';return}if(z.length<12){$('eDad').textContent='Digite o WhatsApp com DDD.';return}
+ b.disabled=true;$('eDad').textContent='Liberando seu teste…';var bt=db.batch();
+ bt.set(db.collection('to_validade').doc(U.uid),{validade:firebase.firestore.Timestamp.fromMillis(Date.now()+TESTE_DIAS*864e5),plano:'teste',criadoEm:TS()});
+ bt.set(db.collection('to_clientes').doc(U.uid),{nome:n,zap:z,email:U.email||'',criadoEm:TS()});
+ bt.commit().then(function(){CLI={nome:n,zap:z};toast('🎁 Pronto! Teste grátis liberado.');app()}).catch(function(e){$('eDad').textContent='Não deu certo ('+e.code+'). Esta conta já usou o teste? Fale com quem te mandou o link.'}).finally(function(){b.disabled=false})};
+/* ---------- app ---------- */
+function app(){vis('vApp');$('quem').textContent=(CLI.nome||'')+' • '+(U.email||'');
+ UNS.push(db.collection('to_validade').doc(U.uid).onSnapshot(function(d){VAL=d.exists?d.data():null;faixa();stPlano()},function(){}));
+ UNS.push(db.collection('to_lojas').where('dono','==',U.uid).onSnapshot(function(s){LOJAS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return (a.nome||'').localeCompare(b.nome||'')});pLojas();pAnun()},function(e){$('lLojas').innerHTML='<p class="e">Erro: '+e.code+'</p>'}));
+ UNS.push(db.collection('to_anuncios').where('dono','==',U.uid).onSnapshot(function(s){ANUN=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return ms(b.criadoEm)-ms(a.criadoEm)});pLojas();pAnun()},function(e){$('lAnun').innerHTML='<p class="e">Erro: '+e.code+'</p>'}));
+ UNS.push(db.collection('to_telas').where('dono','==',U.uid).onSnapshot(function(s){TELAS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return ms(a.criadoEm)-ms(b.criadoEm)});pTelas()},function(e){$('lTelas').innerHTML='<p class="e">Erro: '+e.code+'</p>'}));
+ UNS.push(db.collection('to_pagamentos').where('uid','==',U.uid).onSnapshot(pintaP,function(){}));
+ db.collection('ml_publico').doc('pix').get().then(function(d){PIX=d.exists?d.data():null;desenhaPlanos()}).catch(function(){desenhaPlanos()});
+ if(PAREAR){aba('tTelas');setTimeout(function(){novaTela(PAREAR);PAREAR=''},600)}
+ clearInterval(app.t);app.t=setInterval(function(){faixa();pTelas()},60000)}
+function aba(t){[].forEach.call(document.querySelectorAll('.tab'),function(s){s.style.display=s.id==t?'block':'none'});[].forEach.call(document.querySelectorAll('.abas button'),function(b){b.classList.toggle('on',b.dataset.t==t)});window.scrollTo(0,0)}
+[].forEach.call(document.querySelectorAll('.abas button'),function(b){b.onclick=function(){aba(b.dataset.t)}});
+function faixa(){var F=$('faixa');if(!VAL){F.innerHTML='';return}var v=ms(VAL.validade),dias=Math.ceil((v-Date.now())/864e5);
+ if(v<Date.now())F.innerHTML='<div class="faixa fV"><div style="flex:1">⛔ <b>Assinatura vencida</b><br><small>As TVs mostram "Assinatura vencida". Seus anúncios estão guardados.</small></div><button onclick="aba(\'tPlanos\')">Assinar</button></div>';
+ else if(VAL.plano=='teste')F.innerHTML='<div class="faixa fT"><div style="flex:1">🎁 Teste grátis até <b>'+dt(v)+'</b><br><small>Faltam '+dias+' dia'+(dias>1?'s':'')+'</small></div><button onclick="aba(\'tPlanos\')">⭐ Assinar</button></div>';
+ else F.innerHTML=dias<=5?'<div class="faixa fV"><div style="flex:1">⚠️ Seu plano vence em <b>'+dt(v)+'</b></div><button onclick="aba(\'tPlanos\')">Renovar</button></div>':''}
+function stPlano(){if(!VAL){$('stPlano').textContent='…';return}var v=ms(VAL.validade),p=VAL.plano=='teste'?'Teste grátis':(PLANOS.filter(function(x){return x.id==VAL.plano})[0]||{nome:VAL.plano}).nome;
+ $('stPlano').innerHTML='<b style="font-size:17px;color:#fff">'+esc(p)+'</b>'+(v>Date.now()?'<span class="tag ok">Ativo</span><br>Vale até <b>'+dt(v)+'</b>':'<span class="tag venc">Vencido</span><br>Venceu em '+dt(v)+'. Escolha um plano abaixo.')}
+/* ---------- lojas ---------- */
+function nAnunLoja(id){return ANUN.filter(function(a){return a.lojaId==id}).length}
+function pLojas(){var L=$('lLojas');if(!LOJAS.length){L.innerHTML='<div class="vazio"><i>🏪</i>Nenhuma loja ainda.<br>Toque em <b>Nova loja</b> para começar.</div>';return}
+ L.innerHTML=LOJAS.map(function(x){var n=nAnunLoja(x.id);return '<div class="it" onclick="editaLoja(\''+x.id+'\')"><div class="th" style="background:linear-gradient(135deg,#ff3fa4,#7c3aed)">🏪</div><div class="tx"><b>'+esc(x.nome)+'</b><small>'+n+' anúncio'+(n==1?'':'s')+(x.zap?' • 📱 '+esc(x.zap.slice(2)):'')+'</small></div><span>✏️</span></div>'}).join('')}
+function editaLoja(id){var x=id?LOJAS.filter(function(l){return l.id==id})[0]:{};if(!id&&precisaPlano())return;
+ abreM('<h2>'+(id?'Editar loja':'Nova loja')+'</h2><label class="rt">Nome da loja *</label><input id="lNome" maxlength="50" placeholder="Ex.: Padaria Pão Quente" value="'+esc(x.nome||'')+'">'+
+ '<label class="rt">WhatsApp da loja (opcional)</label><input id="lZap" type="tel" maxlength="20" placeholder="92991234567" value="'+esc(x.zap?x.zap.slice(2):'')+'">'+
+ '<label class="rt">Observação (opcional)</label><input id="lObs" maxlength="80" placeholder="Ex.: paga dia 10, R$ 50/mês" value="'+esc(x.obs||'')+'">'+
+ '<button onclick="salvaLoja(\''+(id||'')+'\')">💾 Salvar loja</button>'+(id?'<button class="bc" onclick="fechaM();FL=\''+id+'\';editaAnun()">➕ Anúncio para esta loja</button><button class="bx" onclick="apagaLoja(\''+id+'\')">🗑️ Apagar loja</button>':'')+'<p class="e" id="eL"></p>');setTimeout(function(){$('lNome').focus()},100)}
+function salvaLoja(id){var n=$('lNome').value.trim();if(n.length<2){$('eL').textContent='Digite o nome da loja.';return}if(precisaPlano())return;
+ var o={dono:U.uid,nome:n,zap:nz($('lZap').value),obs:$('lObs').value.trim(),atualizadoEm:TS()},r=id?db.collection('to_lojas').doc(id).set(o,{merge:true}):(o.criadoEm=TS(),db.collection('to_lojas').add(o));
+ r.then(function(){fechaM();toast('Loja salva ✅')}).catch(function(e){$('eL').textContent=erroTxt(e)})}
+function apagaLoja(id){var n=nAnunLoja(id);if(!confirm('Apagar esta loja'+(n?' e os '+n+' anúncios dela':'')+'?'))return;var bt=db.batch();ANUN.forEach(function(a){if(a.lojaId==id)bt.delete(db.collection('to_anuncios').doc(a.id))});bt.delete(db.collection('to_lojas').doc(id));bt.commit().then(function(){fechaM();toast('Loja apagada')}).catch(function(e){alert(erroTxt(e))})}
+/* ---------- anuncios ---------- */
+function ytId(u){var m=String(u||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/))([A-Za-z0-9_-]{11})/);return m?m[1]:''}
+function ehVideoDireto(u){return /^https?:\/\/.+\.(mp4|webm|m4v|mov)(\?.*)?$/i.test(String(u||'').trim())}
+function hoje(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
+function stAnun(a){if(!a.ativo)return['Pausado','cz'];if(a.fim&&a.fim<hoje())return['Venceu '+a.fim.split('-').reverse().join('/'),'venc'];if(a.inicio&&a.inicio>hoje())return['Começa '+a.inicio.split('-').reverse().join('/'),'az'];return['Passando','ok']}
+function thumb(a){if(a.tipo=='foto'&&a.img)return 'background-image:url('+a.img+')';if(a.tipo=='youtube'&&a.yt)return 'background-image:url(https://img.youtube.com/vi/'+a.yt+'/mqdefault.jpg)';return ''}
+function pAnun(){var F=$('fLojas');if(FL&&!LOJAS.some(function(l){return l.id==FL}))FL='';
+ F.innerHTML=LOJAS.length>1?'<span class="'+(FL?'':'on')+'" onclick="FL=\'\';pAnun()">Todas ('+ANUN.length+')</span>'+LOJAS.map(function(l){return '<span class="'+(FL==l.id?'on':'')+'" onclick="FL=\''+l.id+'\';pAnun()">'+esc(l.nome)+' ('+nAnunLoja(l.id)+')</span>'}).join(''):'';
+ var A=ANUN.filter(function(a){return !FL||a.lojaId==FL}),L=$('lAnun');
+ if(!A.length){L.innerHTML='<div class="vazio"><i>🖼️</i>Nenhum anúncio'+(FL?' desta loja':'')+' ainda.<br>Toque em <b>Novo anúncio</b>.</div>';return}
+ L.innerHTML=A.map(function(a){var s=stAnun(a),t=a.tipo=='foto'?(a.tempo||10)+' s':(a.tempo?a.tempo+' s':'até o fim');
+  return '<div class="it"><div class="th" style="'+thumb(a)+'" onclick="editaAnun(\''+a.id+'\')">'+(a.tipo=='foto'?'':(a.tipo=='youtube'?'':'🎬'))+'<em>'+(a.tipo=='foto'?'📷':'▶️')+' '+t+'</em></div><div class="tx" onclick="editaAnun(\''+a.id+'\')"><b>'+esc(a.titulo||a.lojaNome||'Anúncio')+'</b><small>🏪 '+esc(a.lojaNome||'')+'</small><br><span class="tag '+s[1]+'" style="margin:4px 0 0">'+s[0]+'</span></div>'+
+  '<button class="mini '+(a.ativo?'b2':'bv')+'" onclick="pausa(\''+a.id+'\','+(!a.ativo)+')">'+(a.ativo?'⏸️':'▶️')+'</button></div>'}).join('')}
+function pausa(id,v){if(precisaPlano())return;db.collection('to_anuncios').doc(id).update({ativo:v,atualizadoEm:TS()}).then(function(){toast(v?'Voltou a passar ▶️':'Pausado ⏸️')}).catch(function(e){alert(erroTxt(e))})}
+var NOVA_IMG=null,TIPO='foto';
+function editaAnun(id){var a=id?ANUN.filter(function(x){return x.id==id})[0]:{ativo:true,tipo:'foto',tempo:10,lojaId:FL||(LOJAS.length==1?LOJAS[0].id:'')};
+ if(!id&&precisaPlano())return;
+ if(!LOJAS.length){abreM('<h2>Primeiro, cadastre uma loja</h2><p class="mut">Todo anúncio é de uma loja (quem anuncia). Ex.: Padaria Pão Quente.</p><button onclick="fechaM();aba(\'tLojas\');editaLoja()">➕ Cadastrar loja</button>');return}
+ NOVA_IMG=null;TIPO=a.tipo=='foto'?'foto':'video';
+ abreM('<h2>'+(id?'Editar anúncio':'Novo anúncio')+'</h2>'+
+ '<label class="rt">Loja *</label><select id="aLoja"><option value="">Escolha a loja…</option>'+LOJAS.map(function(l){return '<option value="'+l.id+'"'+(l.id==a.lojaId?' selected':'')+'>'+esc(l.nome)+'</option>'}).join('')+'</select>'+
+ '<label class="rt">Nome do anúncio (opcional)</label><input id="aTit" maxlength="60" placeholder="Ex.: Promoção do pão" value="'+esc(a.titulo||'')+'">'+
+ '<label class="rt">O que vai passar?</label><div class="seg"><label id="sgF" onclick="tipoA(\'foto\')">📷 Foto</label><label id="sgV" onclick="tipoA(\'video\')">▶️ Vídeo</label></div>'+
+ '<div id="bxFoto"><label class="bt bc" for="aArq" style="margin-top:6px">📷 Escolher ou tirar foto</label><input id="aArq" type="file" accept="image/*" style="display:none"><p class="mut" id="aInfo">Dica: deite o celular (foto deitada) para encher a TV.</p><img id="aPrev" class="prev"></div>'+
+ '<div id="bxVid"><label class="rt">Link do vídeo</label><input id="aUrl" inputmode="url" placeholder="Cole o link do YouTube ou de um .mp4" value="'+esc(a.url||'')+'"><p class="mut">YouTube: no app, toque em <b>Compartilhar → Copiar link</b> e cole aqui. O vídeo passa sem som (pode ligar o som na TV).</p><img id="aYt" class="prev"></div>'+
+ '<label class="rt">Tempo na tela (segundos)</label><input id="aTempo" type="number" min="0" max="600" inputmode="numeric" value="'+(a.tempo==null?'':a.tempo)+'"><p class="mut" id="aTmpD"></p>'+
+ '<div class="row"><div><label class="rt">Começa em (opcional)</label><input id="aIni" type="date" value="'+esc(a.inicio||'')+'"></div><div><label class="rt">Sai do ar em (opcional)</label><input id="aFim" type="date" value="'+esc(a.fim||'')+'"></div></div>'+
+ '<label class="sw"><span>▶️ Ativo (passando na TV)</span><input type="checkbox" id="aAtv"'+(a.ativo!==false?' checked':'')+'></label>'+
+ '<button id="aSalva" onclick="salvaAnun(\''+(id||'')+'\')">💾 Salvar anúncio</button>'+(id?'<button class="bx" onclick="apagaAnun(\''+id+'\')">🗑️ Apagar anúncio</button>':'')+'<p class="e" id="eA"></p>');
+ if(a.tipo=='foto'&&a.img){$('aPrev').src=a.img;$('aPrev').style.display='block'}
+ $('aArq').onchange=function(){var f=this.files[0];this.value='';if(!f)return;$('aInfo').textContent='Preparando a foto…';comprime(f,150000,1280,function(u){if(!u){$('aInfo').textContent='Não consegui ler esta foto. Tente outra.';return}NOVA_IMG=u;$('aPrev').src=u;$('aPrev').style.display='block';$('aInfo').textContent='✅ Foto pronta ('+Math.round(u.length*0.75/1024)+' KB)'})};
+ $('aUrl').oninput=function(){var y=ytId(this.value);if(y){$('aYt').src='https://img.youtube.com/vi/'+y+'/mqdefault.jpg';$('aYt').style.display='block'}else $('aYt').style.display='none'};$('aUrl').oninput.call($('aUrl'));
+ tipoA(TIPO,!!id)}
+function tipoA(t,manter){TIPO=t;$('sgF').classList.toggle('on',t=='foto');$('sgV').classList.toggle('on',t!='foto');$('bxFoto').style.display=t=='foto'?'block':'none';$('bxVid').style.display=t=='foto'?'none':'block';
+ if(!manter){$('aTempo').value=t=='foto'?10:''}$('aTmpD').textContent=t=='foto'?'Padrão: 10 segundos.':'Deixe vazio para passar o vídeo até o fim.'}
+function comprime(f,alvo,lim,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var w=im.width,h=im.height,k=Math.min(1,lim/Math.max(w,h)),c=document.createElement('canvas');
+ function des(k){c.width=Math.round(w*k);c.height=Math.round(h*k);var g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height)}
+ des(k);var q=.85,u=c.toDataURL('image/jpeg',q),lado=lim;while(u.length*0.75>alvo&&q>.4){q-=.08;u=c.toDataURL('image/jpeg',q)}
+ while(u.length*0.75>alvo&&lado>640){lado-=160;k=Math.min(1,lado/Math.max(w,h));des(k);u=c.toDataURL('image/jpeg',.7)}cb(u)};im.onerror=function(){cb(null)};im.src=r.result};r.onerror=function(){cb(null)};r.readAsDataURL(f)}
+function salvaAnun(id){var l=$('aLoja').value,lo=LOJAS.filter(function(x){return x.id==l})[0],e=$('eA');if(!lo){e.textContent='Escolha a loja.';return}if(precisaPlano())return;
+ var ant=id?ANUN.filter(function(x){return x.id==id})[0]:null,t=$('aTempo').value.trim(),o={dono:U.uid,lojaId:l,lojaNome:lo.nome,titulo:$('aTit').value.trim(),ativo:$('aAtv').checked,inicio:$('aIni').value||'',fim:$('aFim').value||'',atualizadoEm:TS()};
+ if(o.inicio&&o.fim&&o.fim<o.inicio){e.textContent='A data de sair do ar é antes da de começar.';return}
+ if(TIPO=='foto'){var img=NOVA_IMG||(ant&&ant.tipo=='foto'?ant.img:'');if(!img){e.textContent='Escolha a foto do anúncio.';return}o.tipo='foto';o.img=img;o.url='';o.yt='';o.tempo=Math.max(3,Math.min(600,+t||10))}
+ else{var u=$('aUrl').value.trim(),y=ytId(u);if(!y&&!ehVideoDireto(u)){e.textContent='Cole um link do YouTube ou um link que termina em .mp4.';return}o.tipo=y?'youtube':'mp4';o.url=u;o.yt=y;o.img='';o.tempo=t?Math.max(3,Math.min(600,+t)):0}
+ var b=$('aSalva');b.disabled=true;b.textContent='Salvando…';var r=id?db.collection('to_anuncios').doc(id).set(o,{merge:true}):(o.criadoEm=TS(),db.collection('to_anuncios').add(o));
+ r.then(function(){fechaM();toast('Anúncio salvo ✅ Já vai aparecer nas TVs.')}).catch(function(x){b.disabled=false;b.textContent='💾 Salvar anúncio';e.textContent=erroTxt(x)})}
+function apagaAnun(id){if(!confirm('Apagar este anúncio?'))return;db.collection('to_anuncios').doc(id).delete().then(function(){fechaM();toast('Anúncio apagado')}).catch(function(e){alert(erroTxt(e))})}
+/* ---------- telas ---------- */
+function online(t){return ms(t.visto)>Date.now()-11*60000}
+function pTelas(){var L=$('lTelas');if(!L)return;if(!TELAS.length){L.innerHTML='<div class="vazio"><i>📺</i>Nenhuma TV ainda.<br>Abra <b style="color:var(--am)">'+LINK_TV+'</b> na TV e toque em <b>Adicionar TV</b>.</div>';return}
+ L.innerHTML=TELAS.map(function(t){var n=t.todos!==false?'Todos os anúncios':((t.anuncios||[]).length+' anúncio(s) escolhido(s)'),on=online(t);
+  return '<div class="it" onclick="editaTela(\''+t.id+'\')"><div class="th" style="background:#000">📺</div><div class="tx"><b>'+esc(t.nome||'TV')+'</b><small>Código '+t.id+' • '+n+'</small><br><span class="tag '+(on?'ok':'cz')+'" style="margin:4px 0 0">'+(on?'🟢 Ligada agora':(t.visto?'Desligada • visto '+new Date(ms(t.visto)).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Esperando a TV abrir'))+'</span></div><span>✏️</span></div>'}).join('')}
+function novaTela(cod){if(precisaPlano())return;
+ abreM('<h2>Adicionar TV</h2><div class="dica">1. Na TV, abra o navegador e digite <b style="color:var(--am)">'+LINK_TV+'</b><br>2. Vai aparecer um código grande. Digite ele aqui:</div>'+
+ '<label class="rt">Código que aparece na TV</label><input id="tCod" maxlength="7" autocapitalize="characters" autocomplete="off" placeholder="Ex.: K7M2QX" style="font-size:26px;letter-spacing:6px;text-transform:uppercase;text-align:center" value="'+esc(cod||'')+'">'+
+ '<label class="rt">Nome da TV</label><input id="tNome" maxlength="40" placeholder="Ex.: TV da Padaria Pão Quente">'+
+ '<button onclick="salvaNovaTela()">📺 Ligar esta TV</button><p class="e" id="eT"></p>');setTimeout(function(){$(cod?'tNome':'tCod').focus()},150)}
+function salvaNovaTela(){var c=$('tCod').value.toUpperCase().replace(/[^A-Z0-9]/g,''),n=$('tNome').value.trim()||'TV '+(TELAS.length+1),e=$('eT');if(c.length!=6){e.textContent='O código tem 6 letras/números. Confira na TV.';return}
+ var ref=db.collection('to_telas').doc(c);e.textContent='Ligando…';
+ db.runTransaction(function(tx){return tx.get(ref).then(function(d){if(d.exists)throw{code:d.data().dono==U.uid?'ja-sua':'ja-usada'};tx.set(ref,{dono:U.uid,nome:n,todos:true,anuncios:[],relogio:true,som:false,texto:'',criadoEm:TS()})})})
+ .then(function(){fechaM();toast('📺 TV ligada! Em alguns segundos ela começa a passar os anúncios.')}).catch(function(x){e.textContent=x.code=='ja-sua'?'Essa TV já está na sua lista.':x.code=='ja-usada'?'Esse código já está em uso por outra conta. Na TV, aperte OK e escolha "Gerar código novo".':erroTxt(x)})}
+function editaTela(id){var t=TELAS.filter(function(x){return x.id==id})[0];if(!t)return;var sel=t.anuncios||[];
+ abreM('<h2>📺 '+esc(t.nome||'TV')+'</h2><p class="mut">Código desta TV: <b class="cod" style="font-size:20px">'+t.id+'</b></p>'+
+ '<label class="rt">Nome da TV</label><input id="eNome" maxlength="40" value="'+esc(t.nome||'')+'">'+
+ '<label class="rt">Quais anúncios passam nesta TV?</label><div class="seg"><label id="sgT" onclick="modoT(1)">Todos</label><label id="sgE" onclick="modoT(0)">Escolher</label></div>'+
+ '<div id="bxEsc" class="ckl">'+(ANUN.length?ANUN.map(function(a){return '<label><input type="checkbox" value="'+a.id+'"'+(sel.indexOf(a.id)>=0?' checked':'')+'>'+(a.tipo=='foto'?'<img src="'+a.img+'">':a.tipo=='youtube'?'<img src="https://img.youtube.com/vi/'+a.yt+'/default.jpg">':'🎬')+'<span>'+esc(a.titulo||a.lojaNome)+'<br><small class="mut">'+esc(a.lojaNome||'')+(a.ativo?'':' • pausado')+'</small></span></label>'}).join(''):'<p class="mut">Nenhum anúncio ainda.</p>')+'</div>'+
+ '<label class="sw"><span>🕒 Mostrar hora no rodapé</span><input type="checkbox" id="eRel"'+(t.relogio!==false?' checked':'')+'></label>'+
+ '<label class="sw"><span>🔊 Vídeos com som</span><input type="checkbox" id="eSom"'+(t.som?' checked':'')+'></label>'+
+ '<label class="rt">Frase passando no rodapé (opcional)</label><input id="eTxt" maxlength="120" placeholder="Ex.: Anuncie aqui! Chame no (92) 99999-9999" value="'+esc(t.texto||'')+'">'+
+ '<button onclick="salvaTela(\''+id+'\')">💾 Salvar</button><button class="bx" onclick="apagaTela(\''+id+'\')">🗑️ Tirar esta TV</button><p class="e" id="eE"></p>');modoT(t.todos!==false)}
+var MODO_T=1;function modoT(v){MODO_T=v;$('sgT').classList.toggle('on',!!v);$('sgE').classList.toggle('on',!v);$('bxEsc').style.display=v?'none':'block'}
+function salvaTela(id){var ids=[].map.call(document.querySelectorAll('#bxEsc input:checked'),function(i){return i.value});if(!MODO_T&&!ids.length){$('eE').textContent='Marque pelo menos um anúncio, ou escolha Todos.';return}
+ db.collection('to_telas').doc(id).update({nome:$('eNome').value.trim()||'TV',todos:!!MODO_T,anuncios:ids.slice(0,200),relogio:$('eRel').checked,som:$('eSom').checked,texto:$('eTxt').value.trim()}).then(function(){fechaM();toast('Salvo ✅ A TV atualiza sozinha.')}).catch(function(e){$('eE').textContent=erroTxt(e)})}
+function apagaTela(id){if(!confirm('Tirar esta TV da sua conta? Ela volta a mostrar o código.'))return;db.collection('to_telas').doc(id).delete().then(function(){fechaM();toast('TV removida')}).catch(function(e){alert(erroTxt(e))})}
+/* ---------- planos / Pix ---------- */
+function pixTxt(t,m){return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9 .\-]/g,'').toUpperCase().slice(0,m)}
+function crc16(s){var c=0xFFFF;for(var i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(var j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return('0000'+c.toString(16).toUpperCase()).slice(-4)}
+function pixCC(ch,no,ci,v,tx){function f(i,x){return i+('0'+x.length).slice(-2)+x}var k=String(ch||'').trim();if(/^[\d.\-\/ ]+$/.test(k))k=k.replace(/\D/g,'');
+ var p=f('00','01')+f('26',f('00','br.gov.bcb.pix')+f('01',k))+f('52','0000')+f('53','986')+(v?f('54',Number(v).toFixed(2)):'')+f('58','BR')+f('59',pixTxt(no,25)||'RECEBEDOR')+f('60',pixTxt(ci,15)||'MANAUS')+f('62',f('05',pixTxt(tx,25).replace(/[^A-Z0-9]/g,'')||'***'))+'6304';return p+crc16(p)}
+function desenhaPlanos(){var P=$('planos');P.innerHTML='';$('pixBox').style.display='none';SEL=null;
+ if(!PIX||!PIX.chave){P.innerHTML='<p class="mut">Pagamento ainda não configurado. Fale com quem te mandou o link.</p>';return}
+ PLANOS.forEach(function(p){var d=document.createElement('div');d.className='pl';d.innerHTML=(p.selo?'<span class="selo">'+p.selo+'</span>':'')+'<span class="v">'+reais(p.valor)+'</span><b>'+p.nome+'</b><div class="mut">'+p.dias+' dias</div>';
+  d.onclick=function(){SEL=p;[].forEach.call(P.children,function(c){c.classList.remove('sel')});d.classList.add('sel');$('pixTxt').value=pixCC(PIX.chave,PIX.nome,PIX.cidade,p.valor,'TO'+p.id);$('pixVal').textContent='• '+p.nome+' '+reais(p.valor);$('pixQuem').textContent='Vai aparecer no banco: '+(PIX.nome||'');$('pixBox').style.display='block';setTimeout(function(){$('pixBox').scrollIntoView({behavior:'smooth',block:'center'})},100)};P.appendChild(d)})}
+$('bCopia').onclick=function(){copia($('pixTxt').value,this)};
+$('foto').onchange=function(){var f=this.files[0];this.value='';if(!f||!SEL)return;$('ePag').textContent='Enviando comprovante…';
+ comprime(f,500000,1100,function(u){if(!u){$('ePag').textContent='Não consegui ler a foto. Mande um print do comprovante.';return}
+  db.collection('to_pagamentos').add({uid:U.uid,nome:CLI.nome||'',zap:CLI.zap||'',email:U.email||'',plano:SEL.id,planoNome:SEL.nome,dias:SEL.dias,valor:SEL.valor,comprovante:u,status:'aguardando',criadoEm:TS()})
+  .then(function(){$('ePag').textContent='';$('pixBox').style.display='none';[].forEach.call($('planos').children,function(c){c.classList.remove('sel')});alert('Comprovante enviado! ✅ Assim que o pagamento for confirmado, os dias entram sozinhos.')})
+  .catch(function(e){$('ePag').textContent='Não enviou ('+e.code+'). Tente de novo.'})})};
+function pintaP(s){var L=s.docs.map(function(d){var x=d.data();x.t=ms(x.criadoEm)||Date.now();return x}).sort(function(a,b){return b.t-a.t}),B=$('pags');B.innerHTML=L.length?'<p style="margin:14px 0 4px"><b>Seus pagamentos</b></p>':'';
+ L.forEach(function(x){var d=document.createElement('div');d.className='it';d.style.display='block';var st=x.status=='aprovado'?'<span class="tag ok">Confirmado</span>':x.status=='recusado'?'<span class="tag venc">Não confirmado</span>':'<span class="tag ag">Esperando confirmação</span>';
+  d.innerHTML='<b>'+esc(x.planoNome||x.plano)+'</b> '+reais(x.valor)+st+'<div class="mut">'+dt(x.t)+(x.status=='recusado'?' • o pagamento não apareceu. Fale com o vendedor.':x.status=='aprovado'?' • +'+x.dias+' dias':'')+'</div>';B.appendChild(d)})}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+</script></body></html>

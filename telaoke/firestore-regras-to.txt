@@ -1,0 +1,65 @@
+    // ===== TelaOkê Publicidades (telaoke/) =====
+    function toOk(uid) {
+      return exists(/databases/$(database)/documents/to_validade/$(uid))
+        && get(/databases/$(database)/documents/to_validade/$(uid)).data.validade > request.time;
+    }
+    function toEu() {
+      return request.auth != null;
+    }
+    function toTesteOk(v) {
+      return (!exists(/databases/$(database)/documents/to_config/precos) && v < request.time + duration.value(170, 'h'))
+        || (exists(/databases/$(database)/documents/to_config/precos)
+            && v < request.time + duration.value(int(get(/databases/$(database)/documents/to_config/precos).data.get('testeDias', 7)) * 24 + 2, 'h'));
+    }
+    match /to_config/{d} {
+      allow read: if true;
+      allow write: if mlAdmin();
+    }
+    match /to_clientes/{uid} {
+      allow read: if mlAdmin() || (toEu() && request.auth.uid == uid);
+      allow create, update: if mlAdmin() || (toEu() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['nome','zap','email','criadoEm','atualizadoEm'])
+        && request.resource.data.nome is string && request.resource.data.nome.size() > 1 && request.resource.data.nome.size() <= 60
+        && request.resource.data.zap is string && request.resource.data.zap.size() <= 20);
+      allow delete: if mlAdmin();
+    }
+    match /to_validade/{uid} {
+      allow read: if true;
+      allow create: if mlAdmin() || (toEu() && request.auth.uid == uid
+        && !exists(/databases/$(database)/documents/to_clientes/$(uid))
+        && request.resource.data.keys().hasOnly(['validade','plano','criadoEm'])
+        && request.resource.data.plano == 'teste'
+        && request.resource.data.validade is timestamp
+        && toTesteOk(request.resource.data.validade));
+      allow update, delete: if mlAdmin();
+    }
+    match /to_lojas/{id} {
+      allow read: if mlAdmin() || (toEu() && resource.data.dono == request.auth.uid);
+      allow create: if toEu() && request.resource.data.dono == request.auth.uid && toOk(request.auth.uid);
+      allow update: if mlAdmin() || (toEu() && resource.data.dono == request.auth.uid && request.resource.data.dono == request.auth.uid && toOk(request.auth.uid));
+      allow delete: if mlAdmin() || (toEu() && resource.data.dono == request.auth.uid);
+    }
+    match /to_anuncios/{id} {
+      allow read: if resource.data.ativo == true || mlAdmin() || (toEu() && resource.data.dono == request.auth.uid);
+      allow create: if toEu() && request.resource.data.dono == request.auth.uid && toOk(request.auth.uid)
+        && request.resource.data.get('img', '').size() < 450000;
+      allow update: if mlAdmin() || (toEu() && resource.data.dono == request.auth.uid && request.resource.data.dono == request.auth.uid
+        && toOk(request.auth.uid) && request.resource.data.get('img', '').size() < 450000);
+      allow delete: if mlAdmin() || (toEu() && resource.data.dono == request.auth.uid);
+    }
+    match /to_telas/{codigo} {
+      allow get: if true;
+      allow list: if mlAdmin() || (toEu() && resource.data.dono == request.auth.uid);
+      allow create: if toEu() && request.resource.data.dono == request.auth.uid && toOk(request.auth.uid) && codigo.size() == 6;
+      allow update: if mlAdmin()
+        || (toEu() && resource.data.dono == request.auth.uid && request.resource.data.dono == request.auth.uid)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['visto']) && request.resource.data.visto == request.time);
+      allow delete: if mlAdmin() || (toEu() && resource.data.dono == request.auth.uid);
+    }
+    match /to_pagamentos/{p} {
+      allow create: if toEu() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'aguardando' && request.resource.data.valor is number;
+      allow read: if mlAdmin() || (toEu() && resource.data.uid == request.auth.uid);
+      allow update, delete: if mlAdmin();
+    }
+    // ===== fim TelaOkê Publicidades =====

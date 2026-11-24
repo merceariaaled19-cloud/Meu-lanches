@@ -1,0 +1,114 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ADM TelaOkê Publicidades</title><meta name="robots" content="noindex"><meta name="theme-color" content="#120a2e">
+<link rel="manifest" href="admin.webmanifest"><link rel="icon" href="adm-192.png"><link rel="apple-touch-icon" href="adm-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#0a0620;color:#fff}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(90deg,#1d1145,#3b1680);border-bottom:3px solid #ff3fa4;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+header img{width:36px;height:36px;border-radius:9px}h1{font-size:18px;margin:0;flex:1}main{padding:12px;max-width:760px;margin:auto}
+.card{background:#1d1145;border:1px solid #352170;border-radius:16px;padding:14px;margin-bottom:14px}.card h3{margin:0 0 8px;color:#ffd54a;font-size:17px}
+input{width:100%;padding:12px;font-size:16px;border-radius:10px;border:2px solid #4a2e8f;background:#0d0726;color:#fff;margin:5px 0}
+button,.bt{padding:12px 14px;font-size:15px;border:0;border-radius:10px;background:linear-gradient(90deg,#ff3fa4,#c026d3);color:#fff;font-weight:bold;cursor:pointer;text-align:center;text-decoration:none;display:inline-block}
+.s{background:#352170;padding:8px 10px;font-size:13px}.v{background:#16a34a}.x{background:#7f1d1d}.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+.mut{opacity:.75;font-size:13px;margin:4px 0}#msg{color:#ff8a8a;min-height:18px}
+.it{border-top:1px solid #33205f;padding:10px 0}.it b{color:#fff}.tag{font-size:12px;padding:2px 8px;border-radius:9px;margin-left:6px;font-weight:bold}
+.ok{background:#16a34a}.venc{background:#b91c1c}.tes{background:#2563eb}.ag{background:#b45309}
+.tot{display:flex;gap:8px;text-align:center}.tot div{flex:1;background:#0d0726;border-radius:10px;padding:8px;font-size:13px}.tot b{display:block;font-size:22px;color:#ffd54a}
+.fil{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.fil span{padding:7px 12px;border-radius:16px;background:#0d0726;border:1px solid #4a2e8f;font-size:13px;cursor:pointer}.fil span.on{background:#22d3ee;color:#06202a;font-weight:bold}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#16a34a;padding:12px 18px;border-radius:12px;font-weight:bold;display:none;z-index:9}
+</style></head><body>
+<header><img src="adm-192.png" alt=""><h1>ADM TelaOkê Publicidades</h1><button class="s" id="sair" style="display:none">Sair</button></header>
+<main>
+<div class="card" id="login" style="display:none"><h3>Entrar (conta de administrador)</h3>
+ <button id="bG" style="width:100%;background:#fff;color:#222">Entrar com Google</button><p class="mut" style="text-align:center">ou</p>
+ <input id="em" type="email" placeholder="E-mail" autocomplete="username"><input id="se" type="password" placeholder="Senha" autocomplete="current-password">
+ <button id="bE" style="width:100%">Entrar</button><p id="msg"></p></div>
+<div id="app" style="display:none">
+ <div class="card"><h3>📣 Link para seus clientes se cadastrarem</h3><p class="mut">A pessoa abre, vê os vídeos, cria a conta e já ganha 7 dias grátis. Depois paga o plano pelo Pix lá mesmo.</p>
+  <input id="lk" readonly value="https://is.gd/telaoke" onclick="this.select()">
+  <div class="row" style="margin-top:6px"><button class="s" id="lkCp">📋 Copiar link</button><button class="s" id="lkMsg">📋 Copiar mensagem</button><button class="s v" id="lkWa">💬 Mandar no WhatsApp</button></div>
+  <p class="mut">Link para abrir na TV: <b style="color:#ffd54a">is.gd/telaoketv</b></p></div>
+ <div class="card"><h3>💰 Pagamentos a confirmar <span class="tag ag" id="nPag">0</span></h3><p class="mut">Olhe no seu banco. Se o Pix caiu, toque em "Caiu, liberar": os dias somam sozinhos na conta do cliente e as TVs dele voltam a passar.</p><div id="pags"></div></div>
+ <div class="card"><div class="tot"><div><b id="tT">0</b>Em teste</div><div><b id="tA">0</b>Pagantes</div><div><b id="tV">0</b>Vencidos</div><div><b id="tTv">0</b>TVs</div></div>
+  <input id="bus" placeholder="Buscar nome, e-mail ou WhatsApp" style="margin-top:10px"><div class="fil" id="fil"></div><div id="lista"><p class="mut">Carregando…</p></div></div>
+ <div class="card"><h3>🏷️ Preços dos planos</h3><p class="mut">Mude aqui o valor e os dias de cada plano e do teste grátis. Vale na hora para clientes novos e para quem for pagar (o Pix já sai com o valor novo).</p>
+  <div id="prc"></div><label class="mut" style="display:block;margin-top:8px"><b>🎁 Teste grátis (dias)</b></label><input id="prT" type="number" min="1" max="60" inputmode="numeric">
+  <button id="prSalva" style="width:100%;margin-top:6px">💾 Salvar preços</button><p class="mut" id="prMsg"></p></div>
+ <div class="card"><h3>💠 Pix para receber</h3><p class="mut">É o mesmo Pix do Meu Lanche e do TudoOkê. Os valores do TelaOkê ficam no card Preços dos planos.</p>
+  <input id="pxChave" placeholder="Chave Pix" autocomplete="off"><input id="pxNome" placeholder="Nome de quem recebe (como no banco)" autocomplete="off"><input id="pxCid" placeholder="Cidade" value="Manaus" autocomplete="off">
+  <button id="pxSalva">Salvar Pix</button><p class="mut" id="pxMsg"></p></div>
+</div></main><div id="toast"></div>
+<script>
+var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)},TS=function(){return firebase.firestore.FieldValue.serverTimestamp()};
+var ADMINS=['alexprotasgohan@gmail.com','merceariaaled19@gmail.com','alexprotasioficial@gmail.com'];
+var PLN={mensal:'Mensal',semestral:'Semestral',anual:'Anual',teste:'Teste grátis'},CLI=[],VAL={},TVS={},FIL='todos',UNS=[],PG0=-1;
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function ms(t){return t&&t.toMillis?t.toMillis():0}function dt(m){return new Date(m).toLocaleDateString('pt-BR')}
+function dth(m){var d=new Date(m);return d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+function reais(v){return 'R$ '+Number(v).toFixed(2).replace('.',',')}
+function toast(t){var e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display='none'},2500)}
+function zapUrl(n,t){if(/Android/i.test(navigator.userAgent))return 'intent://send?'+(n?'phone='+n+'&':'')+'text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;end';return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(t)}
+function copia(t,b){function ok(){if(!b)return toast('Copiado!');var o=b.textContent;b.textContent='Copiado! ✅';setTimeout(function(){b.textContent=o},1500)}
+ function velho(){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity=0;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand('copy')}catch(e){}a.remove();if(r)ok();else prompt('Copie:',t)}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,velho);else velho()}
+function msg(t){$('msg').textContent=t}
+$('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});if(/Android|iPhone/i.test(navigator.userAgent)){au.signInWithRedirect(p);return}au.signInWithPopup(p).catch(function(e){if(/popup|not-supported|cancelled/.test(e.code))au.signInWithRedirect(p);else msg('Não entrou: '+e.code)})};
+$('bE').onclick=function(){au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){msg('Não entrou: '+e.code)})};
+$('sair').onclick=function(){au.signOut()};au.getRedirectResult().catch(function(e){msg('Não entrou: '+e.code)});
+au.onAuthStateChanged(function(u){UNS.forEach(function(f){f()});UNS=[];var adm=u&&ADMINS.indexOf((u.email||'').toLowerCase())>=0;
+ $('login').style.display=adm?'none':'block';$('app').style.display=adm?'block':'none';$('sair').style.display=u?'block':'none';
+ if(u&&!adm)msg('A conta '+u.email+' não é de administrador. Saia e entre com a conta certa.');if(adm)inicia()});
+var TXT='📺 TelaOkê Publicidades: transforme qualquer TV em painel de anúncios para padarias, lojas e salões! Fotos e vídeos passando sozinhos, tudo pelo celular. Teste 7 dias grátis: https://is.gd/telaoke';
+$('lkCp').onclick=function(){copia($('lk').value,this)};$('lkMsg').onclick=function(){copia(TXT,this)};$('lkWa').onclick=function(){location.href=zapUrl('',TXT)};
+function inicia(){
+ UNS.push(db.collection('to_clientes').onSnapshot(function(s){CLI=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pinta()},function(e){$('lista').innerHTML='<p class="mut">Erro: '+e.code+'</p>'}));
+ UNS.push(db.collection('to_validade').onSnapshot(function(s){VAL={};s.docs.forEach(function(d){VAL[d.id]=d.data()});pinta()},function(){}));
+ UNS.push(db.collection('to_telas').onSnapshot(function(s){TVS={};s.docs.forEach(function(d){var x=d.data();(TVS[x.dono]=TVS[x.dono]||[]).push(x)});$('tTv').textContent=s.size;pinta()},function(){}));
+ UNS.push(db.collection('to_pagamentos').where('status','==','aguardando').onSnapshot(pags,function(e){$('pags').innerHTML='<p class="mut">Erro: '+e.code+'</p>'}));
+ escutaPrecos();
+ db.collection('ml_publico').doc('pix').get().then(function(d){var c=d.exists?d.data():{};$('pxChave').value=c.chave||'';$('pxNome').value=c.nome||'';if(c.cidade)$('pxCid').value=c.cidade;$('pxMsg').textContent=c.chave?'✅ Pix configurado.':'⚠️ Ainda não configurado: o cliente não consegue pagar.'})}
+$('pxSalva').onclick=function(){db.collection('ml_publico').doc('pix').set({chave:$('pxChave').value.trim(),nome:$('pxNome').value.trim(),cidade:$('pxCid').value.trim()||'Manaus',atualizadoEm:TS()},{merge:true}).then(function(){$('pxMsg').textContent='✅ Pix salvo.'},function(e){$('pxMsg').textContent='Erro: '+e.code})};
+/* ---------- preços (to_config/precos) ---------- */
+var PADRAO={testeDias:7,planos:{mensal:{valor:39.90,dias:30},semestral:{valor:199.90,dias:180},anual:{valor:359.90,dias:365}}},PRECOS=PADRAO,PRC_NOMES=[['mensal','Mensal'],['semestral','Semestral'],['anual','Anual']];
+function num(v){return +String(v||'').replace(/[^\d,.]/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.')}
+function pintaPrecos(){var pl=PRECOS.planos||{};$('prc').innerHTML=PRC_NOMES.map(function(x){var o=pl[x[0]]||PADRAO.planos[x[0]];return '<div class="row" style="align-items:center;margin-top:6px"><b style="flex:0 0 92px">'+x[1]+'</b><div><small class="mut">Valor (R$)</small><input id="pv_'+x[0]+'" inputmode="decimal" value="'+Number(o.valor).toFixed(2).replace('.',',')+'"></div><div><small class="mut">Dias</small><input id="pd_'+x[0]+'" type="number" min="1" inputmode="numeric" value="'+(o.dias)+'"></div><label class="mut" style="flex:0 0 70px;text-align:center"><input type="checkbox" id="pa_'+x[0]+'" style="width:auto;transform:scale(1.4)"'+(o.ativo!==false?' checked':'')+'><br>Mostrar</label></div>'}).join('');$('prT').value=PRECOS.testeDias||7}
+function escutaPrecos(){UNS.push(db.collection('to_config').doc('precos').onSnapshot(function(d){PRECOS=d.exists?d.data():PADRAO;if(!PRECOS.planos)PRECOS.planos=PADRAO.planos;pintaPrecos();$('prMsg').textContent=d.exists?'✅ Preços salvos no sistema.':'Usando os preços padrão (ainda não salvos). Toque em Salvar para fixar.'},function(e){$('prMsg').textContent='Erro: '+e.code}))}
+$('prSalva').onclick=function(){var o={testeDias:Math.round(+$('prT').value),planos:{},atualizadoEm:TS()},er='';if(!(o.testeDias>=1&&o.testeDias<=60))er='Teste grátis: de 1 a 60 dias.';
+ PRC_NOMES.forEach(function(x){var v=num($('pv_'+x[0]).value),d=Math.round(+$('pd_'+x[0]).value);if(!(v>0&&v<100000))er=er||'Valor do '+x[1]+' inválido.';if(!(d>=1&&d<=3660))er=er||'Dias do '+x[1]+' inválidos.';o.planos[x[0]]={valor:Math.round(v*100)/100,dias:d,ativo:$('pa_'+x[0]).checked}});
+ if(!PRC_NOMES.some(function(x){return o.planos[x[0]].ativo}))er=er||'Deixe pelo menos um plano aparecendo.';if(er){$('prMsg').textContent='⚠️ '+er;return}
+ db.collection('to_config').doc('precos').set(o).then(function(){toast('Preços salvos ✅')},function(e){$('prMsg').textContent='Erro: '+e.code})};
+function diasDoPlano(x){var o=(PRECOS.planos||{})[x.plano];return o&&o.dias?+o.dias:(+x.dias||30)}
+function sit(id){var v=VAL[id];if(!v)return['venc','Sem plano',0];var m=ms(v.validade);if(m<Date.now())return['venc','Vencido',m];return v.plano=='teste'?['tes','Teste grátis',m]:['ok',PLN[v.plano]||v.plano,m]}
+$('bus').oninput=pinta;
+function pinta(){var c={tes:0,ok:0,venc:0};CLI.forEach(function(x){c[sit(x.id)[0]]++});$('tT').textContent=c.tes;$('tA').textContent=c.ok;$('tV').textContent=c.venc;
+ $('fil').innerHTML=[['todos','Todos ('+CLI.length+')'],['tes','Em teste'],['ok','Pagantes'],['venc','Vencidos']].map(function(f){return '<span class="'+(FIL==f[0]?'on':'')+'" onclick="FIL=\''+f[0]+'\';pinta()">'+f[1]+'</span>'}).join('');
+ var q=$('bus').value.trim().toLowerCase(),L=CLI.filter(function(x){return (FIL=='todos'||sit(x.id)[0]==FIL)&&(!q||[x.nome,x.email,x.zap].join(' ').toLowerCase().indexOf(q)>=0)});
+ if(!L.length){$('lista').innerHTML='<p class="mut">Nenhum cliente aqui.</p>';return}
+ $('lista').innerHTML=L.map(function(x){var s=sit(x.id),tv=(TVS[x.id]||[]),on=tv.filter(function(t){return ms(t.visto)>Date.now()-11*60000}).length;
+  return '<div class="it"><b>'+esc(x.nome)+'</b><span class="tag '+s[0]+'">'+s[1]+'</span><div class="mut">'+esc(x.email||'')+(x.zap?' • 📱 '+esc(x.zap.slice(2)):'')+'<br>🕒 Cadastro: '+(x.t?dth(x.t):'—')+(s[2]?'<br>📅 '+(s[0]=='venc'?'Venceu em ':'Vale até ')+dt(s[2]):'')+'<br>📺 '+tv.length+' TV(s)'+(tv.length?' • '+on+' ligada(s) agora':'')+'</div>'+
+  '<div class="row" style="margin-top:6px"><button class="s v" onclick="dias(\''+x.id+'\')">➕ Dar dias</button><button class="s" onclick="zap(\''+x.id+'\')">💬 WhatsApp</button><button class="s x" onclick="exclui(\''+x.id+'\')">🗑️ Excluir conta</button></div></div>'}).join('')}
+function acha(id){return CLI.filter(function(x){return x.id==id})[0]||{}}
+function somaDias(uid,dias,plano){var v=VAL[uid],base=Math.max(Date.now(),v?ms(v.validade):0);return db.collection('to_validade').doc(uid).set({validade:firebase.firestore.Timestamp.fromMillis(base+dias*864e5),plano:plano,atualizadoEm:TS()},{merge:true}).then(function(){return base+dias*864e5})}
+function dias(id){var x=acha(id),p=prompt('Quantos dias dar para '+(x.nome||'o cliente')+'? (soma com o que falta)\n30 = mensal • 180 = semestral • 365 = anual','30');p=+p;if(!p||p<1)return;
+ var pl=p>=365?'anual':p>=180?'semestral':p>=30?'mensal':'teste';somaDias(id,p,pl).then(function(fim){toast('Liberado até '+dt(fim)+' ✅');if(x.zap&&confirm('Mandar aviso no WhatsApp?'))location.href=zapUrl(x.zap,'Olá, '+(x.nome||'')+'! Seu TelaOkê Publicidades está liberado até '+dt(fim)+' ✅ Suas TVs já voltam a passar os anúncios.')}).catch(function(e){alert('Erro: '+e.code)})}
+function zap(id){var x=acha(id);location.href=zapUrl(x.zap,'Olá, '+(x.nome||'')+'! Aqui é do TelaOkê Publicidades. ')}
+function exclui(id){var x=acha(id);if(!confirm('Excluir a conta de '+(x.nome||x.email)+'? Apaga lojas, anúncios, TVs e pagamentos. Não tem volta.'))return;if(prompt('Para confirmar, digite EXCLUIR')!=='EXCLUIR')return;
+ var cols=[['to_lojas','dono'],['to_anuncios','dono'],['to_telas','dono'],['to_pagamentos','uid']];
+ Promise.all(cols.map(function(c){return db.collection(c[0]).where(c[1],'==',id).get().then(function(s){return Promise.all(s.docs.map(function(d){return d.ref.delete()}))})}))
+ .then(function(){return Promise.all([db.collection('to_validade').doc(id).delete(),db.collection('to_clientes').doc(id).delete()])}).then(function(){toast('Conta excluída')}).catch(function(e){alert('Erro: '+e.code)})}
+function pags(s){var L=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=ms(x.criadoEm)||Date.now();return x}).sort(function(a,b){return a.t-b.t});
+ if(PG0>=0&&L.length>PG0){toast('💰 Chegou comprovante!');try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}}PG0=L.length;$('nPag').textContent=L.length;var B=$('pags');B.innerHTML=L.length?'':'<p class="mut">Nenhum comprovante esperando.</p>';
+ L.forEach(function(x){var d=document.createElement('div');d.className='it';var h=document.createElement('div');h.innerHTML='<b></b><div class="mut"></div>';h.firstChild.textContent=(x.nome||'Cliente')+' • '+(x.planoNome||x.plano)+' '+reais(x.valor);h.lastChild.textContent=dth(x.t)+(x.zap?' • '+x.zap.slice(2):'')+(x.email?' • '+x.email:'');d.appendChild(h);
+  if(x.comprovante){var im=document.createElement('img');im.src=x.comprovante;im.style.cssText='max-width:100%;max-height:280px;border-radius:10px;margin:6px 0;display:block;cursor:zoom-in';im.onclick=function(){var w=window.open();if(w)w.document.write('<img src="'+x.comprovante+'" style="width:100%">')};d.appendChild(im)}
+  var r=document.createElement('div');r.className='row';function bt(t,f,c){var e=document.createElement('button');e.className='s '+(c||'');e.textContent=t;e.onclick=f;r.appendChild(e);return e}
+  bt('✅ Caiu, liberar',function(){var b=this;var dias=diasDoPlano(x),atual=(PRECOS.planos||{})[x.plano],dif=atual&&Math.abs(atual.valor-x.valor)>0.009?'\n⚠️ Atenção: o preço atual deste plano é '+reais(atual.valor)+'.':'';if(!confirm('Confirmou no banco que caiu '+reais(x.valor)+' de '+(x.nome||'cliente')+'?\nVai liberar '+dias+' dias.'+dif))return;b.disabled=true;
+   somaDias(x.uid,dias,x.plano||'mensal').then(function(fim){return db.collection('to_pagamentos').doc(x.id).update({status:'aprovado',aprovadoEm:TS(),ate:firebase.firestore.Timestamp.fromMillis(fim)}).then(function(){return fim})})
+   .then(function(fim){toast('Liberado até '+dt(fim)+' ✅');if(confirm('Liberado até '+dt(fim)+'. Mandar aviso no WhatsApp do cliente?'))location.href=zapUrl(x.zap,'Olá, '+(x.nome||'')+'! Pagamento confirmado ✅ Seu TelaOkê Publicidades ('+(x.planoNome||'')+') está liberado até '+dt(fim)+'. As TVs já voltam a passar os anúncios.')})
+   .catch(function(e){b.disabled=false;alert('Erro: '+e.code)})},'v');
+  bt('❌ Não caiu',function(){if(confirm('Marcar que o pagamento não caiu?'))db.collection('to_pagamentos').doc(x.id).update({status:'recusado'})},'x');
+  d.appendChild(r);B.appendChild(d)})}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+</script></body></html>
