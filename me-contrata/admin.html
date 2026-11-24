@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a7a42">
+<meta name="robots" content="noindex">
+<link rel="icon" href="icon-192.png">
+<title>Me Contrata - ADM vagas locais</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f2f2f2;color:#222;padding-bottom:40px}
+header{background:#0a7a42;color:#fff;padding:16px;padding-top:calc(16px + env(safe-area-inset-top));display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{font-size:19px}
+header button{background:#fff;color:#0a7a42;border:none;border-radius:16px;padding:8px 12px;font-weight:bold;display:none}
+.box{background:#fff;margin:12px;border-radius:14px;padding:16px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.abas{display:none;gap:6px;padding:12px 12px 0}
+.abas button{flex:1;padding:11px 4px;border-radius:12px;border:1px solid #0a7a42;background:#fff;color:#0a7a42;font-weight:bold;font-size:13px}
+.abas button.on{background:#0a7a42;color:#fff}
+.g{width:100%;padding:14px;border:none;border-radius:12px;background:#0a7a42;color:#fff;font-weight:bold;font-size:16px;margin-top:12px}
+.v{background:#fff;margin:12px;border-radius:14px;padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.v h3{font-size:16px}
+.v .mut{font-size:12px;color:#777}
+.v label{display:block;font-size:12px;font-weight:bold;margin-top:8px;color:#555}
+.v input,.v textarea,.v select{width:100%;padding:9px;border:1px solid #ccc;border-radius:8px;font-size:14px;margin-top:3px}
+.v textarea{min-height:60px}
+.bt{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.bt button,.bt a{flex:1;min-width:90px;text-align:center;padding:11px 6px;border-radius:10px;border:none;font-weight:bold;font-size:13px;text-decoration:none}
+.ap{background:#0a7a42;color:#fff}.rj{background:#fde2e2;color:#b00}.ze{background:#e7f7ee;color:#0a7a42}
+.mut{color:#777;font-size:13px}
+.tag{display:inline-block;font-size:11px;font-weight:bold;padding:4px 8px;border-radius:10px;background:#fff3cd;color:#856404;margin-top:4px}
+.venc{background:#eee;color:#666}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#16a34a;color:#fff;padding:12px 18px;border-radius:12px;font-weight:bold;display:none;z-index:99}
+</style>
+</head>
+<body>
+<header><h1>📢 ADM • Vagas locais</h1><button id="sair">Sair</button></header>
+
+<div class="box" id="login">
+  <p>Entre com uma das contas de administrador para aprovar as vagas que as empresas mandaram.</p>
+  <button class="g" id="bG">Entrar com Google</button>
+  <p id="msg" style="color:#b00;font-weight:bold;margin-top:12px"></p>
+</div>
+
+<div class="abas" id="abas">
+  <button data-t="pend" class="on">⏳ Para aprovar (<span id="nP">0</span>)</button>
+  <button data-t="pub">✅ No ar (<span id="nA">0</span>)</button>
+</div>
+<div id="app" style="display:none">
+  <div id="pend"><p class="mut" style="padding:14px">Carregando...</p></div>
+  <div id="pub" style="display:none"><p class="mut" style="padding:14px">Carregando...</p></div>
+  <p class="mut" style="padding:0 14px">Vaga aprovada fica no app por 30 dias e depois some sozinha. Link para empresas anunciarem: <a href="anunciar.html" target="_blank">anunciar.html</a></p>
+</div>
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+var ADMINS=['alexprotasgohan@gmail.com','alexprotasioficial@gmail.com','merceariaaled19@gmail.com'];
+var DIAS=30;
+firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth();
+function $(i){return document.getElementById(i)}
+function e(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function ms(t){return t&&t.toMillis?t.toMillis():0}
+function dt(t){var m=ms(t);if(!m)return'';var d=new Date(m);return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+function toast(t,c){var x=$('toast');x.textContent=t;x.style.background=c||'#16a34a';x.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){x.style.display='none'},2600)}
+function erroTxt(x){var c=x&&x.code||String(x);return c=='permission-denied'?'Sem permissão (as regras do Firestore para mc_* ainda não foram publicadas, ou esta conta não é ADM).':'Erro: '+c}
+var COMO={whatsapp:'💬 WhatsApp',email:'📧 E-mail',endereco:'📍 Endereço'};
+var PEND=[],PUB=[],UNS=[];
+
+[].forEach.call(document.querySelectorAll('.abas button'),function(b){b.onclick=function(){
+  [].forEach.call(document.querySelectorAll('.abas button'),function(x){x.classList.toggle('on',x===b)});
+  $('pend').style.display=b.getAttribute('data-t')=='pend'?'block':'none';$('pub').style.display=b.getAttribute('data-t')=='pub'?'block':'none';}});
+
+$('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
+  if(/Android|iPhone/i.test(navigator.userAgent)){au.signInWithRedirect(p);return}
+  au.signInWithPopup(p).catch(function(x){if(/popup|not-supported|cancelled/.test(x.code))au.signInWithRedirect(p);else $('msg').textContent='Não entrou: '+x.code})};
+$('sair').onclick=function(){au.signOut()};
+au.getRedirectResult().catch(function(x){$('msg').textContent='Não entrou: '+x.code});
+au.onAuthStateChanged(function(u){
+  UNS.forEach(function(f){f()});UNS=[];
+  var adm=u&&ADMINS.indexOf((u.email||'').toLowerCase())>=0;
+  $('login').style.display=adm?'none':'block';$('app').style.display=adm?'block':'none';$('abas').style.display=adm?'flex':'none';$('sair').style.display=u?'block':'none';
+  if(u&&!adm)$('msg').textContent='A conta '+u.email+' não é de administrador. Toque em Sair e entre com a conta certa.';
+  if(adm)inicia();
+});
+
+function inicia(){
+  UNS.push(db.collection('mc_vagas_pendentes').onSnapshot(function(s){
+    var antes=PEND.length;PEND=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return ms(a.criadoEm)-ms(b.criadoEm)});
+    if(antes&&PEND.length>antes)toast('📢 Chegou vaga nova para aprovar!');pintaPend()},function(x){$('pend').innerHTML='<p class="mut" style="padding:14px">'+erroTxt(x)+'</p>'}));
+  UNS.push(db.collection('mc_vagas').onSnapshot(function(s){
+    PUB=s.docs.map(function(d){var x=d.data();x.id=d.id;return x}).sort(function(a,b){return ms(b.aprovadoEm)-ms(a.aprovadoEm)});pintaPub()},function(x){$('pub').innerHTML='<p class="mut" style="padding:14px">'+erroTxt(x)+'</p>'}));
+}
+function campo(id,k,v,area){return '<label>'+k+'</label>'+(area?'<textarea id="'+id+'">'+e(v)+'</textarea>':'<input id="'+id+'" value="'+e(v)+'">')}
+function pintaPend(){
+  $('nP').textContent=PEND.length;
+  if(!PEND.length){$('pend').innerHTML='<p class="mut" style="padding:14px">Nenhuma vaga esperando. 👍</p>';return}
+  $('pend').innerHTML=PEND.map(function(v){var p='p_'+v.id+'_';
+    return '<div class="v"><h3>'+e(v.cargo)+' • '+e(v.empresa)+'</h3><p class="mut">Enviada '+dt(v.criadoEm)+' • Quem anunciou: <b>'+e(v.contato)+'</b></p>'+
+    '<p class="mut">Confira se é real e corrija o que precisar (principalmente a cidade, para aparecer no lugar certo):</p>'+
+    campo(p+'empresa','Empresa',v.empresa)+campo(p+'cargo','Vaga',v.cargo)+
+    '<div style="display:flex;gap:6px"><div style="flex:0 0 70px">'+campo(p+'uf','UF',v.uf)+'</div><div style="flex:1">'+campo(p+'cidade','Cidade',v.cidade)+'</div></div>'+
+    campo(p+'bairro','Bairro',v.bairro)+campo(p+'descricao','Descrição',v.descricao,1)+campo(p+'tipo','Tipo',v.tipo)+
+    '<label>Como se candidatar ('+(COMO[v.comoTipo]||e(v.comoTipo))+')</label><input id="'+p+'como" value="'+e(v.como)+'">'+
+    '<div class="bt"><button class="ap" onclick="aprova(\''+v.id+'\')">✅ Aprovar (30 dias)</button><button class="rj" onclick="rejeita(\''+v.id+'\')">❌ Recusar e apagar</button></div></div>'}).join('');
+}
+function pintaPub(){
+  var agora=Date.now(),vivos=PUB.filter(function(v){return ms(v.expira)>agora});
+  $('nA').textContent=vivos.length;
+  if(!PUB.length){$('pub').innerHTML='<p class="mut" style="padding:14px">Nenhuma vaga local no ar ainda.</p>';return}
+  $('pub').innerHTML=PUB.map(function(v){var venceu=ms(v.expira)<=agora;
+    return '<div class="v"><h3>'+e(v.cargo)+' • '+e(v.empresa)+'</h3><p class="mut">'+e(v.cidade)+' - '+e(v.uf)+(v.bairro?' • '+e(v.bairro):'')+' • '+(COMO[v.comoTipo]||'')+' '+e(v.como)+'</p>'+
+    '<span class="tag'+(venceu?' venc':'')+'">'+(venceu?'Vencida em ':'No ar até ')+new Date(ms(v.expira)).toLocaleDateString('pt-BR')+'</span>'+
+    '<div class="bt"><button class="ze" onclick="renova(\''+v.id+'\')">🔄 Mais 30 dias</button><button class="rj" onclick="apaga(\''+v.id+'\')">🗑️ Tirar do ar</button></div></div>'}).join('');
+}
+function lim(t,n){return String(t||'').replace(/\s+/g,' ').trim().slice(0,n)}
+function aprova(id){
+  var v=PEND.filter(function(x){return x.id==id})[0];if(!v)return;var p='p_'+id+'_';
+  var d={empresa:lim($(p+'empresa').value,80),cargo:lim($(p+'cargo').value,80),uf:lim($(p+'uf').value,2).toUpperCase(),cidade:lim($(p+'cidade').value,60),
+    bairro:lim($(p+'bairro').value,60),descricao:lim($(p+'descricao').value,500),tipo:lim($(p+'tipo').value,40),comoTipo:v.comoTipo,como:lim($(p+'como').value,200),
+    aprovadoEm:firebase.firestore.FieldValue.serverTimestamp(),expira:firebase.firestore.Timestamp.fromMillis(Date.now()+DIAS*86400000)};
+  if(!d.empresa||!d.cargo||!d.cidade||!/^[A-Z]{2}$/.test(d.uf)||!d.como)return toast('Preencha empresa, vaga, UF, cidade e contato.','#b00');
+  var b=db.batch();
+  b.set(db.collection('mc_vagas').doc(id),d);
+  b.set(db.collection('mc_vagas_privado').doc(id),{contato:v.contato||'',enviadaEm:v.criadoEm||null});
+  b.delete(db.collection('mc_vagas_pendentes').doc(id));
+  b.commit().then(function(){toast('✅ Aprovada! Já aparece no app.')}).catch(function(x){toast(erroTxt(x),'#b00')});
+}
+function rejeita(id){if(!confirm('Recusar e apagar esta vaga?'))return;db.collection('mc_vagas_pendentes').doc(id).delete().then(function(){toast('Apagada.')}).catch(function(x){toast(erroTxt(x),'#b00')})}
+function apaga(id){if(!confirm('Tirar esta vaga do app?'))return;var b=db.batch();b.delete(db.collection('mc_vagas').doc(id));b.delete(db.collection('mc_vagas_privado').doc(id));b.commit().then(function(){toast('Tirada do ar.')}).catch(function(x){toast(erroTxt(x),'#b00')})}
+function renova(id){db.collection('mc_vagas').doc(id).update({expira:firebase.firestore.Timestamp.fromMillis(Date.now()+DIAS*86400000)}).then(function(){toast('🔄 Mais 30 dias.')}).catch(function(x){toast(erroTxt(x),'#b00')})}
+</script>
+</body>
+</html>

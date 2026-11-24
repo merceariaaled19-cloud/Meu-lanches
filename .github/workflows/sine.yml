@@ -1,0 +1,30 @@
+name: Vagas do SINE (Me Contrata)
+on:
+  schedule:
+    - cron: "30 10 * * *"   # 6h30 em Manaus
+    - cron: "0 13 * * *"    # 9h
+    - cron: "0 16 * * *"    # 12h
+    - cron: "0 21 * * *"    # 17h (lista de amanha costuma sair a tarde)
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: sine-vagas
+  cancel-in-progress: false
+jobs:
+  sine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python me-contrata/buscar_sine.py
+      - run: |
+          git config user.name "robo-sine"
+          git config user.email "actions@users.noreply.github.com"
+          git add me-contrata/sine
+          git diff --cached --quiet && exit 0
+          git commit -m "Sine atualizado $(date -u +%F)"
+          for i in 1 2 3; do git pull --rebase origin main && git push && exit 0; sleep 10; done
+          exit 1

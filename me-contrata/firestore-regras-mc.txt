@@ -1,0 +1,31 @@
+    // ===== Me Contrata (me-contrata/) — vagas de empresas locais (v1, 2026-11-24) =====
+    // mlAdmin() = as 3 contas de administrador (já definida no topo das regras).
+    // anunciar.html: qualquer pessoa CRIA em mc_vagas_pendentes (sem login), com campos e tamanhos conferidos.
+    // admin.html: só ADM lê/aprova/apaga. Aprovada vai para mc_vagas (leitura pública; o app mostra até "expira").
+    function mcTxt(d, k, mn, mx) {
+      return d[k] is string && d[k].size() >= mn && d[k].size() <= mx;
+    }
+    match /mc_vagas_pendentes/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['empresa','uf','cidade','bairro','cargo','descricao','tipo','comoTipo','como','contato','criadoEm'])
+        && request.resource.data.keys().hasAll(['empresa','uf','cidade','cargo','tipo','comoTipo','como','contato','criadoEm'])
+        && mcTxt(request.resource.data, 'empresa', 2, 80)
+        && request.resource.data.uf is string && request.resource.data.uf.matches('^[A-Z]{2}$')
+        && mcTxt(request.resource.data, 'cidade', 2, 60)
+        && (!('bairro' in request.resource.data) || mcTxt(request.resource.data, 'bairro', 0, 60))
+        && mcTxt(request.resource.data, 'cargo', 3, 80)
+        && (!('descricao' in request.resource.data) || mcTxt(request.resource.data, 'descricao', 0, 500))
+        && mcTxt(request.resource.data, 'tipo', 2, 40)
+        && request.resource.data.comoTipo in ['whatsapp','email','endereco']
+        && mcTxt(request.resource.data, 'como', 5, 200)
+        && mcTxt(request.resource.data, 'contato', 5, 120)
+        && request.resource.data.criadoEm == request.time;
+      allow read, update, delete: if mlAdmin();
+    }
+    match /mc_vagas/{id} {
+      allow read: if true;
+      allow write: if mlAdmin();
+    }
+    match /mc_vagas_privado/{id} {
+      allow read, write: if mlAdmin();
+    }
+    // ===== fim Me Contrata =====

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a7a42">
+<link rel="icon" href="icon-192.png">
+<title>Anunciar vaga grátis - Me Contrata</title>
+<meta name="description" content="Anuncie a vaga da sua empresa ou comércio de graça no app Me Contrata.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f2f2f2;color:#222;padding-bottom:40px}
+header{background:#0a7a42;color:#fff;padding:18px 15px;padding-top:calc(18px + env(safe-area-inset-top))}
+header h1{font-size:21px}
+header p{font-size:14px;margin-top:4px;opacity:.95}
+.box{background:#fff;margin:14px 12px;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+label{display:block;font-size:14px;font-weight:bold;margin-top:14px}
+label small{font-weight:normal;color:#777}
+input,select,textarea{width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;margin-top:5px;font-size:16px;background:#fff}
+textarea{min-height:90px;resize:vertical}
+.linha{display:flex;gap:8px}
+.linha>div{flex:1}
+.ops{display:flex;gap:6px;margin-top:6px}
+.ops button{flex:1;padding:11px 4px;border:1px solid #0a7a42;border-radius:10px;background:#fff;color:#0a7a42;font-weight:bold;font-size:13px;cursor:pointer}
+.ops button.on{background:#0a7a42;color:#fff}
+.enviar{width:100%;background:#0a7a42;color:#fff;border:none;padding:16px;border-radius:12px;font-weight:bold;font-size:17px;margin-top:20px;cursor:pointer}
+.enviar:disabled{opacity:.6}
+.aviso{font-size:13px;color:#555;line-height:1.45}
+.erro{color:#c00;font-weight:bold;font-size:14px;margin-top:12px;display:none}
+.ok{text-align:center;padding:26px 10px}
+.ok h2{color:#0a7a42;margin:10px 0}
+.voltar{display:inline-block;margin-top:14px;color:#0a7a42;font-weight:bold}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.cont{font-size:11px;color:#888;text-align:right}
+</style>
+</head>
+<body>
+<header>
+  <h1>📢 Anuncie sua vaga grátis</h1>
+  <p>Para empresas e comércios de qualquer tamanho. A vaga aparece no app Me Contrata da sua cidade depois de uma conferida rápida.</p>
+</header>
+
+<div class="box" id="formBox">
+  <p class="aviso">✅ É de graça. ✅ Aparece por 30 dias. ✅ O candidato fala direto com você.<br>Preencha com calma. Campos com * são obrigatórios.</p>
+
+  <label for="empresa">Nome da empresa ou comércio *</label>
+  <input id="empresa" maxlength="80" placeholder="Ex: Mercadinho do Alex">
+
+  <div class="linha">
+    <div style="flex:0 0 96px"><label for="uf">Estado *</label><select id="uf"></select></div>
+    <div><label for="cidade">Cidade *</label><input id="cidade" maxlength="60" list="listaCidades" placeholder="Ex: Manaus"><datalist id="listaCidades"></datalist></div>
+  </div>
+
+  <label for="bairro">Bairro <small>(ajuda quem mora perto)</small></label>
+  <input id="bairro" maxlength="60" placeholder="Ex: Cidade Nova">
+
+  <label for="cargo">Qual é a vaga? *</label>
+  <input id="cargo" maxlength="80" placeholder="Ex: Atendente de balcão">
+
+  <label for="descricao">Descrição curta <small>(horário, o que vai fazer, salário se quiser)</small></label>
+  <textarea id="descricao" maxlength="500" placeholder="Ex: Atender clientes e repor mercadorias. Segunda a sábado, 7h às 15h."></textarea>
+  <div class="cont"><span id="contDesc">0</span>/500</div>
+
+  <label for="tipo">Tipo de vaga *</label>
+  <select id="tipo">
+    <option value="">Escolha...</option>
+    <option>Carteira assinada (CLT)</option>
+    <option>Temporária</option>
+    <option>Meio período</option>
+    <option>Diária / Bico</option>
+    <option>Estágio</option>
+    <option>Jovem aprendiz</option>
+    <option>Autônomo / Comissão</option>
+    <option>Outro</option>
+  </select>
+
+  <label>Como o candidato se candidata? *</label>
+  <div class="ops" id="opsComo">
+    <button type="button" data-v="whatsapp" class="on">💬 WhatsApp</button>
+    <button type="button" data-v="email">📧 E-mail</button>
+    <button type="button" data-v="endereco">📍 Endereço</button>
+  </div>
+  <input id="como" maxlength="200" placeholder="WhatsApp com DDD. Ex: (92) 99999-9999">
+
+  <label for="contato">Seu nome e WhatsApp ou e-mail <small>(só para a gente falar com você, não aparece no app)</small> *</label>
+  <input id="contato" maxlength="120" placeholder="Ex: Alex - (92) 99999-9999">
+
+  <div class="hp" aria-hidden="true"><label>Site</label><input id="site" tabindex="-1" autocomplete="off"></div>
+
+  <p class="erro" id="erro"></p>
+  <button type="button" class="enviar" id="btnEnviar">Enviar vaga ✅</button>
+  <p class="aviso" style="margin-top:12px">Ao enviar, você confirma que a vaga é real. Não aceitamos vaga que cobre dinheiro do candidato, pirâmide ou conteúdo enganoso.</p>
+  <a class="voltar" href="./">← Voltar para as vagas</a>
+</div>
+
+<div class="box ok" id="okBox" style="display:none">
+  <div style="font-size:50px">🎉</div>
+  <h2>Vaga enviada!</h2>
+  <p class="aviso">A gente confere e, quando for aprovada, ela aparece no Me Contrata da sua cidade por 30 dias. Se precisar, entramos em contato pelo que você informou.</p>
+  <a class="voltar" href="anunciar.html">📢 Anunciar outra vaga</a><br>
+  <a class="voltar" href="./">← Ver as vagas</a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+var UFS={AC:"Acre",AL:"Alagoas",AP:"Amapá",AM:"Amazonas",BA:"Bahia",CE:"Ceará",DF:"Distrito Federal",ES:"Espírito Santo",GO:"Goiás",MA:"Maranhão",MT:"Mato Grosso",MS:"Mato Grosso do Sul",MG:"Minas Gerais",PA:"Pará",PB:"Paraíba",PR:"Paraná",PE:"Pernambuco",PI:"Piauí",RJ:"Rio de Janeiro",RN:"Rio Grande do Norte",RS:"Rio Grande do Sul",RO:"Rondônia",RR:"Roraima",SC:"Santa Catarina",SP:"São Paulo",SE:"Sergipe",TO:"Tocantins"};
+function $(i){return document.getElementById(i)}
+var qs=new URLSearchParams(location.search), comoTipo="whatsapp", INDICE=null;
+var ufIni=(qs.get("uf")||"AM").toUpperCase(); if(!UFS[ufIni]) ufIni="AM";
+Object.keys(UFS).forEach(function(u){var o=document.createElement("option");o.value=u;o.text=u;if(u===ufIni)o.selected=true;$("uf").appendChild(o);});
+$("cidade").value=qs.get("cidade")||(ufIni==="AM"?"Manaus":"");
+function cidadesDaUF(){
+  var dl=$("listaCidades"); dl.innerHTML="";
+  if(!INDICE||!INDICE.estados[$("uf").value]) return;
+  INDICE.estados[$("uf").value].cidades.forEach(function(c){var o=document.createElement("option");o.value=c[0];dl.appendChild(o);});
+}
+fetch("vagas/index.json").then(function(r){return r.json()}).then(function(d){INDICE=d;cidadesDaUF();}).catch(function(){});
+$("uf").onchange=function(){$("cidade").value="";cidadesDaUF();};
+$("descricao").oninput=function(){$("contDesc").innerText=this.value.length;};
+var DICA={whatsapp:"WhatsApp com DDD. Ex: (92) 99999-9999",email:"E-mail para receber currículo. Ex: rh@minhaloja.com",endereco:"Endereço para levar currículo. Ex: Rua X, 123, Cidade Nova, de 8h às 12h"};
+Array.prototype.forEach.call(document.querySelectorAll("#opsComo button"),function(b){
+  b.onclick=function(){Array.prototype.forEach.call(document.querySelectorAll("#opsComo button"),function(x){x.classList.remove("on")});b.classList.add("on");comoTipo=b.getAttribute("data-v");$("como").placeholder=DICA[comoTipo];$("como").value="";};
+});
+function erro(t){var e=$("erro");e.innerText="⚠️ "+t;e.style.display="block";}
+function limpa(t){return String(t||"").replace(/\s+/g," ").trim();}
+$("btnEnviar").onclick=function(){
+  $("erro").style.display="none";
+  if($("site").value) return; // robo de spam
+  var d={empresa:limpa($("empresa").value),uf:$("uf").value,cidade:limpa($("cidade").value),bairro:limpa($("bairro").value),
+         cargo:limpa($("cargo").value),descricao:limpa($("descricao").value),tipo:$("tipo").value,comoTipo:comoTipo,
+         como:limpa($("como").value),contato:limpa($("contato").value)};
+  if(d.empresa.length<2) return erro("Digite o nome da empresa."), $("empresa").focus();
+  if(d.cidade.length<2) return erro("Digite a cidade."), $("cidade").focus();
+  if(d.cargo.length<3) return erro("Digite qual é a vaga."), $("cargo").focus();
+  if(!d.tipo) return erro("Escolha o tipo de vaga."), $("tipo").focus();
+  if(comoTipo==="whatsapp"){var n=d.como.replace(/\D/g,"");if(n.length<10||n.length>13) return erro("Digite o WhatsApp com DDD."), $("como").focus();}
+  else if(comoTipo==="email"){if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.como)) return erro("Digite um e-mail válido."), $("como").focus();}
+  else if(d.como.length<8) return erro("Digite o endereço completo."), $("como").focus();
+  if(d.contato.length<5) return erro("Digite seu nome e contato."), $("contato").focus();
+  try{var ult=+localStorage.getItem("mc_anuncio_ult")||0;if(Date.now()-ult<60000) return erro("Espere 1 minuto para enviar outra vaga.");}catch(x){}
+  var b=$("btnEnviar"); b.disabled=true; b.innerText="Enviando...";
+  try{ if(!firebase.apps.length) firebase.initializeApp(FB); }catch(x){}
+  d.criadoEm=firebase.firestore.FieldValue.serverTimestamp();
+  firebase.firestore().collection("mc_vagas_pendentes").add(d).then(function(){
+    try{localStorage.setItem("mc_anuncio_ult",String(Date.now()));}catch(x){}
+    $("formBox").style.display="none"; $("okBox").style.display="block"; window.scrollTo(0,0);
+  }).catch(function(e){
+    b.disabled=false; b.innerText="Enviar vaga ✅";
+    erro("Não deu para enviar agora. Confira os campos e a internet e tente de novo. ("+(e&&e.code||"erro")+")");
+  });
+};
+</script>
+</body>
+</html>

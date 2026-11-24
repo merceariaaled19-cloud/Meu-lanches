@@ -1,7 +1,8 @@
-const CACHE_NAME = "mecontrata-v8";
+const CACHE_NAME = "mecontrata-v9";
 const APP_FILES = [
   "./",
   "./index.html",
+  "./extras.js",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
