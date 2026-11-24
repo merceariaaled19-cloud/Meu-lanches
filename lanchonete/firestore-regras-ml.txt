@@ -16,7 +16,7 @@
       allow create: if request.auth != null && request.auth.uid == uid
         && (request.resource.data.status == 'pendente'
             || (request.resource.data.status == 'liberado' && request.resource.data.plano == 'teste'
-                && request.resource.data.validade is timestamp && request.resource.data.validade < request.time + duration.value(26, 'h')));
+                && request.resource.data.validade is timestamp && request.resource.data.validade < request.time + duration.value(170, 'h')));
       allow update: if mlAdmin() || (request.auth != null && request.auth.uid == uid
         && request.resource.data.status == resource.data.status
         && request.resource.data.get('validade', null) == resource.data.get('validade', null)

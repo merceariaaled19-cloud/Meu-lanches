@@ -306,7 +306,7 @@ var PLANOS = [
   {id: 'semestral', nome: 'Semestral', dias: 180, valor: 99.90, selo: 'Economize 16%'},
   {id: 'anual', nome: 'Anual', dias: 365, valor: 149.90, selo: 'Melhor preço'}
 ];
-var TESTE_HORAS = 24;
+var TESTE_HORAS = 168;
 function planoPorId(id){ for (var i = 0; i < PLANOS.length; i++) if (PLANOS[i].id === id) return PLANOS[i]; return null; }
 function pixTxt(t, max){ return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z0-9 .\-]/g, '').toUpperCase().slice(0, max); }
 function crc16(s){ var c = 0xFFFF; for (var i = 0; i < s.length; i++){ c ^= s.charCodeAt(i) << 8; for (var j = 0; j < 8; j++) c = (c & 0x8000) ? ((c << 1) ^ 0x1021) & 0xFFFF : (c << 1) & 0xFFFF; } return ('0000' + c.toString(16).toUpperCase()).slice(-4); }

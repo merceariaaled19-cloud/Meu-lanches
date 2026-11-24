@@ -22,8 +22,8 @@ function telaLogin(){
   var h = '<div class="topo"><div class="lin"><img class="logo" src="icon-192.png" alt=""><div><h1>Meu Lanche</h1><small>Seu cardápio digital com pedidos no WhatsApp</small></div></div></div><div class="wrap">';
   h += '<div class="abas" style="position:static;padding:10px 0"><button class="' + (modoLogin === 'entrar' ? 'on' : '') + '" onclick="modoLogin=\'entrar\';telaLogin()">Já tenho cadastro</button><button class="' + (modoLogin === 'criar' ? 'on' : '') + '" onclick="modoLogin=\'criar\';telaLogin()">Quero me cadastrar</button></div><div class="card">';
   if (modoLogin === 'criar'){
-    h += '<p class="sub" style="margin:4px 0">▶️ Vídeo: como cadastrar e configurar</p><video controls preload="none" playsinline poster="videos/capa-cadastro.jpg" src="videos/tutorial-cadastro.mp4" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video>' +
-      '<h2>Cadastre sua lanchonete</h2><p class="sub">Depois do cadastro, a gente libera seu acesso rapidinho.</p>' +
+    h += '<p class="sub" style="margin:4px 0">▶️ Vídeo: como cadastrar e configurar</p><video controls preload="none" playsinline poster="videos/capa-cadastro.jpg" src="videos/tutorial-cadastro.mp4?v=2" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video>' +
+      '<h2>Cadastre sua lanchonete</h2><p class="sub">Você ganha 7 dias grátis para testar tudo.</p>' +
       '<label>Seu nome</label><input id="lDono" placeholder="Seu nome">' +
       '<label>Nome da lanchonete</label><input id="lNome" placeholder="Ex.: Lanches do Zé">' +
       '<label>WhatsApp da lanchonete</label><input id="lZap" type="tel" placeholder="(92) 99999-9999">' + htmlTipos(TIPOS_SEL);
@@ -96,7 +96,7 @@ function criaLoja(dono, nome, zap, tipos){
   }).catch(function(e){ $('raiz').innerHTML = '<div class="wrap"><div class="aviso no">Não deu para criar o cadastro (' + esc(e.code || e.message) + ').</div><button onclick="location.reload()">Tentar de novo</button></div>'; });
 }
 function telaEspera(vencido){
-  if (vencido && LD.status === 'liberado'){ $('raiz').innerHTML = '<div class="wrap"><div class="hero"><div class="ico">⭐</div><h2>' + esc(LD.nome) + '</h2><p>' + (LD.plano === 'teste' ? 'Seu dia grátis acabou. Escolha um plano para continuar — tudo que você montou continua salvo.' : 'Seu plano venceu. Renove para continuar — tudo que você montou continua salvo.') + '</p></div><video controls preload="none" playsinline poster="videos/capa-pagamento.jpg" src="videos/tutorial-pagamento.mp4" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video><div id="planos"></div><p style="text-align:center"><a href="#" onclick="au.signOut();return false">Sair</a></p></div>'; return mostraPlanos(); }
+  if (vencido && LD.status === 'liberado'){ $('raiz').innerHTML = '<div class="wrap"><div class="hero"><div class="ico">⭐</div><h2>' + esc(LD.nome) + '</h2><p>' + (LD.plano === 'teste' ? 'Seus 7 dias grátis acabaram. Escolha um plano para continuar — tudo que você montou continua salvo.' : 'Seu plano venceu. Renove para continuar — tudo que você montou continua salvo.') + '</p></div><video controls preload="none" playsinline poster="videos/capa-pagamento.jpg" src="videos/tutorial-pagamento.mp4?v=2" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video><div id="planos"></div><p style="text-align:center"><a href="#" onclick="au.signOut();return false">Sair</a></p></div>'; return mostraPlanos(); }
   var bloq = LD.status === 'bloqueado', t;
   if (vencido) t = 'Seu acesso venceu. Fale com a gente para renovar.';
   else if (bloq) t = 'Seu acesso está pausado. Fale com a gente para saber mais.';
@@ -159,7 +159,7 @@ function faixaPlano(){
     (LD.plano === 'teste' ? '🎁 Teste grátis até ' + quando : '⏳ Seu plano vence ' + quando) + '</span><button class="mini" style="flex:0 0 auto" onclick="abrePlanos()">⭐ Assinar</button></div>';
 }
 function abrePlanos(){
-  $('modal').innerHTML = '<div class="fundo" onclick="if(event.target===this)fechaPlanos()"><div class="folha"><button class="fecha" onclick="fechaPlanos()">✕</button><h2>⭐ Planos Meu Lanche</h2><p class="sub">O tempo do plano soma com o que ainda falta. Nada do que você montou se perde.</p><p class="sub" style="margin:4px 0">▶️ Vídeo: como assinar e pagar</p><video controls preload="none" playsinline poster="videos/capa-pagamento.jpg" src="videos/tutorial-pagamento.mp4" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video><div id="planos"></div></div></div>';
+  $('modal').innerHTML = '<div class="fundo" onclick="if(event.target===this)fechaPlanos()"><div class="folha"><button class="fecha" onclick="fechaPlanos()">✕</button><h2>⭐ Planos Meu Lanche</h2><p class="sub">O tempo do plano soma com o que ainda falta. Nada do que você montou se perde.</p><p class="sub" style="margin:4px 0">▶️ Vídeo: como assinar e pagar</p><video controls preload="none" playsinline poster="videos/capa-pagamento.jpg" src="videos/tutorial-pagamento.mp4?v=2" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video><div id="planos"></div></div></div>';
   mostraPlanos();
 }
 function fechaPlanos(){ if (unPg){ unPg(); unPg = null; } fechaModal(); }

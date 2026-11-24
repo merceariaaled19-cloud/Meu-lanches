@@ -1,6 +1,6 @@
 /* Meu Lanche Pro — service worker */
-var CACHE = 'ml-pro-v16';
-var ARQ = ['./', 'index.html', 'admin.html', 'estilo.css?v=2', 'comum.js?v=8', 'loja.js?v=4', 'dono.js?v=9', 'admin.js?v=6', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-512-maskable.png'];
+var CACHE = 'ml-pro-v17';
+var ARQ = ['./', 'index.html', 'admin.html', 'estilo.css?v=2', 'comum.js?v=9', 'loja.js?v=4', 'dono.js?v=10', 'admin.js?v=6', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-512-maskable.png'];
 self.addEventListener('install', function(e){
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(function(c){ return c.addAll(ARQ); }).catch(function(){}));
