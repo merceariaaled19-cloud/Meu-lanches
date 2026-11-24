@@ -1,5 +1,5 @@
 /* Oferta Okê — robô das fotos (roda num Web Worker, fora da tela principal, para o celular não travar)
-   Modelo: MediaPipe Interactive Segmenter "MagicTouch" (~6 MB) + motor wasm (~9,6 MB), baixados só quando o usuário toca em Perfeita.
+   Modelo: MediaPipe Interactive Segmenter (toque no centro + risco no produto recortado) "MagicTouch" (~6 MB) + motor wasm (~9,6 MB), baixados só quando o usuário toca em Perfeita.
    Entrada {img: ImageData, modo: 'perfeita'|'melhora'}
    Saída   {tipo:'prog', txt} | {tipo:'ok', img: ImageData, recorte: bool, ms} | {tipo:'erro', msg} */
 var VER = '0.10.22-rc.20250304', BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + VER;
@@ -43,27 +43,76 @@ async function carregaRobo(){
   return SEG;
 }
 
+function pegaMascara(r){ var m = r.confidenceMasks && r.confidenceMasks[0]; return m ? {w: m.width, h: m.height, d: new Float32Array(m.getAsFloat32Array())} : null; }
 function umaMascara(seg, img, x, y){
   var out = null;
-  seg.segment(img, {keypoint: {x: x, y: y}}, function(r){
-    var m = r.confidenceMasks && r.confidenceMasks[0]; if (!m) return;
-    out = {w: m.width, h: m.height, d: new Float32Array(m.getAsFloat32Array())};
-  });
+  seg.segment(img, {keypoint: {x: x, y: y}}, function(r){ out = pegaMascara(r); });
   if (!out) throw new Error('sem máscara');
   return out;
 }
-/* toca no centro; depois tenta um pouco acima e abaixo (tampa, rótulo) e junta só se for o mesmo produto */
+/* recorta um pedaço da foto (ImageData) */
+function pedaco(img, x0, y0, w, h){
+  var W = img.width, o = new Uint8ClampedArray(w * h * 4);
+  for (var y = 0; y < h; y++) o.set(img.data.subarray(((y0 + y) * W + x0) * 4, ((y0 + y) * W + x0 + w) * 4), y * w * 4);
+  return new ImageData(o, w, h);
+}
+/* pedaço principal (ligado, perto do centro) com limiar t: devolve marcas + caixa */
+function principal(m, t){
+  var w = m.w, h = m.h, d = m.d, vis = new Uint8Array(w * h), fila = new Int32Array(w * h), melhor = null, melhorN = 0;
+  for (var s = 0; s < w * h; s++){ if (vis[s] || d[s] < t) continue;
+    var ini = 0, fim = 0, cx = 0, cy = 0; fila[fim++] = s; vis[s] = 1;
+    while (ini < fim){ var p = fila[ini++], x = p % w, y = (p / w) | 0; cx += x; cy += y;
+      if (x > 0 && !vis[p - 1] && d[p - 1] >= t){ vis[p - 1] = 1; fila[fim++] = p - 1; }
+      if (x < w - 1 && !vis[p + 1] && d[p + 1] >= t){ vis[p + 1] = 1; fila[fim++] = p + 1; }
+      if (y > 0 && !vis[p - w] && d[p - w] >= t){ vis[p - w] = 1; fila[fim++] = p - w; }
+      if (y < h - 1 && !vis[p + w] && d[p + w] >= t){ vis[p + w] = 1; fila[fim++] = p + w; } }
+    var dx = cx / fim / w - 0.5, dy = cy / fim / h - 0.5, nota = fim * (1 - Math.min(0.8, Math.sqrt(dx * dx + dy * dy)));
+    if (nota > melhorN){ melhorN = nota; melhor = fila.slice(0, fim); } }
+  if (!melhor) return null;
+  var mk = new Uint8Array(w * h), x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (var i = 0; i < melhor.length; i++){ var q = melhor[i], qx = q % w, qy = (q / w) | 0; mk[q] = 1; if (qx < x0) x0 = qx; if (qx > x1) x1 = qx; if (qy < y0) y0 = qy; if (qy > y1) y1 = qy; }
+  return {mk: mk, n: melhor.length, x0: x0, y0: y0, x1: x1, y1: y1};
+}
+/* 1) toca no centro da foto  2) recorta em volta do produto (com folga) e passa um risco pelo meio dele, de ponta a ponta.
+   Olhando de perto e com o risco, o robô pega tampinha, alça, gargalo e rótulo que ficavam de fora. */
 function mascara(seg, img){
-  var m = umaMascara(seg, img, 0.5, 0.5), n = m.w * m.h, base = 0, i;
-  for (i = 0; i < n; i++) if (m.d[i] >= 0.5) base++;
-  if (!base) return m;
-  [[0.5, 0.3], [0.5, 0.7]].forEach(function(pt){
-    var o = umaMascara(seg, img, pt[0], pt[1]), tam = 0, junto = 0;
-    for (var j = 0; j < n; j++) if (o.d[j] >= 0.5){ tam++; if (m.d[j] >= 0.5) junto++; }
-    /* aceita se a nova parte encosta bem no produto e não é um pedação do fundo */
-    if (tam && junto / tam > 0.5 && tam < base * 1.6) for (j = 0; j < n; j++) if (o.d[j] > m.d[j]) m.d[j] = o.d[j];
+  var m = umaMascara(seg, img, 0.5, 0.5), w = m.w, h = m.h;
+  self.TAM_MASCARA = w + 'x' + h; self.REFINO = 'não';
+  var p = principal(m, 0.5); if (!p || p.n < w * h * 0.01) return m;
+  var bw = p.x1 - p.x0 + 1, bh = p.y1 - p.y0 + 1, em = Math.max(bw, bh);
+  var cx0 = Math.max(0, Math.round(p.x0 - Math.max(bw * 0.5, em * 0.15))), cx1 = Math.min(w - 1, Math.round(p.x1 + Math.max(bw * 0.5, em * 0.15)));
+  var cy0 = Math.max(0, Math.round(p.y0 - Math.max(bh * 0.25, em * 0.15))), cy1 = Math.min(h - 1, Math.round(p.y1 + Math.max(bh * 0.25, em * 0.15)));
+  var cw = cx1 - cx0 + 1, ch = cy1 - cy0 + 1;
+  if (cw * ch > w * h * 0.9) cw = 0; /* produto já ocupa a foto toda: o risco direto basta */
+  /* riscos pelo eixo comprido do produto, passando pelo meio de cada ponta (acompanha produto torto).
+     O robô é sensível ao risco exato, então tenta 3 riscos parecidos e junta os que passam na conferência. */
+  var deitado = bw > bh * 1.15;
+  function meio(f){ var a, soma = 0, n = 0, k;
+    if (!deitado){ a = Math.round(p.y0 + f * (bh - 1)); for (k = p.x0; k <= p.x1; k++) if (p.mk[a * w + k]){ soma += k; n++; } return n ? [soma / n, a] : null; }
+    a = Math.round(p.x0 + f * (bw - 1)); for (k = p.y0; k <= p.y1; k++) if (p.mk[k * w + a]){ soma += k; n++; } return n ? [a, soma / n] : null; }
+  var riscos = [[0.05, 0.95], [0.05, 0.5, 0.95], [0.03, 0.97]].map(function(fs){ return fs.map(meio).filter(Boolean); }).filter(function(r){ return r.length >= 2; });
+  if (!riscos.length) return m;
+  var ox = cw ? cx0 : 0, oy = cw ? cy0 : 0, iw = cw || w, ih = cw ? ch : h, alvo = cw ? pedaco(img, cx0, cy0, cw, ch) : img;
+  var uniao = new Float32Array(w * h), usados = 0, info = [], i, x, y;
+  riscos.forEach(function(pts){
+    var r = null;
+    try { seg.segment(alvo, {scribble: pts.map(function(q){ return {x: (q[0] - ox + 0.5) / iw, y: (q[1] - oy + 0.5) / ih}; })}, function(z){ r = pegaMascara(z); }); } catch (e) { r = null; }
+    if (!r){ info.push('falhou'); return; }
+    /* põe o resultado de volta no tamanho da foto */
+    var n2 = new Float32Array(w * h), sx = r.w / iw, sy = r.h / ih;
+    for (y = 0; y < ih; y++){ var ry = Math.min(r.h - 1, (y * sy) | 0); for (x = 0; x < iw; x++) n2[(y + oy) * w + x + ox] = r.d[ry * r.w + Math.min(r.w - 1, (x * sx) | 0)]; }
+    /* confere: tem que cobrir quase todo o produto do 1º toque e não pode inchar demais (senão pegou fundo) */
+    var p2 = principal({w: w, h: h, d: n2}, 0.5); if (!p2){ info.push('vazio'); return; }
+    var cobre = 0; for (i = 0; i < w * h; i++) if (p.mk[i] && p2.mk[i]) cobre++;
+    var c1 = cobre / p.n, cr = p2.n / p.n, al = (p2.y1 - p2.y0 + 1) / bh, lg = (p2.x1 - p2.x0 + 1) / bw;
+    var ok = c1 >= 0.85 && cr <= 1.4 && al <= 1.3 && lg <= 1.3;
+    info.push(c1.toFixed(2) + '/' + cr.toFixed(2) + '/' + al.toFixed(2) + '/' + lg.toFixed(2) + (ok ? '' : 'x'));
+    if (!ok) return; usados++;
+    for (i = 0; i < w * h; i++) if (p2.mk[i] && n2[i] > uniao[i]) uniao[i] = n2[i];
   });
-  self.TAM_MASCARA = m.w + 'x' + m.h;
+  self.REFINO = info.join(' ');
+  if (!usados) return m;
+  for (i = 0; i < w * h; i++) if (uniao[i] > m.d[i]) m.d[i] = uniao[i];
   return m;
 }
 /* borda macia: média 5x5 do alfa */
@@ -76,25 +125,21 @@ function suaviza(a, w, h){
   return o;
 }
 /* fica só com a parte grande ligada perto do centro (tira pedaços soltos do fundo) e deixa a borda macia */
+/* fica só com o pedaço principal; deixa crescer para as bordas onde o robô tem um pouco menos de certeza (>= 0.35)
+   desde que encostado no produto: assim partes finas (tampinha, alça) não somem e o fundo solto não entra. Borda macia. */
 function limpaMascara(m){
-  var w = m.w, h = m.h, d = m.d, vis = new Uint8Array(w * h), fila = new Int32Array(w * h), melhor = null, melhorN = 0;
-  for (var s = 0; s < w * h; s++){ if (vis[s] || d[s] < 0.5) continue;
-    var ini = 0, fim = 0, comp = [], cx = 0, cy = 0; fila[fim++] = s; vis[s] = 1;
-    while (ini < fim){ var p = fila[ini++]; comp.push(p); var x = p % w, y = (p / w) | 0; cx += x; cy += y;
-      if (x > 0 && !vis[p - 1] && d[p - 1] >= 0.5){ vis[p - 1] = 1; fila[fim++] = p - 1; }
-      if (x < w - 1 && !vis[p + 1] && d[p + 1] >= 0.5){ vis[p + 1] = 1; fila[fim++] = p + 1; }
-      if (y > 0 && !vis[p - w] && d[p - w] >= 0.5){ vis[p - w] = 1; fila[fim++] = p - w; }
-      if (y < h - 1 && !vis[p + w] && d[p + w] >= 0.5){ vis[p + w] = 1; fila[fim++] = p + w; } }
-    var dx = cx / comp.length / w - 0.5, dy = cy / comp.length / h - 0.5, nota = comp.length * (1 - Math.min(0.8, Math.sqrt(dx * dx + dy * dy)));
-    if (nota > melhorN){ melhorN = nota; melhor = comp; } }
-  if (!melhor) return null;
-  var manter = new Uint8Array(w * h); melhor.forEach(function(p){ manter[p] = 1; });
+  var w = m.w, h = m.h, d = m.d, p = principal(m, 0.5); if (!p) return null;
+  var manter = p.mk, fila = new Int32Array(w * h), fim = 0, ini = 0, n = p.n, i;
+  for (i = 0; i < w * h; i++) if (manter[i]) fila[fim++] = i;
+  while (ini < fim){ var q = fila[ini++], x = q % w;
+    var viz = [x > 0 ? q - 1 : -1, x < w - 1 ? q + 1 : -1, q >= w ? q - w : -1, q < w * (h - 1) ? q + w : -1];
+    for (var k = 0; k < 4; k++){ var v = viz[k]; if (v >= 0 && !manter[v] && d[v] >= 0.35){ manter[v] = 1; fila[fim++] = v; n++; } } }
   var a = new Uint8ClampedArray(w * h);
-  for (var i = 0; i < w * h; i++){ var v = d[i];
-    if (manter[i]) a[i] = v >= 0.75 ? 255 : Math.round(255 * (0.6 + (v - 0.5) * 1.6));
-    else if (v > 0.25){ var x2 = i % w, viz = (x2 > 0 && manter[i - 1]) || (x2 < w - 1 && manter[i + 1]) || (i >= w && manter[i - w]) || (i < w * (h - 1) && manter[i + w]); a[i] = viz ? Math.round(255 * Math.min(0.6, (v - 0.25) / 0.25 * 0.6)) : 0; }
+  for (i = 0; i < w * h; i++){ var c = d[i];
+    if (manter[i]) a[i] = c >= 0.7 ? 255 : Math.round(255 * (0.55 + (c - 0.35) * 1.28));
+    else if (c > 0.2){ var x2 = i % w, enc = (x2 > 0 && manter[i - 1]) || (x2 < w - 1 && manter[i + 1]) || (i >= w && manter[i - w]) || (i < w * (h - 1) && manter[i + w]); a[i] = enc ? Math.round(255 * Math.min(0.5, (c - 0.2) / 0.15 * 0.5)) : 0; }
   }
-  return {w: w, h: h, a: a, n: melhor.length};
+  return {w: w, h: h, a: a, n: n};
 }
 function redimensionaAlfa(m, W, H){ if (m.w == W && m.h == H) return m.a; var o = new Uint8ClampedArray(W * H);
   for (var y = 0; y < H; y++){ var fy = Math.min(m.h - 1.001, y * m.h / H), y0 = fy | 0, ty = fy - y0;
@@ -146,6 +191,6 @@ self.onmessage = async function(e){
     prog('Tirando o fundo…');
     var m = limpaMascara(mascara(seg, q.img)); if (!m || m.n < m.w * m.h * 0.01) throw new Error('não achou o produto');
     var r = montaRecorte(q.img, suaviza(redimensionaAlfa(m, q.img.width, q.img.height), q.img.width, q.img.height)); if (!r) throw new Error('recorte vazio');
-    self.postMessage({tipo: 'ok', recorte: true, img: new ImageData(r.d, r.w, r.h), ms: Date.now() - t0, msRobo: Date.now() - t1, baixado: self.BAIXADO || 0, mascara: self.TAM_MASCARA}, [r.d.buffer]);
+    self.postMessage({tipo: 'ok', recorte: true, img: new ImageData(r.d, r.w, r.h), ms: Date.now() - t0, msRobo: Date.now() - t1, baixado: self.BAIXADO || 0, mascara: self.TAM_MASCARA, refino: self.REFINO}, [r.d.buffer]);
   } catch (x) { self.postMessage({tipo: 'erro', msg: String(x && x.message || x)}); }
 };

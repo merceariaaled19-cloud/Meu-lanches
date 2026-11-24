@@ -36,7 +36,7 @@ function chamaRobo(c, modo, prog, limite){
   limite = limite || 50000;
   return new Promise(function(ok, ruim){
     if (ROBO.ruim) paraRobo('trocou');
-    if (!ROBO.w){ try { ROBO.w = new Worker('robo.js?v=2'); } catch (e) { ruim(e); return; } }
+    if (!ROBO.w){ try { ROBO.w = new Worker('robo.js?v=3'); } catch (e) { ruim(e); return; } }
     ROBO.ok = ok; ROBO.ruim = ruim;
     function arma(){ clearTimeout(ROBO.t); ROBO.t = setTimeout(function(){ paraRobo('demorou'); }, limite); }
     arma();
