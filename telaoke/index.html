@@ -128,6 +128,7 @@ details summary{cursor:pointer;font-weight:bold;padding:6px 0;color:var(--ci)}
   <section id="tLojas" class="tab">
    <div class="card"><h2>🏪 Lojas</h2><p class="mut">Quem anuncia na sua TV. Ex.: Padaria Pão Quente, Salão Bela.</p>
     <button class="bc" onclick="editaLoja()">➕ Nova loja</button><div id="lLojas"></div></div>
+   <div class="card" id="cApp" style="display:none"><h2>📲 App no celular</h2><p class="mut">Instale o app TelaOkê e abra direto pelo ícone. (Android)</p><a href="apk/TelaOke.apk" download style="text-decoration:none"><button class="bc">📲 Baixar app</button></a><p class="mut">Link: <b style="color:var(--am)">is.gd/telaokeapp</b></p></div>
   </section>
   <!-- ANUNCIOS -->
   <section id="tAnun" class="tab" style="display:none">
@@ -140,7 +141,7 @@ details summary{cursor:pointer;font-weight:bold;padding:6px 0;color:var(--ci)}
   <section id="tTelas" class="tab" style="display:none">
    <div class="card"><h2>📺 Telas (TVs)</h2><p class="mut">Cada TV mostra um código. Digite aqui para ligar ela na sua conta.</p>
     <button class="bc" onclick="novaTela()">➕ Adicionar TV</button><div id="lTelas"></div>
-    <div class="dica"><b>Como ligar a TV:</b><ol><li>Na TV smart ou TV Box, abra o <b>Navegador / Internet</b>.</li><li>Digite <b style="color:var(--am);font-size:1.15em">is.gd/telaoketv</b></li><li>Aparece um <b>código</b> grande. Toque em <b>Adicionar TV</b> aqui e digite ele.</li></ol></div>
+    <div class="dica"><b>Como ligar a TV:</b><ol><li>Na TV smart ou TV Box, abra o <b>Navegador / Internet</b>.</li><li>Digite <b style="color:var(--am);font-size:1.15em">is.gd/telaoketv</b></li><li>Aparece um <b>código</b> grande. Toque em <b>Adicionar TV</b> aqui e digite ele.</li></ol><p style="margin:6px 0 0">📦 <b>TV Box:</b> melhor instalar o app <b>TelaOkê TV</b>: no navegador da TV Box digite <b style="color:var(--am)">is.gd/telaoketvapk</b>, baixe e instale.</p></div>
     <details><summary>▶️ Vídeo: como ligar a TV</summary><video class="vid" controls preload="none" playsinline poster="videos/capa-tv.jpg" src="videos/tutorial-tv.mp4"></video></details></div>
   </section>
   <!-- PLANOS -->
@@ -164,6 +165,7 @@ details summary{cursor:pointer;font-weight:bold;padding:6px 0;color:var(--ci)}
 <script>
 var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
 firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)},TS=function(){return firebase.firestore.FieldValue.serverTimestamp()};
+try{if(/Android/i.test(navigator.userAgent)&&!/telaoke/i.test(document.referrer||'')&&!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches))document.addEventListener('DOMContentLoaded',function(){var c=document.getElementById('cApp');if(c)c.style.display='block'})}catch(e){}
 var TESTE_DIAS=7,LINK_TV='is.gd/telaoketv',BASE=location.href.split('#')[0].split('?')[0].replace(/index\.html$/,'');
 /* preços: padrão só se o doc to_config/precos não existir (o ADM muda lá) */
 var PADRAO={testeDias:7,planos:{mensal:{valor:39.90,dias:30},semestral:{valor:199.90,dias:180},anual:{valor:359.90,dias:365}}},PLANOS=[],PRECOS_OK=false;
@@ -297,7 +299,7 @@ function apagaAnun(id){if(!confirm('Apagar este anúncio?'))return;db.collection
 function online(t){return ms(t.visto)>Date.now()-11*60000}
 function pTelas(){var L=$('lTelas');if(!L)return;if(!TELAS.length){L.innerHTML='<div class="vazio"><i>📺</i>Nenhuma TV ainda.<br>Abra <b style="color:var(--am)">'+LINK_TV+'</b> na TV e toque em <b>Adicionar TV</b>.</div>';return}
  L.innerHTML=TELAS.map(function(t){var n=t.todos!==false?'Todos os anúncios':((t.anuncios||[]).length+' anúncio(s) escolhido(s)'),on=online(t);
-  return '<div class="it" onclick="editaTela(\''+t.id+'\')"><div class="th" style="background:#000">📺</div><div class="tx"><b>'+esc(t.nome||'TV')+'</b><small>Código '+t.id+' • '+n+'</small><br><span class="tag '+(on?'ok':'cz')+'" style="margin:4px 0 0">'+(on?'🟢 Ligada agora':(t.visto?'Desligada • visto '+new Date(ms(t.visto)).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Esperando a TV abrir'))+'</span></div><span>✏️</span></div>'}).join('')}
+  return '<div class="it" onclick="editaTela(\''+t.id+'\')"><div class="th" style="background:#000">📺</div><div class="tx"><b>'+esc(t.nome||'TV')+'</b><small>Código '+t.id+' • '+n+' • ⏰ '+(t.sempre?'24h':esc((t.horaIni||'06:00')+'–'+(t.horaFim||'22:00')))+'</small><br><span class="tag '+(on?'ok':'cz')+'" style="margin:4px 0 0">'+(on?'🟢 Ligada agora':(t.visto?'Desligada • visto '+new Date(ms(t.visto)).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Esperando a TV abrir'))+'</span></div><span>✏️</span></div>'}).join('')}
 function novaTela(cod){if(precisaPlano())return;
  abreM('<h2>Adicionar TV</h2><div class="dica">1. Na TV, abra o navegador e digite <b style="color:var(--am)">'+LINK_TV+'</b><br>2. Vai aparecer um código grande. Digite ele aqui:</div>'+
  '<label class="rt">Código que aparece na TV</label><input id="tCod" maxlength="7" autocapitalize="characters" autocomplete="off" placeholder="Ex.: K7M2QX" style="font-size:26px;letter-spacing:6px;text-transform:uppercase;text-align:center" value="'+esc(cod||'')+'">'+
@@ -305,7 +307,7 @@ function novaTela(cod){if(precisaPlano())return;
  '<button onclick="salvaNovaTela()">📺 Ligar esta TV</button><p class="e" id="eT"></p>');setTimeout(function(){$(cod?'tNome':'tCod').focus()},150)}
 function salvaNovaTela(){var c=$('tCod').value.toUpperCase().replace(/[^A-Z0-9]/g,''),n=$('tNome').value.trim()||'TV '+(TELAS.length+1),e=$('eT');if(c.length!=6){e.textContent='O código tem 6 letras/números. Confira na TV.';return}
  var ref=db.collection('to_telas').doc(c);e.textContent='Ligando…';
- db.runTransaction(function(tx){return tx.get(ref).then(function(d){if(d.exists)throw{code:d.data().dono==U.uid?'ja-sua':'ja-usada'};tx.set(ref,{dono:U.uid,nome:n,todos:true,anuncios:[],relogio:true,som:false,texto:'',criadoEm:TS()})})})
+ db.runTransaction(function(tx){return tx.get(ref).then(function(d){if(d.exists)throw{code:d.data().dono==U.uid?'ja-sua':'ja-usada'};tx.set(ref,{dono:U.uid,nome:n,todos:true,anuncios:[],relogio:true,som:false,texto:'',sempre:false,horaIni:'06:00',horaFim:'22:00',criadoEm:TS()})})})
  .then(function(){fechaM();toast('📺 TV ligada! Em alguns segundos ela começa a passar os anúncios.')}).catch(function(x){e.textContent=x.code=='ja-sua'?'Essa TV já está na sua lista.':x.code=='ja-usada'?'Esse código já está em uso por outra conta. Na TV, aperte OK e escolha "Gerar código novo".':erroTxt(x)})}
 function editaTela(id){var t=TELAS.filter(function(x){return x.id==id})[0];if(!t)return;var sel=t.anuncios||[];
  abreM('<h2>📺 '+esc(t.nome||'TV')+'</h2><p class="mut">Código desta TV: <b class="cod" style="font-size:20px">'+t.id+'</b></p>'+
@@ -314,11 +316,15 @@ function editaTela(id){var t=TELAS.filter(function(x){return x.id==id})[0];if(!t
  '<div id="bxEsc" class="ckl">'+(ANUN.length?ANUN.map(function(a){return '<label><input type="checkbox" value="'+a.id+'"'+(sel.indexOf(a.id)>=0?' checked':'')+'>'+(a.tipo=='foto'?'<img src="'+a.img+'">':a.tipo=='youtube'?'<img src="https://img.youtube.com/vi/'+a.yt+'/default.jpg">':'🎬')+'<span>'+esc(a.titulo||a.lojaNome)+'<br><small class="mut">'+esc(a.lojaNome||'')+(a.ativo?'':' • pausado')+'</small></span></label>'}).join(''):'<p class="mut">Nenhum anúncio ainda.</p>')+'</div>'+
  '<label class="sw"><span>🕒 Mostrar hora no rodapé</span><input type="checkbox" id="eRel"'+(t.relogio!==false?' checked':'')+'></label>'+
  '<label class="sw"><span>🔊 Vídeos com som</span><input type="checkbox" id="eSom"'+(t.som?' checked':'')+'></label>'+
+ '<label class="rt">⏰ Horário de funcionamento</label><label class="sw"><span>Ligada 24h (sem horário)</span><input type="checkbox" id="eSempre" onchange="$(\'bxHora\').style.display=this.checked?\'none\':\'flex\'"'+(t.sempre?' checked':'')+'></label>'+
+ '<div id="bxHora" style="display:'+(t.sempre?'none':'flex')+';gap:10px;align-items:center"><div style="flex:1"><small class="mut">Liga às</small><input type="time" id="eIni" value="'+esc(t.horaIni||'06:00')+'"></div><div style="flex:1"><small class="mut">Desliga às</small><input type="time" id="eFim" value="'+esc(t.horaFim||'22:00')+'"></div></div>'+
+ '<p class="mut" style="margin-top:4px">Fora do horário a TV fica com a tela preta e volta sozinha na hora de ligar.</p>'+
  '<label class="rt">Frase passando no rodapé (opcional)</label><input id="eTxt" maxlength="120" placeholder="Ex.: Anuncie aqui! Chame no (92) 99999-9999" value="'+esc(t.texto||'')+'">'+
  '<button onclick="salvaTela(\''+id+'\')">💾 Salvar</button><button class="bx" onclick="apagaTela(\''+id+'\')">🗑️ Tirar esta TV</button><p class="e" id="eE"></p>');modoT(t.todos!==false)}
 var MODO_T=1;function modoT(v){MODO_T=v;$('sgT').classList.toggle('on',!!v);$('sgE').classList.toggle('on',!v);$('bxEsc').style.display=v?'none':'block'}
 function salvaTela(id){var ids=[].map.call(document.querySelectorAll('#bxEsc input:checked'),function(i){return i.value});if(!MODO_T&&!ids.length){$('eE').textContent='Marque pelo menos um anúncio, ou escolha Todos.';return}
- db.collection('to_telas').doc(id).update({nome:$('eNome').value.trim()||'TV',todos:!!MODO_T,anuncios:ids.slice(0,200),relogio:$('eRel').checked,som:$('eSom').checked,texto:$('eTxt').value.trim()}).then(function(){fechaM();toast('Salvo ✅ A TV atualiza sozinha.')}).catch(function(e){$('eE').textContent=erroTxt(e)})}
+ db.collection('to_telas').doc(id).update({nome:$('eNome').value.trim()||'TV',todos:!!MODO_T,anuncios:ids.slice(0,200),relogio:$('eRel').checked,som:$('eSom').checked,texto:$('eTxt').value.trim(),sempre:$('eSempre').checked,horaIni:hhmm($('eIni').value,'06:00'),horaFim:hhmm($('eFim').value,'22:00')}).then(function(){fechaM();toast('Salvo ✅ A TV atualiza sozinha.')}).catch(function(e){$('eE').textContent=erroTxt(e)})}
+function hhmm(v,d){return /^\d\d:\d\d$/.test(v||'')?v:d}
 function apagaTela(id){if(!confirm('Tirar esta TV da sua conta? Ela volta a mostrar o código.'))return;db.collection('to_telas').doc(id).delete().then(function(){fechaM();toast('TV removida')}).catch(function(e){alert(erroTxt(e))})}
 /* ---------- planos / Pix ---------- */
 function pixTxt(t,m){return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9 .\-]/g,'').toUpperCase().slice(0,m)}

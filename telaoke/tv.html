@@ -33,18 +33,20 @@
 #info{position:fixed;top:2vh;right:2vw;z-index:9;background:rgba(0,0,0,.75);border:2px solid #ff3fa4;border-radius:14px;padding:1.2vw 1.6vw;font-size:2vw;display:none;cursor:default}
 #info b{color:#ffd54a;letter-spacing:.3vw}
 #dica{position:fixed;bottom:9vh;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);padding:1vw 2vw;border-radius:2vw;font-size:1.8vw;z-index:8;display:none}
+#dorme{background:#000;align-items:center;justify-content:center;flex-direction:column;cursor:none}#dorme .h{font-size:6vw;color:rgba(255,255,255,.18);font-weight:bold}#dorme .v{font-size:1.8vw;color:rgba(255,255,255,.14);margin-top:.6vw}
 #rede{position:fixed;top:1.5vh;left:1.5vw;z-index:9;background:rgba(185,28,28,.85);padding:.5vw 1vw;border-radius:1vw;font-size:1.4vw;display:none}
 </style></head><body>
 <div id="par" class="tela"><div class="pw"><div class="pe"><h1>📺 TelaOkê</h1><h2>Publicidades</h2>
  <p>Código desta TV:</p><div id="cod">······</div>
  <p>1. No celular, abra <b class="am">is.gd/telaoke</b> e entre na sua conta</p>
  <p>2. Vá em <b class="am">📺 Telas → Adicionar TV</b> e digite o código</p>
- <p style="opacity:.8">Ou leia o QR com a câmera do celular 👉</p><div id="novoCod">Precisa de outro código? Aperte OK no controle 3 vezes.</div></div>
+ <p style="opacity:.8">Ou leia o QR com a câmera do celular 👉</p><p style="font-size:1.5vw;opacity:.75">📦 App para TV Box: <b class="am">is.gd/telaoketvapk</b></p><div id="novoCod">Precisa de outro código? Aperte OK no controle 3 vezes.</div></div>
  <div class="qrb"><img id="qr" alt="QR">Leia com a câmera</div></div></div>
 <div id="ply" class="tela" style="display:none"><div class="cam" id="c0"></div><div class="cam" id="c1"></div></div>
 <div id="rod"><div id="rLoja"></div><div id="rTxt"><span id="rTxtS"></span></div><div id="rLogo">📺 TelaOkê Publicidades</div><div id="rHora"></div></div>
 <div id="venc" class="tela msg"><div class="ic">⛔</div><h1>Assinatura vencida</h1><p>Os anúncios desta TV estão pausados.</p><p>O dono da TV precisa renovar o plano em <b style="color:#ffd54a">is.gd/telaoke</b>.</p><p style="opacity:.6;font-size:1.6vw" id="vCod"></p></div>
 <div id="vazio" class="tela msg"><div class="ic">📢</div><h1 id="vzT">TV ligada! ✅</h1><p id="vzP">Ainda não tem anúncio ativo para esta TV.</p><p>No celular: <b style="color:#ffd54a">is.gd/telaoke → 🖼️ Anúncios → Novo anúncio</b></p><p style="opacity:.6;font-size:1.6vw" id="vzCod"></p></div>
+<div id="dorme" class="tela"><div class="h" id="dmH"></div><div class="v" id="dmV"></div></div>
 <div id="carr" class="tela msg" style="display:flex"><div class="ic">📺</div><h1>TelaOkê Publicidades</h1><p>Carregando…</p></div>
 <div id="info"></div><div id="dica">Aperte OK para tela cheia</div><div id="rede">📶 Sem internet: passando o que está salvo</div>
 <script>
@@ -58,7 +60,7 @@ function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(6
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
 var COD=(Q.c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(COD.length==6)ls('to_tv_cod',COD);else COD=ls('to_tv_cod');if(!COD||COD.length!=6){COD=gcod();ls('to_tv_cod',COD)}
 var TELA=null,DONO=null,VALID=null,ADS=[],LISTA=[],POS=-1,CAM=0,TIMER=null,SEGURA=null,FALHAS=0,ESTADO='',unT=null,unV=null,unA=null,YTOK=false,YTFILA=[],ADS_OK=false;
-function mostra(id){['par','ply','venc','vazio','carr'].forEach(function(x){$(x).style.display=x==id?(x=='ply'?'block':'flex'):'none'});ESTADO=id;var r=(id=='ply'&&TELA&&(TELA.relogio!==false||TELA.texto));$('rod').style.display=r?'flex':'none';$('ply').style.bottom=r?'7vh':'0'}
+function mostra(id){['par','ply','venc','vazio','carr','dorme'].forEach(function(x){$(x).style.display=x==id?(x=='ply'?'block':'flex'):'none'});ESTADO=id;var r=(id=='ply'&&TELA&&(TELA.relogio!==false||TELA.texto));$('rod').style.display=r?'flex':'none';$('ply').style.bottom=r?'7vh':'0'}
 function msOf(t){return t&&t.toMillis?t.toMillis():(t&&t.seconds?t.seconds*1000:(t||0))}
 /* ---------- pareamento ---------- */
 function telaPar(){$('cod').textContent=COD;$('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=6&data='+encodeURIComponent(BASE+'?parear='+COD);mostra('par');pararTudo()}
@@ -75,6 +77,7 @@ function usaCache(){try{var c=JSON.parse(ls('to_tv_cache')||'null');if(!c||!c.te
 function hoje(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
 function montaLista(){if(!TELA)return;if(!ADS_OK&&!(VALID!==null&&VALID<Date.now()))return;
  if(VALID!==null&&VALID<Date.now()){pararTudo();mostra('venc');return}
+ if(!noHorario()){pararTudo();mostra('dorme');dorme();return}
  var h=hoje(),esc=TELA.todos===false?(TELA.anuncios||[]):null;
  var L=ADS.filter(function(a){return a.ativo&&(!a.inicio||a.inicio<=h)&&(!a.fim||a.fim>=h)&&(!esc||esc.indexOf(a.id)>=0)&&(a.tipo=='foto'?!!a.img:(a.tipo=='youtube'?!!a.yt:!!a.url))});
  /* ordem: escolhida pelo dono, senão mistura as lojas (uma de cada) */
@@ -84,6 +87,11 @@ function montaLista(){if(!TELA)return;if(!ADS_OK&&!(VALID!==null&&VALID<Date.now
  if(!L.length){pararTudo();mostra('vazio');$('vzT').textContent='TV ligada! ✅ '+(TELA.nome||'');return}
  if(ESTADO!='ply'){mostra('ply');POS=-1;proximo();return}
  if(antes!==depois&&!TIMER&&!SEGURA){proximo()}}
+/* ---------- horário de funcionamento (hora local do aparelho) ---------- */
+function minDe(v,d){var m=/^(\d{1,2}):(\d{2})$/.exec(v||'');if(!m)m=/^(\d{1,2}):(\d{2})$/.exec(d);return (+m[1])*60+(+m[2])}
+function noHorario(){if(!TELA||TELA.sempre===true)return true;var a=minDe(TELA.horaIni,'06:00'),b=minDe(TELA.horaFim,'22:00');if(a==b)return true;var d=new Date(),n=d.getHours()*60+d.getMinutes();return a<b?(n>=a&&n<b):(n>=a||n<b)}
+function dorme(){if(ESTADO!='dorme')return;var d=new Date();$('dmH').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);$('dmV').textContent='Volta às '+(/^\d{1,2}:\d{2}$/.test(TELA&&TELA.horaIni||'')?TELA.horaIni:'06:00');var x=$('dorme').firstChild;x.style.marginTop=(Math.round(Math.random()*20)-10)+'vh'}
+setInterval(function(){if(ESTADO=='dorme')dorme()},30000);
 /* ---------- player ---------- */
 function pararTudo(){clearTimeout(TIMER);clearTimeout(SEGURA);TIMER=SEGURA=null;[$('c0'),$('c1')].forEach(function(c){limpa(c);c.classList.remove('on')})}
 function limpa(c){var v=c.querySelector('video');if(v){try{v.pause();v.removeAttribute('src');v.load()}catch(e){}}if(c._yt){try{c._yt.destroy()}catch(e){}c._yt=null}c.innerHTML=''}
@@ -134,7 +142,7 @@ acorda();document.addEventListener('visibilitychange',function(){if(document.vis
 /* avisa o painel que a TV está ligada */
 function visto(){if(TELA&&navigator.onLine)db.collection('to_telas').doc(COD).update({visto:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){})}
 setInterval(visto,5*60000);setTimeout(visto,8000);
-setInterval(function(){if(TELA)montaLista()},60000); /* vira o dia / vence */
+setInterval(function(){if(TELA)montaLista()},30000); /* vira o dia / vence */
 window.addEventListener('online',function(){$('rede').style.display='none'});window.addEventListener('offline',function(){if(ESTADO=='ply')$('rede').style.display='block'});
 /* recarrega 1x por dia de madrugada para pegar versão nova */
 setInterval(function(){var d=new Date();if(d.getHours()==4&&d.getMinutes()<2&&navigator.onLine)location.reload()},60000);
