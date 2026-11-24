@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-24T04:28",
+"atualizado": "2026-11-24T10:28",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -74,16 +74,16 @@
 "url": "https://ssai2-ads.api.leiniao.com/global-adinsertion-api/hls/live/v2/21fdb6dd7491406bba86497a24390a25/playlist.m3u8"
 },
 {
-"nome": "TV A Folha",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/I7XGMhj.png",
-"url": "https://video01.logicahost.com.br/tvafolha/tvafolha/playlist.m3u8"
-},
-{
 "nome": "TV Brusque",
 "cat": "Notícias",
 "logo": "https://i.imgur.com/J2EAZPS.png",
 "url": "https://5ad482a77183d.streamlock.net/rodrigotvbrusque.com.br/5d880199c902eb4a1e8df00d/playlist.m3u8"
+},
+{
+"nome": "TV CAJUI WEB",
+"cat": "Notícias",
+"logo": "https://github.com/user-attachments/assets/e7af691d-0d31-4576-a1eb-bcf85507c891",
+"url": "https://cdn.live.br1.jmvstream.com/webtv/tvcajui/playlist/playlist.m3u8"
 },
 {
 "nome": "TV Camara (Brazil)",
@@ -96,6 +96,12 @@
 "cat": "Notícias",
 "logo": "https://i.imgur.com/t5oUK3C.png",
 "url": "https://5cf4a2c2512a2.streamlock.net/8104/8104/playlist.m3u8"
+},
+{
+"nome": "TV Zoom",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/jCGrjf5.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9730/LVW9730_LmUwslM8jt/playlist.m3u8"
 },
 {
 "nome": "TVideoNews",
@@ -254,6 +260,12 @@
 "url": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8"
 },
 {
+"nome": "SBT Interior",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/IkZfa4j.png",
+"url": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8"
+},
+{
 "nome": "SBT Nacional",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/tc1ALuu.png",
@@ -308,10 +320,10 @@
 "url": "https://5b7f3c45ab7c2.streamlock.net/arapuan/ngrp:arapuan_all/playlist.m3u8"
 },
 {
-"nome": "TV Brasil Oeste",
+"nome": "TV BRICS Portuguese",
 "cat": "Variedades",
-"logo": "https://i.imgur.com/noqGfuy.png",
-"url": "https://5ad482a77183d.streamlock.net/operacaotbomt.com/operacaotbomt.com/playlist.m3u8"
+"logo": "https://i.imgur.com/vLpm8tN.png",
+"url": "https://porbrics.mediacdn.ru/cdn/brics/portuguese/playlist.m3u8"
 },
 {
 "nome": "TV Comunitaria",
