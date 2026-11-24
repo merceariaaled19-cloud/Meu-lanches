@@ -214,13 +214,13 @@ function pintaLojas(){var car=CFG.carencia,q=$('bus').value.trim().toLowerCase()
  if(!L.length){$('lLojas').innerHTML='<p class="mut">Ninguém aqui.</p>';return}
  $('lLojas').innerHTML=L.map(function(l){var s=situacao(l,car),n=nAnunLoja(l.id),gr=l.gratis&&!(l.pags||[]).length&&l.venc&&l.venc>=hoje();
   return '<div class="it"><div class="nm">'+esc(l.nome)+'</div><span class="tag '+s.cl+'">'+s.txt+'</span>'+(gr?'<span class="tag tGr">🎁 1º mês grátis</span>':'')+
-  '<div class="mut">'+(l.categoria?esc(l.categoria)+' • ':'')+reais(l.preco)+'/mês'+(l.venc?' • vence '+br(l.venc):'')+(l.zap?' • 📱 '+esc(zapBr(l.zap)):'')+'<br>🖼️ '+n+' anúncio(s)'+(!s.naTv&&n?' • <b style="color:#f87171">não está passando</b>':'')+(l.obs?'<br>📝 '+esc(l.obs):'')+'</div>'+
+  '<div class="mut">'+(l.categoria?esc(l.categoria)+' • ':'')+(l.preco!=null?reais(l.preco)+'/mês':'sem mensalidade (✏️ Editar)')+(l.venc?' • vence '+br(l.venc):'')+(l.zap?' • 📱 '+esc(zapBr(l.zap)):'')+'<br>🖼️ '+n+' anúncio(s)'+(!s.naTv&&n?' • <b style="color:#f87171">não está passando</b>':'')+(l.obs?'<br>📝 '+esc(l.obs):'')+'</div>'+
   '<div class="bts"><button class="s v" onclick="recebi(\''+l.id+'\')">💰 Recebi o pagamento</button><button class="s" onclick="cobrar(\''+l.id+'\')">💬 Cobrar no WhatsApp</button>'+
   '<button class="s" onclick="pausaLoja(\''+l.id+'\','+(!l.pausado)+')">'+(l.pausado?'▶️ Ativar':'⏸️ Pausar')+'</button><button class="s" onclick="editaLoja(\''+l.id+'\')">✏️ Editar</button></div></div>'}).join('')}
 function acha(L,id){return L.filter(function(x){return x.id==id})[0]}
 
 /* ---------- anunciante ---------- */
-function editaLoja(id,pre){var l=id?acha(LOJAS,id):{nome:'',zap:'',categoria:'',obs:'',preco:CFG.preco,inicio:hoje(),gratis:!!CFG.gratis};pre=pre||{};if(!id){if(pre.nome)l.nome=pre.nome;if(pre.zap)l.zap=pre.zap}
+function editaLoja(id,pre){var l=id?acha(LOJAS,id):{nome:'',zap:'',categoria:'',obs:'',preco:CFG.preco,inicio:hoje(),gratis:!!CFG.gratis};pre=pre||{};if(id){l=Object.assign({},l);if(l.preco==null)l.preco=CFG.preco;if(!l.inicio)l.inicio=hoje()}if(!id){if(pre.nome)l.nome=pre.nome;if(pre.zap)l.zap=pre.zap}
  var v=l.venc||vencInicial(l.inicio,l.gratis),pg=(l.pags||[]).slice().reverse();
  abreM('<h2>'+(id?'✏️ Editar anunciante':'➕ Novo anunciante')+'</h2>'+
  '<label class="rt">Nome da loja *</label><input id="lNome" maxlength="60" value="'+esc(l.nome)+'" placeholder="Ex.: Padaria Pão Quente">'+
