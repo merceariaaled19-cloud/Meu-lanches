@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-24T10:28",
+"atualizado": "2026-11-24T16:33",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -12,18 +12,6 @@
 "cat": "Amazonas",
 "logo": "https://i.imgur.com/j51rBro.png",
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-20715/LVW20715_50E3x2MCm2/playlist.m3u8"
-},
-{
-"nome": "Aratu On",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/Ht4jCab.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
-},
-{
-"nome": "Canal 38",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/co7TCWC.png",
-"url": "https://cdn.jmvstream.com/w/LVW-8503/LVW8503_d0V5oduFlK/playlist.m3u8"
 },
 {
 "nome": "Canal Metropolitano de Noticias",
@@ -74,6 +62,12 @@
 "url": "https://ssai2-ads.api.leiniao.com/global-adinsertion-api/hls/live/v2/21fdb6dd7491406bba86497a24390a25/playlist.m3u8"
 },
 {
+"nome": "TV A Folha",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/I7XGMhj.png",
+"url": "https://video01.logicahost.com.br/tvafolha/tvafolha/playlist.m3u8"
+},
+{
 "nome": "TV Brusque",
 "cat": "Notícias",
 "logo": "https://i.imgur.com/J2EAZPS.png",
@@ -122,16 +116,16 @@
 "url": "https://cpbr.appflux.com.br:2000/hls/1001noites/1001noites.m3u8"
 },
 {
-"nome": "Adesso TV",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/KgetM8j.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9715/LVW9715_12B26T62tm/playlist.m3u8"
-},
-{
 "nome": "Araruna TV",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/jl39ula.png",
 "url": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8"
+},
+{
+"nome": "Boas Novas",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/ZqhizdP.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8"
 },
 {
 "nome": "Catve FM",
@@ -152,6 +146,12 @@
 "url": "https://5b33b873179a2.streamlock.net:1443/catve2/catve2/playlist.m3u8"
 },
 {
+"nome": "Chroma TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/SnaIMgj.png",
+"url": "https://5c483b9d1019c.streamlock.net/8054/8054/playlist.m3u8"
+},
+{
 "nome": "COM Brasil",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/GrjGwKM.png",
@@ -162,6 +162,12 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/qHwTWlz.png",
 "url": "https://adylnet.streampool.net/10324/live/hls/Conecta/index.m3u8"
+},
+{
+"nome": "ConecTV Brasil",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/XN6jjMR.png",
+"url": "https://stream01.msolutionbrasil.com.br/hls/conectv/live.m3u8"
 },
 {
 "nome": "Conexao TV",
@@ -182,10 +188,10 @@
 "url": "https://stmv1.srvsite.com/ely/ely/playlist.m3u8"
 },
 {
-"nome": "EUTV",
+"nome": "Fala Litoral",
 "cat": "Variedades",
-"logo": "https://i.imgur.com/8PxpamC.png",
-"url": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
+"logo": "https://i.imgur.com/NF6PL8O.png",
+"url": "https://5c483b9d1019c.streamlock.net/falalitoraltv/falalitoraltv/playlist.m3u8"
 },
 {
 "nome": "L!ke",
@@ -326,6 +332,12 @@
 "url": "https://porbrics.mediacdn.ru/cdn/brics/portuguese/playlist.m3u8"
 },
 {
+"nome": "TV Clube",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/CpXjcyE.png",
+"url": "https://5c483b9d1019c.streamlock.net/8186/8186/playlist.m3u8"
+},
+{
 "nome": "TV Comunitaria",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/uxefHY3.png",
@@ -398,6 +410,12 @@
 "url": "https://stmv1.voxtvhd.com.br/9030/9030/playlist.m3u8"
 },
 {
+"nome": "TV Sul Bahia",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/qM6nMWm.png",
+"url": "https://live.cdn.upx.com/00046/myStream.sdp/playlist.m3u8"
+},
+{
 "nome": "TV Vila Real",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/Z1uWe7g.png",
@@ -414,6 +432,12 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/IE7IZzi.png",
 "url": "https://srv5.zcast.com.br/tvcommaceio/tvcommaceio/playlist.m3u8"
+},
+{
+"nome": "TVitape",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/XeqcwKe.png",
+"url": "https://stream01.msolutionbrasil.com.br/hls/tvitape/live.m3u8"
 },
 {
 "nome": "TVLatinaSat",
@@ -564,6 +588,12 @@
 "cat": "Religiosos",
 "logo": "https://res.cloudinary.com/dpkehkbpv/image/upload/v1721839192/logo/mixtv/despertar_tv_ieb2l3.png",
 "url": "https://br.conectmy.com.br/DespertarTV/index.m3u8"
+},
+{
+"nome": "Fonte TV",
+"cat": "Religiosos",
+"logo": "https://i.imgur.com/7q2BmNc.png",
+"url": "https://59fb88a1b1108.streamlock.net/fonte/_definst_/fontetv/chunklist_w1224511652.m3u8"
 },
 {
 "nome": "Gospel Movie TV",
