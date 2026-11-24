@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-24T16:33",
+"atualizado": "2026-11-24T22:22",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -12,6 +12,18 @@
 "cat": "Amazonas",
 "logo": "https://i.imgur.com/j51rBro.png",
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-20715/LVW20715_50E3x2MCm2/playlist.m3u8"
+},
+{
+"nome": "Aratu On",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/Ht4jCab.png",
+"url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
+},
+{
+"nome": "Canal 38",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/co7TCWC.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8503/LVW8503_d0V5oduFlK/playlist.m3u8"
 },
 {
 "nome": "Canal Metropolitano de Noticias",
@@ -42,12 +54,6 @@
 "cat": "Notícias",
 "logo": "https://upload.wikimedia.org/wikipedia/commons/4/42/SBT_News_2025.svg",
 "url": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8"
-},
-{
-"nome": "STZ TV",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/SeF2I7q.png",
-"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-12952/playlist/playlist.m3u8"
 },
 {
 "nome": "TCM 10 HD",
@@ -92,12 +98,6 @@
 "url": "https://5cf4a2c2512a2.streamlock.net/8104/8104/playlist.m3u8"
 },
 {
-"nome": "TV Zoom",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/jCGrjf5.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9730/LVW9730_LmUwslM8jt/playlist.m3u8"
-},
-{
 "nome": "TVideoNews",
 "cat": "Notícias",
 "logo": "https://i.imgur.com/vstHOYx.png",
@@ -116,16 +116,16 @@
 "url": "https://cpbr.appflux.com.br:2000/hls/1001noites/1001noites.m3u8"
 },
 {
+"nome": "Adesso TV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/KgetM8j.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9715/LVW9715_12B26T62tm/playlist.m3u8"
+},
+{
 "nome": "Araruna TV",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/jl39ula.png",
 "url": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8"
-},
-{
-"nome": "Boas Novas",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/ZqhizdP.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8"
 },
 {
 "nome": "Catve FM",
@@ -188,6 +188,12 @@
 "url": "https://stmv1.srvsite.com/ely/ely/playlist.m3u8"
 },
 {
+"nome": "EUTV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/8PxpamC.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
+},
+{
 "nome": "Fala Litoral",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/NF6PL8O.png",
@@ -230,12 +236,6 @@
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-15748/LVW15748_Yed7yzLuRC/playlist.m3u8"
 },
 {
-"nome": "Rede Brasil",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/TXJKwzZ.png",
-"url": "https://redebrasil.nuvemplay.live/hls/stream.m3u8"
-},
-{
 "nome": "Rede Meio Norte",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/KVdTi0M.png",
@@ -270,12 +270,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/IkZfa4j.png",
 "url": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8"
-},
-{
-"nome": "SBT Nacional",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/tc1ALuu.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/chunklist.m3u8"
 },
 {
 "nome": "SBT Nova Mutum",
@@ -324,6 +318,12 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/3395A2h.png",
 "url": "https://5b7f3c45ab7c2.streamlock.net/arapuan/ngrp:arapuan_all/playlist.m3u8"
+},
+{
+"nome": "TV Brasil Oeste",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/noqGfuy.png",
+"url": "https://5ad482a77183d.streamlock.net/operacaotbomt.com/operacaotbomt.com/playlist.m3u8"
 },
 {
 "nome": "TV BRICS Portuguese",
@@ -414,12 +414,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/qM6nMWm.png",
 "url": "https://live.cdn.upx.com/00046/myStream.sdp/playlist.m3u8"
-},
-{
-"nome": "TV Vila Real",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/Z1uWe7g.png",
-"url": "https://cdn.jmvstream.com/w/LVW-10841/LVW10841_mT77z9o2cP/playlist.m3u8"
 },
 {
 "nome": "TV+Pet",
@@ -516,12 +510,6 @@
 "cat": "Infantil",
 "logo": "https://i.imgur.com/SRX6EPY.png",
 "url": "https://w2.manasat.com/kkids/smil:kkids.smil/playlist.m3u8"
-},
-{
-"nome": "Retro Cartoon",
-"cat": "Infantil",
-"logo": "https://i.imgur.com/hIlEfhl.png",
-"url": "https://stmv1.video.brstream.com.br/retrotv/retrotv/chunklist_w1069200121.m3u8"
 },
 {
 "nome": "Lamore Rock Show WebTV",
