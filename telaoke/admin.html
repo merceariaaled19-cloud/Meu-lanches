@@ -78,6 +78,10 @@ details summary{cursor:pointer;font-weight:bold;padding:8px 0;color:var(--ci)}
 
  <!-- CAPTAR -->
  <section class="tab" id="tCapta" style="display:none">
+  <div class="card"><h3>🔗 Link para divulgar</h3><p class="mut">Mande para o cliente ou poste nas redes. Quem abrir vê a oferta e fala com você no WhatsApp.</p>
+   <div class="msgbox" style="font-size:22px;text-align:center;color:var(--am)"><b>is.gd/telaoke</b></div>
+   <div class="row" style="margin-top:8px"><button class="s" id="lkCp">📋 Copiar link</button><button class="v" id="lkSh">📤 Compartilhar</button></div>
+   <button class="s w" style="margin-top:8px" onclick="window.open('https://is.gd/telaoke','_blank')">👀 Ver como o cliente vê</button></div>
   <div class="card"><h3>📣 Mensagem para oferecer a TV</h3>
    <label class="rt">Nome da loja ou da pessoa</label><input id="cNome" maxlength="60" placeholder="Ex.: Padaria Pão Quente">
    <label class="rt">WhatsApp (opcional)</label><input id="cZap" inputmode="tel" maxlength="20" placeholder="(92) 99999-9999">
@@ -341,6 +345,9 @@ function pintaOferta(){$('cMsg').textContent=ofertaAtual();var h='';
  if(CFG.videoComercial)h+='<button class="s w" onclick="mandaVid(\'videoComercial\')">🎬 Mandar vídeo comercial</button>';
  if(CFG.videoTv)h+='<button class="s w" onclick="mandaVid(\'videoTv\')">📺 Mandar vídeo da TV funcionando</button>';$('cVids').innerHTML=h}
 $('cNome').oninput=pintaOferta;$('cCp').onclick=function(){copia(ofertaAtual(),this)};$('cWa').onclick=function(){abre(wa($('cZap').value,ofertaAtual()))};
+var LINK_TO='https://is.gd/telaoke',TXT_TO='📺 Anuncie sua loja na TV! 1º mês grátis e a arte é por nossa conta. Veja: '+LINK_TO;
+$('lkCp').onclick=function(){copia(LINK_TO,this)};
+$('lkSh').onclick=function(){if(navigator.share){navigator.share({title:'TelaOkê Publicidades',text:TXT_TO}).catch(function(){})}else abre(wa('',TXT_TO))};
 function mandaVid(k){abre(wa($('cZap').value,(k=='videoTv'?'📺 Olha a TV funcionando: ':'🎬 Conheça a TelaOkê Publicidades: ')+CFG[k]))}
 function pintaLeads(){var n=LEADS.length;$('nLeads').textContent=n;$('nLeads').style.display=n?'inline-block':'none';$('bdLeads').textContent=n;$('bdLeads').style.display=n?'block':'none';
  $('lLeads').innerHTML=n?LEADS.map(function(x){return '<div class="it"><div class="nm">🙋 '+esc(x.loja||'Loja')+'</div><div class="mut">📱 '+esc(zapBr(x.zap))+(x.criadoEm?' • '+new Date(ms(x.criadoEm)).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'')+'</div>'+
