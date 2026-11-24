@@ -14,11 +14,14 @@ main{max-width:620px;margin:auto;padding:12px 12px 40px}
 h2{font-size:20px;margin:0 0 10px;color:var(--am)}.mut{opacity:.8;font-size:14px;line-height:1.45}
 .hero{text-align:center;padding:24px 6px 6px}.logo{width:84px;height:84px;border-radius:22px;box-shadow:0 6px 30px rgba(255,63,164,.4)}
 .hero h1{font-size:30px;margin:12px 0 6px;line-height:1.15}.hero h1 span{color:var(--am)}.hero p{font-size:17px;opacity:.92;margin:0 0 14px;line-height:1.4}
-.tv{margin:18px auto 26px;width:260px;height:160px;border:9px solid #e5e7eb;border-radius:16px;background:#000;position:relative;box-shadow:0 0 50px rgba(34,211,238,.3)}
+.tv{margin:18px auto 30px;width:min(100%,340px);aspect-ratio:16/9;border:9px solid #e5e7eb;border-radius:16px;background:#000;position:relative;box-shadow:0 0 50px rgba(34,211,238,.3)}
 .tv:after{content:'';position:absolute;left:50%;bottom:-32px;width:70px;height:22px;margin-left:-35px;background:#e5e7eb;border-radius:0 0 8px 8px}
-.tv .sl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;animation:sl 9s infinite;font-weight:bold;text-align:center;padding:10px}
-.tv .sl i{font-style:normal;font-size:44px}.tv .sl:nth-child(1){background:linear-gradient(135deg,#f59e0b,#b45309)}.tv .sl:nth-child(2){background:linear-gradient(135deg,#ec4899,#7c3aed);animation-delay:3s}.tv .sl:nth-child(3){background:linear-gradient(135deg,#06b6d4,#2563eb);animation-delay:6s}
-@keyframes sl{0%{opacity:0}4%{opacity:1}30%{opacity:1}34%{opacity:0}100%{opacity:0}}
+.tv video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:7px;background:#000;display:block}
+.tv .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.12);border:0;margin:0;padding:0;width:100%;border-radius:7px;cursor:pointer}
+.tv .play span{width:64px;height:64px;border-radius:50%;background:rgba(255,63,164,.95);box-shadow:0 0 0 6px rgba(255,255,255,.35),0 6px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;padding-left:5px;animation:pul 1.6s infinite}
+.tv .play b{position:absolute;bottom:6px;left:0;right:0;font-size:12px;text-shadow:0 1px 3px #000}
+.tv .fs{position:absolute;top:5px;right:5px;width:auto;margin:0;padding:4px 8px;font-size:13px;border-radius:8px;background:rgba(0,0,0,.55);display:none}
+@keyframes pul{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 .selos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0 4px}.selos div{background:#0d0726;border:2px solid #4a2e8f;border-radius:14px;padding:12px 8px;text-align:center;font-weight:bold;font-size:15px}.selos div b{display:block;font-size:28px;margin-bottom:4px}
 .passos{display:grid;gap:10px}.ps{display:flex;gap:12px;align-items:center;background:#0d0726;border-radius:14px;padding:12px}.ps b.n{flex:0 0 40px;height:40px;border-radius:50%;background:var(--ro);display:flex;align-items:center;justify-content:center;font-size:19px}
 button,.bt{display:block;width:100%;padding:15px;font-size:17px;border:0;border-radius:14px;background:linear-gradient(90deg,#ff3fa4,#c026d3);color:#fff;font-weight:bold;margin:8px 0;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit}
@@ -31,7 +34,7 @@ footer{text-align:center;opacity:.65;font-size:13px;padding:6px}
 <main>
  <div class="hero"><img class="logo" src="icon-192.png" alt="TelaOkê"><h1>Sua loja passando<br><span>na TV do bairro</span></h1>
   <p>A <b>TelaOkê Publicidades</b> tem TVs em lojas do bairro que passam anúncios o dia inteiro para quem vem comprar. Coloque a sua loja nelas!</p>
-  <div class="tv"><div class="sl"><i>🥖</i>Pão quentinho<br>toda hora!</div><div class="sl"><i>💇‍♀️</i>Escova + corte<br>promoção</div><div class="sl"><i>📢</i>Sua loja<br>aqui!</div></div>
+  <div class="tv"><video id="tvVid" playsinline webkit-playsinline preload="none" poster="videos/demo-anunciante.jpg"><source src="videos/demo-anunciante.mp4" type="video/mp4"></video><button class="play" id="tvPlay" aria-label="Ver o vídeo: como anunciar"><span>▶</span><b>Veja como anunciar (1 min)</b></button><button class="fs" id="tvFs" aria-label="Tela cheia">⛶</button></div>
   <a class="bt zap" id="bZap" href="#">💬 Quero anunciar</a></div>
  <div class="card"><div class="selos"><div><b>🎁</b>1º mês grátis</div><div><b>🎨</b>A arte é por nossa conta</div></div>
   <p class="preco">Depois, só <b id="pVal">R$ 49,99</b> por mês, sem fidelidade.</p></div>
@@ -52,6 +55,10 @@ function waLink(t){return 'https://wa.me/'+ZAP+'?text='+encodeURIComponent(t)}
 function zapOk(z){z=String(z||'').replace(/\D/g,'');if(z.length==10||z.length==11)z='55'+z;return /^55\d{10,11}$/.test(z)?z:''}
 function $(i){return document.getElementById(i)}
 $('bZap').href=waLink(msgZap(''));
+(function(){var v=$('tvVid'),b=$('tvPlay'),f=$('tvFs');
+ b.onclick=function(){b.style.display='none';f.style.display='block';v.muted=false;v.controls=true;try{v.currentTime=0}catch(e){}var p=v.play();if(p&&p.catch)p.catch(function(){b.style.display='flex';v.controls=false})};
+ f.onclick=function(){var e=v;if(e.requestFullscreen)e.requestFullscreen().catch(function(){});else if(e.webkitEnterFullscreen)e.webkitEnterFullscreen()};
+ v.onended=function(){if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(function(){});v.controls=false;f.style.display='none';b.style.display='flex';v.load()};})();
 var db=null;try{if(!window.TO_TESTE&&window.firebase){firebase.initializeApp({apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"});db=firebase.firestore();
  db.collection('to_config').doc('operacao').get().then(function(d){var p=d.exists&&+d.data().preco;if(p>0)$('pVal').textContent='R$ '+p.toFixed(2).replace('.',',')}).catch(function(){})}}catch(e){}
 $('fEnvia').onclick=function(){var l=$('fLoja').value.trim(),z=zapOk($('fZap').value),b=this;$('fErro').textContent='';
