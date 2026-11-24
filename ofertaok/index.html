@@ -52,6 +52,8 @@ textarea{min-height:70px;resize:vertical;font-size:16px}input:focus,select:focus
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#16a34a;color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;z-index:99;display:none;max-width:90vw;text-align:center}
 .oculto{display:none!important}
 .roteiro label.l{color:#d0101f}
+.endbox{border:2px solid #f0e2e4;border-radius:14px;padding:4px 10px 8px;background:#fffafa}label.l2{display:block;font-weight:700;margin:8px 0 3px;font-size:14px}
+.op.perf{border:3px dashed #ffd400;background:#fff7d6}.op.perf .sp{color:#5b4500;font-size:13px;font-weight:900}
 </style></head><body>
 <header><img src="icon-192.png" alt=""><h1>OFERTA <span>OKÊ</span></h1><button id="bSair" class="oculto">Sair</button></header>
 <main>
@@ -71,9 +73,19 @@ textarea{min-height:70px;resize:vertical;font-size:16px}input:focus,select:focus
   <button class="bt cz peq" id="bVoltar" style="max-width:220px">⬅️ Meus comerciais</button>
 
   <div class="card"><h2><span class="num">1</span> A loja</h2>
-    <label class="l">Nome da loja *</label><input id="eLoja" maxlength="50" placeholder="Ex.: Mercadinho do Alex">
+    <label class="l">Nome da loja *</label><input id="eLoja" maxlength="50" placeholder="Ex.: Mercadinho Bom Preço">
     <label class="l">WhatsApp <small class="d">(opcional)</small></label><input id="eZap" type="tel" maxlength="20" placeholder="(92) 99999-9999">
-    <label class="l">Endereço <small class="d">(opcional, aparece no fim)</small></label><input id="eEnd" maxlength="70" placeholder="Ex.: Rua Coronel Victor Coutinho, Cidade Nova">
+    <label class="l">Endereço <small class="d">(opcional, aparece no fim do vídeo)</small></label>
+    <div class="endbox">
+      <label class="l2">CEP <small class="d">(o app preenche a rua e o bairro)</small></label>
+      <div class="lin"><input id="eCep" inputmode="numeric" maxlength="9" placeholder="Ex.: 69000-000" style="flex:2"><button class="bt cz peq" id="bCep" style="flex:1;margin:0">🔎 Buscar</button></div>
+      <div class="st" id="cepSt"></div>
+      <label class="l2">Rua</label><input id="eRua" maxlength="60" placeholder="Ex.: Rua das Flores">
+      <label class="l2">Bairro</label><input id="eBairro" maxlength="40" placeholder="Ex.: Centro">
+      <div class="lin"><div style="flex:3"><label class="l2">Cidade</label><input id="eCidade" maxlength="40" placeholder="Ex.: Sua cidade"></div><div style="flex:1"><label class="l2">UF</label><input id="eUf" maxlength="2" placeholder="Ex.: SP" style="text-transform:uppercase"></div></div>
+      <div class="lin"><div><label class="l2">Número da casa</label><input id="eNum" inputmode="numeric" maxlength="10" placeholder="Ex.: 120"></div><div><label class="l2">Complemento <small class="d">(opcional)</small></label><input id="eComp" maxlength="30" placeholder="Ex.: Loja 2"></div></div>
+      <div class="st" id="endPrev"></div>
+    </div>
     <label class="l">Logo da loja <small class="d">(opcional)</small></label>
     <div class="lin" style="align-items:center"><div id="logoPrev" class="pfoto" style="max-width:90px;font-size:34px;margin:0">🏪</div><button class="bt cz peq" id="bLogo">🖼️ Escolher logo</button><button class="bt cz peq oculto" id="bLogoTira">✖ Tirar</button></div>
   </div>
@@ -119,9 +131,9 @@ textarea{min-height:70px;resize:vertical;font-size:16px}input:focus,select:focus
 <input type="file" id="fGal" accept="image/*" class="oculto">
 <input type="file" id="fLogo" accept="image/*" class="oculto">
 <div id="toast"></div>
-<script src="okv.js?v=1"></script>
-<script src="voz.js?v=1"></script>
-<script src="foto.js?v=1"></script>
-<script src="video.js?v=1"></script>
-<script src="app.js?v=1"></script>
+<script src="okv.js?v=2"></script>
+<script src="voz.js?v=2"></script>
+<script src="foto.js?v=2"></script>
+<script src="video.js?v=2"></script>
+<script src="app.js?v=2"></script>
 </body></html>

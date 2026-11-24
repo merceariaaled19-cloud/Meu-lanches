@@ -6,7 +6,7 @@ var $ = function(i){ return document.getElementById(i); };
 var db = null, au = null, U = null, OF = null, TEMP = {}, VID = {}, CHAVE = null, LOJAS = [], AC = null, ALVO = 0, OUVINDO = null;
 function toast(t, cor, ms){ var e = $('toast'); e.textContent = t; e.style.background = cor || '#16a34a'; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(function(){ e.style.display = 'none'; }, ms || 2800); }
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); }
-function mostra(id){ ['entrar', 'home', 'editor'].forEach(function(s){ $(s).classList.toggle('oculto', s != id); }); window.scrollTo(0, 0); }
+function mostra(id){ if (id != 'editor') paraTudo('saiu'); ['entrar', 'home', 'editor'].forEach(function(s){ $(s).classList.toggle('oculto', s != id); }); window.scrollTo(0, 0); }
 function audioCtx(){ if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state == 'suspended') AC.resume(); return AC; }
 function hoje(){ var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
 function addD(s, n){ var d = new Date(s + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
@@ -16,7 +16,7 @@ function copia(t){ function ok(){ toast('Copiado! ✅'); } if (navigator.clipboa
 
 /* ================= dados ================= */
 var DB = TESTE ? (function(){
-  var MEM = {ofertas: {}, lojas: [{id: 'L1', nome: 'Mercadinho do Alex', venc: '', pausado: false}], anuncios: {}, videos: {}};
+  var MEM = {ofertas: {}, lojas: [{id: 'L1', nome: 'Mercadinho Bom Preço', venc: '', pausado: false}], anuncios: {}, videos: {}};
   window.MEM = MEM;
   return {
     chave: function(){ return Promise.resolve('TESTE'); },
@@ -48,13 +48,13 @@ function pegaChave(){ if (CHAVE) return Promise.resolve(CHAVE); return DB.chave(
 
 /* ================= login ================= */
 function entrou(u){
-  U = u; var adm = u && ADMINS.indexOf((u.email || '').toLowerCase()) >= 0;
+  U = u; var adm = u && (TESTE || ADMINS.indexOf((u.email || '').toLowerCase()) >= 0);
   $('bSair').classList.toggle('oculto', !u);
   if (!u){ mostra('entrar'); return; }
-  if (!adm){ $('msgLogin').textContent = 'A conta ' + u.email + ' não tem permissão. Entre com a conta do Alex.'; mostra('entrar'); return; }
+  if (!adm){ $('msgLogin').textContent = 'A conta ' + u.email + ' não tem permissão. Entre com uma conta de administrador.'; mostra('entrar'); return; }
   abreHome();
 }
-if (TESTE){ setTimeout(function(){ entrou({uid: 'teste', email: 'alexprotasgohan@gmail.com'}); }, 50); }
+if (TESTE){ setTimeout(function(){ entrou({uid: 'teste', email: 'teste@exemplo.com'}); }, 50); }
 else {
   firebase.initializeApp(FB); db = firebase.firestore(); au = firebase.auth();
   au.getRedirectResult().catch(function(e){ $('msgLogin').textContent = 'Não entrou: ' + (e.code || e); });
@@ -82,16 +82,73 @@ window.abreOferta = function(i){ editar(JSON.parse(JSON.stringify(window.LISTA[i
 $('bNovo').onclick = function(){ editar({loja: '', zap: '', end: '', logo: '', produtos: [{nome: '', preco: null, de: null, un: '', foto: '', tipoFoto: ''}], voz: 'ze', roteiro: null, roteiroEditado: false}); };
 $('bVoltar').onclick = function(){ if (sujo && !confirm('Sair sem salvar as mudanças?')) return; abreHome(); };
 
+/* ================= endereço (CEP -> rua, bairro, cidade) ================= */
+var CAMPOS_END = ['eCep', 'eRua', 'eBairro', 'eCidade', 'eUf', 'eNum', 'eComp'];
+function montaEnd(e){ /* texto final: "Rua X, 10 - Bairro" */
+  var t = (e.rua || '').trim(); if (e.num) t += (t ? ', ' : '') + e.num.trim(); if (e.comp) t += (t ? ', ' : '') + e.comp.trim();
+  if (e.bairro) t += (t ? ' - ' : '') + e.bairro.trim(); return t.slice(0, 90);
+}
+function pintaEndereco(){
+  var e = OF.endr || null;
+  if (!e){ e = {cep: '', rua: OF.end || '', num: '', comp: '', bairro: '', cidade: '', uf: ''}; } /* comercial antigo: o texto salvo fica no campo Rua e continua igual */
+  $('eCep').value = e.cep || ''; $('eRua').value = e.rua || ''; $('eBairro').value = e.bairro || ''; $('eCidade').value = e.cidade || ''; $('eUf').value = e.uf || ''; $('eNum').value = e.num || ''; $('eComp').value = e.comp || '';
+  $('cepSt').textContent = ''; mostraEndPrev();
+}
+function leEndereco(){
+  var e = {cep: $('eCep').value.trim(), rua: $('eRua').value.trim(), num: $('eNum').value.trim(), comp: $('eComp').value.trim(), bairro: $('eBairro').value.trim(), cidade: $('eCidade').value.trim(), uf: $('eUf').value.trim().toUpperCase()};
+  var vazio = !e.cep && !e.rua && !e.num && !e.comp && !e.bairro && !e.cidade && !e.uf;
+  if (vazio){ delete OF.endr; OF.end = ''; } else { OF.endr = e; OF.end = montaEnd(e); }
+  mostraEndPrev();
+}
+function mostraEndPrev(){ $('endPrev').textContent = OF.end ? '📍 Vai aparecer assim: ' + OF.end : ''; }
+function jsonCurto(u, ms){ var ac = window.AbortController ? new AbortController() : null, t = setTimeout(function(){ if (ac) ac.abort(); }, ms || 8000);
+  return fetch(u, ac ? {signal: ac.signal} : {}).then(function(r){ clearTimeout(t); return r.ok ? r.json() : null; }).catch(function(){ clearTimeout(t); return null; }); }
+async function buscaCep(cep){
+  var d = await jsonCurto('https://viacep.com.br/ws/' + cep + '/json/');
+  if (d && !d.erro && (d.logradouro || d.localidade)) return {rua: d.logradouro || '', bairro: d.bairro || '', cidade: d.localidade || '', uf: d.uf || ''};
+  d = await jsonCurto('https://brasilapi.com.br/api/cep/v1/' + cep);
+  if (d && (d.street || d.city)) return {rua: d.street || '', bairro: d.neighborhood || '', cidade: d.city || '', uf: d.state || ''};
+  return null;
+}
+var CEP_ULTIMO = '';
+async function procuraCep(forcar){
+  var cep = $('eCep').value.replace(/\D/g, '');
+  if (cep.length != 8){ if (forcar) $('cepSt').textContent = 'O CEP tem 8 números (ex.: 69000-000).'; return; }
+  if (cep == CEP_ULTIMO && !forcar) return; CEP_ULTIMO = cep;
+  $('eCep').value = cep.slice(0, 5) + '-' + cep.slice(5); $('cepSt').textContent = '🔎 Procurando o CEP…';
+  var r = await buscaCep(cep);
+  if ($('eCep').value.replace(/\D/g, '') != cep) return;
+  if (!r){ $('cepSt').textContent = 'Não achei esse CEP. Pode digitar a rua e o bairro aqui embaixo.'; $('eRua').focus(); leEndereco(); return; }
+  if (r.rua) $('eRua').value = r.rua; if (r.bairro) $('eBairro').value = r.bairro; $('eCidade').value = r.cidade; $('eUf').value = r.uf;
+  $('cepSt').textContent = r.rua ? '✅ Achei! Agora digite o número da casa.' : '✅ Achei a cidade. Este CEP não tem rua, digite a rua e o bairro.';
+  leEndereco(); sujo = true; mudouDados(); (r.rua ? $('eNum') : $('eRua')).focus();
+}
+$('eCep').addEventListener('input', function(){ if (this.value.replace(/\D/g, '').length == 8) procuraCep(false); });
+$('bCep').onclick = function(){ procuraCep(true); };
+
+/* ================= parar tudo ao sair da tela ou esconder o app ================= */
+var GRAVANDO = false;
+function paraTudo(motivo){
+  try { paraRobo(motivo || 'saiu'); } catch (e) {}
+  if (OUVINDO){ try { OUVINDO.stop(); } catch (e) {} OUVINDO = null; if (OF && $('vozes').innerHTML) pintaVozes(); }
+  clearTimeout(MD_T);
+  if (window.cancelaGravacao) window.cancelaGravacao(motivo || 'saiu');
+  if (window.cancelaEspera) window.cancelaEspera();
+  if (AC && AC.state == 'running') try { AC.suspend(); } catch (e) {}
+}
+document.addEventListener('visibilitychange', function(){ if (document.hidden) paraTudo('oculto'); });
+window.addEventListener('pagehide', function(){ paraTudo('oculto'); });
+
 /* ================= editor ================= */
 var sujo = false;
 function editar(o){
   OF = o; TEMP = {}; VID = {}; sujo = false; mostra('editor');
-  $('eLoja').value = o.loja || ''; $('eZap').value = o.zap || ''; $('eEnd').value = o.end || '';
+  $('eLoja').value = o.loja || ''; $('eZap').value = o.zap || ''; pintaEndereco();
   pintaLogo(); pintaProdutos(); pintaVozes(); if (!OF.roteiro) refazRoteiro(); else pintaRoteiro();
   $('vids').innerHTML = ''; $('tCod').innerHTML = OF.videos && OF.videos.h ? caixaCodigo(OF.videos.h.id) : ''; $('tSt').textContent = '';
   $('bApagar').classList.toggle('oculto', !OF.id); carregaLojas();
 }
-['eLoja', 'eZap', 'eEnd'].forEach(function(id){ $(id).addEventListener('input', function(){ OF.loja = $('eLoja').value.trim(); OF.zap = $('eZap').value.trim(); OF.end = $('eEnd').value.trim(); sujo = true; mudouDados(); }); });
+['eLoja', 'eZap'].concat(CAMPOS_END).forEach(function(id){ $(id).addEventListener('input', function(){ OF.loja = $('eLoja').value.trim(); OF.zap = $('eZap').value.trim(); leEndereco(); sujo = true; mudouDados(); }); });
 function pintaLogo(){ $('logoPrev').innerHTML = OF.logo ? '<img src="' + OF.logo + '">' : '🏪'; $('bLogoTira').classList.toggle('oculto', !OF.logo); }
 $('bLogo').onclick = function(){ $('fLogo').click(); };
 $('bLogoTira').onclick = function(){ OF.logo = ''; sujo = true; pintaLogo(); };
@@ -126,6 +183,7 @@ $('fCam').onchange = $('fGal').onchange = function(){ var f = this.files[0]; thi
 function pintaEscolha(i){
   var T = TEMP[i], box = $('pe' + i); if (!T || !box) return; box.classList.remove('oculto');
   box.innerHTML = T.ops.map(function(o, k){
+    if (o.botao) return '<div class="op perf" onclick="fazPerfeita(' + i + ')"><div class="sp">✨<br>' + esc(o.rotulo) + '</div>' + esc(o.titulo) + '</div>';
     if (o.carregando) return '<div class="op"><div class="sp">⏳ ' + esc(o.rotulo) + '</div>' + esc(o.titulo) + '</div>';
     return '<div class="op' + (T.esc == k ? ' on' : '') + '" onclick="escolhe(' + i + ',' + k + ')"><img src="' + o.prev + '">' + esc(o.titulo) + '</div>';
   }).join('');
@@ -133,7 +191,7 @@ function pintaEscolha(i){
 }
 window.escolhe = function(i, k){ var T = TEMP[i]; T.esc = k; T.tocou = true; aplicaEscolha(i); pintaEscolha(i); sujo = true; };
 function aplicaEscolha(i){
-  var T = TEMP[i], o = T.ops[T.esc], p = OF.produtos[i]; if (!o || o.carregando) return;
+  var T = TEMP[i], o = T.ops[T.esc], p = OF.produtos[i]; if (!o || o.carregando || o.botao) return;
   p.tipoFoto = o.tipo; p.foto = telaParaDado(o.c, 640, 110000, o.tipo == 'recorte');
   $('pf' + i).innerHTML = '<img src="' + o.prev + '">';
 }
@@ -142,33 +200,50 @@ function trocaOp(i, k, o){ if (o.c) o.prev = compoeLimpo(o.c, o.tipo, 300).toDat
 function melhorPadrao(i){
   /* foto oficial só vem marcada quando é com certeza o mesmo produto: achada pelo código de barras, ou nome quase igual ao que ele digitou / à marca lida no rótulo */
   var T = TEMP[i]; if (T.tocou) return; var best = 0, bp = -1;
-  T.ops.forEach(function(o, k){ if (o.carregando) return; var pts;
+  T.ops.forEach(function(o, k){ if (o.carregando || o.botao) return; var pts;
     if (o.tipo == 'oficial'){ var certo = o.pontos >= 2 || (o.pontos >= 0.85 && (T.fonteNome == 'digitado' || (T.marca && palavras(T.marca).every(function(w){ return palavras(o.nome).indexOf(w) >= 0; })))); pts = certo ? 3 - (o.pontos >= 2 ? 0 : 0.5) : 0.5; }
     else pts = o.tipo == 'recorte' ? 2 : 1;
     if (pts > bp){ bp = pts; best = k; } });
   T.esc = best; aplicaEscolha(i);
 }
 async function trataFoto(i, arq){
-  var c; try { c = await arquivoParaTela(arq, 1280); } catch (e) { toast('Não abriu essa foto.', '#b91c1c'); return; }
-  var T = TEMP[i] = {ops: [], esc: 0, tocou: false, status: 'Deixando a foto perfeita e procurando a foto oficial…'};
-  addOp(i, {tipo: 'foto', c: c, titulo: '📷 Sua foto'}); aplicaEscolha(i);
-  var kP = addOp(i, {carregando: true, rotulo: 'Melhorando…', titulo: '✨ Perfeita'}); pintaEscolha(i); sujo = true;
-  var tarefaPerf = (async function(){
-    try {
-      var cut = await tiraFundo(c, function(s){ T.ops[kP].rotulo = s.replace('Baixando o robô das fotos', 'Baixando'); pintaEscolha(i); });
-      var m = melhoraRecorte(cut); if (!m) throw new Error('vazio');
-      trocaOp(i, kP, {tipo: 'recorte', c: m, titulo: '✨ Perfeita'});
-    } catch (e) { console.log('fundo', e); T.ops[kP] = {carregando: true, rotulo: 'Não deu', titulo: '✨ Perfeita'}; }
-    pintaEscolha(i);
-  })();
-  var tarefaOf = buscaParaProduto(i, c);
-  await Promise.all([tarefaPerf, tarefaOf]);
-  var escolhida = T.ops[T.esc]; T.ops = T.ops.filter(function(o){ return !o.carregando; }); T.esc = Math.max(0, T.ops.indexOf(escolhida));
+  var c; try { c = await arquivoParaTela(arq, 1024); } catch (e) { toast('Não abriu essa foto.', '#b91c1c'); return; }
+  if (TEMP[i] && TEMP[i].rodando) paraRobo('trocou');
+  var T = TEMP[i] = {ops: [], esc: 0, tocou: false, orig: c, status: 'Procurando a foto oficial… Para tirar o fundo, toque em ✨ Perfeita.'};
+  addOp(i, {tipo: 'foto', c: c, titulo: '📷 Sua foto', base: true}); aplicaEscolha(i);
+  T.ops.push({botao: true, perf: true, titulo: '✨ Perfeita', rotulo: 'Toque para tirar o fundo'}); pintaEscolha(i); sujo = true;
+  await buscaParaProduto(i, c);
+  if (TEMP[i] !== T) return;
+  var escolhida = T.ops[T.esc]; T.ops = T.ops.filter(function(o){ return !o.carregando || o.perf; }); T.esc = Math.max(0, T.ops.indexOf(escolhida));
   melhorPadrao(i);
   var nOf = T.ops.filter(function(o){ return o.tipo == 'oficial'; }).length;
-  T.status = (nOf ? 'Achei ' + nOf + ' foto(s) oficial(is). ' : 'Não achei foto oficial deste produto. ') + 'Toque na foto que ficou melhor (a marcada ✓ é a que vai no vídeo).';
+  if (!T.rodando) T.status = (nOf ? 'Achei ' + nOf + ' foto(s) oficial(is). ' : 'Não achei foto oficial deste produto. ') + 'Toque na foto que ficou melhor (a marcada ✓ é a que vai no vídeo).' + (T.avisoPerf ? ' ' + T.avisoPerf : (T.ops.some(function(o){ return o.tipo == 'recorte'; }) ? '' : ' ✨ Perfeita tira o fundo.'));
   pintaEscolha(i);
 }
+/* ✨ Perfeita: só quando o usuário toca. Robô num worker; se falhar, melhora a luz da própria foto */
+window.fazPerfeita = async function(i){
+  var T = TEMP[i]; if (!T || T.rodando || !T.orig) return;
+  var ph = T.ops.filter(function(o){ return o.perf; })[0]; if (!ph) return;
+  ph.botao = false; ph.carregando = true; ph.rotulo = 'Começando…'; T.rodando = true;
+  T.status = '✨ Tirando o fundo… Pode continuar preenchendo o preço enquanto isso.'; pintaEscolha(i);
+  try {
+    var cut = await tiraFundo(T.orig, function(s){ ph.rotulo = s.replace('Baixando o robô', 'Baixando'); pintaEscolha(i); });
+    if (TEMP[i] !== T) return;
+    var k = T.ops.indexOf(ph), o = {tipo: 'recorte', c: cut, titulo: '✨ Perfeita', perf: true};
+    trocaOp(i, k, o); T.esc = k; T.tocou = true; aplicaEscolha(i);
+    T.avisoPerf = ''; T.status = '✅ Pronto! A foto ✨ Perfeita está marcada ✓. Se preferir outra, é só tocar nela.';
+  } catch (e) {
+    console.log('perfeita', e && e.message);
+    if (TEMP[i] !== T){ return; }
+    ph.carregando = false; ph.botao = true; ph.rotulo = 'Tocar para tentar de novo';
+    if (/saiu|trocou|oculto/.test(e && e.message || '')){ T.status = 'O robô parou porque você saiu da tela. Toque em ✨ Perfeita para tentar de novo.'; }
+    else {
+      T.status = T.avisoPerf = (e && e.message == 'demorou' ? 'O robô demorou demais e eu parei para o celular não travar. ' : 'Não deu para tirar o fundo desta foto. ') + 'Deixei a sua foto mais clara e bonita. Dica: tire a foto com o produto no meio e um fundo liso.';
+      try { var mc = await melhoraSimples(T.orig); if (TEMP[i] === T){ var kb = -1; T.ops.forEach(function(x, j){ if (x.base) kb = j; }); if (kb >= 0){ trocaOp(i, kb, {tipo: 'foto', c: mc, titulo: '📷 Sua foto', base: true}); if (T.esc == kb) aplicaEscolha(i); } } } catch (x) {}
+    }
+  }
+  T.rodando = false; pintaEscolha(i);
+};
 /* identifica o produto (código de barras > nome digitado > IA lendo o rótulo) e busca fotos oficiais */
 async function buscaParaProduto(i, c){
   var T = TEMP[i], ean = '', nome = $('pn' + i) ? $('pn' + i).value.trim() : ''; T.fonteNome = nome ? 'digitado' : ''; T.marca = '';
@@ -225,7 +300,7 @@ $('bRot').onclick = function(){ OF.semente = Math.floor(Math.random() * 1000); O
 
 /* ---------- validação ---------- */
 function valida(){
-  OF.loja = $('eLoja').value.trim(); OF.zap = $('eZap').value.trim(); OF.end = $('eEnd').value.trim(); OF.produtos.forEach(function(p, i){ leProd(i); }); leRoteiro();
+  OF.loja = $('eLoja').value.trim(); OF.zap = $('eZap').value.trim(); leEndereco(); OF.produtos.forEach(function(p, i){ leProd(i); }); leRoteiro();
   if (OF.loja.length < 2) return 'Digite o nome da loja (passo 1).';
   for (var i = 0; i < OF.produtos.length; i++){ var p = OF.produtos[i]; if (!p.nome) return 'Digite o nome do produto ' + (i + 1) + '.'; if (!(p.preco > 0)) return 'Digite o preço do produto ' + (i + 1) + ' (ex.: 7,99).'; }
   return '';
@@ -243,7 +318,7 @@ $('bGerar').onclick = async function(){
   var e = valida(); if (e){ toast(e, '#b91c1c', 4000); return; }
   var fmts = []; if ($('fV').checked) fmts.push({nome: 'vertical', w: 720, h: 1280, bits: 2200000}); if ($('fH').checked) fmts.push({nome: 'horizontal', w: 1280, h: 720, bits: 2400000});
   if (!fmts.length){ toast('Marque pelo menos um tipo de vídeo.', '#b91c1c'); return; }
-  var ac = audioCtx(), b = this; b.disabled = true; $('gerando').classList.remove('oculto'); $('vids').innerHTML = '';
+  var ac = audioCtx(), b = this; b.disabled = true; GRAVANDO = true; $('gerando').classList.remove('oculto'); $('vids').innerHTML = '';
   try {
     var voz = vozPorId(OF.voz), r = OF.roteiro, partes = [r.abre].concat(r.itens).concat([r.fecha]), texto = partes.join('\n\n'), mix;
     st('🎙️ ' + voz.nome + ' está gravando a voz…', 0.05);
@@ -252,6 +327,7 @@ $('bGerar').onclick = async function(){
       var key = await pegaChave();
       try { wav = await geraFala(texto, voz, key, function(m){ st('⏳ ' + m, 0.08); }); idbPut(ck, wav); }
       catch (x) {
+        if (x.message == 'oculto') throw x;
         var m2 = x.message == 'sem-chave' ? 'A chave da IA (Gemini) não está salva no ADM do Meu Lanche.' : (x.message == 'limite' ? 'A voz grátis chegou no limite agora.' : 'A voz não respondeu (' + x.message + ').');
         if (!confirm(m2 + '\n\nQuer fazer o vídeo só com música (sem locutor)? Você pode tentar a voz de novo mais tarde.')) throw new Error('cancelado');
         wav = null;
@@ -268,8 +344,10 @@ $('bGerar').onclick = async function(){
     mostraVideos(); toast('Vídeo pronto! 🎉');
     if (!wav) $('vids').insertAdjacentHTML('afterbegin', '<div class="aviso">Este vídeo saiu sem locutor (só música).</div>');
     salvar(true);
-  } catch (x) { if (x.message != 'cancelado'){ console.error(x); toast('Não deu para gerar: ' + (x.message == 'sem-gravador' ? 'este navegador não grava vídeo. Use o Chrome.' : x.message), '#b91c1c', 5000); } st('', 0); }
-  b.disabled = false; setTimeout(function(){ $('gerando').classList.add('oculto'); }, 1500);
+  } catch (x) {
+    if (/^oculto|^saiu/.test(x.message)){ toast('A gravação foi cancelada porque o app saiu da tela. Toque em 🎬 Gerar o vídeo de novo e deixe a tela aberta até terminar.', '#b45309', 7000); $('vids').innerHTML = '<div class="aviso">⚠️ A gravação foi cancelada porque o app saiu da tela (ou o celular apagou a tela). Toque em <b>🎬 Gerar o vídeo</b> de novo e deixe esta tela aberta até terminar.</div>'; }
+    else if (x.message != 'cancelado'){ console.error(x); toast('Não deu para gerar: ' + (x.message == 'sem-gravador' ? 'este navegador não grava vídeo. Use o Chrome.' : x.message), '#b91c1c', 5000); } st('', 0); }
+  GRAVANDO = false; b.disabled = false; setTimeout(function(){ $('gerando').classList.add('oculto'); }, 1500);
 };
 function nomeArq(fmt){ var ext = /mp4/.test(VID.tipo) ? 'mp4' : 'webm'; return 'oferta-' + (OF.loja || 'loja').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + (fmt == 'vertical' ? 'celular' : 'tv') + '.' + ext; }
 function mostraVideos(){
@@ -330,7 +408,7 @@ $('bTela').onclick = async function(){
     OF.anuncioId = await DB.anuncio(OF.anuncioId || null, an);
     $('tCod').innerHTML = caixaCodigo(id); $('tSt').textContent = '✅ Pronto! O anúncio já está ligado em todas as TVs do TelaOkê' + (l.pausado ? ' (mas o anunciante está pausado)' : '') + '.';
     await salvar(true); toast('📺 Mandado para o TelaOkê!');
-  } catch (x) { tProg(null); $('tSt').textContent = '❌ Não deu: ' + (x.code == 'permission-denied' ? 'sem permissão (confira se entrou com a conta do Alex).' : (x.message || x.code || x)); }
+  } catch (x) { tProg(null); $('tSt').textContent = '❌ Não deu: ' + (x.code == 'permission-denied' ? 'sem permissão (confira se entrou com uma conta de administrador).' : (x.message || x.code || x)); }
   b.disabled = false;
 };
 
@@ -348,4 +426,8 @@ $('bApagar').onclick = async function(){ if (!OF.id || !confirm('Apagar este com
   try { await DB.apaga(OF.id); toast('Apagado'); sujo = false; abreHome(); } catch (x) { toast('Não apagou: ' + (x.code || x.message), '#b91c1c'); } };
 window.copia = copia;
 window.addEventListener('beforeunload', function(e){ if (sujo){ e.preventDefault(); e.returnValue = ''; } });
-if ('serviceWorker' in navigator && !TESTE) navigator.serviceWorker.register('sw.js').catch(function(){});
+if ('serviceWorker' in navigator && !TESTE){
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+  /* versão nova chegou: recarrega sozinho (só se não tiver nada pela metade) */
+  var RECARREGOU = false; navigator.serviceWorker.addEventListener('controllerchange', function(){ if (RECARREGOU || sujo || GRAVANDO) return; RECARREGOU = true; location.reload(); });
+}

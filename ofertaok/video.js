@@ -141,10 +141,18 @@ async function gravaVideos(ac, P, audio, formatos, prog){
     return {f: f, c: c, g: g, rec: rec, pronto: pronto};
   });
   var trava = null; try { if (navigator.wakeLock) trava = await navigator.wakeLock.request('screen'); } catch (e) {}
+  var cancelado = '', acaba = null;
+  function limpa(){ grav.forEach(function(x){ try { if (x.rec.state != 'inactive') x.rec.stop(); } catch (e) {} });
+    try { src.stop(); } catch (e) {} try { trilha.stop(); } catch (e) {}
+    if (trava){ try { trava.release(); } catch (e) {} trava = null; } window.cancelaGravacao = null; }
+  /* app escondido / saiu da tela no meio do vídeo: para tudo e avisa */
+  window.cancelaGravacao = function(motivo){ cancelado = motivo || 'oculto'; limpa(); if (acaba) acaba(); };
   grav.forEach(function(x){ x.rec.start(1000); });
   var t0 = ac.currentTime + 0.15; src.start(t0);
   await new Promise(function(fim){
+    acaba = fim;
     function passo(){
+      if (cancelado) return;
       var t = ac.currentTime - t0;
       grav.forEach(function(x){ desenhaQuadro(x.g, x.f.w, x.f.h, Math.max(0, t), P); });
       if (prog) prog(Math.min(1, Math.max(0, t / P.total)));
@@ -153,9 +161,8 @@ async function gravaVideos(ac, P, audio, formatos, prog){
     }
     requestAnimationFrame(passo);
   });
-  grav.forEach(function(x){ try { x.rec.stop(); } catch (e) {} });
-  try { src.stop(); } catch (e) {}
-  if (trava) try { trava.release(); } catch (e) {}
+  if (cancelado) throw new Error(cancelado);
+  limpa();
   var out = {};
   for (var i = 0; i < grav.length; i++) out[grav[i].f.nome] = await grav[i].pronto;
   return {videos: out, tipo: tipo};

@@ -78,7 +78,7 @@ function montaRoteiro(of, semente){
     return sorteia([nome + ', por apenas ' + pr + u + '!', 'Olha só: ' + nome + ', só ' + pr + u + '!', 'E tem mais: ' + nome + ' por apenas ' + pr + u + '!', nome + '? Tá saindo por ' + pr + u + '!'], s + i);
   });
   var fecha = sorteia(['Corre pro ' + loja + '!', loja + ': o preço baixo tá aqui! Corre que acaba!', 'Não perde não! Corre pro ' + loja + '!'], s);
-  if (of.end) fecha += ' Fica na ' + of.end.replace(/^(na|no|em)\s+/i, '') + '.';
+  if (of.end) fecha += ' Fica na ' + of.end.replace(/^(na|no|em)\s+/i, '').replace(/\s+-\s+/g, ', ') + '.';
   if (of.zap) fecha += ' Chama no zap!';
   fecha += ' Ofertas válidas enquanto durarem os estoques.';
   return {abre: abre, itens: itens, fecha: fecha};
@@ -94,7 +94,7 @@ function wavDePcm(u8, rate){
   var o = new Uint8Array(44 + n); o.set(new Uint8Array(h), 0); o.set(u8, 44); return o.buffer;
 }
 function b64u8(b){ var s = atob(b), u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
-function espera(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+function espera(ms){ return new Promise(function(r, ruim){ var t = setTimeout(function(){ window.cancelaEspera = null; r(); }, ms); window.cancelaEspera = function(){ clearTimeout(t); window.cancelaEspera = null; ruim(new Error('oculto')); }; }); }
 /* devolve ArrayBuffer de um WAV */
 async function geraFala(texto, voz, key, avisa){
   if (!key) throw new Error('sem-chave');

@@ -4,7 +4,7 @@ function novaTela(w, h){ var c = document.createElement('canvas'); c.width = Mat
 function carregaImg(src, cors){ return new Promise(function(ok, ruim){ var i = new Image(); if (cors) i.crossOrigin = 'anonymous'; i.onload = function(){ ok(i); }; i.onerror = function(){ ruim(new Error('img')); }; i.src = src; }); }
 /* arquivo -> canvas (no máx. lado px) */
 async function arquivoParaTela(arq, lado){
-  lado = lado || 1280; var url = URL.createObjectURL(arq), im;
+  lado = lado || 1024; var url = URL.createObjectURL(arq), im;
   try { im = await carregaImg(url); } finally { setTimeout(function(){ URL.revokeObjectURL(url); }, 2000); }
   var k = Math.min(1, lado / Math.max(im.naturalWidth, im.naturalHeight)), c = novaTela(im.naturalWidth * k, im.naturalHeight * k);
   c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); return c;
@@ -23,41 +23,38 @@ function telaParaDado(c, maxLado, alvoBytes, alfa){
   return u;
 }
 
-/* ---------- tirar fundo (roda no próprio celular, grátis) ---------- */
-var BGR = null;
-function carregaRemovedor(){ if (!BGR) BGR = import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm').catch(function(e){ BGR = null; throw e; }); return BGR; }
-async function tiraFundo(c, prog){
-  var m = await carregaRemovedor(), b = await telaParaBlob(c, 'image/png');
-  var out = await m.removeBackground(b, {model: 'isnet_quint8', output: {format: 'image/png'}, progress: function(k, a, t){ if (prog && t) prog(/fetch/.test(k) ? 'Baixando o robô das fotos… ' + Math.round(a / t * 100) + '%' : 'Tirando o fundo…'); }});
-  var u = URL.createObjectURL(out), im = await carregaImg(u); URL.revokeObjectURL(u);
-  var r = novaTela(im.naturalWidth, im.naturalHeight); r.getContext('2d').drawImage(im, 0, 0); return r;
+/* ---------- robô das fotos (Web Worker: roda fora da tela principal, o celular não trava) ----------
+   Só roda quando o usuário toca em "Perfeita". Para sozinho se passar 50 s sem avançar, se sair da tela ou esconder o app. */
+var ROBO = {w: null, t: null, ruim: null, ok: null};
+function paraRobo(motivo){
+  if (ROBO.w){ try { ROBO.w.terminate(); } catch (e) {} ROBO.w = null; }
+  clearTimeout(ROBO.t); ROBO.t = null;
+  if (ROBO.ruim){ var r = ROBO.ruim; ROBO.ruim = null; ROBO.ok = null; r(new Error(motivo || 'parado')); }
 }
-/* caixa do que não é transparente */
-function caixaAlfa(c){
-  var g = c.getContext('2d'), d = g.getImageData(0, 0, c.width, c.height).data, x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
-  for (var y = 0; y < c.height; y++) for (var x = 0; x < c.width; x++) if (d[(y * c.width + x) * 4 + 3] > 24){ if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
-  if (x1 < 0) return null; return {x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1};
+function reduzTela(c, lado){ var k = Math.min(1, lado / Math.max(c.width, c.height)); if (k >= 1) return c; var t = novaTela(c.width * k, c.height * k); t.getContext('2d').drawImage(c, 0, 0, t.width, t.height); return t; }
+function chamaRobo(c, modo, prog, limite){
+  limite = limite || 50000;
+  return new Promise(function(ok, ruim){
+    if (ROBO.ruim) paraRobo('trocou');
+    if (!ROBO.w){ try { ROBO.w = new Worker('robo.js?v=2'); } catch (e) { ruim(e); return; } }
+    ROBO.ok = ok; ROBO.ruim = ruim;
+    function arma(){ clearTimeout(ROBO.t); ROBO.t = setTimeout(function(){ paraRobo('demorou'); }, limite); }
+    arma();
+    var w = ROBO.w, c2 = reduzTela(c, 1024), id = c2.getContext('2d').getImageData(0, 0, c2.width, c2.height);
+    w.onmessage = function(e){ var m = e.data;
+      if (m.tipo == 'prog'){ arma(); if (prog) prog(m.txt); return; }
+      clearTimeout(ROBO.t); ROBO.t = null; var bom = ROBO.ok, mau = ROBO.ruim; ROBO.ok = ROBO.ruim = null; if (!bom) return;
+      if (m.tipo == 'ok'){ var r = novaTela(m.img.width, m.img.height); r.getContext('2d').putImageData(m.img, 0, 0); window.OK_ROBO = {ms: m.ms, msRobo: m.msRobo, baixado: m.baixado}; bom(r); }
+      else mau(new Error(m.msg || 'erro'));
+    };
+    w.onerror = function(e){ if (e && e.preventDefault) e.preventDefault(); paraRobo('erro ' + (e && e.message || '')); };
+    w.postMessage({img: id, modo: modo}, [id.data.buffer]);
+  });
 }
-/* corta, ajusta luz/contraste/cor e dá nitidez */
-function melhoraRecorte(c){
-  var bx = caixaAlfa(c); if (!bx || bx.w * bx.h < c.width * c.height * 0.01) return null;
-  var pad = Math.round(Math.max(bx.w, bx.h) * 0.04), t = novaTela(bx.w + pad * 2, bx.h + pad * 2), g = t.getContext('2d');
-  g.drawImage(c, bx.x, bx.y, bx.w, bx.h, pad, pad, bx.w, bx.h);
-  var im = g.getImageData(0, 0, t.width, t.height), d = im.data, hist = new Uint32Array(256), n = 0;
-  for (var i = 0; i < d.length; i += 4) if (d[i + 3] > 128){ hist[Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2])]++; n++; }
-  var lo = 0, hi = 255, a = 0; while (lo < 255 && (a += hist[lo]) < n * 0.01) lo++; a = 0; while (hi > 0 && (a += hist[hi]) < n * 0.01) hi--;
-  if (hi - lo < 60){ lo = Math.max(0, lo - 30); hi = Math.min(255, hi + 30); }
-  var esc = 255 / Math.max(1, hi - lo), media = 0; for (var v = 0; v < 256; v++) media += v * hist[v]; media = n ? media / n : 128;
-  var gama = media < 100 ? 0.82 : (media > 175 ? 1.1 : 0.95);
-  var lut = new Uint8ClampedArray(256); for (v = 0; v < 256; v++) lut[v] = Math.round(255 * Math.pow(Math.min(1, Math.max(0, (v - lo) * esc / 255)), gama));
-  for (i = 0; i < d.length; i += 4){ var r = lut[d[i]], gg = lut[d[i + 1]], b = lut[d[i + 2]], l = 0.299 * r + 0.587 * gg + 0.114 * b, s = 1.18;
-    d[i] = l + (r - l) * s; d[i + 1] = l + (gg - l) * s; d[i + 2] = l + (b - l) * s; }
-  /* nitidez (unsharp 3x3) */
-  var w = t.width, h = t.height, o = new Uint8ClampedArray(d), amt = 0.55;
-  for (var y = 1; y < h - 1; y++) for (var x = 1; x < w - 1; x++){ var p = (y * w + x) * 4; if (d[p + 3] < 10) continue;
-    for (var ch = 0; ch < 3; ch++){ var viz = (d[p - 4 + ch] + d[p + 4 + ch] + d[p - w * 4 + ch] + d[p + w * 4 + ch]) / 4; o[p + ch] = d[p + ch] + (d[p + ch] - viz) * amt * 2; } }
-  im.data.set(o); g.putImageData(im, 0, 0); return t;
-}
+/* tira o fundo (robô) — devolve canvas com fundo transparente, já cortado e ajustado */
+function tiraFundo(c, prog){ return chamaRobo(c, 'perfeita', prog, 50000); }
+/* sem robô: só luz, contraste, nitidez e corte das bordas */
+function melhoraSimples(c){ return chamaRobo(c, 'melhora', null, 20000); }
 /* foto do produto num fundo limpo com sombra (para mostrar e para miniatura) */
 function compoeLimpo(src, tipo, lado){
   lado = lado || 600; var t = novaTela(lado, lado), g = t.getContext('2d');

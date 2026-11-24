@@ -1,0 +1,151 @@
+/* Oferta Okê — robô das fotos (roda num Web Worker, fora da tela principal, para o celular não travar)
+   Modelo: MediaPipe Interactive Segmenter "MagicTouch" (~6 MB) + motor wasm (~9,6 MB), baixados só quando o usuário toca em Perfeita.
+   Entrada {img: ImageData, modo: 'perfeita'|'melhora'}
+   Saída   {tipo:'prog', txt} | {tipo:'ok', img: ImageData, recorte: bool, ms} | {tipo:'erro', msg} */
+var VER = '0.10.22-rc.20250304', BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + VER;
+var MODELO = 'https://storage.googleapis.com/mediapipe-models/interactive_segmenter/magic_touch/float32/1/magic_touch.tflite';
+var WASM = BASE + '/wasm/vision_wasm_internal.wasm';
+var CACHE_ROBO = 'okrobo-v1';
+var SEG = null;
+function prog(t){ self.postMessage({tipo: 'prog', txt: t}); }
+
+async function baixa(urls, aoProgresso){
+  var cache = null; try { cache = await caches.open(CACHE_ROBO); } catch (e) {}
+  var saida = [], faltam = [];
+  for (var i = 0; i < urls.length; i++){ var m = cache ? await cache.match(urls[i]) : null; if (m) saida[i] = await m.arrayBuffer(); else faltam.push(i); }
+  if (!faltam.length) return saida;
+  var total = 0, feito = 0, resps = [];
+  for (var k = 0; k < faltam.length; k++){ var r = await fetch(urls[faltam[k]]); if (!r.ok) throw new Error('baixar ' + r.status); resps.push(r); total += +(r.headers.get('content-length') || 0); }
+  for (k = 0; k < resps.length; k++){
+    var rd = resps[k].body.getReader(), partes = [], n = 0;
+    for (;;){ var x = await rd.read(); if (x.done) break; partes.push(x.value); n += x.value.length; feito += x.value.length; if (total) aoProgresso(Math.min(99, Math.round(feito / total * 100))); }
+    var buf = new Uint8Array(n), o = 0; partes.forEach(function(p){ buf.set(p, o); o += p.length; });
+    saida[faltam[k]] = buf.buffer;
+    if (cache) try { await cache.put(urls[faltam[k]], new Response(buf.slice(0), {headers: {'Content-Type': 'application/octet-stream'}})); } catch (e) {}
+  }
+  self.BAIXADO = feito;
+  return saida;
+}
+
+async function carregaRobo(){
+  if (SEG) return SEG;
+  prog('Baixando o robô… 0%');
+  self.module = {exports: {}}; self.exports = self.module.exports;
+  /* o CDN manda o .cjs com tipo errado; lê como texto e carrega por blob */
+  var js = await (await fetch(BASE + '/vision_bundle.cjs')).text();
+  importScripts(URL.createObjectURL(new Blob([js], {type: 'text/javascript'})));
+  var V = self.module.exports;
+  var bufs = await baixa([MODELO, WASM], function(p){ prog('Baixando o robô… ' + p + '%'); });
+  var wasmUrl = URL.createObjectURL(new Blob([bufs[1]], {type: 'application/wasm'}));
+  prog('Ligando o robô…');
+  SEG = await V.InteractiveSegmenter.createFromOptions({wasmLoaderPath: BASE + '/wasm/vision_wasm_internal.js', wasmBinaryPath: wasmUrl},
+    {baseOptions: {modelAssetBuffer: new Uint8Array(bufs[0]), delegate: 'CPU'}, outputCategoryMask: false, outputConfidenceMasks: true});
+  return SEG;
+}
+
+function umaMascara(seg, img, x, y){
+  var out = null;
+  seg.segment(img, {keypoint: {x: x, y: y}}, function(r){
+    var m = r.confidenceMasks && r.confidenceMasks[0]; if (!m) return;
+    out = {w: m.width, h: m.height, d: new Float32Array(m.getAsFloat32Array())};
+  });
+  if (!out) throw new Error('sem máscara');
+  return out;
+}
+/* toca no centro; depois tenta um pouco acima e abaixo (tampa, rótulo) e junta só se for o mesmo produto */
+function mascara(seg, img){
+  var m = umaMascara(seg, img, 0.5, 0.5), n = m.w * m.h, base = 0, i;
+  for (i = 0; i < n; i++) if (m.d[i] >= 0.5) base++;
+  if (!base) return m;
+  [[0.5, 0.3], [0.5, 0.7]].forEach(function(pt){
+    var o = umaMascara(seg, img, pt[0], pt[1]), tam = 0, junto = 0;
+    for (var j = 0; j < n; j++) if (o.d[j] >= 0.5){ tam++; if (m.d[j] >= 0.5) junto++; }
+    /* aceita se a nova parte encosta bem no produto e não é um pedação do fundo */
+    if (tam && junto / tam > 0.5 && tam < base * 1.6) for (j = 0; j < n; j++) if (o.d[j] > m.d[j]) m.d[j] = o.d[j];
+  });
+  self.TAM_MASCARA = m.w + 'x' + m.h;
+  return m;
+}
+/* borda macia: média 5x5 do alfa */
+function suaviza(a, w, h){
+  var t = new Uint8ClampedArray(a.length), o = new Uint8ClampedArray(a.length), r = 2, x, y, k, s;
+  for (y = 0; y < h; y++){ s = 0; for (k = -r; k <= r; k++) s += a[y * w + Math.min(w - 1, Math.max(0, k))];
+    for (x = 0; x < w; x++){ t[y * w + x] = s / (2 * r + 1); s += a[y * w + Math.min(w - 1, x + r + 1)] - a[y * w + Math.max(0, x - r)]; } }
+  for (x = 0; x < w; x++){ s = 0; for (k = -r; k <= r; k++) s += t[Math.min(h - 1, Math.max(0, k)) * w + x];
+    for (y = 0; y < h; y++){ o[y * w + x] = s / (2 * r + 1); s += t[Math.min(h - 1, y + r + 1) * w + x] - t[Math.max(0, y - r) * w + x]; } }
+  return o;
+}
+/* fica só com a parte grande ligada perto do centro (tira pedaços soltos do fundo) e deixa a borda macia */
+function limpaMascara(m){
+  var w = m.w, h = m.h, d = m.d, vis = new Uint8Array(w * h), fila = new Int32Array(w * h), melhor = null, melhorN = 0;
+  for (var s = 0; s < w * h; s++){ if (vis[s] || d[s] < 0.5) continue;
+    var ini = 0, fim = 0, comp = [], cx = 0, cy = 0; fila[fim++] = s; vis[s] = 1;
+    while (ini < fim){ var p = fila[ini++]; comp.push(p); var x = p % w, y = (p / w) | 0; cx += x; cy += y;
+      if (x > 0 && !vis[p - 1] && d[p - 1] >= 0.5){ vis[p - 1] = 1; fila[fim++] = p - 1; }
+      if (x < w - 1 && !vis[p + 1] && d[p + 1] >= 0.5){ vis[p + 1] = 1; fila[fim++] = p + 1; }
+      if (y > 0 && !vis[p - w] && d[p - w] >= 0.5){ vis[p - w] = 1; fila[fim++] = p - w; }
+      if (y < h - 1 && !vis[p + w] && d[p + w] >= 0.5){ vis[p + w] = 1; fila[fim++] = p + w; } }
+    var dx = cx / comp.length / w - 0.5, dy = cy / comp.length / h - 0.5, nota = comp.length * (1 - Math.min(0.8, Math.sqrt(dx * dx + dy * dy)));
+    if (nota > melhorN){ melhorN = nota; melhor = comp; } }
+  if (!melhor) return null;
+  var manter = new Uint8Array(w * h); melhor.forEach(function(p){ manter[p] = 1; });
+  var a = new Uint8ClampedArray(w * h);
+  for (var i = 0; i < w * h; i++){ var v = d[i];
+    if (manter[i]) a[i] = v >= 0.75 ? 255 : Math.round(255 * (0.6 + (v - 0.5) * 1.6));
+    else if (v > 0.25){ var x2 = i % w, viz = (x2 > 0 && manter[i - 1]) || (x2 < w - 1 && manter[i + 1]) || (i >= w && manter[i - w]) || (i < w * (h - 1) && manter[i + w]); a[i] = viz ? Math.round(255 * Math.min(0.6, (v - 0.25) / 0.25 * 0.6)) : 0; }
+  }
+  return {w: w, h: h, a: a, n: melhor.length};
+}
+function redimensionaAlfa(m, W, H){ if (m.w == W && m.h == H) return m.a; var o = new Uint8ClampedArray(W * H);
+  for (var y = 0; y < H; y++){ var fy = Math.min(m.h - 1.001, y * m.h / H), y0 = fy | 0, ty = fy - y0;
+    for (var x = 0; x < W; x++){ var fx = Math.min(m.w - 1.001, x * m.w / W), x0 = fx | 0, tx = fx - x0, i = y0 * m.w + x0;
+      o[y * W + x] = (m.a[i] * (1 - tx) + m.a[i + 1] * tx) * (1 - ty) + (m.a[i + m.w] * (1 - tx) + m.a[i + m.w + 1] * tx) * ty; } }
+  return o; }
+
+/* ---------- ajustes (luz, contraste, cor, nitidez, corte), só com números ---------- */
+function corta(src, w, h, x0, y0, cw, ch, pad, transparente){
+  var W = cw + pad * 2, H = ch + pad * 2, o = new Uint8ClampedArray(W * H * 4);
+  if (!transparente) o.fill(255);
+  for (var y = 0; y < ch; y++){ var sy = y0 + y; if (sy < 0 || sy >= h) continue;
+    for (var x = 0; x < cw; x++){ var sx = x0 + x; if (sx < 0 || sx >= w) continue; var s = (sy * w + sx) * 4, t = ((y + pad) * W + x + pad) * 4;
+      o[t] = src[s]; o[t + 1] = src[s + 1]; o[t + 2] = src[s + 2]; o[t + 3] = src[s + 3]; } }
+  return {w: W, h: H, d: o};
+}
+function ajusta(im){
+  var d = im.d, w = im.w, h = im.h, hist = new Uint32Array(256), n = 0;
+  for (var i = 0; i < d.length; i += 4) if (d[i + 3] > 128){ hist[Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2])]++; n++; }
+  var lo = 0, hi = 255, a = 0; while (lo < 255 && (a += hist[lo]) < n * 0.01) lo++; a = 0; while (hi > 0 && (a += hist[hi]) < n * 0.01) hi--;
+  if (hi - lo < 60){ lo = Math.max(0, lo - 30); hi = Math.min(255, hi + 30); }
+  var esc = 255 / Math.max(1, hi - lo), media = 0; for (var v = 0; v < 256; v++) media += v * hist[v]; media = n ? media / n : 128;
+  var gama = media < 100 ? 0.82 : (media > 175 ? 1.1 : 0.95), lut = new Uint8ClampedArray(256);
+  for (v = 0; v < 256; v++) lut[v] = Math.round(255 * Math.pow(Math.min(1, Math.max(0, (v - lo) * esc / 255)), gama));
+  for (i = 0; i < d.length; i += 4){ var r = lut[d[i]], g = lut[d[i + 1]], b = lut[d[i + 2]], l = 0.299 * r + 0.587 * g + 0.114 * b, s = 1.15;
+    d[i] = l + (r - l) * s; d[i + 1] = l + (g - l) * s; d[i + 2] = l + (b - l) * s; }
+  var o = new Uint8ClampedArray(d);
+  for (var y = 1; y < h - 1; y++) for (var x = 1; x < w - 1; x++){ var p = (y * w + x) * 4; if (d[p + 3] < 10) continue;
+    for (var ch = 0; ch < 3; ch++){ var viz = (d[p - 4 + ch] + d[p + 4 + ch] + d[p - w * 4 + ch] + d[p + w * 4 + ch]) / 4; o[p + ch] = d[p + ch] + (d[p + ch] - viz) * 0.6; } }
+  im.d = o; return im;
+}
+function montaRecorte(img, alfa){
+  var w = img.width, h = img.height, d = img.data, x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (var y = 0; y < h; y++) for (var x = 0; x < w; x++){ var a = alfa[y * w + x]; d[(y * w + x) * 4 + 3] = a; if (a > 24){ if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } }
+  if (x1 < 0) return null; var cw = x1 - x0 + 1, ch = y1 - y0 + 1; if (cw * ch < w * h * 0.01) return null;
+  return ajusta(corta(d, w, h, x0, y0, cw, ch, Math.round(Math.max(cw, ch) * 0.04), true));
+}
+function melhoraFoto(img){
+  var w = img.width, h = img.height, cw = Math.round(w * 0.86), ch = Math.round(h * 0.86);
+  if (cw > ch * 1.25) cw = Math.round(ch * 1.25); if (ch > cw * 1.25) ch = Math.round(cw * 1.25);
+  return ajusta(corta(img.data, w, h, Math.round((w - cw) / 2), Math.round((h - ch) / 2), cw, ch, 0, false));
+}
+
+self.onmessage = async function(e){
+  var q = e.data, t0 = Date.now();
+  try {
+    if (q.modo == 'melhora'){ var r0 = melhoraFoto(q.img); self.postMessage({tipo: 'ok', recorte: false, img: new ImageData(r0.d, r0.w, r0.h), ms: Date.now() - t0}, [r0.d.buffer]); return; }
+    var seg = await carregaRobo(), t1 = Date.now();
+    prog('Tirando o fundo…');
+    var m = limpaMascara(mascara(seg, q.img)); if (!m || m.n < m.w * m.h * 0.01) throw new Error('não achou o produto');
+    var r = montaRecorte(q.img, suaviza(redimensionaAlfa(m, q.img.width, q.img.height), q.img.width, q.img.height)); if (!r) throw new Error('recorte vazio');
+    self.postMessage({tipo: 'ok', recorte: true, img: new ImageData(r.d, r.w, r.h), ms: Date.now() - t0, msRobo: Date.now() - t1, baixado: self.BAIXADO || 0, mascara: self.TAM_MASCARA}, [r.d.buffer]);
+  } catch (x) { self.postMessage({tipo: 'erro', msg: String(x && x.message || x)}); }
+};

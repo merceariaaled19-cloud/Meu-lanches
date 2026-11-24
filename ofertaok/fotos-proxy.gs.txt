@@ -1,4 +1,4 @@
-/* Oferta Okê — busca de fotos oficiais de produto (Google Apps Script, conta alexprotasgohan).
+/* Oferta Okê — busca de fotos oficiais de produto (Google Apps Script, conta do dono).
    Web app: Executar como "Eu", Acesso "Qualquer pessoa". Só consulta APIs públicas de catálogo VTEX de supermercados.
    GET ?ean=7893500020110  ou  ?q=arroz tio joao 1kg   ->  {ok:true, itens:[{nome, img, loja, ean}]} */
 var LOJAS = [
