@@ -405,17 +405,22 @@ function montarLista(d){
   var lista=document.getElementById('lista'); var html=''; var total=0;
   (d.empresas||[]).forEach(function(e, idx){
     if(idx>0 && idx%5===0) html+=blocoAnuncio();
-    var id=idEmpresa(e.empresa); total+=e.vagas.length;
+    var id=idEmpresa(e.empresa);
+    var reais=e.vagas.filter(function(v){return !v.email;}), mails=e.vagas.filter(function(v){return v.email;});
+    total+=reais.length;
     var busca=(e.empresa+' '+e.vagas.map(function(v){return v.cargo;}).join(' ')).toLowerCase();
-    var itens=e.vagas.map(function(v){
+    var itens=reais.map(function(v){
       return '<div class="vaga-item"><b>'+esc(v.cargo)+'</b><p>'+esc(v.local)+(v.tipo?' • '+esc(v.tipo):'')+'</p><div class="mini"><a class="cad" href="'+esc(v.link)+'" target="_blank">🚀 Ver vaga e se candidatar</a></div></div>';
+    }).join('')+mails.map(function(v){
+      return '<div class="vaga-item"><b>📧 Banco de currículos</b><p>'+esc(v.local)+' • A empresa recebe currículo pelo e-mail '+esc(v.email)+' (informado no site oficial). Não é uma vaga específica.</p><div class="mini"><a class="cad" href="'+esc(v.link)+'">📧 Enviar currículo por e-mail</a></div>'+(v.fonte?'<p style="font-size:12px"><a href="'+esc(v.fonte)+'" target="_blank" rel="noopener">Ver no site da empresa</a></p>':'')+'</div>';
     }).join('');
-    var n=e.vagas.length;
-    html+='<div class="card" data-id="'+id+'" data-cat="'+esc(e.cat)+'" data-nome="'+esc(busca)+'"><button type="button" class="fav-btn" onclick="toggleSalvar('+id+')">🤍</button><div class="top"><div class="logo">'+esc(e.emoji)+'</div><div><h3>'+esc(e.empresa)+'</h3><small style="font-weight:bold;color:#0a7a42">✅ '+n+(n==1?' vaga aberta':' vagas abertas')+' agora</small></div></div><details><summary>Ver as vagas ▼</summary>'+itens+'</details></div>';
+    var n=reais.length;
+    var selo=n?'✅ '+n+(n==1?' vaga aberta':' vagas abertas')+' agora'+(mails.length?' • 📧 aceita currículo por e-mail':''):'📧 Recebe currículo por e-mail';
+    html+='<div class="card" data-id="'+id+'" data-cat="'+esc(e.cat)+'" data-nome="'+esc(busca)+'"><button type="button" class="fav-btn" onclick="toggleSalvar('+id+')">🤍</button><div class="top"><div class="logo">'+esc(e.emoji)+'</div><div><h3>'+esc(e.empresa)+'</h3><small style="font-weight:bold;color:#0a7a42">'+selo+'</small></div></div><details><summary>'+(n?'Ver as vagas ▼':'Como mandar o currículo ▼')+'</summary>'+itens+'</details></div>';
   });
   if(!html) html='<p style="text-align:center;padding:30px 15px;color:#555">Nenhuma vaga aberta encontrada hoje em '+esc(LOCAL.cidade)+'. Toca em Escolher cidade pra ver as cidades vizinhas, ou volta amanhã que o app atualiza sozinho. 🙏</p>';
   lista.innerHTML=html;
-  var ne=(d.empresas||[]).length;
+  var ne=(d.empresas||[]).filter(function(e){return e.vagas.some(function(v){return !v.email;});}).length;
   document.getElementById('resumoVagas').innerText='🔥 '+total+' vagas abertas em '+ne+' empresas em '+LOCAL.cidade+' • atualizado '+(d.atualizado||'');
   atualizarCoracoes(); filtrar(); ativarAnuncios();
 }

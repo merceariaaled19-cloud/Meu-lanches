@@ -26,7 +26,7 @@ REGRAS = [
     ("supermercado", "🛒", r"assa[ií]|atacad|supermerc|nova era|carrefour|\bdb\b|mercado|hiper"),
     ("outros", "🏨", r"hospitality|hotel"),
     ("saude", "🏥", r"hospital|hapvida|sa[uú]de|farm[aá]c|pague menos|sabin|unimed|cl[ií]nica|davita|drogar|check ?up|laborat|\brd\b|ach[eé]"),
-    ("energia", "⚡", r"energ|enerwatt|fog[aá]s|g[aá]s|el[eé]tric|transformador|moura|eletro"),
+    ("energia", "⚡", r"energ|eneva|refinaria|petr[oó]leo|enerwatt|fog[aá]s|g[aá]s|el[eé]tric|transformador|moura|eletro"),
     ("loja", "🏪", r"loja|bemol|renner|torra|ramsons|riachuelo|havan|magazine|vivara|joias|farm\b|colch|cacau|petz|camicado|taco|bagaggio|dress|iplace|claro|vivo|[oó]tica|granado|centauro|espa[cç]olaser|bio mundo|varejo|extra natal|dufry|duty|brasileirissima|monte carlo|cantu"),
     ("industria", "🏭", r"valgroup|ind[uú]stria|honda|yamaha|caloi|daikin|coca|panasonic|mondial|philco|jabil|samsung|lg\b|lg electronics|whirlpool|procter|p&g|michelin|elgin|positivo|weg|denso|tigre|crown|ccl|hana|itam|tesa|seb|bmw|eldorado|sidi|fortlev|dexco|votorantim|3cora|ambev|ind[uú]stria|f[aá]brica|tecnologia|electronics"),
 ]
@@ -173,6 +173,48 @@ def pandape(t):
             out.append({"uf": "AM", "cidade": "Manaus", "cargo": limpa(tit.group(1)) if tit else "", "local": "Manaus", "tipo": "", "link": base + href})
     return (nome, out)
 
+# ---------- COMPLEO (ENEVA): lista HTML via /Pesquisar?estado=AM ----------
+COMPLEO = [("https://eneva.compleo.com.br", "ENEVA", "AM")]
+def compleo(t):
+    base, nome, uf = t
+    out, vistos = [], set()
+    for p in range(1, 21):
+        d = json.loads(get(base + "/Pesquisar?page=%d&pesquisa=&estado=%s" % (p, uf),
+                           headers={"X-Requested-With": "XMLHttpRequest", "Accept": "application/json"}))
+        cards = re.split(r'class="vaga-div', d.get("viewLista") or "")[1:]
+        novos = 0
+        for c in cards:
+            href = re.search(r'href="(/Visualizar/\d+)"', c)
+            tit = re.search(r'class="titulo-vaga">(.*?)</h5>', c, re.S)
+            loc = re.search(r'Local:\s*(.*?)</h5>', c, re.S)
+            if not (href and tit and loc) or href.group(1) in vistos:
+                continue
+            vistos.add(href.group(1)); novos += 1
+            cidade, _, est = limpa(loc.group(1)).rpartition("/")
+            if est.strip().upper() != uf or not cidade.strip():
+                continue
+            tp = re.search(r'Tipo de Contrata[^:]*:\s*(.*?)</h5>', c, re.S)
+            out.append({"uf": uf, "cidade": cidade.strip(), "cargo": limpa(tit.group(1)), "local": cidade.strip(),
+                        "tipo": limpa(tp.group(1)) if tp else "", "link": base + href.group(1)})
+        if not novos:
+            break
+    return (nome, out)
+
+# ---------- EMPRESAS QUE RECEBEM CURRICULO POR E-MAIL (lista curada) ----------
+# So entra e-mail publicado no SITE OFICIAL da propria empresa (nunca blog/agregador). "fonte" = pagina onde esta.
+# Aparece como "Banco de curriculos": nao afirma que existe vaga aberta.
+EMPRESAS_EMAIL = [
+    {"empresa": "REAM - Refinaria da Amazônia", "uf": "AM", "cidade": "Manaus",
+     "email": "recrutamento@ream.com.br", "fonte": "https://ream.com.br/fale-conosco/"},
+]
+def empresas_email():
+    out = []
+    for e in EMPRESAS_EMAIL:
+        out.append((e["empresa"], [{"uf": e["uf"], "cidade": e["cidade"], "cargo": "Enviar currículo por e-mail",
+                     "local": e["cidade"], "tipo": "Banco de currículos", "email": e["email"], "fonte": e["fonte"],
+                     "link": "mailto:" + e["email"] + "?subject=" + urllib.parse.quote("Currículo")}]))
+    return out
+
 def seguro(fn, x):
     try:
         return fn(x)
@@ -187,6 +229,11 @@ with ThreadPoolExecutor(16) as ex:
     resultados += list(ex.map(lambda i: seguro(gupy_empresa, i), subs.items()))
     resultados += list(ex.map(lambda t: seguro(workday, t), WORKDAY))
     resultados += list(ex.map(lambda t: seguro(pandape, t), PANDAPE))
+    resultados += list(ex.map(lambda t: seguro(compleo, t), COMPLEO))
+try:
+    resultados += empresas_email()
+except Exception:
+    pass
 
 def chave_cidade(c):
     import unicodedata
@@ -210,24 +257,29 @@ for r in resultados:
         if v["link"] in e["_l"]:
             continue
         e["_l"].add(v["link"])
-        e["vagas"].append({"cargo": v["cargo"], "local": v["local"], "tipo": v["tipo"], "link": v["link"]})
+        item = {"cargo": v["cargo"], "local": v["local"], "tipo": v["tipo"], "link": v["link"]}
+        if v.get("email"):
+            item.update({"email": v["email"], "fonte": v["fonte"]})
+        e["vagas"].append(item)
 
 agora = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-4)))
 quando = agora.strftime("%d/%m/%Y %H:%M")
 pasta = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(os.path.join(pasta, "vagas"), exist_ok=True)
+def nv(e):  # vagas reais (sem o item de e-mail)
+    return sum(1 for v in e["vagas"] if not v.get("email"))
 indice, total = {}, 0
 for uf in UFS:
     cidades = porUF.get(uf, {})
     saida = {}
     for k, c in cidades.items():
         lista = [{kk: vv for kk, vv in e.items() if kk != "_l"} for e in c["empresas"].values()]
-        lista.sort(key=lambda e: -len(e["vagas"]))
+        lista.sort(key=lambda e: -nv(e))
         saida[c["nome"]] = lista
-    n = sum(len(e["vagas"]) for l in saida.values() for e in l)
+    n = sum(nv(e) for l in saida.values() for e in l)
     total += n
     indice[uf] = {"estado": UFS[uf], "vagas": n,
-                  "cidades": sorted(([c, sum(len(e["vagas"]) for e in l)] for c, l in saida.items()), key=lambda x: -x[1])}
+                  "cidades": sorted(([c, sum(nv(e) for e in l)] for c, l in saida.items()), key=lambda x: -x[1])}
     json.dump({"atualizado": quando, "uf": uf, "cidades": saida},
               open(os.path.join(pasta, "vagas", uf + ".json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 json.dump({"atualizado": quando, "estados": indice},
@@ -235,4 +287,4 @@ json.dump({"atualizado": quando, "estados": indice},
 # arquivo antigo (so Manaus) pra quem ainda tem a versao anterior do app
 manaus = json.load(open(os.path.join(pasta, "vagas", "AM.json"), encoding="utf-8"))["cidades"].get("Manaus", [])
 json.dump({"atualizado": quando, "empresas": manaus}, open(os.path.join(pasta, "vagas.json"), "w", encoding="utf-8"), ensure_ascii=False)
-print(total, "vagas no Brasil;", sum(len(e["vagas"]) for e in manaus), "em Manaus")
+print(total, "vagas no Brasil;", sum(nv(e) for e in manaus), "em Manaus")
