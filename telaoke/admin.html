@@ -310,7 +310,7 @@ function apagaAnun(id){if(!confirm('Apagar este anúncio?'))return;db.collection
 function pintaTelas(){var L=$('lTelas');if(!TELAS.length){L.innerHTML='<div class="vazio"><i>📺</i>Nenhuma TV ainda.</div>';return}
  L.innerHTML=TELAS.map(function(t){var on=ligada(t),n=ANUN.filter(function(a){return a.ativo&&(!(a.telas||[]).length||(a.telas||[]).indexOf(t.id)>=0)}).length;
   return '<div class="it" onclick="editaTela(\''+t.id+'\')" style="cursor:pointer"><div class="nm">📺 '+esc(t.nome||'TV')+'</div><span class="tag '+(on?'tOk':'tCz')+'">'+(on?'🟢 Ligada agora':(t.visto?'Desligada • visto '+new Date(ms(t.visto)).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Esperando a TV abrir'))+'</span>'+
-  '<div class="mut">'+(t.local?'📍 '+esc(t.local)+' • ':'')+'Código '+t.id+' • ⏰ '+(t.sempre?'24h':esc(hhmm(t.horaIni,'06:00')+'–'+hhmm(t.horaFim,'22:00')))+' • '+n+' anúncio(s) ligado(s) para ela • ✏️ toque para editar</div></div>'}).join('')}
+  '<div class="mut">'+(t.local?'📍 '+esc(t.local)+' • ':'')+'Código '+t.id+' • ⏰ '+(t.sempre?'24h':esc(hhmm(t.horaIni,'06:00')+'–'+hhmm(t.horaFim,'22:00')))+' • '+n+' anúncio(s) ligado(s) para ela • ✏️ toque para editar</div><button class="w s x" style="margin-top:8px" onclick="event.stopPropagation();apagaTela(\''+t.id+'\')">🗑️ Excluir TV</button></div>'}).join('')}
 function novaTela(cod){abreM('<h2>📺 Adicionar TV</h2><div class="dica">1. Na TV, abra <b style="color:var(--am)">is.gd/telaoketv</b> (ou o app TelaOkê TV).<br>2. Aparece um código grande. Digite aqui:</div>'+
  '<label class="rt">Código que aparece na TV</label><input id="tCod" maxlength="7" autocapitalize="characters" autocomplete="off" placeholder="Ex.: K7M2QX" style="font-size:26px;letter-spacing:6px;text-transform:uppercase;text-align:center" value="'+esc(cod||'')+'">'+
  '<label class="rt">Nome da TV</label><input id="tNome" maxlength="40" placeholder="Ex.: TV da Taberna">'+
@@ -330,10 +330,10 @@ function editaTela(id){var t=acha(TELAS,id);if(!t)return;
  '<div id="bxHora" style="display:'+(t.sempre?'none':'flex')+';gap:10px;align-items:center"><div style="flex:1"><small class="mut">Liga às</small><input type="time" id="eIni" value="'+esc(hhmm(t.horaIni,'06:00'))+'"></div><div style="flex:1"><small class="mut">Desliga às</small><input type="time" id="eFim" value="'+esc(hhmm(t.horaFim,'22:00'))+'"></div></div>'+
  '<p class="mut">Fora do horário a TV fica com a tela preta e volta sozinha.</p>'+
  '<label class="rt">Frase passando no rodapé (opcional)</label><input id="eTxt" maxlength="120" placeholder="Ex.: Anuncie aqui! (92) 99501-5662" value="'+esc(t.texto||'')+'">'+
- '<button class="w" onclick="salvaTela(\''+id+'\')">💾 Salvar</button><button class="w s x" onclick="apagaTela(\''+id+'\')">🗑️ Remover esta TV</button><p class="e" id="eE"></p>')}
+ '<button class="w" onclick="salvaTela(\''+id+'\')">💾 Salvar</button><button class="w s x" onclick="apagaTela(\''+id+'\')">🗑️ Excluir esta TV</button><p class="e" id="eE"></p>')}
 function salvaTela(id){db.collection('to_telas').doc(id).update({nome:$('eNome').value.trim()||'TV',local:$('eLocal').value.trim(),todos:true,relogio:$('eRel').checked,som:$('eSom').checked,texto:$('eTxt').value.trim(),sempre:$('eSempre').checked,horaIni:hhmm($('eIni').value,'06:00'),horaFim:hhmm($('eFim').value,'22:00')})
  .then(function(){fechaM();toast('Salvo ✅ A TV atualiza sozinha.')}).catch(function(e){$('eE').textContent=erroTxt(e)})}
-function apagaTela(id){if(!confirm('Remover esta TV? Ela volta a mostrar o código.'))return;db.collection('to_telas').doc(id).delete().then(function(){fechaM();toast('TV removida')}).catch(function(e){alert(erroTxt(e))})}
+function apagaTela(id){var tt=acha(TELAS,id);if(!confirm('Excluir a TV '+((tt&&tt.nome)||'')+'? Ela sai da lista e volta a mostrar o código.'))return;db.collection('to_telas').doc(id).delete().then(function(){fechaM();toast('TV excluída')}).catch(function(e){alert(erroTxt(e))})}
 
 /* ---------- captar ---------- */
 function ofertaAtual(){return textoOferta(CFG.oferta,$('cNome').value,CFG.preco)}
