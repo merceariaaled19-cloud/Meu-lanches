@@ -27,6 +27,7 @@
 <script>
 (function(){
   var q = new URLSearchParams(location.search);
+  if (q.get('cad')) modoLogin = 'criar';
   if (q.get('l')) abreLoja(q.get('l')); else abreDono();
 })();
 </script>

@@ -27,6 +27,13 @@
   <button class="full" id="bR" style="margin-top:8px;background:#eee;color:#333">Criar ou trocar senha (manda e-mail)</button>
  </div>
  <div id="app" style="display:none">
+  <div class="card" id="cLink">
+   <h3>📣 Link para o cliente se cadastrar</h3>
+   <p class="sub">Mande para o dono da lanchonete. O link já abre na tela "Quero me cadastrar", com o vídeo, o app para baixar e 7 dias grátis.</p>
+   <input id="lkCad" readonly value="https://is.gd/meulanchecadastrar" onclick="this.select()">
+   <div class="row" style="margin-top:10px"><button onclick="copiar($('lkCad').value,'Link copiado!')">📋 Copiar link</button><button class="btz" onclick="copiar(textoConvite(),'Mensagem copiada!')">📋 Copiar mensagem</button></div>
+   <a class="bt full" style="margin-top:8px;background:#25d366" target="_blank" onclick="this.href='https://wa.me/?text='+encodeURIComponent(textoConvite())">💬 Mandar no WhatsApp</a>
+  </div>
   <div class="card" id="cPags">
    <h3>💰 Pagamentos a confirmar <span id="nPags" class="tag esp">0</span></h3>
    <p class="sub">Confira no seu banco se o Pix caiu. Se caiu, toque em "Caiu, liberar" e a loja da pessoa abre sozinha.</p>
@@ -59,6 +66,6 @@
 </div>
 <div id="modal"></div>
 <script src="comum.js?v=9"></script>
-<script src="admin.js?v=6"></script>
+<script src="admin.js?v=7"></script>
 </body>
 </html>

@@ -147,3 +147,11 @@ function aprovaPag(id){
   }, function(e){ toast('Erro: ' + e.code, 4000); });
 }
 function recusaPag(id){ var p = achaPag(id); if (p && confirm('Marcar que o Pix de "' + (p.loja || '') + '" NÃO caiu? O cliente vai ver o aviso para enviar de novo.')) db.collection('ml_pagamentos').doc(id).update({status: 'recusado'}).then(function(){ toast('Marcado como não confirmado'); }, function(e){ toast('Erro: ' + e.code); }); }
+
+function textoConvite(){
+  return 'Olá! Monte o cardápio digital da sua lanchonete e receba pedidos pelo WhatsApp com o Meu Lanche. 🍔\n\n' +
+    '👉 Faça seu cadastro (7 dias grátis): ' + $('lkCad').value + '\n\n' +
+    '▶️ Vídeo: como cadastrar e configurar: https://is.gd/meulanchecadastro\n' +
+    '▶️ Vídeo: como assinar e pagar: https://is.gd/meulanchepagamento\n' +
+    '📲 App para celular (Android): https://is.gd/meulancheapp';
+}
