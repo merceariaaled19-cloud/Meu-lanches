@@ -1,0 +1,21 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oferta Okê • Vídeo</title><meta name="theme-color" content="#b30016"><link rel="icon" href="icon-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>body{margin:0;font-family:Arial,sans-serif;background:#2a0008;color:#fff;text-align:center}main{max-width:720px;margin:0 auto;padding:16px}
+h1{color:#ffd400;font-family:Impact,'Arial Black',sans-serif;letter-spacing:1px;margin:8px 0}video{width:100%;max-height:78vh;background:#000;border-radius:12px}
+.bt{display:inline-block;margin:10px 6px;padding:14px 18px;border-radius:12px;background:#16a34a;color:#fff;font-weight:bold;font-size:17px;text-decoration:none;border:none}
+.cod{font-size:28px;letter-spacing:4px;color:#ffd400;font-weight:bold}.st{opacity:.85;margin:10px}</style></head><body><main>
+<h1>OFERTA OKÊ</h1><div class="st" id="st">Carregando o vídeo…</div><video id="v" controls playsinline style="display:none"></video>
+<div id="acoes" style="display:none"><a class="bt" id="baixar">⬇️ Baixar vídeo</a><button class="bt" id="comp" style="background:#2563eb">📤 Compartilhar</button><div class="st">Código do vídeo: <span class="cod" id="cod"></span></div></div>
+</main><script src="okv.js?v=1"></script><script>
+firebase.initializeApp({apiKey:'AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM',authDomain:'pdv-mercadinho-1c882.firebaseapp.com',projectId:'pdv-mercadinho-1c882'});
+var db=firebase.firestore(),id=(new URLSearchParams(location.search).get('id')||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+document.getElementById('cod').textContent=id;
+if(!id)document.getElementById('st').textContent='Link sem código de vídeo.';
+else OKV.baixa(db,id,function(p){document.getElementById('st').textContent='Carregando o vídeo… '+Math.round(p*100)+'%'}).then(function(r){
+ var u=URL.createObjectURL(r.blob),v=document.getElementById('v'),ext=/mp4/.test(r.blob.type)?'mp4':'webm';v.src=u;v.style.display='block';document.getElementById('st').textContent=r.meta.titulo||'';
+ var a=document.getElementById('baixar');a.href=u;a.download='oferta-'+id+'.'+ext;document.getElementById('acoes').style.display='block';
+ document.getElementById('comp').onclick=function(){var f=new File([r.blob],'oferta-'+id+'.'+ext,{type:r.blob.type});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(function(){});else navigator.share?navigator.share({url:location.href}).catch(function(){}):prompt('Copie o link:',location.href)};
+}).catch(function(e){document.getElementById('st').textContent=e.message=='nao-existe'?'Vídeo não encontrado (pode ter sido apagado).':'Não carregou: '+(e.code||e.message)});
+</script></body></html>

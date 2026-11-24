@@ -1,0 +1,39 @@
+/* Oferta Okê — busca de fotos oficiais de produto (Google Apps Script, conta alexprotasgohan).
+   Web app: Executar como "Eu", Acesso "Qualquer pessoa". Só consulta APIs públicas de catálogo VTEX de supermercados.
+   GET ?ean=7893500020110  ou  ?q=arroz tio joao 1kg   ->  {ok:true, itens:[{nome, img, loja, ean}]} */
+var LOJAS = [
+  ['Atacadão', 'https://www.atacadao.com.br/io/api/catalog_system/pub/products/search?'],
+  ['Nova Era', 'https://www.novaeranet.com.br/api/catalog_system/pub/products/search/?'],
+  ['Giassi', 'https://www.giassi.com.br/api/catalog_system/pub/products/search?'],
+  ['Savegnago', 'https://www.savegnago.com.br/api/catalog_system/pub/products/search?'],
+  ['Prezunic', 'https://www.prezunic.com.br/api/catalog_system/pub/products/search?'],
+  ['Covabra', 'https://www.covabra.com.br/api/catalog_system/pub/products/search?'],
+  ['Bistek', 'https://www.bistek.com.br/api/catalog_system/pub/products/search?']
+];
+function saida(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function doGet(e){
+  var p = (e && e.parameter) || {}, ean = String(p.ean || '').replace(/\D/g, '').slice(0, 14), q = String(p.q || '').replace(/[^\wÀ-ÿ\s\.,\-]/g, ' ').trim().slice(0, 80);
+  if (!ean && q.length < 2) return saida({ok: false, erro: 'faltou q ou ean'});
+  var chave = 'v1|' + ean + '|' + q.toLowerCase(), cache = CacheService.getScriptCache(), c = cache.get(chave);
+  if (c) return saida(JSON.parse(c));
+  var filtro = ean ? 'fq=alternateIds_Ean:' + ean : 'ft=' + encodeURIComponent(q);
+  var reqs = LOJAS.map(function(l){ return {url: l[1] + filtro + '&_from=0&_to=3', muteHttpExceptions: true, headers: {'User-Agent': 'Mozilla/5.0 (OfertaOke)'}}; });
+  var res = [];
+  try { res = UrlFetchApp.fetchAll(reqs); } catch (err) { return saida({ok: false, erro: String(err)}); }
+  var itens = [], vistos = {};
+  res.forEach(function(r, i){
+    try {
+      if (r.getResponseCode() >= 300) return;
+      var d = JSON.parse(r.getContentText());
+      (d || []).slice(0, 4).forEach(function(prod){
+        var it = prod.items && prod.items[0], img = it && it.images && it.images[0] && it.images[0].imageUrl;
+        if (!img) return; img = img.replace(/^http:/, 'https:');
+        var k = img.split('?')[0]; if (vistos[k]) return; vistos[k] = 1;
+        itens.push({nome: prod.productName || '', img: img, loja: LOJAS[i][0], ean: (it.ean || '')});
+      });
+    } catch (x) {}
+  });
+  var o = {ok: true, itens: itens};
+  try { cache.put(chave, JSON.stringify(o), 21600); } catch (x) {}
+  return saida(o);
+}

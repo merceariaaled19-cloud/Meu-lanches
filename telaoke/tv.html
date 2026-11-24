@@ -71,10 +71,10 @@ function escutaTela(){if(unT)unT();unT=db.collection('to_telas').doc(COD).onSnap
 /* TVs são do operador: lê todos os anúncios ligados (sem login) + tolerância de vencimento */
 function escutaAds(){
  unC=db.collection('to_config').doc('operacao').onSnapshot(function(d){var c=d.exists?d.data():{};CAR=c.carencia!=null&&c.carencia!==''?+c.carencia:3;salvaCache();montaLista()},function(){});
- unA=db.collection('to_anuncios').where('ativo','==',true).onSnapshot(function(s){ADS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});ADS_OK=true;$('rede').style.display=s.metadata.fromCache&&!navigator.onLine?'block':'none';salvaCache();montaLista()},function(e){console.log('anuncios',e)})}
+ unA=db.collection('to_anuncios').where('ativo','==',true).onSnapshot(function(s){ADS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});ADS_OK=true;$('rede').style.display=s.metadata.fromCache&&!navigator.onLine?'block':'none';salvaCache();okvPrefetch();montaLista()},function(e){console.log('anuncios',e)})}
 /* cache leve (além do cache do Firestore) */
 function salvaCache(){try{ls('to_tv_cache',JSON.stringify({tela:TELA,car:CAR,ads:ADS}))}catch(e){try{ls('to_tv_cache',JSON.stringify({tela:TELA,car:CAR,ads:ADS.filter(function(a){return a.tipo!='foto'})}))}catch(e2){}}}
-function usaCache(){try{var c=JSON.parse(ls('to_tv_cache')||'null');if(!c||!c.tela)return telaPar();TELA=c.tela;if(c.car!=null)CAR=+c.car;ADS=c.ads||[];ADS_OK=true;$('rede').style.display='block';rodape();montaLista()}catch(e){telaPar()}}
+function usaCache(){try{var c=JSON.parse(ls('to_tv_cache')||'null');if(!c||!c.tela)return telaPar();TELA=c.tela;if(c.car!=null)CAR=+c.car;ADS=c.ads||[];ADS_OK=true;okvPrefetch();$('rede').style.display='block';rodape();montaLista()}catch(e){telaPar()}}
 function hoje(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
 function addD(s,n){var d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
 /* regra do que passa nesta TV: anúncio ligado, marcado para esta TV (vazio = todas), loja não pausada e não vencida além da tolerância */
@@ -97,6 +97,17 @@ function noHorario(){if(!TELA||TELA.sempre===true)return true;var a=minDe(TELA.h
 function dorme(){if(ESTADO!='dorme')return;var d=new Date();$('dmH').textContent=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);$('dmV').textContent='Volta às '+(/^\d{1,2}:\d{2}$/.test(TELA&&TELA.horaIni||'')?TELA.horaIni:'06:00');var x=$('dorme').firstChild;x.style.marginTop=(Math.round(Math.random()*20)-10)+'vh'}
 setInterval(function(){if(ESTADO=='dorme')dorme()},30000);
 /* ---------- player ---------- */
+/* vídeos do Oferta Okê: guardados no Firestore em pedaços (ok_videos); baixa uma vez e guarda no aparelho */
+var OKVU={},OKVP={};function okvId(u){var m=String(u||'').match(/ofertaok\/v\.html\?(?:[^#]*&)?id=([A-Za-z0-9]{4,12})/);return m?m[1].toUpperCase():''}
+function okvChave(id){return location.origin+'/okv-cache/'+id}
+function okvBaixa(id){if(OKVU[id])return Promise.resolve(OKVU[id]);if(OKVP[id])return OKVP[id];
+ var c0=window.caches?caches.open('okv-1').then(function(c){return c.match(okvChave(id))}).then(function(r){return r?r.blob():null}).catch(function(){return null}):Promise.resolve(null);
+ OKVP[id]=c0.then(function(b){if(b&&b.size)return b;if(!db)throw new Error('sem-db');var ref=db.collection('ok_videos').doc(id);
+  return ref.get().then(function(d){if(!d.exists)throw new Error('nao-existe');var m=d.data(),n=m.partes||0,ps=[],i=0;
+   function prox(){if(i>=n)return Promise.resolve();return ref.collection('p').doc(String(i)).get().then(function(p){ps.push(p.data().d.toUint8Array());i++;return prox()})}
+   return prox().then(function(){var bl=new Blob(ps,{type:m.mime||'video/mp4'});if(window.caches)caches.open('okv-1').then(function(c){c.put(okvChave(id),new Response(bl,{headers:{'Content-Type':bl.type}}))}).catch(function(){});return bl})})})
+ .then(function(b){OKVU[id]=URL.createObjectURL(b);delete OKVP[id];return OKVU[id]},function(e){delete OKVP[id];throw e});return OKVP[id]}
+function okvPrefetch(){(ADS||[]).forEach(function(a){var id=a.tipo=='mp4'&&okvId(a.url);if(id&&!OKVU[id])okvBaixa(id).catch(function(){})})}
 function pararTudo(){clearTimeout(TIMER);clearTimeout(SEGURA);TIMER=SEGURA=null;[$('c0'),$('c1')].forEach(function(c){limpa(c);c.classList.remove('on')})}
 function limpa(c){var v=c.querySelector('video');if(v){try{v.pause();v.removeAttribute('src');v.load()}catch(e){}}if(c._yt){try{c._yt.destroy()}catch(e){}c._yt=null}c.innerHTML=''}
 function proximo(){clearTimeout(TIMER);clearTimeout(SEGURA);TIMER=SEGURA=null;if(!LISTA.length||ESTADO!='ply')return;
@@ -108,8 +119,9 @@ function proximo(){clearTimeout(TIMER);clearTimeout(SEGURA);TIMER=SEGURA=null;if
  if(a.tipo=='foto'){var bg=document.createElement('div');bg.className='bg';bg.style.backgroundImage='url('+a.img+')';var im=new Image();im.className='fg';
   im.onload=function(){nova.appendChild(bg);nova.appendChild(im);nova.classList.add('zoom');troca();TIMER=setTimeout(fim,Math.max(3,a.tempo||10)*1000)};im.onerror=erro;im.src=a.img;nova.classList.remove('zoom');return}
  nova.classList.remove('zoom');var som=!!TELA.som,lim=(a.tempo>0?a.tempo:900)*1000;
- if(a.tipo=='mp4'){var v=document.createElement('video');v.muted=!som;v.autoplay=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';v.src=a.url;
+ if(a.tipo=='mp4'){var v=document.createElement('video');v.muted=!som;v.autoplay=true;v.playsInline=true;v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';var okid=okvId(a.url);if(!okid)v.src=a.url;
   var comecou=false;v.onplaying=function(){if(comecou)return;comecou=true;troca();clearTimeout(SEGURA);SEGURA=null;TIMER=setTimeout(fim,lim)};v.onended=fim;v.onerror=erro;nova.appendChild(v);
+  if(okid){okvBaixa(okid).then(function(u){if(!nova.contains(v))return;v.src=u;var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;v.play().catch(erro)})}).catch(function(){if(nova.contains(v))erro()});SEGURA=setTimeout(function(){if(nova.contains(v))erro()},90000);return}
   var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;v.play().catch(erro)});SEGURA=setTimeout(erro,20000);return}
  if(a.tipo=='youtube'){if(!navigator.onLine){erro();return}
   carregaYT(function(){var d=document.createElement('div');d.className='yt';nova.appendChild(d);var comecou=false;

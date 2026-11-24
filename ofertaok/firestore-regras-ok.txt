@@ -1,0 +1,14 @@
+    // ===== Oferta Okê (ofertaok/) — comerciais de ofertas, 2026-11-24 =====
+    // ok_ofertas: só as 3 contas admin (mlAdmin). ok_videos: qualquer um assiste (a TV do TelaOkê e o link do vídeo), só admin grava.
+    match /ok_ofertas/{id} {
+      allow read, write: if mlAdmin();
+    }
+    match /ok_videos/{vid} {
+      allow read: if true;
+      allow write: if mlAdmin();
+      match /p/{n} {
+        allow read: if true;
+        allow write: if mlAdmin();
+      }
+    }
+    // ===== fim Oferta Okê =====

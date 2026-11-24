@@ -1,0 +1,127 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Oferta Okê • Comerciais de ofertas</title>
+<meta name="theme-color" content="#b30016"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Poppins,Arial,sans-serif;background:#2a0008;color:#fff;min-height:100vh;background:radial-gradient(circle at 50% -10%,#e0122b,#7a0010 45%,#2a0008)}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(40,0,8,.92);backdrop-filter:blur(6px);border-bottom:3px solid #ffd400}
+header img{width:40px;height:40px;border-radius:10px}header h1{font-family:Anton,Impact,sans-serif;font-weight:normal;font-size:26px;margin:0;letter-spacing:1px;flex:1}
+header h1 span{color:#ffd400}header button{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:10px;padding:6px 10px;font:inherit;font-size:13px}
+main{max-width:760px;margin:0 auto;padding:14px 12px 120px}
+.card{background:#fff;color:#1b0006;border-radius:20px;padding:16px;margin:14px 0;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.card h2{margin:0 0 10px;font-size:21px;display:flex;align-items:center;gap:8px}.num{display:inline-flex;width:34px;height:34px;border-radius:50%;background:#d0101f;color:#fff;align-items:center;justify-content:center;font-size:18px;flex:none}
+label.l{display:block;font-weight:700;margin:10px 0 4px;font-size:15px}small.d{color:#6b5a5d;font-weight:400}
+input[type=text],input[type=tel],input[type=number],input:not([type]),select,textarea{width:100%;font:inherit;font-size:18px;padding:12px;border:2px solid #e3d4d6;border-radius:12px;background:#fff;color:#1b0006}
+textarea{min-height:70px;resize:vertical;font-size:16px}input:focus,select:focus,textarea:focus{outline:none;border-color:#d0101f}
+.bt{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;border-radius:16px;padding:16px;font:inherit;font-size:19px;font-weight:900;cursor:pointer;margin:8px 0;color:#fff;background:#d0101f;box-shadow:0 5px 0 #7a0010}
+.bt:active{transform:translateY(3px);box-shadow:0 2px 0 #7a0010}.bt:disabled{opacity:.5}
+.bt.am{background:#ffd400;color:#1b0006;box-shadow:0 5px 0 #b38f00}.bt.vd{background:#16a34a;box-shadow:0 5px 0 #0d6b30}.bt.az{background:#2563eb;box-shadow:0 5px 0 #173f99}.bt.cz{background:#efe6e7;color:#1b0006;box-shadow:0 5px 0 #c9b9bb}
+.bt.peq{font-size:16px;padding:12px;border-radius:12px}
+.lin{display:flex;gap:8px}.lin>*{flex:1}
+.prod{border:2px solid #f0e2e4;border-radius:16px;padding:12px;margin:12px 0;background:#fffafa}
+.prod .tp{display:flex;justify-content:space-between;align-items:center;font-weight:900;color:#d0101f}
+.pfoto{width:100%;aspect-ratio:1;max-width:320px;margin:8px auto;border-radius:16px;background:#f3eced;display:flex;align-items:center;justify-content:center;font-size:70px;overflow:hidden}
+.pfoto img,.pfoto canvas{width:100%;height:100%;object-fit:contain}
+.esc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.op{border:3px solid transparent;border-radius:14px;background:#f3eced;padding:4px;text-align:center;font-size:12px;font-weight:700;position:relative;cursor:pointer}
+.op img{width:100%;aspect-ratio:1;object-fit:contain;border-radius:10px;background:#fff;display:block}.op.on{border-color:#16a34a;background:#dcfce7}
+.op.on:after{content:'✓';position:absolute;top:2px;right:6px;background:#16a34a;color:#fff;border-radius:50%;width:24px;height:24px;line-height:24px;font-size:15px}
+.op .sp{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6b5a5d;padding:6px}
+.st{font-size:14px;color:#6b5a5d;margin:6px 0;min-height:18px}
+.vozes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}@media(min-width:600px){.vozes{grid-template-columns:repeat(3,1fr)}}
+.voz{border:3px solid #f0e2e4;border-radius:16px;overflow:hidden;cursor:pointer;background:#fff}.voz img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.voz .tx{padding:8px}.voz b{display:block;font-size:17px}.voz small{color:#6b5a5d;display:block;line-height:1.25}.voz.on{border-color:#d0101f;box-shadow:0 0 0 3px #ffd400}
+.voz .ouvir{width:100%;border:none;background:#1b0006;color:#ffd400;font:inherit;font-weight:900;padding:10px;font-size:16px}
+.chk{display:flex;align-items:center;gap:10px;padding:12px;border:2px solid #f0e2e4;border-radius:12px;margin:6px 0;font-weight:700;font-size:17px}.chk input{width:26px;height:26px}
+.prog{height:16px;border-radius:9px;background:#f0e2e4;overflow:hidden;margin:8px 0}.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#d0101f,#ffd400);transition:width .3s}
+.vid{margin:12px 0;padding:10px;border:2px solid #f0e2e4;border-radius:14px}.vid video{width:100%;max-height:70vh;background:#000;border-radius:10px;display:block}
+.cod{background:#1b0006;color:#ffd400;border-radius:14px;padding:14px;text-align:center;margin:10px 0}.cod b{font-family:Anton,Impact,sans-serif;font-size:40px;letter-spacing:4px;display:block}.cod small{color:#fff;word-break:break-all;display:block;margin-top:6px}
+.item{display:flex;gap:12px;align-items:center;background:#fff;color:#1b0006;border-radius:16px;padding:10px;margin:10px 0;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.item img,.item .ph{width:70px;height:70px;border-radius:12px;object-fit:cover;background:#f3eced;flex:none;display:flex;align-items:center;justify-content:center;font-size:32px}.item b{font-size:18px;display:block}.item small{color:#6b5a5d}
+.tag{display:inline-block;background:#dcfce7;color:#166534;border-radius:8px;padding:1px 8px;font-size:12px;font-weight:700;margin-left:4px}
+.aviso{background:#fff7d6;border:2px solid #ffd400;color:#5b4500;border-radius:12px;padding:10px;font-size:14px;margin:8px 0}
+.erro{color:#b91c1c;font-weight:700;margin:6px 0}
+#entrar{text-align:center;padding-top:8vh}#entrar img{width:120px;border-radius:26px;box-shadow:0 10px 30px rgba(0,0,0,.4)}#entrar h2{font-family:Anton,Impact,sans-serif;font-weight:normal;font-size:44px;margin:14px 0 4px}#entrar p{opacity:.9}
+.vazio{text-align:center;opacity:.85;padding:20px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#16a34a;color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;z-index:99;display:none;max-width:90vw;text-align:center}
+.oculto{display:none!important}
+.roteiro label.l{color:#d0101f}
+</style></head><body>
+<header><img src="icon-192.png" alt=""><h1>OFERTA <span>OKÊ</span></h1><button id="bSair" class="oculto">Sair</button></header>
+<main>
+<section id="entrar" class="oculto">
+  <img src="icon-512.png" alt="Oferta Okê"><h2>OFERTA OKÊ</h2><p>Faça comerciais de ofertas com locutor, para WhatsApp, Instagram e TV.</p>
+  <button class="bt am" id="bGoogle" style="max-width:360px;margin:24px auto 8px">🔐 Entrar com Google</button>
+  <p class="st" id="msgLogin" style="color:#fff"></p>
+</section>
+
+<section id="home" class="oculto">
+  <button class="bt am" id="bNovo" style="font-size:22px;padding:20px">➕ Fazer comercial novo</button>
+  <h3 style="margin:18px 4px 4px">📂 Meus comerciais</h3>
+  <div id="lista"><p class="vazio">Carregando…</p></div>
+</section>
+
+<section id="editor" class="oculto">
+  <button class="bt cz peq" id="bVoltar" style="max-width:220px">⬅️ Meus comerciais</button>
+
+  <div class="card"><h2><span class="num">1</span> A loja</h2>
+    <label class="l">Nome da loja *</label><input id="eLoja" maxlength="50" placeholder="Ex.: Mercadinho do Alex">
+    <label class="l">WhatsApp <small class="d">(opcional)</small></label><input id="eZap" type="tel" maxlength="20" placeholder="(92) 99999-9999">
+    <label class="l">Endereço <small class="d">(opcional, aparece no fim)</small></label><input id="eEnd" maxlength="70" placeholder="Ex.: Rua Coronel Victor Coutinho, Cidade Nova">
+    <label class="l">Logo da loja <small class="d">(opcional)</small></label>
+    <div class="lin" style="align-items:center"><div id="logoPrev" class="pfoto" style="max-width:90px;font-size:34px;margin:0">🏪</div><button class="bt cz peq" id="bLogo">🖼️ Escolher logo</button><button class="bt cz peq oculto" id="bLogoTira">✖ Tirar</button></div>
+  </div>
+
+  <div class="card"><h2><span class="num">2</span> Os produtos</h2>
+    <p class="st" style="margin-top:0">Tire a foto do produto. O app deixa a foto bonita e também procura a foto oficial do produto. Você toca na que achar melhor.</p>
+    <div id="prods"></div>
+    <button class="bt am" id="bAddProd">➕ Adicionar produto</button>
+  </div>
+
+  <div class="card"><h2><span class="num">3</span> O locutor</h2>
+    <div class="vozes" id="vozes"></div>
+  </div>
+
+  <div class="card roteiro"><h2><span class="num">4</span> O que o locutor vai falar</h2>
+    <p class="st" style="margin-top:0">Já vem pronto, com o preço por extenso. Pode mudar as palavras se quiser.</p>
+    <div id="rot"></div>
+    <button class="bt cz peq" id="bRot">🔄 Fazer outro texto</button>
+  </div>
+
+  <div class="card"><h2><span class="num">5</span> O vídeo</h2>
+    <label class="chk"><input type="checkbox" id="fV" checked> 📱 Celular (em pé) — WhatsApp, Status, Reels</label>
+    <label class="chk"><input type="checkbox" id="fH" checked> 📺 TV (deitado) — TelaOkê, YouTube</label>
+    <button class="bt" id="bGerar" style="font-size:22px;padding:20px">🎬 Gerar o vídeo</button>
+    <div id="gerando" class="oculto"><div class="st" id="gSt">Preparando…</div><div class="prog"><i id="gPr"></i></div><div class="aviso">⚠️ Deixe esta tela aberta até terminar (não troque de app).</div></div>
+    <div id="vids"></div>
+  </div>
+
+  <div class="card" id="cTela"><h2><span class="num">6</span> Mandar para o TelaOkê</h2>
+    <p class="st" style="margin-top:0">Coloca o vídeo de TV (deitado) para passar nas suas TVs do TelaOkê.</p>
+    <label class="l">Anunciante</label><select id="tLoja"><option value="">Carregando…</option></select>
+    <button class="bt az" id="bTela">📺 Mandar para o TelaOkê</button>
+    <button class="bt cz peq" id="bLink">🔗 Só gerar o código do vídeo</button>
+    <div id="tSt" class="st"></div><div class="prog oculto" id="tProg"><i id="tPr"></i></div>
+    <div id="tCod"></div>
+  </div>
+
+  <button class="bt vd" id="bSalvar">💾 Salvar comercial</button>
+  <button class="bt cz peq" id="bApagar">🗑️ Apagar este comercial</button>
+</section>
+</main>
+<input type="file" id="fCam" accept="image/*" capture="environment" class="oculto">
+<input type="file" id="fGal" accept="image/*" class="oculto">
+<input type="file" id="fLogo" accept="image/*" class="oculto">
+<div id="toast"></div>
+<script src="okv.js?v=1"></script>
+<script src="voz.js?v=1"></script>
+<script src="foto.js?v=1"></script>
+<script src="video.js?v=1"></script>
+<script src="app.js?v=1"></script>
+</body></html>
