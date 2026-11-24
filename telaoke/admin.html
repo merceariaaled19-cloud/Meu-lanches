@@ -124,7 +124,7 @@ function reais(v){return 'R$ '+val(v)}
 function num(v){v=String(v==null?'':v).replace(/[^\d,.]/g,'');if(v.indexOf(',')>=0)v=v.replace(/\./g,'').replace(',','.');return +v}
 function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
 function zapBr(z){z=String(z||'').replace(/\D/g,'');if(z.indexOf('55')===0&&z.length>=12)z=z.slice(2);return z.length==11?'('+z.slice(0,2)+') '+z.slice(2,7)+'-'+z.slice(7):z.length==10?'('+z.slice(0,2)+') '+z.slice(2,6)+'-'+z.slice(6):z}
-function wa(n,t){return 'https://wa.me/'+(n?nz(n):'')+'?text='+encodeURIComponent(t)}
+function wa(n,t){var w='https://wa.me/'+(n?nz(n):'')+'?text='+encodeURIComponent(t);if(/Android/i.test(navigator.userAgent))return 'intent://send/?'+(n?'phone='+nz(n)+'&':'')+'text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url='+encodeURIComponent(w)+';end';return w}
 /* vencimento inicial: com 1º mês grátis vence 30 dias depois do início; sem, vence no próprio início */
 function vencInicial(inicio,gratis){return gratis?addD(inicio,30):inicio}
 /* situação do anunciante */
