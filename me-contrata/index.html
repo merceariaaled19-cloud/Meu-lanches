@@ -99,7 +99,7 @@ footer div.nav-ativo{color:#0a7a42;font-weight:bold}
     <h3 style="margin-bottom:10px">🏙️ Escolher cidade</h3>
     <label style="font-size:13px;font-weight:bold">Estado</label>
     <select id="selUF" onchange="preencherCidades()" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;margin:6px 0 12px;font-size:15px"></select>
-    <label style="font-size:13px;font-weight:bold">Cidade (com vagas hoje)</label>
+    <label style="font-size:13px;font-weight:bold">Cidade (vagas hoje ou currículo por e-mail)</label>
     <select id="selCidade" style="width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;margin:6px 0 14px;font-size:15px"></select>
     <button type="button" onclick="confirmarCidade()" style="width:100%;padding:13px;border:none;border-radius:12px;background:#0a7a42;color:white;font-weight:bold;font-size:15px">Ver vagas ✅</button>
     <button type="button" onclick="pegarLocal()" style="width:100%;padding:12px;border:1px solid #0a7a42;border-radius:12px;background:white;color:#0a7a42;font-weight:bold;margin-top:8px">📍 Usar minha localização</button>
@@ -350,7 +350,8 @@ function abrirCidade(){
 function preencherCidades(){
   var uf=document.getElementById('selUF').value, s=document.getElementById('selCidade'); s.innerHTML='';
   (INDICE.estados[uf].cidades||[]).forEach(function(c){
-    var o=document.createElement('option'); o.value=c[0]; o.text=c[0]+' ('+c[1]+' vagas)'; if(c[0]===LOCAL.cidade) o.selected=true; s.appendChild(o);
+    var m=c[2]||0, t=c[1]?c[1]+(c[1]==1?' vaga':' vagas')+(m?' + '+m+' por e-mail':''):(m?m+(m==1?' empresa recebe':' empresas recebem')+' currículo por e-mail':'0 vagas');
+    var o=document.createElement('option'); o.value=c[0]; o.text=c[0]+' ('+t+')'; if(c[0]===LOCAL.cidade) o.selected=true; s.appendChild(o);
   });
 }
 function confirmarCidade(){
@@ -421,7 +422,8 @@ function montarLista(d){
   if(!html) html='<p style="text-align:center;padding:30px 15px;color:#555">Nenhuma vaga aberta encontrada hoje em '+esc(LOCAL.cidade)+'. Toca em Escolher cidade pra ver as cidades vizinhas, ou volta amanhã que o app atualiza sozinho. 🙏</p>';
   lista.innerHTML=html;
   var ne=(d.empresas||[]).filter(function(e){return e.vagas.some(function(v){return !v.email;});}).length;
-  document.getElementById('resumoVagas').innerText='🔥 '+total+' vagas abertas em '+ne+' empresas em '+LOCAL.cidade+' • atualizado '+(d.atualizado||'');
+  var nm=(d.empresas||[]).filter(function(e){return e.vagas.some(function(v){return v.email;});}).length;
+  document.getElementById('resumoVagas').innerText=(total?'🔥 '+total+' vagas abertas em '+ne+' empresas em '+LOCAL.cidade+(nm?' • 📧 '+nm+' recebem currículo por e-mail':''):(nm?'📧 '+nm+(nm==1?' empresa recebe':' empresas recebem')+' currículo por e-mail em '+LOCAL.cidade:'🔥 0 vagas abertas em '+LOCAL.cidade))+' • atualizado '+(d.atualizado||'');
   atualizarCoracoes(); filtrar(); ativarAnuncios();
 }
 function listaDaCidade(d){

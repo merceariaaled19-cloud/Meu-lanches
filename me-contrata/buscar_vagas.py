@@ -1,7 +1,7 @@
 # Busca vagas reais abertas em Manaus nos portais oficiais das empresas
 # (Gupy, Workday, Pandape) e grava me-contrata/vagas.json.
 # Roda todo dia pelo GitHub Actions. Empresa sem vaga em Manaus nao entra.
-import json, re, html, datetime, os, urllib.request, urllib.parse
+import json, re, html, datetime, os, sys, urllib.request, urllib.parse
 from concurrent.futures import ThreadPoolExecutor
 
 UA = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36"
@@ -203,10 +203,22 @@ def compleo(t):
 # ---------- EMPRESAS QUE RECEBEM CURRICULO POR E-MAIL (lista curada) ----------
 # So entra e-mail publicado no SITE OFICIAL da propria empresa (nunca blog/agregador). "fonte" = pagina onde esta.
 # Aparece como "Banco de curriculos": nao afirma que existe vaga aberta.
+# Empresas que recebem currículo por e-mail: a lista fica em empresas_email.json (editável).
+# Regra: só entra e-mail publicado no SITE OFICIAL da empresa como canal de currículo/recrutamento,
+# com o link da página em "fonte" e a cidade da unidade/sede citada na página.
 EMPRESAS_EMAIL = [
     {"empresa": "REAM - Refinaria da Amazônia", "uf": "AM", "cidade": "Manaus",
      "email": "recrutamento@ream.com.br", "fonte": "https://ream.com.br/fale-conosco/"},
 ]
+try:
+    _arq = os.path.join(os.path.dirname(os.path.abspath(__file__)), "empresas_email.json")
+    _lst = json.load(open(_arq, encoding="utf-8"))
+    _lst = [e for e in _lst if all(e.get(k) for k in ("empresa", "uf", "cidade", "email", "fonte"))]
+    if _lst:
+        EMPRESAS_EMAIL = _lst
+except Exception as _e:
+    print("empresas_email.json não lido:", _e, flush=True)
+
 def empresas_email():
     out = []
     for e in EMPRESAS_EMAIL:
@@ -220,6 +232,82 @@ def seguro(fn, x):
         return fn(x)
     except Exception:
         return None
+
+def chave_cidade(c):
+    import unicodedata
+    return unicodedata.normalize("NFKD", c).encode("ascii", "ignore").decode().lower().strip()
+
+def nv(e):  # vagas reais (sem o item de e-mail)
+    return sum(1 for v in e["vagas"] if not v.get("email"))
+
+def ne(e):  # 1 se a empresa recebe currículo por e-mail
+    return 1 if any(v.get("email") for v in e["vagas"]) else 0
+
+def linha_cidade(c, l):  # [cidade, vagas, empresas que recebem currículo por e-mail]
+    return [c, sum(nv(e) for e in l), sum(ne(e) for e in l)]
+
+def ordem_cidades(lst):
+    return sorted(lst, key=lambda x: (-x[1], -x[2], chave_cidade(x[0])))
+
+def so_emails():
+    """Atualiza só as empresas de e-mail nos vagas/*.json atuais, sem rodar os robôs (que demoram)."""
+    pasta = os.path.dirname(os.path.abspath(__file__))
+    idx_arq = os.path.join(pasta, "vagas", "index.json")
+    indice = json.load(open(idx_arq, encoding="utf-8"))
+    novos = {}
+    for nome, vagas in empresas_email():
+        nome = nome_bonito(nome)
+        cat, emo = categoria(nome)
+        for v in vagas:
+            item = {"cargo": v["cargo"], "local": v["local"], "tipo": v["tipo"], "link": v["link"],
+                    "email": v["email"], "fonte": v["fonte"]}
+            novos.setdefault(v["uf"], []).append((v["cidade"], nome, cat, emo, item))
+    for uf in UFS:
+        arq = os.path.join(pasta, "vagas", uf + ".json")
+        try:
+            d = json.load(open(arq, encoding="utf-8"))
+        except Exception:
+            d = {"atualizado": indice.get("atualizado", ""), "uf": uf, "cidades": {}}
+        cidades = {}
+        for c, lista in d.get("cidades", {}).items():  # tira os itens de e-mail antigos
+            nova = []
+            for e in lista:
+                e["vagas"] = [v for v in e["vagas"] if not v.get("email")]
+                if e["vagas"]:
+                    nova.append(e)
+            if nova:
+                cidades[c] = nova
+        chaves = {chave_cidade(c): c for c in cidades}
+        for cidade, nome, cat, emo, item in novos.get(uf, []):
+            c = chaves.setdefault(chave_cidade(cidade), cidade)
+            lista = cidades.setdefault(c, [])
+            e = next((x for x in lista if x["empresa"] == nome), None)
+            if not e:
+                e = {"empresa": nome, "cat": cat, "emoji": emo, "vagas": []}
+                lista.append(e)
+            if not any(v.get("email") == item["email"] for v in e["vagas"]):
+                e["vagas"].append(item)
+        for c in cidades:
+            cidades[c].sort(key=lambda e: (-nv(e), -ne(e)))
+        d["cidades"] = cidades
+        json.dump(d, open(arq, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+        est = indice["estados"].setdefault(uf, {"estado": UFS[uf], "vagas": 0, "cidades": []})
+        est["vagas"] = sum(nv(e) for l in cidades.values() for e in l)
+        est["cidades"] = ordem_cidades(linha_cidade(c, l) for c, l in cidades.items())
+    json.dump(indice, open(idx_arq, "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
+    manaus = json.load(open(os.path.join(pasta, "vagas", "AM.json"), encoding="utf-8"))["cidades"].get("Manaus", [])
+    velho = os.path.join(pasta, "vagas.json")
+    try:
+        quando = json.load(open(velho, encoding="utf-8")).get("atualizado", indice.get("atualizado", ""))
+    except Exception:
+        quando = indice.get("atualizado", "")
+    json.dump({"atualizado": quando, "empresas": manaus}, open(velho, "w", encoding="utf-8"), ensure_ascii=False)
+    n = sum(len(v) for v in novos.values())
+    print(n, "empresas de e-mail em", len(novos), "estados")
+
+if "--so-emails" in sys.argv:
+    so_emails()
+    sys.exit(0)
 
 # ---------- junta tudo ----------
 resultados = []
@@ -235,9 +323,6 @@ try:
 except Exception:
     pass
 
-def chave_cidade(c):
-    import unicodedata
-    return unicodedata.normalize("NFKD", c).encode("ascii", "ignore").decode().lower().strip()
 
 # estrutura: uf -> chave cidade -> {"nome": cidade, "empresas": {nome: {...}}}
 porUF = {}
@@ -266,20 +351,18 @@ agora = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-4)))
 quando = agora.strftime("%d/%m/%Y %H:%M")
 pasta = os.path.dirname(os.path.abspath(__file__))
 os.makedirs(os.path.join(pasta, "vagas"), exist_ok=True)
-def nv(e):  # vagas reais (sem o item de e-mail)
-    return sum(1 for v in e["vagas"] if not v.get("email"))
 indice, total = {}, 0
 for uf in UFS:
     cidades = porUF.get(uf, {})
     saida = {}
     for k, c in cidades.items():
         lista = [{kk: vv for kk, vv in e.items() if kk != "_l"} for e in c["empresas"].values()]
-        lista.sort(key=lambda e: -nv(e))
+        lista.sort(key=lambda e: (-nv(e), -ne(e)))
         saida[c["nome"]] = lista
     n = sum(nv(e) for l in saida.values() for e in l)
     total += n
     indice[uf] = {"estado": UFS[uf], "vagas": n,
-                  "cidades": sorted(([c, sum(nv(e) for e in l)] for c, l in saida.items()), key=lambda x: -x[1])}
+                  "cidades": ordem_cidades(linha_cidade(c, l) for c, l in saida.items())}
     json.dump({"atualizado": quando, "uf": uf, "cidades": saida},
               open(os.path.join(pasta, "vagas", uf + ".json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"))
 json.dump({"atualizado": quando, "estados": indice},
