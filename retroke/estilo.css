@@ -1,0 +1,24 @@
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0b0620;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden}
+body{background:radial-gradient(ellipse at 20% -10%,#3b1a8a 0,transparent 55%),radial-gradient(ellipse at 110% 110%,#0e5c7a 0,transparent 50%),#0b0620}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.f{outline:none;transition:transform .15s,box-shadow .15s}
+.f:focus{transform:scale(1.07);box-shadow:0 0 0 .5vmin #ffd400,0 0 3vmin #ffd40099;z-index:2;position:relative}
+#toast{position:fixed;left:50%;bottom:4vmin;transform:translate(-50%,200%);background:#111c;border:2px solid #ffd400;padding:1.6vmin 3vmin;border-radius:2vmin;font-size:2.6vmin;transition:transform .3s;z-index:99;max-width:90vw;text-align:center}
+#toast.on{transform:translate(-50%,0)}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:20;padding:3vmin}
+.modal.on{display:flex}
+.caixa{background:linear-gradient(160deg,#241452,#120a2e);border:2px solid #6d4cff55;border-radius:3vmin;padding:3.5vmin;max-width:94vw;max-height:94vh;overflow:auto;box-shadow:0 2vmin 8vmin #000a}
+.caixa h2{font-size:4vmin;margin-bottom:2vmin}
+.bt{display:flex;align-items:center;gap:1.5vmin;width:100%;background:#ffffff14;border-radius:2vmin;padding:2vmin 2.6vmin;font-size:2.9vmin;margin:1vmin 0;text-align:left}
+.bt.big{background:linear-gradient(90deg,#ffb800,#ff6a00);color:#1a0a00;font-weight:800;font-size:3.6vmin;padding:2.6vmin 3vmin}
+.bt{flex-wrap:wrap}.bt small{display:block;width:100%;font-size:2.1vmin;opacity:.75;font-weight:400}
+.bt:focus{background:#ffd40033;transform:scale(1.02)}
+.bt.big:focus{background:linear-gradient(90deg,#ffe066,#ff8a33)}
+.dica{font-size:2.3vmin;opacity:.8;line-height:1.45}
+.capa{width:100%;aspect-ratio:3/4;border-radius:1.4vmin;overflow:hidden;position:relative;background:#222;display:flex;align-items:flex-end}
+.capa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.capa .sem{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.4vmin;font-weight:800;font-size:2.3vmin;line-height:1.2}
+.capa .sem i{font-style:normal;font-size:6vmin;margin-bottom:1vmin}
+.capa .pl{position:relative;width:100%;background:linear-gradient(transparent,#000d);font-size:2vmin;padding:3vmin 1vmin 1vmin;text-align:center;font-weight:700;text-shadow:0 1px 2px #000}
+@media (orientation:portrait){.caixa h2{font-size:5.5vmin}.bt{font-size:4.2vmin}.bt small{font-size:3.2vmin}.bt.big{font-size:5vmin}.dica{font-size:3.6vmin}#toast{font-size:4vmin}}

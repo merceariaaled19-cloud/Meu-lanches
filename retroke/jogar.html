@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Retrô Okê — jogando</title>
+<link rel="stylesheet" href="estilo.css">
+<style>
+html,body{background:#000}
+#game{position:fixed;inset:0;width:100vw;height:100vh}
+#carrega{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4vmin;text-align:center;padding:4vmin}
+#carrega .capa{width:24vmin}
+#carrega h1{font-size:4.6vmin}
+#carrega p{font-size:2.6vmin;opacity:.8}
+.roda{width:8vmin;height:8vmin;border-radius:50%;border:1vmin solid #ffffff22;border-top-color:#ffd400;animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+#menu .caixa{width:min(760px,94vw)}
+#menu .bt{padding:1.5vmin 2.4vmin;font-size:2.7vmin;margin:.7vmin 0}
+#mTit{display:flex;gap:2vmin;align-items:center;margin-bottom:1.4vmin}
+#mTit img{width:9vmin;border-radius:1vmin}
+#mTit b{font-size:3.4vmin}
+#mTit small{display:block;font-size:2vmin;opacity:.7}
+#bMenu{position:fixed;left:1.6vmin;top:1.6vmin;z-index:15;background:#0008;border:1px solid #fff4;border-radius:50%;width:11vmin;height:11vmin;font-size:5vmin;display:none}
+body.toque #bMenu{display:block}
+#avisoPad{position:fixed;right:2vmin;top:2vmin;z-index:15;background:#000a;border-radius:2vmin;padding:1vmin 2vmin;font-size:2.2vmin;display:none}
+body.tv .ejs_virtualGamepad_parent{display:none!important}
+.qrbox{display:flex;gap:3vmin;align-items:center}
+.qrbox img{width:32vmin;height:32vmin;background:#fff;border-radius:2vmin;padding:1vmin}
+.cod{font-size:6vmin;font-weight:900;letter-spacing:1vmin;color:#ffd400}
+@media (orientation:portrait){#menu .bt{font-size:4vmin}#mTit b{font-size:5vmin}.qrbox{flex-direction:column}.qrbox img{width:60vmin;height:60vmin}#carrega h1{font-size:6vmin}#carrega p{font-size:3.8vmin}#carrega .capa{width:40vmin}}
+</style></head>
+<body>
+<div id="game"></div>
+<div id="carrega"><div class="capa" id="cCapa"></div><h1 id="cNome">Carregando…</h1><div class="roda"></div><p id="cMsg">Preparando o emulador…</p>
+ <button class="f bt" id="cVolta" style="display:none;width:auto">⬅ Voltar</button></div>
+<button id="bMenu" aria-label="Menu">☰</button>
+<div id="avisoPad"></div>
+
+<div class="modal" id="menu"><div class="caixa">
+ <div id="mTit"><img id="mCapa" alt=""><div><b id="mNome"></b><small id="mInfo">Jogo pausado</small></div></div>
+ <button class="f bt big" id="m1">▶ Voltar ao jogo</button>
+ <button class="f bt" id="m2">💾 Salvar agora<small>Guarda o ponto exato onde você está</small></button>
+ <button class="f bt" id="m3">⏪ Voltar ao último salvamento</button>
+ <button class="f bt" id="m4">⏯️ Apertar START</button>
+ <button class="f bt" id="m5">⏯️ Apertar SELECT</button>
+ <button class="f bt" id="m6">📱 Celular como controle</button>
+ <button class="f bt" id="m7">🌐 Jogar com amigo pela internet<small>O amigo vê a tela no celular e controla o Jogador 2</small></button>
+ <button class="f bt" id="m8">🔀 Trocar botões A e B<small id="m8s"></small></button>
+ <button class="f bt" id="m9">🔁 Recomeçar o jogo do início</button>
+ <button class="f bt" id="m10">🚪 Salvar e sair</button>
+</div></div>
+
+<div class="modal" id="mCel"><div class="caixa" style="width:min(1000px,94vw)">
+ <h2 id="celTit"></h2>
+ <div class="qrbox"><img id="celQr" alt="QR"><div>
+  <p class="dica" id="celTxt"></p>
+  <p class="dica" style="margin-top:1.4vmin">Código:</p><div class="cod" id="celCod"></div>
+  <p class="dica" id="celLink" style="word-break:break-all;margin-top:1vmin"></p>
+  <p class="dica" id="celSt" style="margin-top:1.4vmin;color:#7cf"></p>
+ </div></div>
+ <button class="f bt" id="celFecha" style="margin-top:2vmin">⬅ Voltar ao menu</button>
+</div></div>
+
+<script>
+/* guarda os AudioContext do emulador para destravar o som no primeiro toque */
+(function(){ var A = window.AudioContext || window.webkitAudioContext; window.__acs = []; if (!A) return;
+  var N = function(o){ var c = new A(o); window.__acs.push(c); return c; }; N.prototype = A.prototype; window.AudioContext = N; window.webkitAudioContext = N; })();
+function destrava(){ (window.__acs || []).forEach(function(c){ try { if (c.state !== 'running') c.resume(); } catch (e) {} }); }
+</script>
+<script src="lib/peerjs.min.js"></script>
+<script src="comum.js"></script>
+<script>
+(function(){
+var $ = function(i){ return document.getElementById(i); }, B = RK.B, q = new URLSearchParams(location.search);
+var ultimaFoto = null, ID = q.get('id'), CONT = q.get('c') === '1', J = null, S = null, E = null, comecou = false, menuOn = false, salvando = false;
+document.body.className = RK.modo + ((('ontouchstart' in window) && RK.modo !== 'tv') ? ' toque' : '');
+var troca = localStorage.rkTrocaAB === '1';
+
+function sair(){ if (B) B.modoJogo(false); location.replace('index.html#' + (J ? J.sys : '')); }
+$('cVolta').onclick = sair;
+function erro(msg){ $('cMsg').innerHTML = msg; $('cVolta').style.display = ''; document.querySelector('.roda').style.display = 'none'; setTimeout(function(){ $('cVolta').focus(); }, 50); if (B) B.modoJogo(false); }
+
+/* ---------- carrega o jogo ---------- */
+RK.get('jogos', ID).then(function(j){
+  if (!j) { erro('Jogo não encontrado.'); return; }
+  J = j; S = RK.SYS[j.sys];
+  $('cNome').textContent = j.nome; $('mNome').textContent = j.nome; $('mInfo').textContent = S.nome + ' · jogo pausado';
+  if (j.capa) { $('cCapa').innerHTML = '<img src="' + RK.esc(j.capa) + '">'; $('mCapa').src = j.capa; } else { $('cCapa').innerHTML = '<div class="sem" style="background:linear-gradient(160deg,' + S.cor + ',' + S.cor2 + ')"><i>' + S.ico + '</i></div>'; $('mCapa').style.display = 'none'; }
+  var rom = j.origem === 'idb' ? RK.get('roms', j.id).then(function(b){ if (!b) throw new Error('arquivo sumiu'); return (b instanceof File && b.name === j.arq) ? b : new File([b], j.arq); }) : Promise.resolve(j.url);
+  var est = CONT ? RK.get('estados', j.id) : Promise.resolve(null);
+  return Promise.all([rom, est]).then(function(r){ inicia(r[0], r[1]); });
+}).catch(function(e){ erro('Não consegui abrir este jogo (' + RK.esc(e && e.message || e) + ').<br>Se ele estava no pen drive, confira se o pen drive está ligado.'); });
+
+function controlesPadrao(){
+  var g = {0:'BUTTON_1', 8:'BUTTON_2', 1:'BUTTON_3', 9:'BUTTON_4', 2:'SELECT', 3:'START', 4:'DPAD_UP', 5:'DPAD_DOWN', 6:'DPAD_LEFT', 7:'DPAD_RIGHT',
+    10:'LEFT_TOP_SHOULDER', 11:'RIGHT_TOP_SHOULDER', 12:'LEFT_BOTTOM_SHOULDER', 13:'RIGHT_BOTTOM_SHOULDER', 14:'LEFT_STICK', 15:'RIGHT_STICK',
+    16:'LEFT_STICK_X:+1', 17:'LEFT_STICK_X:-1', 18:'LEFT_STICK_Y:+1', 19:'LEFT_STICK_Y:-1', 20:'RIGHT_STICK_X:+1', 21:'RIGHT_STICK_X:-1', 22:'RIGHT_STICK_Y:+1', 23:'RIGHT_STICK_Y:-1'};
+  if (troca) { var t = g[0]; g[0] = g[8]; g[8] = t; t = g[1]; g[1] = g[9]; g[9] = t; }
+  var c = {}; for (var p = 0; p < 4; p++) { c[p] = {}; for (var k in g) c[p][k] = {value:'', value2:g[k]}; }
+  return c;
+}
+function inicia(rom, est){
+  if (B) B.modoJogo(true);
+  window.EJS_player = '#game';
+  window.EJS_core = S.core;
+  window.EJS_gameUrl = rom;
+  window.EJS_gameName = (J.arq || J.nome).replace(/\.[a-z0-9]+$/i, '');
+  window.EJS_pathtodata = 'ejs/';
+  window.EJS_language = 'pt-BR';
+  window.EJS_startOnLoaded = true;
+  window.EJS_color = '#ffb800';
+  window.EJS_CacheLimit = 0;
+  window.EJS_threads = false; window.EJS_semUpdate = true;
+  window.EJS_defaultControls = controlesPadrao();
+  window.EJS_Buttons = {netplay:false, exitEmulation:false, cacheManager:false, contextMenu:false};
+  window.EJS_defaultOptions = {'save-save-interval':'60'};
+  if (RK.modo === 'tv') window.EJS_VirtualGamepadSettings = undefined;
+  if (est && est.data) window.EJS_loadStateURL = est.data instanceof Uint8Array ? est.data : new Uint8Array(est.data);
+  $('cMsg').textContent = CONT && est ? 'Abrindo de onde você parou…' : 'Ligando o ' + S.nome + '…';
+  var s = document.createElement('script'); s.src = 'ejs/loader.js'; document.body.appendChild(s);
+  var espera = setInterval(function(){
+    if (!window.EJS_emulator || !window.EJS_emulator.on) return; clearInterval(espera); E = window.EJS_emulator;
+    E.on('start', comecouJogo);
+  }, 50);
+  setTimeout(function(){ if (!comecou) erro('O jogo está demorando para abrir. Pode ser um arquivo que não é deste console, ou a TV Box está sem memória.<br>Tente outro jogo ou reinicie o aparelho.'); }, 90000);
+}
+function comecouJogo(){
+  comecou = true; $('carrega').style.display = 'none'; RK.semNav = true;
+  J.ult = Date.now(); RK.put('jogos', J);
+  setTimeout(function(){ try { E.elements.parent.focus(); } catch (e) {} }, 100);
+  if (CONT) setTimeout(function(){ RK.toast('▶ Continuando de onde você parou'); }, 600);
+  else RK.toast('Aperte Voltar para abrir o menu (salvar e sair)', 4000);
+  setInterval(function(){ if (!menuOn) salva(true); }, 120000);
+}
+
+/* ---------- salvar ---------- */
+function foto(){
+  return new Promise(function(ok){
+    var t = setTimeout(function(){ ok(null); }, 1500);
+    try { E.gameManager.screenshot().then(function(png){ clearTimeout(t);
+      var u = URL.createObjectURL(new Blob([png], {type:'image/png'})), im = new Image();
+      im.onload = function(){ var w = 320, h = Math.round(im.height * w / im.width), c = document.createElement('canvas'); c.width = w; c.height = h; c.getContext('2d').drawImage(im, 0, 0, w, h); URL.revokeObjectURL(u); ok(c.toDataURL('image/jpeg', .75)); };
+      im.onerror = function(){ ok(null); }; im.src = u; }, function(){ ok(null); }); } catch (e) { clearTimeout(t); ok(null); }
+  });
+}
+function salva(quieto){
+  if (!comecou || !E || !E.gameManager || salvando) return Promise.resolve(false);
+  salvando = true;
+  var dados;
+  try { E.gameManager.saveSaveFiles(); } catch (e) {}
+  try { dados = E.gameManager.getState(); } catch (e) { salvando = false; if (!quieto) RK.toast('Este jogo não deixa salvar o ponto exato. O salvamento do próprio jogo continua valendo.'); return Promise.resolve(false); }
+  return (menuOn ? Promise.resolve(ultimaFoto) : foto()).then(function(img){ if (img) ultimaFoto = img; return RK.put('estados', {data:dados, img:img || ultimaFoto, t:Date.now()}, J.id); })
+    .then(function(){ salvando = false; if (!quieto) RK.toast('💾 Salvo! Na próxima vez é só tocar em Continuar.'); return true; },
+          function(){ salvando = false; if (!quieto) RK.toast('Não consegui salvar (memória cheia?)'); return false; });
+}
+window.autosave = function(){ salva(true); };
+function salvaESai(){ $('mInfo').textContent = 'Salvando…'; salva(true).then(function(){ setTimeout(sair, 500); }); }
+
+/* ---------- menu ---------- */
+function abreMenu(){
+  if (!comecou) { sair(); return; }
+  if (menuOn) return; menuOn = true; RK.semNav = false; soltaTudo();
+  foto().then(function(f){ if (f) ultimaFoto = f; if (menuOn) try { E.pause(); } catch (e) {} });
+  soltaTudo(); $('mInfo').textContent = S.nome + ' · jogo pausado';
+  $('m8s').textContent = troca ? 'Agora: trocados' : 'Agora: normal';
+  $('menu').classList.add('on'); setTimeout(function(){ $('m1').focus(); }, 50);
+  sala && sala.manda({t:'onde', onde:'menu'});
+}
+function fechaMenu(depois){
+  $('mCel').classList.remove('on'); $('menu').classList.remove('on'); menuOn = false; RK.semNav = true;
+  try { E.play(); } catch (e) {} destrava(); try { E.elements.parent.focus(); } catch (e) {}
+  sala && sala.manda({t:'onde', onde:'jogo'});
+  if (depois) setTimeout(depois, 120);
+}
+function aperta(i){ entra(0, i, 1); setTimeout(function(){ entra(0, i, 0); }, 180); }
+$('m1').onclick = function(){ fechaMenu(); };
+$('m2').onclick = function(){ salva(false); };
+$('m3').onclick = function(){ RK.get('estados', J.id).then(function(e){ if (!e) { RK.toast('Ainda não tem salvamento'); return; } try { E.gameManager.loadState(e.data); fechaMenu(); RK.toast('⏪ Voltou ao salvamento de ' + RK.quando(e.t)); } catch (x) { RK.toast('Não deu para carregar'); } }); };
+$('m4').onclick = function(){ fechaMenu(function(){ aperta(3); }); };
+$('m5').onclick = function(){ fechaMenu(function(){ aperta(2); }); };
+$('m6').onclick = function(){ mostraCel(false); };
+$('m7').onclick = function(){ mostraCel(true); };
+$('m8').onclick = function(){ troca = !troca; localStorage.rkTrocaAB = troca ? '1' : '0'; $('m8s').textContent = troca ? 'Agora: trocados' : 'Agora: normal';
+  try { E.controls = controlesPadrao(); E.defaultControllers = controlesPadrao(); } catch (e) {} RK.toast(troca ? 'Botões A e B trocados' : 'Botões A e B normais'); };
+$('m9').onclick = function(){ try { E.gameManager.restart(); } catch (e) {} fechaMenu(); };
+$('m10').onclick = salvaESai;
+$('celFecha').onclick = function(){ $('mCel').classList.remove('on'); $('m6').focus(); };
+$('bMenu').onclick = function(){ menuOn ? fechaMenu() : abreMenu(); };
+function raiz(){ return $('mCel').classList.contains('on') ? $('mCel') : $('menu').classList.contains('on') ? $('menu') : $('carrega'); }
+RK.nav(raiz);
+window.voltar = function(){
+  if ($('mCel').classList.contains('on')) { $('celFecha').click(); return 'ok'; }
+  if (menuOn) { fechaMenu(); return 'ok'; }
+  abreMenu(); return 'ok';
+};
+function mostraCel(amigo){
+  var link = RK.linkPad(amigo ? '&v=1' : '');
+  $('celTit').textContent = amigo ? '🌐 Jogar com amigo pela internet' : '📱 Celular como controle';
+  $('celTxt').innerHTML = amigo ? 'Mande este link para o amigo (WhatsApp).<br>Ele abre no celular, vê a tela do jogo e controla o <b>Jogador 2</b>.<br><small>Experimental: o som não vai para o amigo e pode ter atraso.</small>' : 'Aponte a câmera do celular para o quadrado.<br>Cada celular que entrar vira um jogador (1, 2, 3, 4).';
+  $('celQr').src = RK.qr(link); $('celCod').textContent = RK.codigo(); $('celLink').textContent = link.replace('https://', '');
+  $('celSt').textContent = sala && sala.conns.length ? '✅ ' + sala.conns.length + ' celular(es) ligado(s)' : 'Esperando…';
+  $('mCel').classList.add('on'); setTimeout(function(){ $('celFecha').focus(); }, 50);
+}
+
+/* ---------- entradas ---------- */
+var segurando = {};
+function entra(p, i, v){
+  if (!comecou || !E || !E.gameManager) return;
+  var k = p + ':' + i; if (v) segurando[k] = 1; else delete segurando[k];
+  try { E.gameManager.simulateInput(p, i, v); } catch (e) {}
+}
+function soltaTudo(){ for (var k in segurando) { var a = k.split(':'); try { E.gameManager.simulateInput(+a[0], +a[1], 0); } catch (e) {} } segurando = {}; }
+function ajusta(i){
+  if (troca) i = {0:8, 8:0, 1:9, 9:1}[i] !== undefined ? {0:8, 8:0, 1:9, 9:1}[i] : i;
+  if (J && J.sys === 'nes') i = {1:0, 9:8}[i] !== undefined ? {1:0, 9:8}[i] : i;
+  return i;
+}
+/* controle (Android): códigos de tecla -> RetroPad */
+var PAD = {96:0, 97:8, 99:1, 100:9, 102:10, 103:11, 104:12, 105:13, 106:14, 107:15, 108:3, 109:2, 19:4, 20:5, 21:6, 22:7, 98:13, 101:12, 23:0};
+/* controle remoto da TV: muda conforme o console */
+function remoto(code){
+  var s = J ? J.sys : 'nes', ok = S ? S.ok : 8, seg = S ? S.seg : 0;
+  var m = {19:4, 20:5, 21:6, 22:7, 82:3, 85:3, 126:3, 127:3, 7:2, 23:ok, 66:ok, 160:ok, 8:seg, 183:seg, 186:2, 166:10, 167:11};
+  var x = {snes:{9:1, 10:9, 11:10, 12:11, 184:1, 185:9}, psx:{9:1, 10:9, 11:10, 12:11, 13:12, 14:13, 184:1, 185:9}, n64:{9:12, 10:10, 11:11, 12:23, 13:22, 14:21, 15:20, 184:12, 185:10}, nes:{}}[s];
+  for (var k in x) m[k] = x[k];
+  return m[code];
+}
+var devs = [];
+function jogadorDe(dev){ var i = devs.indexOf(dev); if (i < 0) { devs.push(dev); i = devs.length - 1; } return Math.min(i, 3); }
+var combo = {};
+/* chamado pelo app Android com o código da tecla */
+window.andKey = function(code, down, dev, pad){
+  destrava();
+  if (code === 4 || code === 111 || (pad && code === 110)) { if (down) window.voltar(); return; }
+  if (menuOn || !comecou) {
+    if (!down) return;
+    var dir = {19:'u', 20:'d', 21:'l', 22:'r'}[code];
+    if (dir) RK.move(dir);
+    else if (code === 23 || code === 66 || code === 96 || code === 160) { if (document.activeElement) document.activeElement.click(); }
+    else if (code === 97) window.voltar();
+    return;
+  }
+  if (pad) {
+    var p = jogadorDe(dev);
+    combo[dev] = combo[dev] || {}; combo[dev][code] = down;
+    if (combo[dev][108] && combo[dev][109]) { combo[dev] = {}; soltaTudo(); abreMenu(); return; }
+    var i = PAD[code]; if (i === undefined) return;
+    entra(p, ajusta(i), down ? 1 : 0);
+  } else {
+    var r = remoto(code); if (r === undefined) return;
+    entra(0, r, down ? 1 : 0);
+  }
+};
+var eixoAnt = {};
+window.andAxis = function(dev, lx, ly, rx, ry, hx, hy, lt, rt){
+  if (menuOn || !comecou) { // navega no menu com a alavanca/cruz
+    var a = eixoAnt[dev] || {}, d = hy < -.5 || ly < -.6 ? 'u' : hy > .5 || ly > .6 ? 'd' : hx < -.5 || lx < -.6 ? 'l' : hx > .5 || lx > .6 ? 'r' : '';
+    if (d && d !== a.nav) RK.move(d); eixoAnt[dev] = {nav:d}; return;
+  }
+  var p = jogadorDe(dev), A = eixoAnt[dev] || {}, N = {};
+  var an = function(pos, neg, v){ entra(p, pos, v > .12 ? Math.round(v * 32767) : 0); entra(p, neg, v < -.12 ? Math.round(-v * 32767) : 0); };
+  an(16, 17, lx); an(18, 19, ly); an(20, 21, rx); an(22, 23, ry);
+  var digital = J.sys !== 'n64';
+  N.u = hy < -.5 || (digital && ly < -.6); N.d = hy > .5 || (digital && ly > .6); N.l = hx < -.5 || (digital && lx < -.6); N.r = hx > .5 || (digital && lx > .6);
+  N.lt = lt > .5; N.rt = rt > .5;
+  var mapa = {u:4, d:5, l:6, r:7, lt:12, rt:13};
+  for (var k in mapa) if (!!N[k] !== !!A[k]) entra(p, mapa[k], N[k] ? 1 : 0);
+  eixoAnt[dev] = N;
+};
+/* navegador (TV smart / PC): teclado e controle remoto da TV */
+var TEC = {38:19, 40:20, 37:21, 39:22, 13:23, 403:183, 404:184, 405:185, 406:186, 415:85, 179:85, 19:85, 33:166, 34:167, 93:82};
+for (var n = 0; n <= 9; n++) { TEC[48 + n] = 7 + n; TEC[96 + n] = 7 + n; }
+var PC = {90:0, 88:8, 65:1, 83:9, 81:10, 87:11, 69:12, 82:13, 16:2, 32:3, 80:3};
+if (!B) {
+  var tecla = function(ev, down){
+    if (!comecou) return;
+    var k = ev.keyCode;
+    if (k === 27 || k === 461 || k === 10009 || (k === 8 && down)) { ev.preventDefault(); if (down) window.voltar(); return; }
+    if (menuOn) return; // menu usa a navegação normal
+    ev.preventDefault(); ev.stopPropagation(); destrava();
+    if (ev.repeat) return;
+    if (PC[k] !== undefined) { entra(0, ajusta(PC[k]), down ? 1 : 0); return; }
+    var r = TEC[k] !== undefined ? remoto(TEC[k]) : undefined;
+    if (r !== undefined) entra(0, r, down ? 1 : 0);
+  };
+  window.addEventListener('keydown', function(e){ tecla(e, true); }, true);
+  window.addEventListener('keyup', function(e){ tecla(e, false); }, true);
+  /* SELECT+START ou botão central do controle abre o menu */
+  (function poll(){ var gs = navigator.getGamepads ? navigator.getGamepads() : [];
+    for (var i = 0; i < gs.length; i++) { var g = gs[i]; if (!g) continue; var b = function(n){ return g.buttons[n] && g.buttons[n].pressed; };
+      if (comecou && !menuOn && ((b(8) && b(9)) || b(16))) { abreMenu(); destrava(); } if (g.buttons.some(function(x){ return x.pressed; })) destrava(); }
+    requestAnimationFrame(poll); })();
+}
+document.addEventListener('click', destrava, true); document.addEventListener('touchstart', destrava, true);
+
+/* ---------- celulares: controle e amigo pela internet ---------- */
+var pads = {};
+var sala = RK.sala({
+  onConn: function(c){
+    var usados = {}; for (var k in pads) usados[pads[k]] = 1;
+    var j = c.metadata && c.metadata.j != null ? +c.metadata.j : -1;
+    if (j < 0) { j = (c.metadata && c.metadata.v) ? 1 : 0; while (usados[j] && j < 3) j++; }
+    pads[c.peer] = j;
+    c.send({t:'oi', onde:menuOn ? 'menu' : 'jogo', sys:J ? J.sys : 'nes', nome:J ? J.nome : '', j:j});
+    aviso('📱 Celular ligado: Jogador ' + (j + 1));
+    $('celSt').textContent = '✅ ' + sala.conns.length + ' celular(es) ligado(s)';
+  },
+  onClose: function(c){ var j = pads[c.peer]; delete pads[c.peer]; for (var i = 0; i < 30; i++) entra(j || 0, i, 0); aviso('📱 Um celular saiu'); },
+  onMsg: function(c, m){
+    if (!m) return;
+    if (m.t === 'menu') { window.voltar(); return; }
+    if (m.t === 'j') { pads[c.peer] = Math.max(0, Math.min(3, +m.j)); return; }
+    if (m.t === 'video') { video(c); return; }
+    if (m.t === 'i') {
+      destrava();
+      if (menuOn || !comecou) { if (!m.v) return; var dir = {4:'u', 5:'d', 6:'l', 7:'r'}[m.i];
+        if (dir) RK.move(dir); else if (m.i === 8 || m.i === 0 || m.i === 3) { if (document.activeElement) document.activeElement.click(); } else if (m.i === 1) window.voltar(); return; }
+      entra(pads[c.peer] || 0, m.i >= 16 ? m.i : ajusta(m.i), m.v);
+    }
+  }
+});
+function video(c){
+  try {
+    var cv = E && E.canvas; if (!cv || !cv.captureStream) { c.send({t:'semvideo'}); return; }
+    var st = cv.captureStream(30);
+    sala.peer.call(c.peer, st);
+    aviso('🌐 Amigo vendo a tela');
+  } catch (e) { c.send({t:'semvideo'}); }
+}
+var tAviso;
+function aviso(t){ var a = $('avisoPad'); a.textContent = t; a.style.display = 'block'; clearTimeout(tAviso); tAviso = setTimeout(function(){ a.style.display = 'none'; }, 3500); }
+window.addEventListener('pagehide', function(){ if (comecou) salva(true); });
+document.addEventListener('visibilitychange', function(){ if (document.hidden && comecou) salva(true); });
+})();
+</script>
+</body></html>

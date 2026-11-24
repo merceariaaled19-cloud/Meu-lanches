@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Retrô Okê — Controle no celular</title>
+<meta name="theme-color" content="#0b0620">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;touch-action:none}
+html,body{height:100%;background:#0b0620;color:#fff;font-family:system-ui,Roboto,Arial,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;border:0;background:none}
+#topo{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;gap:8px;padding:6px 10px;z-index:5;background:#0008;font-size:14px}
+#topo b{color:#ffd400}
+#st{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{background:#ffffff1a;border-radius:14px;padding:5px 10px;font-size:13px;font-weight:700}
+.chip.on{background:#ffd400;color:#000}
+#entrar{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;z-index:9;background:#0b0620}
+#entrar input{font-size:34px;text-align:center;width:200px;letter-spacing:8px;text-transform:uppercase;border-radius:12px;border:2px solid #ffd400;background:#000;color:#fff;padding:8px;touch-action:auto;-webkit-user-select:text;user-select:text}
+.grande{background:linear-gradient(90deg,#ffb800,#ff6a00);color:#1a0a00;font-weight:800;font-size:20px;padding:14px 26px;border-radius:14px;touch-action:manipulation}
+#pad{position:fixed;inset:0;display:none}
+#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;display:none}
+.zona{position:absolute;bottom:0;top:44px}
+#esq{left:0;width:38%}#dir{right:0;width:38%}#meio{left:38%;right:38%;bottom:0;top:44px;position:absolute}
+.b{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;background:#ffffff22;border:2px solid #ffffff44;color:#fff;text-shadow:0 1px 2px #000}
+.b.on{transform:scale(.92);filter:brightness(1.6);background:#ffd40066}
+.pil{border-radius:16px;font-size:13px;font-weight:800}
+#cruz{position:absolute;width:min(42vmin,190px);height:min(42vmin,190px);left:50%;top:58%;transform:translate(-50%,-50%)}
+#cruz div{position:absolute;background:#ffffff26;border:2px solid #ffffff44}
+#cruz .h{left:0;right:0;top:33%;bottom:33%;border-radius:10px}#cruz .v{top:0;bottom:0;left:33%;right:33%;border-radius:10px}
+#cruz span{position:absolute;font-size:18px;opacity:.7}
+#cruz.u .v,#cruz.d .v,#cruz.l .h,#cruz.r .h{background:#ffd40055}
+#stick{position:absolute;width:min(40vmin,180px);height:min(40vmin,180px);border-radius:50%;background:#ffffff14;border:2px solid #ffffff44;left:50%;top:60%;transform:translate(-50%,-50%);display:none}
+#stick i{position:absolute;width:42%;height:42%;border-radius:50%;background:#ffffff55;left:29%;top:29%}
+#enviar{position:fixed;inset:0;top:44px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;overflow:auto;touch-action:auto}
+#enviar *{touch-action:manipulation}
+#enviar select{font-size:18px;padding:8px;border-radius:10px;background:#000;color:#fff;border:2px solid #ffffff55}
+.barra{width:90%;height:14px;background:#ffffff22;border-radius:8px;overflow:hidden}.barra i{display:block;height:100%;width:0;background:#ffd400}
+#gira{position:fixed;inset:0;z-index:4;display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:#0b0620ee;font-size:20px;text-align:center;padding:20px;pointer-events:none}
+@media (orientation:portrait){ body.jogo #gira{display:flex} }
+p.d{opacity:.8;font-size:15px;line-height:1.4}
+</style></head>
+<body>
+<div id="entrar">
+ <div style="font-size:30px;font-weight:900;color:#ffd400">Retrô Okê</div>
+ <p class="d">Digite o código que aparece na TV</p>
+ <input id="cod" maxlength="4" autocomplete="off">
+ <button class="grande" id="ok">Conectar</button>
+ <p class="d" id="msg"></p>
+</div>
+<div id="topo"><span id="st">Conectando…</span>
+ <button class="chip" id="tC">🎮 Controle</button><button class="chip" id="tE">📤 Mandar jogo</button>
+ <button class="chip" data-j="0">J1</button><button class="chip" data-j="1">J2</button><button class="chip" data-j="2">J3</button><button class="chip" data-j="3">J4</button>
+</div>
+<div id="pad"><video id="vid" autoplay playsinline muted></video>
+ <div class="zona" id="esq"><div id="cruz"><div class="h"></div><div class="v"></div></div><div id="stick"><i></i></div></div>
+ <div id="meio"></div>
+ <div class="zona" id="dir"></div>
+</div>
+<div id="gira"><div style="font-size:60px">📱↻</div>Deite o celular (tela de lado)<br>para usar o controle</div>
+<div id="enviar">
+ <div style="font-size:22px;font-weight:800">📤 Mandar jogo para a TV</div>
+ <p class="d">Escolha o arquivo do jogo que está no seu celular.<br>Ele vai para a lista da TV. (A TV precisa estar na tela de jogos, não dentro de um jogo.)</p>
+ <label class="d">Console: <select id="eSys"><option value="">Descobrir sozinho</option><option value="nes">Nintendinho</option><option value="snes">Super Nintendo</option><option value="n64">Nintendo 64</option><option value="psx">PlayStation</option></select></label>
+ <button class="grande" id="eEsc">📁 Escolher jogo</button>
+ <input type="file" id="eArq" multiple style="display:none">
+ <p class="d" id="eSt"></p><div class="barra" id="eBar" style="display:none"><i></i></div>
+</div>
+<script src="lib/peerjs.min.js"></script>
+<script>
+(function(){
+var RKS = {nes:1, snes:1, n64:1, psx:1}, $ = function(i){ return document.getElementById(i); }, q = new URLSearchParams(location.search);
+var COD = (q.get('c') || localStorage.rkPadCod || '').toUpperCase(), VER = q.get('v') === '1', peer = null, conn = null, sys = 'nes', onde = 'menu', meuJ = null;
+if (q.get('s')) { $('eSys').value = q.get('s'); if (RKS[q.get('s')]) sys = q.get('s'); }
+function st(t){ $('st').innerHTML = t; }
+function vib(){ try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} }
+function manda(m){ if (conn && conn.open) try { conn.send(m); } catch (e) {} }
+
+/* ---------- conectar ---------- */
+$('ok').onclick = function(){ var c = $('cod').value.trim().toUpperCase(); if (c.length !== 4) { $('msg').textContent = 'O código tem 4 letras'; return; } COD = c; conecta(); };
+function conecta(){
+  localStorage.rkPadCod = COD; $('entrar').style.display = 'none'; $('topo').style.display = ''; st('Conectando na sala <b>' + COD + '</b>…');
+  if (!peer || peer.destroyed) { peer = new Peer(); peer.on('open', liga); peer.on('error', function(e){ if (e.type === 'peer-unavailable') { st('TV não encontrada (código <b>' + COD + '</b>). Tentando de novo…'); setTimeout(liga, 3000); } });
+    peer.on('call', function(call){ call.answer(); call.on('stream', function(s){ $('vid').srcObject = s; $('vid').style.display = 'block'; $('vid').play().catch(function(){}); }); });
+    peer.on('disconnected', function(){ try { peer.reconnect(); } catch (e) {} }); }
+  else liga();
+}
+function liga(){
+  if (conn && conn.open) return;
+  conn = peer.connect('retroke-' + COD, {reliable:true, metadata:{v:VER ? 1 : 0, j:meuJ}});
+  conn.on('open', function(){ st('✅ Ligado na TV <b>' + COD + '</b>'); });
+  conn.on('data', recebe);
+  conn.on('close', function(){ st('TV desligou ou mudou de tela. Reconectando…'); conn = null; setTimeout(liga, 2000); });
+  conn.on('error', function(){});
+}
+function recebe(m){
+  if (!m) return;
+  if (m.t === 'oi') { sys = m.sys || sys; onde = m.onde; if (m.j != null) { meuJ = m.j; marcaJ(); } monta(); mostra(aba);
+    st('✅ ' + (onde === 'menu' ? 'TV no menu — use o controle para escolher' : 'Jogando ' + (m.nome || '')) + (meuJ != null ? ' · <b>Jogador ' + (meuJ + 1) + '</b>' : ''));
+    if (VER && onde === 'jogo') manda({t:'video'}); }
+  if (m.t === 'onde') { onde = m.onde; }
+  if (m.t === 'fa') { conf = m.rec; }
+  if (m.t === 'fok') { $('eSt').textContent = '✅ A TV recebeu: ' + m.nome; $('eBar').style.display = 'none'; proximo(); }
+  if (m.t === 'ferro') { $('eSt').textContent = '❌ ' + m.msg; $('eBar').style.display = 'none'; proximo(); }
+  if (m.t === 'semvideo') st('A TV não conseguiu mandar a imagem.');
+}
+function marcaJ(){ [].forEach.call(document.querySelectorAll('[data-j]'), function(b){ b.classList.toggle('on', +b.dataset.j === meuJ); }); }
+[].forEach.call(document.querySelectorAll('[data-j]'), function(b){ b.onclick = function(){ meuJ = +b.dataset.j; marcaJ(); manda({t:'j', j:meuJ}); }; });
+
+/* ---------- abas ---------- */
+var aba = q.get('m') === 'enviar' ? 'e' : 'c';
+function mostra(a){ aba = a; $('pad').style.display = a === 'c' ? 'block' : 'none'; $('enviar').style.display = a === 'e' ? 'flex' : 'none';
+  $('tC').classList.toggle('on', a === 'c'); $('tE').classList.toggle('on', a === 'e'); document.body.classList.toggle('jogo', a === 'c'); }
+$('tC').onclick = function(){ mostra('c'); }; $('tE').onclick = function(){ mostra('e'); };
+
+/* ---------- montar o controle de cada console ---------- */
+var LAY = {
+  nes:{dir:[['B',0,22,62,'#c33'],['A',8,62,40,'#c33']], meio:[['SELECT',2],['START',3]], omb:[]},
+  snes:{dir:[['Y',1,10,50,'#2a8a3a'],['X',9,40,22,'#2b4fb3'],['B',0,40,72,'#c9a400'],['A',8,70,50,'#b3242b']], meio:[['SELECT',2],['START',3]], omb:[['L',10],['R',11]]},
+  n64:{dir:[['B',1,14,52,'#2a8a3a'],['A',0,40,72,'#2b4fb3'],['C▲',23,62,18,'#c9a400',1],['C◀',21,48,34,'#c9a400',1],['C▶',20,76,34,'#c9a400',1],['C▼',22,62,50,'#c9a400',1]], meio:[['START',3],['Z',12]], omb:[['L',10],['R',11]], stick:1},
+  psx:{dir:[['□',1,10,50,'#c06'],['△',9,40,22,'#2a8'],['✕',0,40,72,'#58f'],['○',8,70,50,'#e44']], meio:[['SELECT',2],['START',3]], omb:[['L1',10],['R1',11],['L2',12],['R2',13]]}
+};
+function botao(par, txt, i, x, y, cor, peq, w, h){
+  var b = document.createElement('div'); b.className = 'b' + (w ? ' pil' : ''); b.textContent = txt; b.dataset.i = i;
+  var t = peq ? 'min(13vmin,58px)' : 'min(20vmin,88px)';
+  b.style.width = w || t; b.style.height = h || t; b.style.left = x + '%'; b.style.top = y + '%'; if (cor) b.style.borderColor = cor, b.style.background = cor + '66';
+  par.appendChild(b); return b;
+}
+function monta(){
+  var L = LAY[sys] || LAY.nes, d = $('dir'), m = $('meio'), e = $('esq');
+  d.innerHTML = ''; m.innerHTML = ''; [].forEach.call(e.querySelectorAll('.b'), function(x){ x.remove(); });
+  L.dir.forEach(function(b){ botao(d, b[0], b[1], b[2], b[3], b[4], b[5]); });
+  L.meio.forEach(function(b, k){ botao(m, b[0], b[1], 10 + k * 46, 66, null, 0, '40%', '34px'); });
+  var mn = botao(m, '⏸ MENU', 'menu', 25, 82, '#888', 0, '50%', '34px');
+  L.omb.forEach(function(b, k){ var lado = k % 2 === 0 ? e : d, lin = k < 2 ? 0 : 1; botao(lado, b[0], b[1], lado === e ? 4 + lin * 30 : 66 - lin * 30, 3, null, 0, '28%', '36px'); });
+  $('stick').style.display = L.stick ? 'block' : 'none'; $('cruz').style.top = L.stick ? '30%' : '58%';
+  if (L.stick) { $('cruz').style.width = $('cruz').style.height = 'min(30vmin,130px)'; $('stick').style.top = '74%'; }
+  else { $('cruz').style.width = $('cruz').style.height = 'min(42vmin,190px)'; }
+}
+monta();
+
+/* ---------- toques (vários dedos ao mesmo tempo) ---------- */
+var dedos = {}, ativos = {};
+function pressiona(i, v){ if (i === 'menu') { if (v) manda({t:'menu'}); return; } manda({t:'i', i:+i, v:v}); }
+function recalcula(){
+  var novo = {}, cruz = $('cruz').getBoundingClientRect(), dirs = '';
+  for (var id in dedos) { var p = dedos[id];
+    if (p.stick) continue;
+    var el = document.elementFromPoint(p.x, p.y);
+    if (el && el.dataset && el.dataset.i !== undefined) novo[el.dataset.i] = el;
+    var cx = cruz.left + cruz.width / 2, cy = cruz.top + cruz.height / 2, dx = p.x - cx, dy = p.y - cy, r = cruz.width * 0.75;
+    if (Math.abs(dx) < r && Math.abs(dy) < r && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+      var a = Math.atan2(dy, dx) * 180 / Math.PI;
+      if (a > -157.5 && a < -22.5) { novo[4] = 1; dirs += 'u'; } if (a > 22.5 && a < 157.5) { novo[5] = 1; dirs += 'd'; }
+      if (a > 112.5 || a < -112.5) { novo[6] = 1; dirs += 'l'; } if (a > -67.5 && a < 67.5) { novo[7] = 1; dirs += 'r'; }
+    }
+  }
+  $('cruz').className = dirs.split('').join(' ');
+  for (var k in ativos) if (!novo[k]) { pressiona(k, 0); if (ativos[k].classList) ativos[k].classList.remove('on'); }
+  for (var n in novo) if (!ativos[n]) { pressiona(n, 1); vib(); if (novo[n].classList) novo[n].classList.add('on'); }
+  ativos = novo;
+}
+/* alavanca analógica (N64) */
+function alavanca(p, solta){
+  var s = $('stick').getBoundingClientRect(), cx = s.left + s.width / 2, cy = s.top + s.height / 2, R = s.width / 2;
+  var dx = solta ? 0 : Math.max(-1, Math.min(1, (p.x - cx) / R)), dy = solta ? 0 : Math.max(-1, Math.min(1, (p.y - cy) / R));
+  $('stick').firstChild.style.transform = 'translate(' + dx * R * .6 + 'px,' + dy * R * .6 + 'px)';
+  var v = function(x){ return Math.abs(x) < .15 ? 0 : Math.round(Math.abs(x) * 32767); };
+  manda({t:'i', i:16, v:dx > 0 ? v(dx) : 0}); manda({t:'i', i:17, v:dx < 0 ? v(dx) : 0});
+  manda({t:'i', i:18, v:dy > 0 ? v(dy) : 0}); manda({t:'i', i:19, v:dy < 0 ? v(dy) : 0});
+}
+function toque(ev, fim){
+  ev.preventDefault();
+  [].forEach.call(ev.changedTouches, function(t){
+    if (fim) { if (dedos[t.identifier] && dedos[t.identifier].stick) alavanca(null, true); delete dedos[t.identifier]; return; }
+    var d = dedos[t.identifier];
+    if (!d) { var s = $('stick').getBoundingClientRect(), naAlav = $('stick').style.display !== 'none' && t.clientX > s.left - 20 && t.clientX < s.right + 20 && t.clientY > s.top - 20 && t.clientY < s.bottom + 20;
+      d = dedos[t.identifier] = {stick:naAlav}; }
+    d.x = t.clientX; d.y = t.clientY; if (d.stick) alavanca(d);
+  });
+  recalcula();
+}
+var P = $('pad');
+P.addEventListener('touchstart', function(e){ toque(e); }, {passive:false});
+P.addEventListener('touchmove', function(e){ toque(e); }, {passive:false});
+P.addEventListener('touchend', function(e){ toque(e, true); }, {passive:false});
+P.addEventListener('touchcancel', function(e){ toque(e, true); }, {passive:false});
+/* mouse (para testar no computador) */
+P.addEventListener('mousedown', function(e){ dedos.m = {x:e.clientX, y:e.clientY}; recalcula(); });
+P.addEventListener('mouseup', function(){ delete dedos.m; recalcula(); });
+
+/* ---------- mandar jogo ---------- */
+var fila = [], conf = 0;
+$('eEsc').onclick = function(){ $('eArq').value = ''; $('eArq').click(); };
+$('eArq').onchange = function(){ fila = [].slice.call($('eArq').files || []); proximo(); };
+function proximo(){
+  var f = fila.shift(); if (!f) return;
+  if (!conn || !conn.open) { $('eSt').textContent = 'Não está ligado na TV ainda.'; return; }
+  if (onde === 'jogo') { $('eSt').textContent = 'Saia do jogo na TV (Voltar → Salvar e sair) e tente de novo.'; return; }
+  var PED = 16000, n = 0, pos = 0;
+  manda({t:'f0', nome:f.name, tam:f.size, sys:$('eSys').value || null});
+  $('eBar').style.display = 'block';
+  (function vai(){
+    if (!conn || !conn.open) { $('eSt').textContent = 'A conexão caiu. Escolha o jogo de novo.'; return; }
+    var dc = conn.dataChannel;
+    if (dc && dc.bufferedAmount > 1048576) { setTimeout(vai, 30); return; }
+    if (pos >= f.size) { manda({t:'f1'}); $('eSt').textContent = 'Terminando…'; return; }
+    f.slice(pos, pos + PED).arrayBuffer().then(function(b){
+      manda({t:'fp', n:n++, d:b}); pos += b.byteLength;
+      var pc = Math.round(pos * 100 / f.size); $('eBar').firstChild.style.width = pc + '%'; $('eSt').textContent = 'Mandando ' + f.name + '… ' + pc + '%';
+      setTimeout(vai, 0);
+    });
+  })();
+}
+
+mostra(aba);
+if (COD.length === 4) conecta(); else { $('entrar').style.display = 'flex'; $('topo').style.display = 'none'; }
+$('cod').value = COD;
+})();
+</script>
+</body></html>
