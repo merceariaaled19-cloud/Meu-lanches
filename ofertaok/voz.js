@@ -1,22 +1,35 @@
 /* Oferta Okê — locutores, texto, voz (Gemini TTS), efeitos e música (Web Audio) */
 var VOZES = [
-  {id: 'bene', nome: 'Seu Bené', estilo: 'Grave de rádio', desc: 'Voz grossa de locutor das antigas, com eco de rádio.', gem: 'Charon',
-   prompt: 'Fale como um locutor de rádio veterano, voz grave, firme e encorpada, com entusiasmo de oferta de supermercado',
-   fx: {rate: 0.97, hp: 70, low: 5, mid: -1, pres: 2, high: -1, drive: 0.05, eco: 0.2, ecoT: 0.12, eco2: 0.25, room: 0.12}},
-  {id: 'ze', nome: 'Zé do Feirão', estilo: 'Animado de feirão', desc: 'Empolgado, rápido, aquele grito de oferta!', gem: 'Puck',
-   prompt: 'Fale como um locutor de feirão de supermercado, muito animado, rápido e empolgado, gritando a oferta com alegria',
-   fx: {rate: 1.03, hp: 110, low: 2, mid: 1, pres: 5, high: 2, drive: 0.28, eco: 0.08, ecoT: 0.08, eco2: 0.15, room: 0.05}},
-  {id: 'leo', nome: 'Léo Turbo', estilo: 'Jovem e moderno', desc: 'Descontraído, estilo propaganda de internet.', gem: 'Fenrir',
-   prompt: 'Fale como um locutor jovem e moderno, descontraído e animado, estilo propaganda de internet',
-   fx: {rate: 1.04, hp: 100, low: 1, mid: 0, pres: 3, high: 4, drive: 0.1, eco: 0, ecoT: 0.05, eco2: 0, room: 0.03}},
-  {id: 'cida', nome: 'Dona Cida', estilo: 'Mulher simpática', desc: 'Calorosa e sorridente, jeito de mercado do bairro.', gem: 'Sulafat',
-   prompt: 'Fale como uma locutora simpática e acolhedora, sorridente, tom caloroso de propaganda de mercado do bairro',
-   fx: {rate: 1.0, hp: 120, low: 2, mid: 1, pres: 2, high: 1.5, drive: 0, eco: 0.06, ecoT: 0.06, eco2: 0.1, room: 0.1}},
-  {id: 'kelly', nome: 'Kelly Show', estilo: 'Mulher animada', desc: 'Cheia de energia, clima de feirão de ofertas!', gem: 'Laomedeia',
-   prompt: 'Fale como uma locutora muito animada e alegre, cheia de energia, estilo feirão de ofertas',
-   fx: {rate: 1.04, hp: 130, low: 0, mid: 1, pres: 4, high: 3, drive: 0.15, eco: 0.06, ecoT: 0.07, eco2: 0.12, room: 0.05}}
+  {id: 'bene', nome: 'Seu Bené', estilo: 'Grave de rádio', desc: 'Vozeirão de locutor das antigas, animado, com eco de rádio.', gem: 'Algenib',
+   perfil: 'Seu Bené, a deep-voiced veteran MALE Brazilian radio announcer, booming, proud and very enthusiastic',
+   fx: {rate: 1.03, hp: 70, low: 5, mid: -1, pres: 3, high: 0, drive: 0.08, eco: 0.18, ecoT: 0.11, eco2: 0.22, room: 0.1}},
+  {id: 'ze', nome: 'Zé do Feirão', estilo: 'Animado de feirão', desc: 'Explosivo, rápido, aquele grito de oferta!', gem: 'Puck',
+   perfil: 'Zé do Feirão, a MALE Brazilian street-market (feirão) announcer with explosive energy, shouting the deals with joy',
+   fx: {rate: 1.08, hp: 110, low: 2, mid: 1, pres: 5, high: 2, drive: 0.28, eco: 0.08, ecoT: 0.08, eco2: 0.15, room: 0.05}},
+  {id: 'leo', nome: 'Léo Turbo', estilo: 'Jovem e acelerado', desc: 'Empolgado, ritmo turbo de propaganda de internet.', gem: 'Fenrir',
+   perfil: 'Léo Turbo, a young hyped MALE Brazilian announcer, fast and punchy like a viral internet ad',
+   fx: {rate: 1.08, hp: 100, low: 1, mid: 0, pres: 4, high: 4, drive: 0.12, eco: 0, ecoT: 0.05, eco2: 0, room: 0.03}},
+  {id: 'toninho', nome: 'Toninho do Som', estilo: 'Carro de som', desc: 'O clássico do carro de som: alto, rápido, "olha a promoção!"', gem: 'Sadachbia',
+   perfil: 'Toninho do Som, a loud festive MALE Brazilian sound-truck (carro de som) announcer, fast and full of energy',
+   fx: {rate: 1.07, hp: 160, low: 0, mid: 3, pres: 6, high: 1, drive: 0.22, eco: 0.14, ecoT: 0.09, eco2: 0.2, room: 0.06}},
+  {id: 'kelly', nome: 'Kelly Show', estilo: 'Mulher animada', desc: 'A locutora: cheia de energia, clima de feirão!', gem: 'Laomedeia',
+   perfil: 'Kelly Show, a bubbly FEMALE Brazilian supermarket announcer with explosive energy and a big smile',
+   fx: {rate: 1.06, hp: 130, low: 0, mid: 1, pres: 4, high: 3, drive: 0.15, eco: 0.06, ecoT: 0.07, eco2: 0.12, room: 0.05}}
 ];
-function vozPorId(id){ for (var i = 0; i < VOZES.length; i++) if (VOZES[i].id == id) return VOZES[i]; return VOZES[0]; }
+/* comerciais antigos com 'Dona Cida' (saiu na v5) usam a locutora que ficou */
+var VOZ_ANTIGA = {cida: 'kelly'};
+/* instruções de estilo no formato que o Gemini TTS NÃO lê em voz alta (na v4 ele lia "Fale como..." e atrasava tudo) */
+function promptTTS(voz, texto){
+  return '# AUDIO PROFILE: ' + voz.perfil + '\n' +
+    "## THE SCENE: A sound truck (carro de som) driving through a busy Brazilian neighborhood, announcing the supermarket's big sale on a loudspeaker.\n" +
+    "### DIRECTOR'S NOTES\n" +
+    'Style: Extremely excited Brazilian supermarket sale announcer ("olha a promoção!"), very high energy, a big smile you can hear, shouting the deals with joy, punchy emphasis on product names and prices.\n' +
+    'Pace: Fast and lively, never dragging. Make a clear pause of about one second between each line of the transcript.\n' +
+    'Accent: Brazilian Portuguese (Brazil), popular and friendly.\n' +
+    'Only speak the transcript below, exactly as written. Never read these notes aloud.\n' +
+    '#### TRANSCRIPT\n' + texto;
+}
+function vozPorId(id){ id = VOZ_ANTIGA[id] || id; for (var i = 0; i < VOZES.length; i++) if (VOZES[i].id == id) return VOZES[i]; return VOZES[0]; }
 
 /* ---------- números por extenso ---------- */
 var UN = ['zero','um','dois','três','quatro','cinco','seis','sete','oito','nove','dez','onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove'];
@@ -114,7 +127,7 @@ var TTS_TEMPO_PEDIDO = 45000, TTS_TEMPO_TOTAL = 150000, TTS_ESPERA_429 = 40000;
 async function geraFala(texto, voz, key, avisa, modelos){
   if (!key) throw new Error('sem-chave');
   modelos = modelos || TTS_MODELOS;
-  var corpo = JSON.stringify({contents: [{parts: [{text: voz.prompt + ':\n' + texto}]}], generationConfig: {responseModalities: ['AUDIO'], speechConfig: {voiceConfig: {prebuiltVoiceConfig: {voiceName: voz.gem}}}}});
+  var corpo = JSON.stringify({contents: [{parts: [{text: promptTTS(voz, texto)}]}], generationConfig: {responseModalities: ['AUDIO'], speechConfig: {voiceConfig: {prebuiltVoiceConfig: {voiceName: voz.gem}}}}});
   var ultimo = '', inicio = Date.now();
   for (var volta = 0; volta < 3; volta++){
     var todos429 = true;
@@ -165,44 +178,70 @@ function cadeiaFx(ctx, fx, destino){
   return hp;
 }
 
-/* tira silêncio do começo e do fim; acha pausas */
-function analisaFala(buf){
-  var d = buf.getChannelData(0), sr = buf.sampleRate, win = Math.floor(sr * 0.02), n = Math.floor(d.length / win), rms = new Float32Array(n), mx = 0;
-  for (var i = 0; i < n; i++){ var s = 0; for (var j = i * win; j < (i + 1) * win; j++) s += d[j] * d[j]; rms[i] = Math.sqrt(s / win); if (rms[i] > mx) mx = rms[i]; }
-  var lim = Math.max(0.008, mx * 0.06), ini = 0, fim = n - 1;
-  while (ini < n && rms[ini] < lim) ini++; while (fim > ini && rms[fim] < lim) fim--;
-  var pausas = [], k = ini, corrida = 0;
-  for (k = ini; k <= fim; k++){ if (rms[k] < lim) corrida++; else { if (corrida >= 9) pausas.push((k - corrida / 2) * 0.02 - ini * 0.02); corrida = 0; } }
-  return {ini: Math.max(0, ini * 0.02 - 0.03), fim: Math.min(buf.duration, (fim + 1) * 0.02 + 0.08), pausas: pausas};
-}
-
-/* tempos de cada parte do texto, ajustados nas pausas da fala */
-function tempos(partes, falaDur, pausas){
-  var tot = 0, ls = partes.map(function(p){ var l = Math.max(8, p.length); tot += l; return l; }), acc = 0, cortes = [];
-  for (var i = 0; i < ls.length - 1; i++){ acc += ls[i]; var est = acc / tot * falaDur, melhor = est, md = 1.3;
-    pausas.forEach(function(p){ var dd = Math.abs(p - est); if (dd < md && (!cortes.length || p > cortes[cortes.length - 1] + 0.6)){ md = dd; melhor = p; } });
-    cortes.push(melhor); }
-  var r = [], a = 0; cortes.concat([falaDur]).forEach(function(c){ r.push([a, c]); a = c; }); return r;
+/* ---------- corta a fala em um trecho por parte (abertura, cada produto, encerramento) ----------
+   A voz vem num pedido só (a cota grátis é de 10 pedidos por dia por modelo), com ~1 s de pausa entre as linhas.
+   Aqui medimos os silêncios de verdade e escolhemos as N-1 pausas que separam as partes (as mais longas,
+   perto de onde o tamanho do texto diz que cada parte acaba). Devolve [{ini, fim}] em segundos do áudio original. */
+function cortaFala(d, sr, partes){
+  var win = Math.floor(sr * 0.01), n = Math.floor(d.length / win), rms = new Float32Array(n), mx = 0, i, j;
+  for (i = 0; i < n; i++){ var s = 0; for (j = i * win; j < (i + 1) * win; j++) s += d[j] * d[j]; rms[i] = Math.sqrt(s / win); }
+  var sm = new Float32Array(n); for (i = 0; i < n; i++){ var a = 0, c = 0; for (j = Math.max(0, i - 2); j <= Math.min(n - 1, i + 2); j++){ a += rms[j]; c++; } sm[i] = a / c; if (sm[i] > mx) mx = sm[i]; }
+  var lim = Math.max(0.004, mx * 0.045), ini = 0, fim = n - 1;
+  while (ini < n && sm[ini] < lim) ini++; while (fim > ini && sm[fim] < lim) fim--;
+  if (fim <= ini) return null;
+  /* silêncios dentro da fala (>= 0,12 s) */
+  var sil = [], k = ini, run = 0;
+  for (k = ini; k <= fim + 1; k++){ if (k <= fim && sm[k] < lim) run++; else { if (run >= 12) sil.push({a: (k - run) * 0.01, b: k * 0.01, len: run * 0.01}); run = 0; } }
+  var K = partes.length, T0 = ini * 0.01, T1 = (fim + 1) * 0.01, D = T1 - T0;
+  if (K < 2) return [{ini: Math.max(0, T0 - 0.03), fim: Math.min(d.length / sr, T1 + 0.1)}];
+  var tam = partes.map(function(p){ return Math.max(10, String(p).replace(/\s+/g, ' ').length); }), tot = tam.reduce(function(x, y){ return x + y; }, 0), est = [], ac = 0;
+  /* tempo de silêncio esperado entre as partes entra na conta da posição estimada */
+  for (i = 0; i < K - 1; i++){ ac += tam[i]; est.push(T0 + ac / tot * D); }
+  /* programação dinâmica: escolhe K-1 silêncios em ordem; pontua pausa longa e perto do estimado */
+  function nota(c, kk){ var m = (c.a + c.b) / 2, dv = Math.abs(m - est[kk]) / D; return 3 * Math.min(c.len, 1.2) - 9 * dv - 14 * dv * dv; }
+  var M = sil.length, NEG = -1e9, best = [], de = [];
+  for (k = 0; k < K - 1; k++){ best.push(new Float64Array(M).fill(NEG)); de.push(new Int32Array(M).fill(-1)); }
+  for (j = 0; j < M; j++) best[0][j] = (sil[j].a - T0 >= 0.4) ? nota(sil[j], 0) : NEG;
+  for (k = 1; k < K - 1; k++) for (j = 0; j < M; j++){ var m2 = NEG, arg = -1;
+    for (var q = 0; q < j; q++) if (best[k - 1][q] > NEG && sil[j].a - sil[q].b >= 0.4 && best[k - 1][q] > m2){ m2 = best[k - 1][q]; arg = q; }
+    if (arg >= 0){ best[k][j] = m2 + nota(sil[j], k); de[k][j] = arg; } }
+  var esc = null, top = NEG; for (j = 0; j < M; j++) if (best[K - 2][j] > top && T1 - sil[j].b >= 0.4){ top = best[K - 2][j]; esc = j; }
+  var cortes = [];
+  if (esc != null){ for (k = K - 2, j = esc; k >= 0; k--){ cortes.unshift(sil[j]); j = de[k][j]; } }
+  else { /* poucos silêncios: corta onde o tamanho do texto manda */ for (k = 0; k < K - 1; k++) cortes.push({a: est[k], b: est[k], len: 0}); }
+  var r = [], st = Math.max(0, T0 - 0.03);
+  for (k = 0; k < K; k++){ var c2 = cortes[k]; var f = c2 ? Math.min(c2.b, c2.a + 0.1) : Math.min(d.length / sr, T1 + 0.1); r.push({ini: st, fim: f}); if (c2) st = Math.max(c2.a, c2.b - 0.05); }
+  return r;
 }
 
 /* ---------- música de fundo sintetizada (sem direitos autorais) ---------- */
 function ruido(ctx, seg){ var b = ctx.createBuffer(1, Math.floor(ctx.sampleRate * seg), ctx.sampleRate), d = b.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; }
 function musica(ctx, dest, dur, estilo){
-  var bpm = estilo == 'grave' ? 112 : 124, bt = 60 / bpm, nz = ruido(ctx, 0.5);
+  var bpm = estilo == 'grave' ? 120 : 132, bt = 60 / bpm, nz = ruido(ctx, 0.5);
   var prog = [[261.6, 329.6, 392.0], [196.0, 246.9, 293.7], [220.0, 261.6, 329.6], [174.6, 220.0, 261.6]], raiz = [65.41, 49.0, 55.0, 43.65];
   var bus = ctx.createGain(); bus.gain.value = 1; bus.connect(dest);
-  function kick(t){ var o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.12); g.gain.setValueAtTime(0.9, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.25); o.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.26); }
+  function kick(t){ var o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.11); g.gain.setValueAtTime(0.95, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.24); o.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.25); }
   function ruidoHit(t, tipo, f, vol, len){ var s = ctx.createBufferSource(); s.buffer = nz; var fl = ctx.createBiquadFilter(); fl.type = tipo; fl.frequency.value = f; var g = ctx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + len); s.connect(fl); fl.connect(g); g.connect(bus); s.start(t); s.stop(t + len + 0.02); }
+  function palma(t, vol){ [0, 0.012, 0.025].forEach(function(d){ ruidoHit(t + d, 'bandpass', 1400, vol, 0.09); }); }
   function nota(t, f, len, tipo, vol, corte){ var o = ctx.createOscillator(), g = ctx.createGain(), fl = ctx.createBiquadFilter(); o.type = tipo; o.frequency.value = f; fl.type = 'lowpass'; fl.frequency.value = corte; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.001, t + len); o.connect(fl); fl.connect(g); g.connect(bus); o.start(t); o.stop(t + len + 0.02); }
   for (var b = 0, t = 0; t < dur; b++, t = b * bt){
     var comp = Math.floor(b / 4) % 4, ch = prog[comp];
-    kick(t); ruidoHit(t + bt / 2, 'highpass', 7000, 0.12, 0.04); ruidoHit(t, 'highpass', 8000, 0.05, 0.03);
-    if (b % 2 == 1) ruidoHit(t, 'bandpass', 1600, 0.35, 0.14);
-    nota(t, raiz[comp], bt * 0.45, 'triangle', 0.5, 900); nota(t + bt / 2, raiz[comp] * 2, bt * 0.4, 'triangle', 0.4, 900);
-    ch.forEach(function(f){ nota(t + bt / 2, f, bt * 0.35, 'sawtooth', 0.07, 2400); });
-    if (b % 8 == 7) nota(t + bt * 0.75, ch[2] * 2, bt * 0.3, 'square', 0.05, 3000);
+    kick(t); if (b % 4 == 3) kick(t + bt * 0.75);
+    for (var h = 0; h < 4; h++) ruidoHit(t + h * bt / 4, 'highpass', 8000, h == 2 ? 0.14 : 0.06, 0.03);
+    if (b % 2 == 1) palma(t, 0.32);
+    nota(t, raiz[comp], bt * 0.4, 'triangle', 0.5, 900); nota(t + bt / 2, raiz[comp] * 2, bt * 0.35, 'triangle', 0.42, 900); nota(t + bt * 0.75, raiz[comp] * 2, bt * 0.2, 'triangle', 0.3, 900);
+    ch.forEach(function(f){ nota(t + bt / 2, f, bt * 0.3, 'sawtooth', 0.075, 2600); });
+    if (b % 4 == 3) [0, 0.25, 0.5].forEach(function(d, k){ nota(t + d * bt, ch[k] * 2, bt * 0.22, 'square', 0.045, 3400); });
   }
   return bus;
+}
+/* "tchan!" de metais (acorde curto) para abrir e marcar cada produto */
+function metais(ctx, dest, t, alto){
+  var fs = alto ? [523.3, 659.3, 784.0, 1046.5] : [392.0, 493.9, 587.3, 784.0];
+  fs.forEach(function(f){ [-6, 6].forEach(function(det){ var o = ctx.createOscillator(), fl = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = det;
+    fl.type = 'lowpass'; fl.frequency.setValueAtTime(600, t); fl.frequency.linearRampToValueAtTime(4200, t + 0.06); fl.frequency.exponentialRampToValueAtTime(1200, t + 0.45);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.05, t + 0.02); g.gain.setValueAtTime(0.05, t + 0.22); g.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+    o.connect(fl); fl.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.6); }); });
 }
 function efeitoSom(ctx, dest, t, tipo){
   if (tipo == 'ding'){ [1318.5, 1760, 2637].forEach(function(f, i){ var o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.22 / (i + 1), t + 0.005); g.gain.exponentialRampToValueAtTime(0.001, t + 0.7); o.connect(g); g.connect(dest); o.start(t); o.stop(t + 0.72); }); return; }
@@ -210,28 +249,33 @@ function efeitoSom(ctx, dest, t, tipo){
   var g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.35, t + 0.25); g.gain.exponentialRampToValueAtTime(0.001, t + 0.5); s.connect(f); f.connect(g); g.connect(dest); s.start(t); s.stop(t + 0.6);
 }
 
-/* monta o áudio final: fala com efeito + música abaixando na fala + efeitos. Devolve {buf, plano} */
-var T_INTRO = 1.4, T_FIM = 2.6;
+/* monta o áudio final: cada parte da fala é um trecho com a duração REAL dela, colocado um depois do outro.
+   As cenas (abertura, cada produto, final) começam exatamente quando o trecho daquela parte começa a tocar.
+   Devolve {buf, plano}. plano.trechos guarda os tempos para conferência. */
+var T_INTRO = 1.3, T_FIM = 2.4, T_VAO = 0.28, T_ANTES = 0.12;
 async function mixar(falaWav, voz, partes, nProd){
   var tmp = new OfflineAudioContext(1, 1, 44100), fala = await tmp.decodeAudioData(falaWav.slice(0));
-  var an = analisaFala(fala), rate = voz.fx.rate || 1, falaDur = (an.fim - an.ini) / rate;
-  var pz = an.pausas.map(function(p){ return p / rate; }), tp = tempos(partes, falaDur, pz);
-  var total = T_INTRO + falaDur + T_FIM, sr = 44100, ctx = new OfflineAudioContext(2, Math.ceil(sr * total), sr);
+  var rate = voz.fx.rate || 1, cortes = cortaFala(fala.getChannelData(0), fala.sampleRate, partes);
+  if (!cortes) throw new Error('voz-vazia');
+  var pos = [], t = T_INTRO;
+  cortes.forEach(function(c){ var dur = (c.fim - c.ini) / rate; pos.push({t: t, dur: dur, ini: c.ini, fim: c.fim}); t += dur + T_VAO; });
+  var falaFim = t - T_VAO, total = falaFim + T_FIM, sr = 44100, ctx = new OfflineAudioContext(2, Math.ceil(sr * total), sr);
   var lim = ctx.createDynamicsCompressor(); lim.threshold.value = -6; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.002; lim.release.value = 0.1;
   var master = ctx.createGain(); master.gain.value = 0.9; master.connect(lim); lim.connect(ctx.destination);
   var mg = ctx.createGain(); mg.connect(master);
   musica(ctx, mg, total, voz.id == 'bene' ? 'grave' : '');
-  var g = mg.gain; g.setValueAtTime(0.0, 0); g.linearRampToValueAtTime(0.5, 0.15); g.setValueAtTime(0.5, T_INTRO - 0.25); g.linearRampToValueAtTime(0.16, T_INTRO + 0.05);
-  g.setValueAtTime(0.16, T_INTRO + falaDur); g.linearRampToValueAtTime(0.5, T_INTRO + falaDur + 0.4); g.setValueAtTime(0.5, total - 1.0); g.linearRampToValueAtTime(0.0, total - 0.05);
-  var src = ctx.createBufferSource(); src.buffer = fala; src.playbackRate.value = rate; var vg = ctx.createGain(); vg.gain.value = 1; vg.connect(master);
-  src.connect(cadeiaFx(ctx, voz.fx, vg)); src.start(T_INTRO, an.ini, an.fim - an.ini);
+  var g = mg.gain; g.setValueAtTime(0.0, 0); g.linearRampToValueAtTime(0.55, 0.12); g.setValueAtTime(0.55, T_INTRO - 0.25); g.linearRampToValueAtTime(0.2, T_INTRO + 0.05);
+  g.setValueAtTime(0.2, falaFim); g.linearRampToValueAtTime(0.55, falaFim + 0.35); g.setValueAtTime(0.55, total - 0.9); g.linearRampToValueAtTime(0.0, total - 0.05);
+  var vg = ctx.createGain(); vg.gain.value = 1; vg.connect(master); var entrada = cadeiaFx(ctx, voz.fx, vg);
+  pos.forEach(function(p){ var src = ctx.createBufferSource(); src.buffer = fala; src.playbackRate.value = rate; src.connect(entrada); src.start(p.t, p.ini, p.fim - p.ini); });
   var sfx = ctx.createGain(); sfx.gain.value = 0.8; sfx.connect(master);
-  efeitoSom(ctx, sfx, 0.05, 'whoosh');
-  var cenas = [{tipo: 'abre', t0: 0, t1: T_INTRO + tp[0][1]}];
-  for (var i = 0; i < nProd; i++){ var s = tp[i + 1]; if (!s) break; var t0 = T_INTRO + s[0], t1 = T_INTRO + s[1]; cenas.push({tipo: 'prod', i: i, t0: t0, t1: t1}); efeitoSom(ctx, sfx, Math.max(0, t0 - 0.2), 'whoosh'); efeitoSom(ctx, sfx, t0 + Math.min(0.75, (t1 - t0) * 0.3), 'ding'); }
-  var ultimo = tp[tp.length - 1]; cenas.push({tipo: 'fim', t0: T_INTRO + ultimo[0], t1: total}); efeitoSom(ctx, sfx, Math.max(0, T_INTRO + ultimo[0] - 0.2), 'whoosh');
+  efeitoSom(ctx, sfx, 0.05, 'whoosh'); metais(ctx, sfx, 0.3, true);
+  var ini = function(k){ return Math.max(0, pos[k].t - T_ANTES); };
+  var cenas = [{tipo: 'abre', t0: 0, t1: pos.length > 1 ? ini(1) : total}];
+  for (var i = 0; i < nProd && i + 1 < pos.length - 1; i++){ var t0 = ini(i + 1), t1 = ini(i + 2); cenas.push({tipo: 'prod', i: i, t0: t0, t1: t1}); efeitoSom(ctx, sfx, Math.max(0, t0 - 0.2), 'whoosh'); metais(ctx, sfx, t0, i % 2 == 0); efeitoSom(ctx, sfx, t0 + Math.min(0.7, (t1 - t0) * 0.3), 'ding'); }
+  var ul = pos.length - 1; cenas.push({tipo: 'fim', t0: ini(ul), t1: total}); efeitoSom(ctx, sfx, Math.max(0, ini(ul) - 0.2), 'whoosh');
   var buf = await ctx.startRendering();
-  return {buf: buf, plano: {cenas: cenas, total: total}};
+  return {buf: buf, plano: {cenas: cenas, total: total, trechos: pos.map(function(p){ return [+p.t.toFixed(2), +(p.t + p.dur).toFixed(2)]; })}};
 }
 /* música sozinha (se a voz falhar) */
 async function mixarSemVoz(nProd){

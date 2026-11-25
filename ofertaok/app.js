@@ -273,13 +273,13 @@ window.procuraOficial = async function(i){
 
 /* ---------- locutores ---------- */
 function pintaVozes(){
-  $('vozes').innerHTML = VOZES.map(function(v){ return '<div class="voz' + (OF.voz == v.id ? ' on' : '') + '" onclick="escVoz(\'' + v.id + '\')"><img src="vozes/' + v.id + '.jpg" alt=""><div class="tx"><b>' + v.nome + '</b><small>' + v.estilo + ' — ' + v.desc + '</small></div><button class="ouvir" onclick="event.stopPropagation();ouvir(\'' + v.id + '\',this)">▶️ Ouvir</button></div>'; }).join('');
+  $('vozes').innerHTML = VOZES.map(function(v){ return '<div class="voz' + (OF.voz == v.id ? ' on' : '') + '" onclick="escVoz(\'' + v.id + '\')"><img src="vozes/' + v.id + '.jpg?v=5" alt=""><div class="tx"><b>' + v.nome + '</b><small>' + v.estilo + ' — ' + v.desc + '</small></div><button class="ouvir" onclick="event.stopPropagation();ouvir(\'' + v.id + '\',this)">▶️ Ouvir</button></div>'; }).join('');
 }
 window.escVoz = function(id){ OF.voz = id; sujo = true; pintaVozes(); };
 window.ouvir = async function(id, b){
   var ac = audioCtx(); if (OUVINDO){ try { OUVINDO.stop(); } catch (e) {} var era = OUVINDO.id; OUVINDO = null; pintaVozes(); if (era == id) return; }
   b.textContent = '⏳ …';
-  try { var ab = await (await fetch('vozes/' + id + '.mp3')).arrayBuffer(), buf = await ac.decodeAudioData(ab), v = vozPorId(id), s = ac.createBufferSource(); s.buffer = buf; s.playbackRate.value = v.fx.rate || 1;
+  try { var ab = await (await fetch('vozes/' + id + '.mp3?v=5')).arrayBuffer(), buf = await ac.decodeAudioData(ab), v = vozPorId(id), s = ac.createBufferSource(); s.buffer = buf; s.playbackRate.value = v.fx.rate || 1;
     s.connect(cadeiaFx(ac, v.fx, ac.destination)); s.start(); s.id = id; OUVINDO = s; b.textContent = '⏹️ Parar'; s.onended = function(){ if (OUVINDO == s){ OUVINDO = null; b.textContent = '▶️ Ouvir'; } }; OF.voz = id; pintaVozes(); var bb = document.querySelector('.voz.on .ouvir'); if (bb) bb.textContent = '⏹️ Parar'; }
   catch (e) { b.textContent = '▶️ Ouvir'; toast('Não tocou.', '#b91c1c'); }
 };
@@ -342,7 +342,7 @@ async function gerar(o){
     var r = OF.roteiro, partes = [r.abre].concat(r.itens).concat([r.fecha]), texto = partes.join('\n\n'), mix;
     etapa(0); st('🎙️ Gerando a voz de ' + voz.nome + '…', 0.03); await respira();
     if (!o.semVoz){
-      var ck = voz.id + '|' + hash(texto); wav = await idbGet(ck);
+      var ck = 'v5|' + voz.id + '|' + hash(texto); wav = await idbGet(ck);
       if (!wav){
         G.t0v = Date.now(); var key = await comTempo(pegaChave(), 15000, 'sem-chave');
         wav = await geraFala(texto, voz, key, function(m){ st(m, 0.03 + Math.min(0.2, (Date.now() - G.t0v) / 150000 * 0.2)); });
@@ -352,6 +352,7 @@ async function gerar(o){
     if (G.cancelado) throw new Error('cancelado');
     etapa(1); st('🎵 Juntando voz, música e efeitos…', 0.25); await respira();
     mix = await comTempo(wav ? mixar(wav, voz, partes, OF.produtos.length) : mixarSemVoz(OF.produtos.length), 90000, 'tempo-mix');
+    window.OK_PLANO = mix.plano;
     if (G.cancelado) throw new Error('cancelado');
     etapa(2); st('🖼️ Preparando as fotos…', 0.3); await respira();
     var imgs = []; for (var i = 0; i < OF.produtos.length; i++){ var f = OF.produtos[i].foto; imgs.push(f ? await comTempo(carregaImg(f), 15000, 'img').catch(function(){ return null; }) : null); }
