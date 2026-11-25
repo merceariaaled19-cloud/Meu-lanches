@@ -61,8 +61,15 @@ else {
   au.onAuthStateChanged(entrou);
 }
 $('bGoogle').onclick = function(){ var p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt: 'select_account'});
-  if (/Android|iPhone|iPad/i.test(navigator.userAgent)){ au.signInWithRedirect(p); return; }
-  au.signInWithPopup(p).catch(function(e){ if (/popup|not-supported|cancelled/.test(e.code)) au.signInWithRedirect(p); else $('msgLogin').textContent = 'Não entrou: ' + e.code; }); };
+  /* No celular o login por redirecionamento volta sem entrar (Chrome separa os dados do site do Google). Por isso abre a janela do Google primeiro em qualquer aparelho. */
+  $('msgLogin').textContent = 'Abrindo o Google… escolha sua conta.';
+  au.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){}).then(function(){ return au.signInWithPopup(p); })
+    .then(function(){ $('msgLogin').textContent = ''; })
+    .catch(function(e){ var c = (e && e.code) || '';
+      if (/popup-closed|cancelled-popup/.test(c)){ $('msgLogin').textContent = 'A janela do Google fechou antes de terminar. Toque de novo em Entrar com Google.'; return; }
+      if (/popup-blocked|not-supported|web-storage/.test(c)){ $('msgLogin').textContent = 'Abrindo o Google nesta tela…'; au.signInWithRedirect(p); return; }
+      if (/network/.test(c)){ $('msgLogin').textContent = 'Sem internet. Confira a conexão e tente de novo.'; return; }
+      $('msgLogin').textContent = 'Não entrou: ' + (c || e); }); };
 $('bSair').onclick = function(){ if (TESTE) return; if (confirm('Sair da conta?')) au.signOut(); };
 
 /* ================= lista ================= */
