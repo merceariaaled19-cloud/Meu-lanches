@@ -1,0 +1,77 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mande suas ofertas • Oferta Okê</title>
+<meta name="theme-color" content="#b30016"><link rel="icon" href="icon-192.png">
+<meta property="og:title" content="Mande as ofertas da sua loja"><meta property="og:description" content="Mande as fotos e os preços dos produtos. A gente faz o comercial com locutor."><meta property="og:image" content="https://merceariaaled19-cloud.github.io/Meu-lanches/ofertaok/icon-512.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#1b0006;background:#7a0010;background:radial-gradient(circle at 50% -10%,#e0122b,#7a0010 45%,#2a0008);min-height:100vh;font-size:18px}
+header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(40,0,8,.92);border-bottom:3px solid #ffd400;color:#fff}
+header img{width:42px;height:42px;border-radius:10px}header h1{font-size:24px;margin:0;font-weight:900;letter-spacing:.5px}header h1 span{color:#ffd400}
+main{max-width:620px;margin:0 auto;padding:12px 12px 80px}
+.intro{color:#fff;text-align:center;margin:12px 6px}.intro b{color:#ffd400}
+.card{background:#fff;border-radius:20px;padding:16px;margin:14px 0;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.card h2{margin:0 0 8px;font-size:22px}
+label.l{display:block;font-weight:700;margin:12px 0 4px;font-size:18px}small.d{color:#6b5a5d;font-weight:400;font-size:15px}
+input,select{width:100%;font:inherit;font-size:20px;padding:13px;border:2px solid #e3d4d6;border-radius:12px;background:#fff;color:#1b0006}
+input:focus,select:focus{outline:none;border-color:#d0101f}
+.lin{display:flex;gap:8px}.lin>*{flex:1;min-width:0}
+.bt{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;border-radius:16px;padding:16px;font:inherit;font-size:20px;font-weight:900;cursor:pointer;margin:8px 0;color:#fff;background:#d0101f;box-shadow:0 5px 0 #7a0010}
+.bt:active{transform:translateY(3px);box-shadow:0 2px 0 #7a0010}.bt:disabled{opacity:.5}
+.bt.am{background:#ffd400;color:#1b0006;box-shadow:0 5px 0 #b38f00}.bt.vd{background:#16a34a;box-shadow:0 5px 0 #0d6b30}.bt.cz{background:#efe6e7;color:#1b0006;box-shadow:0 5px 0 #c9b9bb}
+a.bt{text-decoration:none}
+.bt.peq{font-size:17px;padding:12px;border-radius:12px}
+.prod{border:2px solid #f0e2e4;border-radius:16px;padding:12px;margin:14px 0;background:#fffafa}
+.prod .tp{display:flex;justify-content:space-between;align-items:center;font-weight:900;color:#d0101f;font-size:20px}
+.pfoto{width:100%;max-width:260px;aspect-ratio:1;margin:8px auto;border-radius:16px;background:#f3eced;display:flex;align-items:center;justify-content:center;font-size:64px;overflow:hidden}
+.pfoto img{width:100%;height:100%;object-fit:contain}
+.st{font-size:16px;color:#6b5a5d;margin:6px 0;min-height:18px}
+.erro{color:#b91c1c;font-weight:700;margin:8px 0;font-size:18px}
+.prog{height:16px;border-radius:9px;background:#f0e2e4;overflow:hidden;margin:8px 0}.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#d0101f,#ffd400);transition:width .3s}
+.fim{text-align:center;padding:26px 14px}.fim .ok{font-size:80px}.fim h2{font-size:30px;margin:8px 0}
+.endbox{border:2px solid #f0e2e4;border-radius:14px;padding:4px 10px 10px;background:#fffafa}
+.oculto{display:none!important}
+</style></head><body>
+<header><img src="icon-192.png" alt=""><h1>OFERTA <span>OKÊ</span></h1></header>
+<main>
+<div id="carregando" class="intro">Carregando…</div>
+<div id="invalido" class="card oculto"><h2>😕 Este link não vale mais</h2><p>Peça um link novo para quem te mandou.</p></div>
+
+<form id="form" class="oculto" autocomplete="on" novalidate>
+  <p class="intro" id="ola">Mande as <b>fotos</b> e os <b>preços</b> dos produtos.<br>A gente faz o <b>comercial com locutor</b> para você! 🎤</p>
+
+  <div class="card"><h2>🏪 Sua loja</h2>
+    <label class="l">Nome da loja *</label><input id="cLoja" maxlength="50" autocomplete="organization" placeholder="Ex.: Mercadinho Bom Preço">
+    <label class="l">WhatsApp da loja *</label><input id="cZap" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="(92) 99999-9999">
+    <label class="l">Endereço <small class="d">(opcional, aparece no fim do vídeo)</small></label>
+    <div class="endbox">
+      <label class="l">CEP <small class="d">(preenche a rua sozinho)</small></label>
+      <input id="cCep" inputmode="numeric" maxlength="9" placeholder="Ex.: 69000-000">
+      <div class="st" id="cepSt"></div>
+      <label class="l">Rua</label><input id="cRua" maxlength="60" placeholder="Ex.: Rua das Flores">
+      <div class="lin"><div><label class="l">Número</label><input id="cNum" inputmode="numeric" maxlength="10" placeholder="Ex.: 120"></div><div><label class="l">Bairro</label><input id="cBairro" maxlength="40" placeholder="Ex.: Centro"></div></div>
+      <input id="cCidade" type="hidden"><input id="cUf" type="hidden">
+    </div>
+    <label class="l">Logo da loja <small class="d">(opcional)</small></label>
+    <div class="lin" style="align-items:center"><div id="logoPrev" class="pfoto" style="max-width:90px;font-size:36px;margin:0">🏪</div><button type="button" class="bt cz peq" id="bLogo">🖼️ Escolher logo</button></div>
+  </div>
+
+  <div class="card"><h2>🛒 Seus produtos <small class="d">(até 6)</small></h2>
+    <div id="prods"></div>
+    <button type="button" class="bt am" id="bAdd">➕ Mais um produto</button>
+  </div>
+
+  <div id="erro" class="erro"></div>
+  <div id="enviando" class="oculto"><div class="st" id="envSt" style="color:#fff;font-weight:700">Enviando…</div><div class="prog"><i id="envPr"></i></div></div>
+  <button type="submit" class="bt vd" id="bEnviar" style="font-size:24px;padding:20px">📤 Enviar</button>
+</form>
+
+<div id="fim" class="card fim oculto"><div class="ok">✅</div><h2>Recebido!</h2><p style="font-size:20px">O Alex vai preparar seu comercial. 🎬<br>Logo ele te chama no WhatsApp.</p><button class="bt cz peq" id="bOutro">Mandar outras ofertas</button></div>
+</main>
+<input type="file" id="fCam" accept="image/*" capture="environment" class="oculto">
+<input type="file" id="fGal" accept="image/*" class="oculto">
+<input type="file" id="fLogo" accept="image/*" class="oculto">
+<script src="cliente.js?v=1"></script>
+</body></html>

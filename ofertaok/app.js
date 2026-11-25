@@ -158,7 +158,7 @@ window.addEventListener('pagehide', function(){ paraTudo('oculto'); });
 /* ================= editor ================= */
 var sujo = false;
 function editar(o){
-  OF = o; TEMP = {}; VID = {}; sujo = false; mostra('editor');
+  OF = o; TEMP = {}; VID = {}; sujo = false; mostra('editor'); $('pedAviso').classList.add('oculto');
   $('eLoja').value = o.loja || ''; $('eZap').value = o.zap || ''; pintaEndereco();
   pintaLogo(); pintaProdutos(); pintaVozes(); if (!OF.roteiro) refazRoteiro(); else pintaRoteiro();
   $('vids').innerHTML = ''; $('tCod').innerHTML = OF.videos && OF.videos.h ? caixaCodigo(OF.videos.h.id) : ''; $('tSt').textContent = '';
@@ -222,10 +222,10 @@ function melhorPadrao(i){
     if (pts > bp){ bp = pts; best = k; } });
   T.esc = best; aplicaEscolha(i);
 }
-async function trataFoto(i, arq){
+async function trataFoto(i, arq, manterSua){
   var c; try { c = await arquivoParaTela(arq, 1024); } catch (e) { toast('Não abriu essa foto.', '#b91c1c'); return; }
   if (TEMP[i] && TEMP[i].rodando) paraRobo('trocou');
-  var T = TEMP[i] = {ops: [], esc: 0, tocou: false, orig: c, status: 'Procurando a foto oficial… Para tirar o fundo, toque em ✨ Perfeita.'};
+  var T = TEMP[i] = {ops: [], esc: 0, tocou: !!manterSua, orig: c, status: 'Procurando a foto oficial… Para tirar o fundo, toque em ✨ Perfeita.'};
   addOp(i, {tipo: 'foto', c: c, titulo: '📷 Sua foto', base: true}); aplicaEscolha(i);
   T.ops.push({botao: true, perf: true, titulo: '✨ Perfeita', rotulo: 'Toque para tirar o fundo'}); pintaEscolha(i); sujo = true;
   await buscaParaProduto(i, c);
@@ -381,7 +381,7 @@ async function gerar(o){
     VID = res.videos; VID.tipo = res.tipo; etapa(3); st('✅ Pronto!', 1); acoes('');
     mostraVideos(); toast('Vídeo pronto! 🎉');
     if (!wav) $('vids').insertAdjacentHTML('afterbegin', '<div class="aviso">Este vídeo saiu sem locutor (só música).</div>');
-    salvar(true);
+    await salvar(true); if (OF.pedidoId && window.pedidoFeito) pedidoFeito(OF.pedidoId);
   } catch (x) {
     var m = x && x.message || 'falhou';
     if (/^oculto|^saiu/.test(m)){ st('⚠️ Cancelado: o app saiu da tela.', 0); toast('A gravação foi cancelada porque o app saiu da tela. Deixe a tela aberta até terminar.', '#b45309', 7000);

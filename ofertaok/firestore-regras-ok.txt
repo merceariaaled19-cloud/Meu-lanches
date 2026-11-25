@@ -1,4 +1,4 @@
-    // ===== Oferta Okê (ofertaok/) — comerciais de ofertas, 2026-11-24 =====
+    // ===== Oferta Okê (ofertaok/) — comerciais de ofertas, 2026-11-24 (v8 2026-11-25: link para o cliente) =====
     // ok_ofertas: só as 3 contas admin (mlAdmin). ok_videos: qualquer um assiste (a TV do TelaOkê e o link do vídeo), só admin grava.
     match /ok_ofertas/{id} {
       allow read, write: if mlAdmin();
@@ -9,6 +9,44 @@
       match /p/{n} {
         allow read: if true;
         allow write: if mlAdmin();
+      }
+    }
+    // ok_links: link para o cliente (cliente.html?c=CÓDIGO). Qualquer um abre um link pelo código; só admin lista e cria.
+    match /ok_links/{cod} {
+      allow get: if true;
+      allow list, write: if mlAdmin();
+    }
+    // ok_pedidos: o cliente (sem login) manda loja, produtos e fotos. Só cria; ler, mudar e apagar só admin.
+    function okLinkOk(c) {
+      return c == 'alex' || (exists(/databases/$(database)/documents/ok_links/$(c))
+        && get(/databases/$(database)/documents/ok_links/$(c)).data.get('ativo', true) == true);
+    }
+    function okPedidoOk(d) {
+      return d.keys().hasOnly(['codigo', 'cliente', 'loja', 'zap', 'end', 'endr', 'logo', 'produtos', 'nFotos', 'status', 'criadoEm'])
+        && d.keys().hasAll(['codigo', 'loja', 'zap', 'produtos', 'nFotos', 'status', 'criadoEm'])
+        && d.status == 'novo' && d.criadoEm == request.time
+        && d.codigo is string && d.codigo.size() <= 40 && okLinkOk(d.codigo)
+        && d.loja is string && d.loja.size() >= 2 && d.loja.size() <= 60
+        && d.zap is string && d.zap.size() <= 25
+        && d.get('cliente', '') is string && d.get('cliente', '').size() <= 60
+        && d.get('end', '') is string && d.get('end', '').size() <= 120
+        && d.get('endr', {}) is map && d.get('endr', {}).keys().hasOnly(['cep', 'rua', 'num', 'comp', 'bairro', 'cidade', 'uf'])
+        && d.get('logo', '') is string && d.get('logo', '').size() <= 80000
+        && d.produtos is list && d.produtos.size() >= 1 && d.produtos.size() <= 6
+        && d.nFotos is int && d.nFotos >= 0 && d.nFotos <= 6 && d.nFotos <= d.produtos.size();
+    }
+    match /ok_pedidos/{id} {
+      allow create: if okPedidoOk(request.resource.data);
+      allow read, update, delete: if mlAdmin();
+      // fotos dos produtos: 1 por produto (n = 0 a 5), cada uma até ~300 KB, só logo depois de criar o pedido, sem trocar depois.
+      match /fotos/{n} {
+        allow create: if n in ['0', '1', '2', '3', '4', '5']
+          && int(n) < get(/databases/$(database)/documents/ok_pedidos/$(id)).data.nFotos
+          && get(/databases/$(database)/documents/ok_pedidos/$(id)).data.status == 'novo'
+          && get(/databases/$(database)/documents/ok_pedidos/$(id)).data.criadoEm > request.time - duration.value(30, 'm')
+          && request.resource.data.keys().hasOnly(['d'])
+          && request.resource.data.d is string && request.resource.data.d.size() <= 300000;
+        allow read, update, delete: if mlAdmin();
       }
     }
     // ===== fim Oferta Okê =====

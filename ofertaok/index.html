@@ -22,6 +22,7 @@ textarea{min-height:70px;resize:vertical;font-size:16px}input:focus,select:focus
 .bt{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:none;border-radius:16px;padding:16px;font:inherit;font-size:19px;font-weight:900;cursor:pointer;margin:8px 0;color:#fff;background:#d0101f;box-shadow:0 5px 0 #7a0010}
 .bt:active{transform:translateY(3px);box-shadow:0 2px 0 #7a0010}.bt:disabled{opacity:.5}
 .bt.am{background:#ffd400;color:#1b0006;box-shadow:0 5px 0 #b38f00}.bt.vd{background:#16a34a;box-shadow:0 5px 0 #0d6b30}.bt.az{background:#2563eb;box-shadow:0 5px 0 #173f99}.bt.cz{background:#efe6e7;color:#1b0006;box-shadow:0 5px 0 #c9b9bb}
+a.bt{text-decoration:none}
 .bt.peq{font-size:16px;padding:12px;border-radius:12px}
 .lin{display:flex;gap:8px}.lin>*{flex:1}
 .prod{border:2px solid #f0e2e4;border-radius:16px;padding:12px;margin:12px 0;background:#fffafa}
@@ -55,6 +56,9 @@ textarea{min-height:70px;resize:vertical;font-size:16px}input:focus,select:focus
 .oculto{display:none!important}
 .roteiro label.l{color:#d0101f}
 .endbox{border:2px solid #f0e2e4;border-radius:14px;padding:4px 10px 8px;background:#fffafa}label.l2{display:block;font-weight:700;margin:8px 0 3px;font-size:14px}
+.badge{display:inline-block;background:#ffd400;color:#1b0006;border-radius:20px;padding:2px 10px;font-size:15px;font-weight:900;vertical-align:middle}
+.tag.novo{background:#ffd400;color:#1b0006}.tag.am{background:#fff3b0;color:#5b4500}.item.ped.novo{box-shadow:0 0 0 3px #ffd400,0 4px 14px rgba(0,0,0,.25)}
+.item.ped .ph{width:44px;height:44px;font-size:24px}.pacs{display:flex;flex-direction:column;gap:4px;flex:none}.pacs .bt{margin:0;width:48px;padding:8px;font-size:18px;box-shadow:0 3px 0 #7a0010}.pacs .bt.vd{box-shadow:0 3px 0 #0d6b30}.pacs .bt.cz{box-shadow:0 3px 0 #c9b9bb}
 .op.perf{border:3px dashed #ffd400;background:#fff7d6}.op.perf .sp{color:#5b4500;font-size:13px;font-weight:900}
 </style></head><body>
 <header><img src="icon-192.png" alt=""><h1>OFERTA <span>OKÊ</span></h1><button id="bSair" class="oculto">Sair</button></header>
@@ -74,12 +78,23 @@ textarea{min-height:70px;resize:vertical;font-size:16px}input:focus,select:focus
 
 <section id="home" class="oculto">
   <button class="bt am" id="bNovo" style="font-size:22px;padding:20px">➕ Fazer comercial novo</button>
+  <button class="bt az" id="bLinkCli">🔗 Link para o cliente</button>
+  <div class="card oculto" id="linkBox"><h2>🔗 Link para o cliente</h2>
+    <p class="st" style="margin-top:0">Mande este link no WhatsApp. O cliente coloca as fotos e os preços dos produtos e o pedido aparece aqui em <b>📥 Pedidos dos clientes</b>.</p>
+    <div id="lkSai"></div>
+    <label class="l">Link só para um cliente <small class="d">(opcional: já vem com o nome da loja)</small></label>
+    <input id="lkNome" maxlength="60" placeholder="Nome do cliente (ex.: Seu João)" style="margin-bottom:6px"><input id="lkLoja" maxlength="50" placeholder="Nome da loja dele (opcional)">
+    <button class="bt cz peq" id="lkCria">➕ Criar link deste cliente</button>
+  </div>
+  <h3 style="margin:18px 4px 4px">📥 Pedidos dos clientes <span id="nNovos" class="badge oculto"></span></h3>
+  <div id="pedidos"></div>
   <h3 style="margin:18px 4px 4px">📂 Meus comerciais</h3>
   <div id="lista"><p class="vazio">Carregando…</p></div>
 </section>
 
 <section id="editor" class="oculto">
   <button class="bt cz peq" id="bVoltar" style="max-width:220px">⬅️ Meus comerciais</button>
+  <div class="aviso oculto" id="pedAviso" style="font-size:16px"></div>
 
   <div class="card"><h2><span class="num">1</span> A loja</h2>
     <label class="l">Nome da loja *</label><input id="eLoja" maxlength="50" placeholder="Ex.: Mercadinho Bom Preço">
@@ -144,5 +159,6 @@ textarea{min-height:70px;resize:vertical;font-size:16px}input:focus,select:focus
 <script src="voz.js?v=5"></script>
 <script src="foto.js?v=3"></script>
 <script src="video.js?v=3"></script>
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
+<script src="pedidos.js?v=1"></script>
 </body></html>
