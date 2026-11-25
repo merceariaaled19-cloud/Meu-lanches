@@ -23,6 +23,9 @@ table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:7px 4px;b
 .tot{display:flex;gap:8px;text-align:center}.tot div{flex:1;background:#0f0322;border-radius:10px;padding:8px;font-size:13px}.tot b{display:block;font-size:22px}
 textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f0322;color:#fff;border:2px solid #4a2380;padding:8px}
 .abas{display:flex;gap:6px;margin-bottom:8px}.abas button{flex:1;background:#0f0322;border:2px solid #4a2380;font-size:13px;padding:8px}.abas button.on{border-color:#ffd54a;color:#ffd54a}
+.tvf{background:linear-gradient(#2a2a35,#111118);border:3px solid #55556a;border-radius:16px;padding:9px 9px 12px;margin:12px auto 0;max-width:520px;box-shadow:0 6px 20px #0008}
+.tvf video{width:100%;display:block;border-radius:8px;background:#000;aspect-ratio:16/9}.tvp{width:90px;height:10px;margin:0 auto;background:#3a3a48;border-radius:0 0 8px 8px}.tvb{width:160px;height:6px;margin:0 auto 6px;background:#3a3a48;border-radius:6px}
+.mat{background:#0f0322;border-radius:10px;padding:10px;margin:8px 0}.mat b{font-size:14px}.mat video{width:100%;border-radius:10px;background:#000;margin:6px 0;max-height:300px}
 </style><script src="confirma-sair.js?v=1"></script>
 </head><body>
 <header><h1>🤝 Revenda TudoOkê TV</h1><button class="s" id="sair" style="display:none">Sair</button></header>
@@ -35,6 +38,8 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
  <input id="em" type="email" placeholder="Seu e-mail" autocomplete="email"><input id="se" type="password" placeholder="Senha (mínimo 6)" autocomplete="current-password">
  <button id="bCria" class="w">Criar conta</button><button id="bEnt" class="w s" style="padding:12px">Já tenho conta, entrar</button>
  <p class="e" id="eLog"></p>
+ <p class="mut" style="text-align:center;margin-top:14px"><b style="color:#ffd54a;font-size:15px">▶️ Veja em 1 minuto como funciona a revenda</b></p>
+ <div class="tvf"><video id="vidRev" controls preload="metadata" playsinline poster="videos/capa-tutorial-revenda.jpg" src="videos/tutorial-revenda.mp4"></video></div><div class="tvp"></div><div class="tvb"></div>
  <p class="mut" style="text-align:center"><a class="apkRev" href="https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeRevenda.apk" style="color:#4ade80">📲 Baixar o app de revendedor (Android)</a></p>
 </div>
 <div class="card" id="vCad" style="display:none">
@@ -76,6 +81,25 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
  <p class="mut" style="text-align:center"><span id="quem"></span> • <a href="#" id="editar" style="color:#ffd54a">Editar meus dados</a></p>
  <p class="mut" style="text-align:center"><a class="apkRev" href="https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeRevenda.apk" style="color:#4ade80">📲 Baixar o app de revendedor (Android)</a></p>
  <div class="card"><h2>⬇️ Para seus clientes</h2><p class="mut">O cliente baixa o app na TV Box pelo navegador: <b style="color:#ffd54a">is.gd/tudookebox</b>. Na TV smart: abre o navegador e digita <b style="color:#ffd54a">is.gd/tudooke</b>. Depois digita o código que você mandou.</p></div>
+ <div class="card" id="cMat"><h2>📣 Material para enviar ao cliente</h2>
+  <p class="mut">Toque em <b>WhatsApp</b> e escolha o cliente (ou um grupo). A mensagem já vai com o seu nome e o seu WhatsApp, para o cliente falar com você.</p>
+  <p class="mut" id="matAss" style="color:#4ade80"></p>
+  <div class="mat"><b>🎬 Comercial do TudoOkê TV (deitado, para Status e grupos)</b>
+   <video controls preload="metadata" playsinline src="https://merceariaaled19-cloud.github.io/Meu-lanches/telaoke/anuncios/tudooke-lancamento.mp4#t=0.5"></video>
+   <div class="row"><button class="s mCp" data-m="com" style="flex:1">Copiar</button><button class="s mWa" data-m="com" style="flex:1;background:#16a34a">Enviar no WhatsApp</button></div></div>
+  <div class="mat"><b>🎬 Comercial em pé (para Status / Reels)</b>
+   <video controls preload="metadata" playsinline src="https://merceariaaled19-cloud.github.io/Meu-lanches/telaoke/anuncios/tudooke-lancamento-vertical.mp4#t=0.5" style="max-height:340px"></video>
+   <div class="row"><button class="s mCp" data-m="comv" style="flex:1">Copiar</button><button class="s mWa" data-m="comv" style="flex:1;background:#16a34a">Enviar no WhatsApp</button></div></div>
+  <div class="mat"><b>▶️ Vídeo: como instalar (TV Box e TV smart)</b>
+   <video controls preload="none" playsinline poster="videos/capa-tvbox.jpg" src="videos/tutorial-tvbox.mp4"></video>
+   <div class="row"><button class="s mCp" data-m="tut" style="flex:1">Copiar</button><button class="s mWa" data-m="tut" style="flex:1;background:#16a34a">Enviar no WhatsApp</button></div></div>
+  <div class="mat"><b>📲 Link para baixar o app (TV Box e TV smart)</b>
+   <p class="mut">TV Box: <b style="color:#ffd54a">is.gd/tudookebox</b> • TV smart: <b style="color:#ffd54a">is.gd/tudooke</b></p>
+   <div class="row"><button class="s mCp" data-m="app" style="flex:1">Copiar</button><button class="s mWa" data-m="app" style="flex:1;background:#16a34a">Enviar no WhatsApp</button></div></div>
+  <div class="mat"><b>🎁 Mensagem pronta com teste grátis de 3 dias</b>
+   <p class="mut">Gera um código de teste e já monta a mensagem completa (código + link do app + vídeo de como instalar), com os seus dados.</p>
+   <button class="w verde" id="mTeste">🎁 Gerar teste grátis e mandar</button></div>
+ </div>
 </div>
 </main>
 <script>
@@ -137,7 +161,7 @@ function escutaListas(){
  subs.push(db.collection('tk_rev_recargas').where('rev','==',U.uid).onSnapshot(function(s){RECS=s.docs.map(function(d){var x=d.data();x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pintaH()},function(){}))}
 
 function pintaTudo(){if(!REV||REV.status!='aprovado')return;var s=REV.saldoC||0;$('saldo').textContent=reais(s);$('saldo').className='saldo'+(s<=0?' zero':'');
- $('quem').textContent=(REV.nome||'')+' • '+(U.email||'');
+ $('quem').textContent=(REV.nome||'')+' • '+(U.email||'');$('matAss').textContent='Suas mensagens vão assinadas: Fale comigo: '+(REV.nome||'')+' – WhatsApp '+zapBonito(REV.zap);
  if(!pronto()){$('tabPreco').innerHTML='<div class="aviso">O Alex ainda está configurando os preços da revenda. Por enquanto dá para gerar só testes de 3 dias.</div>'}
  else{var h='<table><tr><th>Plano</th><th>Você paga</th><th>Você vende por</th></tr>';PLANOS.forEach(function(p){if(p.id=='teste')h+='<tr><td>Teste 3 dias</td><td class="v">Grátis</td><td class="v">Grátis</td></tr>';else h+='<tr><td>'+p.nome+' ('+p.dias+' dias)</td><td class="v"><b style="color:#4ade80;letter-spacing:0">'+reais(custoC(p.id))+'</b></td><td class="v">'+reais(precoC(p.id))+'</td></tr>'});$('tabPreco').innerHTML=h+'</table>'}
  var P=$('planos');P.innerHTML='';PLANOS.forEach(function(p){var l=document.createElement('label');var pago=p.id!='teste';var sub=pago?(pronto()?'custa '+reais(custoC(p.id)):'indisponível'):'grátis';
@@ -147,7 +171,14 @@ function avisoSaldo(){var e=$('eGera');e.textContent='';$('gera').disabled=false
  if(!pronto()){e.textContent='Os preços ainda não foram configurados pelo Alex.';$('gera').disabled=true;return}
  if((REV.saldoC||0)<custoC(SEL)){e.textContent='Crédito insuficiente: este plano custa '+reais(custoC(SEL))+' e você tem '+reais(REV.saldoC||0)+'. Peça crédito ao Alex.';$('gera').disabled=true}}
 
-function texto(c,d,n){return (n?'Olá, '+n+'! ':'')+'Seu código do TudoOkê TV ('+NOME[d]+'): '+fmt(c)+'\nAbra o app na TV Box (baixe em is.gd/tudookebox) ou na TV smart pelo navegador em is.gd/tudooke e digite o código. Ele fica preso a esse aparelho.'}
+function zapBonito(z){z=String(z||'').replace(/\D/g,'');if(z.indexOf('55')==0&&z.length>=12)z=z.slice(2);return z.length>=10?'('+z.slice(0,2)+') '+z.slice(2,z.length-4)+'-'+z.slice(-4):z}
+function assina(){if(!REV)return '';var z=String(REV.zap||'').replace(/\D/g,'');return '\n\n📞 Fale comigo: '+(REV.nome||'')+' – WhatsApp '+zapBonito(z)+(z?' (wa.me/'+z+')':'')}
+var LKAPP='\n📲 Baixe o app: TV Box → abra o navegador e digite is.gd/tudookebox • TV smart → abra o navegador e digite is.gd/tudooke',LKTUT='\n▶️ Vídeo de como instalar: TV Box is.gd/tudookevideobox • TV smart is.gd/tudookevideosmart';
+var MAT={com:function(){return '🎤 Conheça o TudoOkê TV: karaokê com nota na sua TV Box ou TV smart! Churrasco, aniversário, fim de semana… todo mundo cantando 🎶\n🎬 Veja o vídeo: is.gd/tudookelancamento\n🎁 Peça seu teste grátis de 3 dias comigo!'+assina()},
+ comv:function(){return '🎤 TudoOkê TV: karaokê com nota na sua TV! 🎶\n🎬 Veja o vídeo: is.gd/tudookelancamentov\n🎁 Peça seu teste grátis de 3 dias comigo!'+assina()},
+ tut:function(){return '▶️ Como instalar o TudoOkê TV:\n📺 TV Box: is.gd/tudookevideobox\n🖥️ TV smart: is.gd/tudookevideosmart\nDepois é só digitar o código que eu te mandar.'+assina()},
+ app:function(){return '🎤 TudoOkê TV – karaokê com nota'+LKAPP+'\nDepois digite o código que eu te mandar. Quer testar 3 dias grátis? É só me chamar!'+assina()}};
+function texto(c,d,n){return (n?'Olá, '+n+'! ':'')+'🎤 Seu código do TudoOkê TV ('+NOME[d]+'): '+fmt(c)+LKAPP+'\nAbra o app e digite o código. Ele fica preso a esse aparelho.'+(d<=3?LKTUT:'')+assina()}
 $('gera').onclick=function(){var b=this,cl=$('cli').value.trim(),z=nz($('zap').value),p=PLANOS.filter(function(x){return x.id==SEL})[0],c=gcod();$('eGera').textContent='';
  if(z&&z.length>20)z=z.slice(0,20);b.disabled=true;$('novo').style.display='none';
  var base={dias:p.dias,plano:p.nome,cliente:cl,zap:z,device:'',ativadoEm:null,criadoEm:TS(),revendedor:U.uid,revNome:REV.nome||''},licRef=db.collection('licencas').doc(c),pr;
@@ -192,6 +223,9 @@ $('cVal').oninput=function(){var v=num(this.value);if(!v||!PIX||!PIX.chave){$('p
 $('bPixCp').onclick=function(){copia($('pixTxt').value,this)};
 $('bAvisa').onclick=function(){var v=num($('cVal').value);$('eComp').textContent='';if(!v){$('eComp').textContent='Digite o valor que você pagou.';return}
  location.href=zapUrl(zapAlex(),'Olá, Alex! Sou '+(REV.nome||'')+', revendedor do TudoOkê TV ('+(U.email||'')+'). Fiz um Pix de R$ '+v.toFixed(2).replace('.',',')+' para comprar crédito. Vou mandar o comprovante aqui. Meu crédito agora: '+reais(REV.saldoC||0)+'.')};
+[].forEach.call(document.querySelectorAll('.mCp'),function(b){b.onclick=function(){copia(MAT[b.getAttribute('data-m')](),b)}});
+[].forEach.call(document.querySelectorAll('.mWa'),function(b){b.onclick=function(){location.href=zapUrl('',MAT[b.getAttribute('data-m')]())}});
+$('mTeste').onclick=function(){SEL='teste';pintaTudo();$('novo').style.display='none';$('eGera').textContent='Digite o nome e o WhatsApp do cliente (se quiser) e toque em Gerar código. Depois toque em Mandar no WhatsApp: a mensagem já vai pronta.';window.scrollTo(0,$('planos').offsetTop-80);setTimeout(function(){$('cli').focus()},300)};
 /* dentro do próprio app (APK), esconde o link de baixar o app */
 if(/; wv\)/.test(navigator.userAgent)||matchMedia('(display-mode: standalone)').matches)[].forEach.call(document.querySelectorAll('.apkRev'),function(a){a.parentNode.style.display='none'});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('revenda-sw.js',{scope:'./revenda'}).catch(function(){});
