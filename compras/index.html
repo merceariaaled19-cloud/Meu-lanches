@@ -33,7 +33,7 @@ main{padding:14px 14px 110px;max-width:720px;margin:0 auto}
 h2{font-size:22px;margin:18px 4px 10px}
 .card{background:#fff;border-radius:18px;padding:14px 16px;margin:0 0 12px;box-shadow:0 1px 3px #0001}
 .grupo h3{margin:0 0 6px;font-size:19px;color:var(--v2)}
-.it{border-top:1px solid #eef2ef;padding:10px 0}
+.it{border-top:1px solid #eef2ef;padding:10px 0}.it.cf{position:relative;padding-right:96px}.it .ft{position:absolute;right:0;top:12px;width:86px;height:86px;object-fit:contain;background:#fff;border:1px solid #eef2ef;border-radius:12px}
 .it:first-of-type{border-top:0}
 .it .nm{font-size:17px}
 .it .lj{font-weight:800;font-size:19px}
@@ -288,7 +288,8 @@ function htmlItem(it, top){
   var mt = [];
   mt.push(it.validade ? 'Válido até ' + dataBR(it.validade) : (it.fonte.indexOf('site') >= 0 ? 'Preço do site' : 'Enquanto durar o estoque'));
   mt.push('Coletado ' + horaBR(it.coletado_em));
-  return '<div class="it' + (top ? ' top' : '') + '">' +
+  var ft = it.foto ? '<img class="ft" src="' + esc(it.foto) + '" alt="" loading="lazy" onerror="this.remove()">' : '';
+  return '<div class="it' + (top ? ' top' : '') + (ft ? ' cf' : '') + '">' + ft +
     '<div class="lj">' + esc(it.loja) + (top ? '<span class="tag">MAIS BARATO</span>' : '') + (it.promo ? '<span class="tag n">promoção</span>' : '') + (it._novo ? '<span class="tag nv">NOVO</span>' : '') + '</div>' +
     '<div class="nm">' + esc(it.produto) + '</div>' +
     '<div class="pr">' + reais(it.preco) + '</div>' +

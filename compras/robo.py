@@ -166,8 +166,96 @@ def nova_era():
             if it['promo']: it['preco_de'] = round(lista, 2)
             ean = p['items'][0].get('ean')
             if ean: it['ean'] = ean
+            try: it['foto'] = foto_peq(p['items'][0]['images'][0]['imageUrl'])
+            except (KeyError, IndexError): pass
             itens.append(it)
     return itens
+
+
+# ---------- fotos: só a foto do MESMO produto (marca + palavras + tamanho iguais) ----------
+CACHE_FOTOS = os.path.join(AQUI, 'dados', 'fotos_cache.json')
+LOJAS_VTEX = ['https://www.novaeranet.com.br', 'https://www.atacadao.com.br', 'https://www.giassi.com.br', 'https://www.savegnago.com.br']
+PARADAS = set('de da do das dos e com sem p para em a o tipo un unid und cada pct pacote cx caixa lata pet garrafa fardo kit c/ s/ sabor sabores varios vários diversos'.split())
+
+VARIANTES = set('premium extra forte descafeinado integral light zero diet gourmet parboilizado parboilizada desnatado semidesnatado organico organica tradicional suave intenso lactose refil concentrado infantil morango chocolate baunilha limao laranja uva maracuja abacaxi coco menta lavanda talco hortela frutas floral cereja pessego goiaba tutti frutti picante apimentado defumado temperado amaciante neutro sensivel premium aromatizado espumante zero light tipo2 vermelho preto branco carioca rajado fradinho bandinha'.split())
+
+GENERICOS = set('em po tipo pacote pct embalagem emb saco sache sachet vidro bandeja unidade unidades original classico classica oficial gelado pacotinho fd pt'.split())
+
+def sem_acento(t):
+    return ''.join(c for c in unicodedata.normalize('NFD', t.lower()) if unicodedata.category(c) != 'Mn')
+
+def tamanho(t):
+    t = sem_acento(t).replace(',', '.')
+    m = re.findall(r'(\d+(?:\.\d+)?)\s*(kg|g|gr|ml|l|lt|litros?|m|un|und|unid|rolos?|folhas?)\b', t)
+    out = set()
+    for v, u in m:
+        v = float(v)
+        if u in ('kg',): out.add(('g', v * 1000))
+        elif u in ('g', 'gr'): out.add(('g', v))
+        elif u in ('l', 'lt', 'litro', 'litros'): out.add(('ml', v * 1000))
+        elif u == 'ml': out.add(('ml', v))
+        elif u.startswith('rolo'): out.add(('rolo', v))
+    return out
+
+def palavras(t):
+    t = re.sub(r'^\s*\d+\s*[.)-]\s*', '', sem_acento(t))
+    t = re.sub(r'\d+(?:[.,]\d+)?\s*(kg|g|gr|ml|l|lt|litros?|un|und|unid|rolos?|folhas?|m)\b', ' ', t)
+    return [w for w in re.findall(r'[a-z]+', t) if len(w) > 1 and w not in PARADAS]
+
+def mesmo_produto(nome, cand):
+    a, b = palavras(nome), set(palavras(cand))
+    if len(a) < 2: return False                     # nome curto demais ("Abacate") = sem foto
+    if any(w not in b for w in a): return False     # toda palavra do encarte tem que estar no produto
+    va = set(palavras(nome))
+    if any(w not in va and w not in GENERICOS for w in b): return False   # palavra a mais no site (Extraforte, Parboilizado...) = outro produto
+    ta, tb = tamanho(nome), tamanho(cand)
+    if not ta or ta != tb: return False             # tamanho tem que existir e ser igual
+    return True
+
+def pega_rapido(url):
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=8) as r:
+            return json.loads(r.read().decode('utf-8'))
+    except Exception:
+        return None
+
+def foto_peq(u):
+    # VTEX: pede miniatura 200x200 (mais leve no celular)
+    return re.sub(r'/arquivos/ids/(\d+)(-\d+-\d+)?/', r'/arquivos/ids/\1-200-200/', u)
+
+def acha_foto(nome, cache):
+    k = ' '.join(palavras(nome)) + '|' + ','.join('%s%g' % x for x in sorted(tamanho(nome)))
+    if k in cache: return cache[k] or None
+    foto = ''
+    if len(palavras(nome)) >= 2 and tamanho(nome):
+        busca = re.sub(r'^\s*\d+\s*[.)-]\s*', '', nome)
+        for base in LOJAS_VTEX:
+            dados = pega_rapido(base + '/api/catalog_system/pub/products/search?ft=' + urllib.parse.quote(busca) + '&_from=0&_to=9')
+            for p in dados or []:
+                try:
+                    if mesmo_produto(nome, p['productName']):
+                        foto = foto_peq(p['items'][0]['images'][0]['imageUrl']); break
+                except (KeyError, IndexError, TypeError):
+                    continue
+            if foto: break
+    cache[k] = foto
+    return foto or None
+
+def poe_fotos(itens, limite=400):
+    try: cache = json.load(open(CACHE_FOTOS, encoding='utf-8'))
+    except Exception: cache = {}
+    novos = 0
+    for it in itens:
+        if it.get('foto'): continue
+        k = ' '.join(palavras(it['produto'])) + '|' + ','.join('%s%g' % x for x in sorted(tamanho(it['produto'])))
+        if k not in cache:
+            if novos >= limite: continue
+            novos += 1
+        f = acha_foto(it['produto'], cache)
+        if f: it['foto'] = f
+    with open(CACHE_FOTOS, 'w', encoding='utf-8') as f:
+        json.dump(cache, f, ensure_ascii=False, separators=(',', ':'))
+    print('Fotos: %d com foto, %d buscas novas' % (sum(1 for i in itens if i.get('foto')), novos))
 
 
 def main():
@@ -180,6 +268,8 @@ def main():
         if k not in melhor or it['preco'] < melhor[k]['preco']:
             melhor[k] = it
     itens = sorted(melhor.values(), key=lambda x: (x['produto'].lower(), x['preco']))
+    try: poe_fotos(itens)
+    except Exception as e: print('Fotos falharam:', e)
     if len(itens) < 50:
         print('Poucos itens (%d); mantendo o arquivo anterior.' % len(itens)); sys.exit(1)
     lojas = sorted(set(i['loja'] for i in itens))
