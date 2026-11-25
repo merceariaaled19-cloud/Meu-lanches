@@ -47,14 +47,25 @@ RK.todos = function(loja){ return RK.tx(loja, 'readonly', function(s){ return s.
 RK.jogos = function(sys){ return RK.todos('jogos').then(function(l){ return (l||[]).filter(function(j){ return !sys || j.sys === sys; }); }); };
 RK.novoId = function(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
 
-/* jogos de demonstração (homebrew livre, domínio público, de Shiru) */
+/* jogos de demonstração (homebrew grátis com licença que deixa redistribuir; ver demos/LICENCAS.txt) */
 RK.DEMOS = [
   {id:'demo-lawn', sys:'nes', nome:'Lawn Mower (demonstração grátis)', arq:'LawnMower.nes', origem:'url', url:'demos/LawnMower.nes', capa:'demos/LawnMower.jpg', demo:1},
-  {id:'demo-lan', sys:'nes', nome:'Lan Master (demonstração grátis)', arq:'LanMaster.nes', origem:'url', url:'demos/LanMaster.nes', capa:'demos/LanMaster.jpg', demo:1}
+  {id:'demo-lan', sys:'nes', nome:'Lan Master (demonstração grátis)', arq:'LanMaster.nes', origem:'url', url:'demos/LanMaster.nes', capa:'demos/LanMaster.jpg', demo:1},
+  {id:'demo-chase', sys:'nes', nome:'Chase (grátis)', arq:'Chase.nes', origem:'url', url:'demos/Chase.nes', capa:'demos/Chase.jpg', demo:1},
+  {id:'demo-zoom', sys:'nes', nome:'Zooming Secretary (grátis)', arq:'ZoomingSecretary.nes', origem:'url', url:'demos/ZoomingSecretary.nes', capa:'demos/ZoomingSecretary.jpg', demo:1},
+  {id:'demo-golf', sys:'nes', nome:'NESert Golfing (grátis)', arq:'NESertGolfing.nes', origem:'url', url:'demos/NESertGolfing.nes', capa:'demos/NESertGolfing.jpg', demo:1},
+  {id:'demo-snek', sys:'nes', nome:'Snek - cobrinha (grátis)', arq:'Snek.nes', origem:'url', url:'demos/Snek.nes', capa:'demos/Snek.jpg', demo:1},
+  {id:'demo-blaster', sys:'nes', nome:'Big City Sliding Blaster (grátis)', arq:'SlidingBlaster.nes', origem:'url', url:'demos/SlidingBlaster.nes', capa:'demos/SlidingBlaster.jpg', demo:1},
+  {id:'demo-gothic', sys:'snes', nome:'Gothicvania (grátis)', arq:'Gothicvania.sfc', origem:'url', url:'demos/Gothicvania.sfc', capa:'demos/Gothicvania.jpg', demo:1}
 ];
+/* semeia cada demo uma vez só (se a pessoa tirar da lista, não volta) */
 RK.semeia = function(){
-  if (localStorage.rkDemos) return Promise.resolve();
-  return Promise.all(RK.DEMOS.map(function(j){ j.add = Date.now(); return RK.put('jogos', j); })).then(function(){ localStorage.rkDemos = '1'; });
+  var ja = {}; try { ja = JSON.parse(localStorage.rkDemosIds || '{}'); } catch (e) {}
+  if (localStorage.rkDemos && !localStorage.rkDemosIds) { ja['demo-lawn'] = 1; ja['demo-lan'] = 1; }
+  var novos = RK.DEMOS.filter(function(j){ return !ja[j.id]; });
+  if (!novos.length) return Promise.resolve();
+  return Promise.all(novos.map(function(j){ j.add = Date.now(); ja[j.id] = 1; return RK.put('jogos', j); }))
+    .then(function(){ localStorage.rkDemos = '1'; localStorage.rkDemosIds = JSON.stringify(ja); });
 };
 
 /* ---------- descobrir o console pelo arquivo ---------- */
