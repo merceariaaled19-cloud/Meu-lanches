@@ -79,6 +79,7 @@ label.big{font-size:19px;font-weight:700;display:block}
 .ufb{display:inline-block;background:#fff3;border-radius:999px;padding:2px 10px;margin-left:6px;font-size:14px;cursor:pointer}
 .aviso-uf{background:#fff7d6;border:2px solid #facc15;border-radius:16px;padding:12px 14px;margin:4px 0 12px;font-size:17px}
 </style>
+<script src="confirma-sair.js?v=1"></script>
 </head>
 <body>
 <div id="cad"><div class="cx">
@@ -517,7 +518,7 @@ function stLogin(){
   }).catch(function(){ $('stLogin').textContent = 'Sem internet para o login.'; });
 }
 $('bLogin').onclick = function(){
-  carregaFirebase().then(function(au){ if (au.currentUser) return au.signOut().then(function(){ LS.set('querLogin', false); stLogin(); }); return entrarGoogle(); })
+  carregaFirebase().then(function(au){ if (au.currentUser) { confirmaSair(function(){ au.signOut().then(function(){ LS.set('querLogin', false); stLogin(); }); }, {texto:'Você vai sair da conta Google (a IA de fotos para até entrar de novo).'}); return; } return entrarGoogle(); })
     .catch(function(e){ toast('Não entrou: ' + (e.code || e.message), 4000); });
 };
 function chaveIA(){

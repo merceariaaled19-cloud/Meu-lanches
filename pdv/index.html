@@ -71,6 +71,7 @@ tr.sel td{background:#ccfbf1}
 #cupom table td{padding:1px 0;border:0;font-size:12px;font-family:"Courier New",monospace}
 #cupom img{max-width:40mm;max-height:20mm}
 </style>
+<script src="confirma-sair.js?v=1"></script>
 </head>
 <body>
 <div id="telaLogin" class="login">
@@ -284,7 +285,8 @@ async function entrar(){ var e=lgEmail.value.trim().toLowerCase(), s=lgSenha.val
 async function carregar(){ localStorage.setItem("pdv_logado",LOJA); PROD=(await dbGet(k("produtos")))||[]; VENDAS=(await dbGet(k("vendas")))||[]; CLI=(await dbGet(k("clientes")))||[]; CX=(await dbGet(k("caixa")))||null; CXH=(await dbGet(k("caixas")))||[]; CFG=(await dbGet(k("config")))||{nome:"Meu Mercadinho",papel:"80",auto:"perguntar",proxNum:1}; telaLogin.classList.add("esc"); app.classList.remove("esc"); aplicaCfg(); aba("vender"); if(LOJA!=="nuvem") avisoLocal(); }
 function avisoLocal(){ if(document.getElementById("avLocal")) return; var d=document.createElement("div"); d.id="avLocal"; d.style.cssText="background:#fef3c7;color:#111;padding:8px 12px;text-align:center;font-size:14px"; d.innerHTML='⚠️ Esse login é só deste aparelho. <button class="pri" style="padding:6px 10px;font-size:13px" onclick="passarNuvem()">☁️ Passar pra nuvem com Google</button>'; app.insertBefore(d,app.firstChild); }
 async function passarNuvem(){ if(VENDA.itens.length){ alert("Termine a venda aberta primeiro."); return; } if(!confirm("Vai entrar com Google e levar os produtos, vendas e fiado deste aparelho pra nuvem. No celular, entre com o mesmo Google. Continuar?")) return; await entrarGoogle(); }
-function sair(){ if(VENDA.itens.length&&!confirm("Tem venda aberta. Sair mesmo?")) return; localStorage.removeItem("pdv_logado"); if(NUVEM&&window.firebase){ firebase.auth().signOut().then(function(){ location.reload(); }); return; } location.reload(); }
+function sair(){ confirmaSair(sairSim, {texto: VENDA.itens.length ? "Tem venda aberta. Se sair agora, ela não é finalizada." : "Você vai sair do caixa."}); }
+function sairSim(){ localStorage.removeItem("pdv_logado"); if(NUVEM&&window.firebase){ firebase.auth().signOut().then(function(){ location.reload(); }); return; } location.reload(); }
 
 // ---------- abas ----------
 var ABA="vender";

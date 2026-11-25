@@ -198,6 +198,7 @@ body.apk .so-web{display:none!important}
 
 <script src="lib/peerjs.min.js"></script>
 <script src="comum.js"></script>
+<script src="confirma-sair.js?v=1"></script>
 <script>
 (function(){
 var $ = function(i){ return document.getElementById(i); }, B = RK.B, modo = RK.modo, SYS = RK.SYS;
@@ -303,12 +304,15 @@ $('bVolta').onclick = volta;
 /* ---------- modais ---------- */
 function abre(id, el){ $(id).classList.add('on'); pilha.push({id:id, volta:document.activeElement}); setTimeout(function(){ var f = el ? $(el) : $(id).querySelector('.f'); if (f) f.focus(); }, 60); }
 function fecha(){ var p = pilha.pop(); if (!p) return; $(p.id).classList.remove('on'); if (p.volta && p.volta.focus) p.volta.focus(); }
-function raiz(){ if (pilha.length) return $(pilha[pilha.length - 1].id); if ($('intro')) return $('intro'); return $('telaSys').style.display === 'none' ? $('home') : $('telaSys'); }
+function raiz(){ if (window.confirmaSair && confirmaSair.aberto()) return document.getElementById('cfsCaixa'); if (pilha.length) return $(pilha[pilha.length - 1].id); if ($('intro')) return $('intro'); return $('telaSys').style.display === 'none' ? $('home') : $('telaSys'); }
 RK.nav(raiz);
 if (!B) document.addEventListener('keydown', function(ev){ var k = ev.keyCode; if (k === 27 || k === 461 || k === 10009 || (k === 8 && !(ev.target && ev.target.tagName === 'INPUT'))) { ev.preventDefault(); window.voltar(); } });
 window.voltar = function(){
+  if (window.confirmaSair && confirmaSair.cancelar()) return 'ok';
   if (pilha.length) { fecha(); return 'ok'; }
   if (atual) { volta(); return 'ok'; }
+  /* no app de celular, Voltar na tela inicial fecha o app: pergunta antes (2026-11-25) */
+  if (B && RK.modo === 'cel' && B.sair) { confirmaSair(function(){ B.sair(); }, {texto:'O Retrô Okê vai fechar.', classe:'f'}); return 'ok'; }
   return 'sair';
 };
 window.inicio = function(){ while (pilha.length) fecha(); if (atual) volta(); foco(); };

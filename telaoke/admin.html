@@ -45,7 +45,8 @@ details summary{cursor:pointer;font-weight:bold;padding:8px 0;color:var(--ci)}
 .cod{font-size:26px;letter-spacing:5px;color:var(--am);font-weight:bold;font-family:monospace}
 #toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);background:#16a34a;padding:12px 18px;border-radius:12px;font-weight:bold;display:none;z-index:90;max-width:90%;text-align:center}
 .vazio{text-align:center;padding:18px 8px;opacity:.8}.vazio i{display:block;font-size:40px;font-style:normal;margin-bottom:6px}
-</style></head><body>
+</style><script src="confirma-sair.js?v=1"></script>
+</head><body>
 <header><img src="adm-192.png" alt=""><h1>TelaOkê Publicidades • ADM</h1><button class="s" id="sair" style="display:none">Sair</button></header>
 <main>
 <div class="card" id="login" style="display:none;text-align:center"><img src="icon-192.png" alt="" style="width:76px;height:76px;border-radius:18px;margin-top:6px">
@@ -181,7 +182,7 @@ function msg(t){$('msg').textContent=t}
 if(!window.TO_TESTE){
 $('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});if(/Android|iPhone/i.test(navigator.userAgent)){au.signInWithRedirect(p);return}au.signInWithPopup(p).catch(function(e){if(/popup|not-supported|cancelled/.test(e.code))au.signInWithRedirect(p);else msg('Não entrou: '+e.code)})};
 $('bE').onclick=function(){au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){msg('Não entrou: '+e.code)})};
-$('sair').onclick=function(){au.signOut()};au.getRedirectResult().catch(function(e){msg('Não entrou: '+e.code)});
+$('sair').onclick=function(){confirmaSair(function(){au.signOut()},{texto:'Você vai sair do painel do TelaOkê.'})};au.getRedirectResult().catch(function(e){msg('Não entrou: '+e.code)});
 au.onAuthStateChanged(function(u){UNS.forEach(function(f){f()});UNS=[];U=u;var adm=u&&ADMINS.indexOf((u.email||'').toLowerCase())>=0;
  $('login').style.display=adm?'none':'block';$('app').style.display=adm?'block':'none';$('abas').style.display=adm?'flex':'none';$('sair').style.display=u?'block':'none';
  if(u&&!adm)msg('A conta '+u.email+' não é de administrador. Toque em Sair e entre com a conta certa.');if(adm)inicia()});

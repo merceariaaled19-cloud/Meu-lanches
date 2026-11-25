@@ -17,7 +17,8 @@ button,.bt{display:block;width:100%;padding:14px;font-size:16px;border:0;border-
 .pl b{font-size:18px}.pl .v{float:right;font-size:20px;color:#ffd54a;font-weight:bold}.selo{position:absolute;top:-10px;right:12px;background:#16a34a;font-size:11px;padding:2px 8px;border-radius:8px}
 textarea{width:100%;height:84px;font-size:12px;border-radius:10px;background:#0f0322;color:#fff;border:2px solid #4a2380;padding:8px}
 ol{padding-left:20px;margin:6px 0}li{margin:4px 0}
-</style></head><body>
+</style><script src="confirma-sair.js?v=1"></script>
+</head><body>
 <header><h1>🎤 TudoOkê TV</h1><p>Karaokê com nota na sua TV Box</p></header>
 <main>
 <div class="card" id="vLogin" style="display:none">
@@ -95,7 +96,7 @@ function pixCC(ch,no,ci,v,tx){function f(i,x){return i+('0'+x.length).slice(-2)+
 $('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});au.signInWithPopup(p).catch(function(e){if(/popup|not-supported/.test(e.code))au.signInWithRedirect(p);else $('eLog').textContent=erroTxt(e)})};
 $('bCria').onclick=function(){$('eLog').textContent='';au.createUserWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){$('eLog').textContent=erroTxt(e)})};
 $('bEnt').onclick=function(){$('eLog').textContent='';au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){$('eLog').textContent=erroTxt(e)})};
-$('sair').onclick=function(e){e.preventDefault();au.signOut()};au.getRedirectResult().catch(function(){});
+$('sair').onclick=function(e){e.preventDefault();confirmaSair(function(){au.signOut()},{texto:'Você vai sair da sua conta.'})};au.getRedirectResult().catch(function(){});
 au.onAuthStateChanged(function(u){U=u;if(unL){unL();unL=null}if(unP){unP();unP=null}
  if(!u){vis('vLogin');return}
  db.collection('tk_clientes').doc(u.uid).get().then(function(d){if(d.exists){CLI=d.data();app()}else{if(u.displayName)$('nome').value=u.displayName;vis('vDados')}}).catch(function(e){vis('vLogin');$('eLog').textContent='Erro: '+e.code})});

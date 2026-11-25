@@ -3,7 +3,7 @@ var LOJAS = [], FILTRO = 'pendente', unA = null, unPg = null, PAGS = [], PAGS_OK
 function msg(t){ $('msg').textContent = t; }
 $('bG').onclick = function(){ var p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt: 'select_account'}); msg('Abrindo o Google…'); var cel = /Android|iPhone/i.test(navigator.userAgent); if (cel){ au.signInWithRedirect(p).catch(function(e){ msg('Não entrou: ' + e.code); }); return; } au.signInWithPopup(p).catch(function(e){ if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment' || e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') au.signInWithRedirect(p); else msg('Não entrou: ' + e.code); }); };
 $('bE').onclick = function(){ au.signInWithEmailAndPassword($('em').value.trim(), $('se').value).catch(function(e){ msg('Não entrou: ' + e.code); }); };
-$('sair').onclick = function(){ au.signOut(); };
+$('sair').onclick = function(){ confirmaSair(function(){ au.signOut(); }, {texto:'Você vai sair da conta de administrador.'}); };
 au.getRedirectResult().catch(function(e){ msg('Não entrou: ' + (e.code || e.message)); });
 au.onAuthStateChanged(function(u){
   if (unA){ unA(); unA = null; } if (unPg){ unPg(); unPg = null; } PAGS = []; PAGS_OK = false;

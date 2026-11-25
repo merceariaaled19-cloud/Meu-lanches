@@ -1,3 +1,5 @@
+/* Sair sempre pergunta antes (2026-11-25) */
+function sairConta(){ confirmaSair(function(){ au.signOut(); }, {texto:'Você vai sair da conta da sua lanchonete.'}); }
 /* Meu Lanche Pro — painel do dono */
 var U = null, LD = null, IT = [], PEDS = [], ABA = 'pedidos', CFG = null, unL = null, unI = null, unP = null, pedVistos = null, REV = [], fotoCb = null;
 
@@ -12,7 +14,7 @@ function abreDono(){
       var ven = LD.validade && LD.validade.toDate && LD.validade.toDate() < new Date();
       if (LD.status !== 'liberado' || ven) return telaEspera(ven);
       if (!unI) iniciaPainel(); else if (!antes || antes.status !== LD.status || !$('conteudo')) desenhaPainel(); else { atualizaTopo(); if (ABA !== 'pedidos' && !$('modal').innerHTML) desenhaAba(); }
-    }, function(e){ $('raiz').innerHTML = '<div class="wrap"><div class="aviso no">Erro ao carregar: ' + esc(e.code || e.message) + '</div><button onclick="au.signOut()">Sair</button></div>'; });
+    }, function(e){ $('raiz').innerHTML = '<div class="wrap"><div class="aviso no">Erro ao carregar: ' + esc(e.code || e.message) + '</div><button onclick="sairConta()">Sair</button></div>'; });
   });
 }
 
@@ -71,7 +73,7 @@ function telaNovaLoja(){
     '<label>Nome da lanchonete</label><input id="lNome" placeholder="Ex.: Lanches do Zé">' +
     '<label>WhatsApp da lanchonete</label><input id="lZap" type="tel" placeholder="(92) 99999-9999">' + htmlTipos(TIPOS_SEL) + '<p id="lMsg" style="color:var(--erro)"></p>' +
     '<button class="full" id="lBt" onclick="var z=soNum($(\'lZap\').value);if(!$(\'lNome\').value.trim()||z.length<10){$(\'lMsg\').textContent=\'Preencha o nome e o WhatsApp com DDD.\';return}if(!TIPOS_SEL.length){$(\'lMsg\').textContent=\'Marque pelo menos um tipo de lanche.\';return}this.disabled=true;criaLoja($(\'lDono\').value.trim(),$(\'lNome\').value.trim(),z,TIPOS_SEL.slice())">Enviar cadastro</button>' +
-    '<p style="text-align:center"><a href="#" onclick="au.signOut();return false">Sair</a></p></div></div>';
+    '<p style="text-align:center"><a href="#" onclick="sairConta();return false">Sair</a></p></div></div>';
   $('raiz').innerHTML = h;
 }
 /* ---------- tipo da lanchonete (vários) ---------- */
@@ -97,14 +99,14 @@ function criaLoja(dono, nome, zap, tipos){
   }).catch(function(e){ $('raiz').innerHTML = '<div class="wrap"><div class="aviso no">Não deu para criar o cadastro (' + esc(e.code || e.message) + ').</div><button onclick="location.reload()">Tentar de novo</button></div>'; });
 }
 function telaEspera(vencido){
-  if (vencido && LD.status === 'liberado'){ $('raiz').innerHTML = '<div class="wrap"><div class="hero"><div class="ico">⭐</div><h2>' + esc(LD.nome) + '</h2><p>' + (LD.plano === 'teste' ? 'Seus 7 dias grátis acabaram. Escolha um plano para continuar — tudo que você montou continua salvo.' : 'Seu plano venceu. Renove para continuar — tudo que você montou continua salvo.') + '</p></div><video controls preload="none" playsinline poster="videos/capa-pagamento.jpg" src="videos/tutorial-pagamento.mp4?v=2" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video><div id="planos"></div><p style="text-align:center"><a href="#" onclick="au.signOut();return false">Sair</a></p></div>'; return mostraPlanos(); }
+  if (vencido && LD.status === 'liberado'){ $('raiz').innerHTML = '<div class="wrap"><div class="hero"><div class="ico">⭐</div><h2>' + esc(LD.nome) + '</h2><p>' + (LD.plano === 'teste' ? 'Seus 7 dias grátis acabaram. Escolha um plano para continuar — tudo que você montou continua salvo.' : 'Seu plano venceu. Renove para continuar — tudo que você montou continua salvo.') + '</p></div><video controls preload="none" playsinline poster="videos/capa-pagamento.jpg" src="videos/tutorial-pagamento.mp4?v=2" style="width:100%;border-radius:12px;background:#000;margin-bottom:10px"></video><div id="planos"></div><p style="text-align:center"><a href="#" onclick="sairConta();return false">Sair</a></p></div>'; return mostraPlanos(); }
   var bloq = LD.status === 'bloqueado', t;
   if (vencido) t = 'Seu acesso venceu. Fale com a gente para renovar.';
   else if (bloq) t = 'Seu acesso está pausado. Fale com a gente para saber mais.';
   else t = 'Recebemos seu cadastro! Assim que seu acesso for liberado, esta tela abre sozinha o seu painel.';
   var msg = 'Olá! Fiz o cadastro no Meu Lanche. Lanchonete: ' + LD.nome + ' • E-mail: ' + (LD.email || '') + '. Pode liberar meu acesso?';
   $('raiz').innerHTML = '<div class="wrap"><div class="hero"><div class="ico">' + (vencido || bloq ? '🔒' : '⏳') + '</div><h2>' + esc(LD.nome) + '</h2><p>' + t + '</p></div>' +
-    '<div class="card"><a class="bt btz full" href="' + zapLink(ZAP_ADMIN, msg) + '" target="_blank">💬 Pedir liberação no WhatsApp</a><p></p><button class="bt3 full" onclick="au.signOut()">Sair</button></div></div>';
+    '<div class="card"><a class="bt btz full" href="' + zapLink(ZAP_ADMIN, msg) + '" target="_blank">💬 Pedir liberação no WhatsApp</a><p></p><button class="bt3 full" onclick="sairConta()">Sair</button></div></div>';
 }
 
 /* ---------- painel ---------- */
@@ -137,7 +139,7 @@ function desenhaPainel(){
 function atualizaTopo(){
   if (!$('topo')) return;
   var link = linkLoja(LD.slug);
-  $('topo').innerHTML = '<div class="lin">' + (LD.logo ? '<img class="logo" src="' + LD.logo + '">' : '<img class="logo" src="icon-192.png">') + '<div style="flex:1;min-width:0"><h1>' + esc(LD.nome) + '</h1><small>' + (abertoAgora(LD.horario) ? '🟢 Aberto agora' : '🔴 Fechado agora') + '</small></div><button class="mini bt3" onclick="if(confirm(\'Sair da conta?\'))au.signOut()">Sair</button></div>' +
+  $('topo').innerHTML = '<div class="lin">' + (LD.logo ? '<img class="logo" src="' + LD.logo + '">' : '<img class="logo" src="icon-192.png">') + '<div style="flex:1;min-width:0"><h1>' + esc(LD.nome) + '</h1><small>' + (abertoAgora(LD.horario) ? '🟢 Aberto agora' : '🔴 Fechado agora') + '</small></div><button class="mini bt3" onclick="sairConta()">Sair</button></div>' +
     faixaPlano() + '<div style="max-width:760px;margin:12px auto 0"><div class="linkbox" style="background:rgba(255,255,255,.95);color:#222">🔗 <span style="flex:1">' + esc(link) + '</span></div>' +
     '<div class="row" style="margin-top:8px"><button class="mini bt3" onclick="copiar(linkLoja(LD.slug),\'Link copiado!\')">📋 Copiar link</button><button class="mini btz" onclick="abreZap(\'\',\'Peça seu lanche aqui: \'+linkLoja(LD.slug))">📲 Compartilhar</button><a class="bt mini bt3" href="' + esc(link) + '" target="_blank">👀 Ver loja</a></div></div>';
 }

@@ -1,8 +1,9 @@
-const CACHE_NAME = "mecontrata-v10";
+const CACHE_NAME = "mecontrata-v11";
 const APP_FILES = [
   "./",
   "./index.html",
   "./extras.js",
+  "./confirma-sair.js?v=1",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",

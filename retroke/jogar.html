@@ -67,6 +67,7 @@ function destrava(){ (window.__acs || []).forEach(function(c){ try { if (c.state
 </script>
 <script src="lib/peerjs.min.js"></script>
 <script src="comum.js"></script>
+<script src="confirma-sair.js?v=1"></script>
 <script>
 (function(){
 var $ = function(i){ return document.getElementById(i); }, B = RK.B, q = new URLSearchParams(location.search);
@@ -181,12 +182,13 @@ $('m7').onclick = function(){ mostraCel(true); };
 $('m8').onclick = function(){ troca = !troca; localStorage.rkTrocaAB = troca ? '1' : '0'; $('m8s').textContent = troca ? 'Agora: trocados' : 'Agora: normal';
   try { E.controls = controlesPadrao(); E.defaultControllers = controlesPadrao(); } catch (e) {} RK.toast(troca ? 'Botões A e B trocados' : 'Botões A e B normais'); };
 $('m9').onclick = function(){ try { E.gameManager.restart(); } catch (e) {} fechaMenu(); };
-$('m10').onclick = salvaESai;
+$('m10').onclick = function(){ confirmaSair(salvaESai, {texto:'O jogo é salvo e você volta para a lista de jogos.', classe:'f'}); };
 $('celFecha').onclick = function(){ $('mCel').classList.remove('on'); $('m6').focus(); };
 $('bMenu').onclick = function(){ menuOn ? fechaMenu() : abreMenu(); };
-function raiz(){ return $('mCel').classList.contains('on') ? $('mCel') : $('menu').classList.contains('on') ? $('menu') : $('carrega'); }
+function raiz(){ if (window.confirmaSair && confirmaSair.aberto()) return document.getElementById('cfsCaixa'); return $('mCel').classList.contains('on') ? $('mCel') : $('menu').classList.contains('on') ? $('menu') : $('carrega'); }
 RK.nav(raiz);
 window.voltar = function(){
+  if (window.confirmaSair && confirmaSair.cancelar()) return 'ok';
   if ($('mCel').classList.contains('on')) { $('celFecha').click(); return 'ok'; }
   if (menuOn) { fechaMenu(); return 'ok'; }
   abreMenu(); return 'ok';

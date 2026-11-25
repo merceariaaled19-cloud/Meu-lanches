@@ -79,7 +79,7 @@ $('bSenha').onclick = function(){ var em = $('lEm').value.trim().toLowerCase(); 
   au.languageCode = 'pt'; au.sendPasswordResetEmail(em).then(function(){ $('msgLogin').textContent = 'Pronto! Mandei um e-mail para ' + em + '. Abra, toque no link, crie a senha e volte aqui para entrar. (Olhe também no Spam.)'; })
     .catch(function(e){ var c = (e && e.code) || ''; if (/user-not-found/.test(c)) au.createUserWithEmailAndPassword(em, Math.random().toString(36).slice(2) + 'Aa9!').then(function(){ return au.signOut(); }).then(function(){ return au.sendPasswordResetEmail(em); }).then(function(){ $('msgLogin').textContent = 'Pronto! Mandei um e-mail para ' + em + '. Abra, crie a senha e volte aqui. (Olhe no Spam.)'; }).catch(function(x){ $('msgLogin').textContent = erroLogin(x.code || String(x)); });
       else $('msgLogin').textContent = erroLogin(c); }); };
-$('bSair').onclick = function(){ if (TESTE) return; if (confirm('Sair da conta?')) au.signOut(); };
+$('bSair').onclick = function(){ if (TESTE) return; confirmaSair(function(){ au.signOut(); }, {texto:'Você vai sair da sua conta do Oferta Okê.'}); };
 
 /* ================= lista ================= */
 function abreHome(){

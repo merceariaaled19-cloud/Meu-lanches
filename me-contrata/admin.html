@@ -32,6 +32,7 @@ header button{background:#fff;color:#0a7a42;border:none;border-radius:16px;paddi
 .venc{background:#eee;color:#666}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#16a34a;color:#fff;padding:12px 18px;border-radius:12px;font-weight:bold;display:none;z-index:99}
 </style>
+<script src="confirma-sair.js?v=1"></script>
 </head>
 <body>
 <header><h1>📢 ADM • Vagas locais</h1><button id="sair">Sair</button></header>
@@ -77,7 +78,7 @@ var PEND=[],PUB=[],UNS=[];
 $('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
   if(/Android|iPhone/i.test(navigator.userAgent)){au.signInWithRedirect(p);return}
   au.signInWithPopup(p).catch(function(x){if(/popup|not-supported|cancelled/.test(x.code))au.signInWithRedirect(p);else $('msg').textContent='Não entrou: '+x.code})};
-$('sair').onclick=function(){au.signOut()};
+$('sair').onclick=function(){confirmaSair(function(){au.signOut()},{texto:'Você vai sair da conta de administrador.'})};
 au.getRedirectResult().catch(function(x){$('msg').textContent='Não entrou: '+x.code});
 au.onAuthStateChanged(function(u){
   UNS.forEach(function(f){f()});UNS=[];
