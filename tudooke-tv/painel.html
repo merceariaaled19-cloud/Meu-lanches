@@ -16,7 +16,12 @@ button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;ga
 .cod{font-size:30px;letter-spacing:4px;color:#ffd54a;text-align:center;margin:10px 0;font-weight:bold}
 .it{border-top:1px solid #33175c;padding:10px 0}.it b{color:#ffd54a;letter-spacing:2px}.tag{font-size:12px;padding:2px 8px;border-radius:9px;margin-left:6px}
 .novo{background:#2563eb}.ag{background:#b45309}.blq{background:#7f1d1d}.rv{background:#0f3d2e;border:1px solid #22c55e}.ok{background:#16a34a}.venc{background:#b91c1c}.mut{opacity:.75;font-size:13px;margin:4px 0}
-#msg{color:#ff8a8a;min-height:18px}.tot{display:flex;gap:8px;text-align:center}.tot div{flex:1;background:#0f0322;border-radius:10px;padding:8px}.tot b{display:block;font-size:22px}
+#msg{color:#ff8a8a;min-height:18px}
+.pedAv{position:sticky;top:0;z-index:50;background:#0e7490;border:3px solid #ffd54a;border-radius:14px;padding:12px;margin-bottom:14px;box-shadow:0 6px 20px #000a}.pedAv b{font-size:17px;display:block;margin-bottom:6px}
+.ped{background:#2a2205;border:2px solid #ffd54a;border-radius:10px;padding:10px;margin:8px 0}.ped b{color:#ffd54a;letter-spacing:0;font-size:15px}.ped.flash{animation:fl 1s 3}@keyframes fl{50%{background:#5a4a0a}}
+.crBox{background:#0f0322;border:2px solid #16a34a;border-radius:12px;padding:10px;margin:8px 0}.crOp{border:2px solid #4a2380;border-radius:10px;padding:8px;margin:6px 0}.crOp.sel{border-color:#ffd54a;background:#2b0a4f}
+.crOp .tt{display:flex;justify-content:space-between;gap:6px}.crOp .pg{color:#4ade80;font-weight:bold}.qt{display:flex;align-items:center;gap:6px;margin-top:6px}.qt button{width:42px;height:42px;padding:0;font-size:22px;background:#3a1a66}.qt input{width:64px;text-align:center;margin:0;padding:8px}.qt .sub{flex:1;text-align:right;font-weight:bold;color:#ffd54a}
+.crTot{text-align:center;font-size:16px;margin:8px 0}.crTot b{font-size:22px;color:#4ade80}.stP{background:#b45309}.stA{background:#16a34a}.stR{background:#7f1d1d}.tot{display:flex;gap:8px;text-align:center}.tot div{flex:1;background:#0f0322;border-radius:10px;padding:8px}.tot b{display:block;font-size:22px}
 </style><script src="confirma-sair.js?v=1"></script>
 </head><body>
 <header><h1>🎤 Painel TudoOkê TV</h1><button class="s" id="sair" style="display:none">Sair</button></header>
@@ -29,6 +34,8 @@ button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;ga
  <button id="bE" style="width:100%">Entrar</button><p id="msg"></p>
 </div>
 <div id="app" style="display:none">
+ <div class="pedAv" id="pedAv" style="display:none"><b id="pedAvT"></b><div class="row"><button class="s" id="pedAvIr" style="flex:2;background:#16a34a;font-size:15px;padding:11px">👉 Ver o pedido</button><button class="s" id="pedAvX" style="flex:1">Fechar</button></div></div>
+ <div class="card" id="cAvisos" style="display:none;padding:10px"><button class="s" id="bNotif" style="width:100%;padding:12px;font-size:15px;background:#0e7490">🔔 Ativar avisos de pedido de crédito</button><p class="mut" id="notifMsg" style="margin:6px 0 0"></p></div>
  <div class="card" id="cApps"><b>📲 Apps para baixar</b>
   <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">📲 App do ADM (este painel)</b> <span class="mut">is.gd/tudookeadmapp</span>
    <div class="row" style="margin-top:6px"><button class="s" id="apAdmBx" style="flex:1 1 100%;background:#7c3aed">📲 Baixar app do ADM</button><button class="s" id="apAdmCp" style="flex:1">Copiar link</button><button class="s" id="apAdmWa" style="flex:1;background:#16a34a">WhatsApp</button></div></div>
@@ -37,14 +44,14 @@ button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;ga
   <p class="mut" style="margin:0">Android: depois de baixar, abra o arquivo e toque em Instalar (se pedir, permita "instalar apps desconhecidos").</p></div>
  <div class="card"><b>🔗 Link para seus clientes</b><p class="mut">A pessoa abre, faz o cadastro, ganha 3 dias grátis e o app. Depois compra pelo Pix lá mesmo.</p>
   <div class="row"><button class="s" id="lkCp" style="flex:1">Copiar link</button><button class="s" id="lkWa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
- <div class="card" id="cRev"><b>🤝 Revendedores</b> <span class="tag ag" id="nRevAg" style="display:none"></span>
+ <div class="card" id="cRev"><b>🤝 Revendedores</b> <span class="tag ag" id="nRevAg" style="display:none"></span> <span class="tag" id="nPedCr" style="display:none;background:#0e7490;cursor:pointer"></span>
   <p class="mut">Revendedor compra crédito com você (Pix) e você põe o crédito aqui. Cada conta paga que ele gera desconta do crédito dele a sua parte do preço. Testes de 3 dias são livres.</p>
   <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">🔗 Link para revendedores</b> <span class="mut" id="lkRevTxt">is.gd/tudookerevenda</span>
    <div class="row" style="margin-top:6px"><button class="s" id="lkRevCp" style="flex:1">Copiar link</button><button class="s" id="lkRevWa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
-  <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">📲 App do revendedor</b> <span class="mut">is.gd/tudookerevendaapp</span>
-   <div class="row" style="margin-top:6px"><button class="s apRevBx" style="flex:1 1 100%;background:#7c3aed">📲 Baixar app do revendedor</button><button class="s apRevCp" style="flex:1">Copiar link</button><button class="s apRevWa" style="flex:1;background:#16a34a">WhatsApp</button></div></div>
+  <p class="mut" style="margin:0 0 6px">O app do revendedor está no card "📲 Apps para baixar", lá em cima. O botão "Mandar no WhatsApp" acima já leva o cadastro + o app.</p>
   <div class="row" style="flex-wrap:nowrap;align-items:end"><label style="flex:1;font-size:13px;min-width:0">Sua parte (%)<input id="rvPct" type="text" inputmode="decimal" placeholder="50"></label><label style="flex:2;font-size:13px;min-width:0">Seu WhatsApp (revendedor chama aqui)<input id="rvZap" type="tel" placeholder="92995015662"></label></div>
   <button class="s" id="rvSalva" style="width:100%;padding:10px">Salvar % e WhatsApp</button><p class="mut" id="rvMsg"></p>
+  <div id="pedTopo" class="ped" style="display:none;cursor:pointer"></div>
   <div id="revs" class="mut">Carregando…</div>
  </div>
  <div class="card"><b>💰 Pagamentos a confirmar (<span id="nPag">0</span>)</b><p class="mut">Olhe no seu banco. Se caiu, toque em "Caiu, liberar": o código é criado e aparece sozinho para o cliente.</p><div id="pags"></div></div>
@@ -164,12 +171,20 @@ function escutaRev(){if(unRv)return;var cf=db.collection('ml_publico').doc('tudo
   $('rvPct').value=String(RVCFG.percentAlex).replace('.',',');$('rvZap').value=String(RVCFG.zapAlex||'').replace(/^55/,'')}).catch(function(e){$('rvMsg').textContent='Não carregou ('+e.code+').'});
  unRv=db.collection('tk_revendedores').onSnapshot(function(s){REVS=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=x.criadoEm&&x.criadoEm.toMillis?x.criadoEm.toMillis():Date.now();return x}).sort(function(a,b){var o={aguardando:0,aprovado:1,bloqueado:2};return (o[a.status]-o[b.status])||(b.t-a.t)});
   var ag=REVS.filter(function(x){return x.status=='aguardando'}).length;if(RVAG0>=0&&ag>RVAG0){try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}}RVAG0=ag;pintaRev()},function(e){$('revs').textContent='Erro: '+e.code});
+ db.collection('ml_publico').doc('tudooke_precos').onSnapshot(function(d){PRECOS=d.exists?d.data():null;pintaRev()},function(){});
+ cf.onSnapshot(function(d){if(d.exists){RVCFG=d.data();pintaRev()}},function(){});
+ db.collection('tk_credito_pedidos').onSnapshot(function(s){PEDS=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=x.criadoEm&&x.criadoEm.toMillis?x.criadoEm.toMillis():Date.now();return x}).sort(function(a,b){return b.t-a.t});
+  var pend=PEDS.filter(function(x){return x.status=='pendente'}),novos=pend.filter(function(x){return PEDVISTO&&!PEDVISTO[x.id]});
+  if(!PEDVISTO){PEDVISTO={};if(pend.length)mostraAviso(pend[0],pend.length,false)}else if(novos.length){avisaNovo(novos[0],pend.length)}
+  pend.forEach(function(x){PEDVISTO[x.id]=1});if(!pend.length)$('pedAv').style.display='none';pintaRev()},function(e){console.log('pedidos',e.code)});
  db.collection('tk_rev_vendas').onSnapshot(function(s){RVEN=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=x.criadoEm&&x.criadoEm.toMillis?x.criadoEm.toMillis():Date.now();return x}).sort(function(a,b){return b.t-a.t});pintaRev()},function(){});
  db.collection('tk_rev_recargas').onSnapshot(function(s){RREC=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=x.criadoEm&&x.criadoEm.toMillis?x.criadoEm.toMillis():Date.now();return x}).sort(function(a,b){return b.t-a.t});pintaRev()},function(){})}
 $('rvSalva').onclick=function(){var p=num($('rvPct').value),z=nz($('rvZap').value),b=this;if(!p||p>100){$('rvMsg').textContent='Digite a sua parte entre 1 e 100 (ex.: 50).';return}if(!/^55\d{10,11}$/.test(z)){$('rvMsg').textContent='Digite seu WhatsApp com DDD.';return}
  if(!confirm('Salvar?\nSua parte: '+String(p).replace('.',',')+'% do preço de cada plano\nWhatsApp: '+z.slice(2)))return;b.disabled=true;
  db.collection('ml_publico').doc('tudooke_revenda').set({percentAlex:p,zapAlex:z,atualizadoEm:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){RVCFG={percentAlex:p,zapAlex:z};$('rvMsg').textContent='✅ Salvo. Os revendedores já veem o custo novo.'}).catch(function(e){$('rvMsg').textContent='Não salvou ('+e.code+').'}).finally(function(){b.disabled=false})};
 function pintaRev(){var B=$('revs');if(!B)return;var ag=REVS.filter(function(x){return x.status=='aguardando'}).length;$('nRevAg').style.display=ag?'inline':'none';$('nRevAg').textContent=ag+' esperando aprovação';
+ var pend=PEDS.filter(function(p){return p.status=='pendente'});$('nPedCr').style.display=pend.length?'inline':'none';$('nPedCr').textContent='📥 '+pend.length+(pend.length>1?' pedidos':' pedido')+' de crédito';
+ var PT=$('pedTopo');if(pend.length){PT.style.display='block';PT.innerHTML='<b>📥 '+pend.length+(pend.length>1?' pedidos de crédito esperando você':' pedido de crédito esperando você')+'</b><div class="mut" style="opacity:1">'+pend.map(function(p){return escR(p.revNome||nomeRev(p.rev))+': '+escR(pedItens(p))+' = '+rc(p.totalC)}).join('<br>')+'</div><div class="mut">Toque para ir ao primeiro. Confira o Pix no banco e aprove na conta do revendedor.</div>';PT.onclick=function(){vaiPed(pend[pend.length-1].id)}}else PT.style.display='none';
  if(!REVS.length){B.innerHTML='<p class="mut">Nenhum revendedor ainda. Mande o link acima.</p>';return}B.innerHTML='';
  REVS.forEach(function(r){var ven=RVEN.filter(function(v){return v.rev==r.id}),rec=RREC.filter(function(v){return v.rev==r.id}),tes=TODOS.filter(function(l){return l.revendedor==r.id&&(l.dias==1||l.dias==3)&&!l.venda}).length;
   var vend=ven.reduce(function(a,v){return a+(v.precoC||0)},0),parte=ven.reduce(function(a,v){return a+(v.custoC||0)},0),pago=rec.reduce(function(a,v){return a+(v.valorC||0)},0);
@@ -179,24 +194,89 @@ function pintaRev(){var B=$('revs');if(!B)return;var ag=REVS.filter(function(x){
   var w=document.createElement('div');w.className='row';function bt(tx,f,c){var e=document.createElement('button');e.className='s';e.textContent=tx;if(c)e.style.background=c;e.onclick=f;w.appendChild(e);return e}
   var ref=db.collection('tk_revendedores').doc(r.id);
   if(r.status!='aprovado')bt('✅ Aprovar',function(){if(confirm('Aprovar '+(r.nome||'')+' como revendedor?'))ref.update({status:'aprovado'}).then(function(){if(r.status=='aguardando'&&confirm('Aprovado! Avisar no WhatsApp?'))location.href=zapUrl(r.zap,'Olá, '+(r.nome||'')+'! Seu cadastro de revendedor do TudoOkê TV foi aprovado ✅ Já pode abrir o painel: '+LKREV)}).catch(function(e){alert('Erro: '+e.code)})},'#16a34a');
-  if(r.status=='aprovado'){bt('➕ Adicionar crédito',function(){var v=prompt('Quanto de crédito colocar para '+(r.nome||'')+'? (em R$, ex.: 100,00)\nPara corrigir um erro, use sinal de menos (ex.: -10).','');if(v===null)return;var neg=/^\s*-/.test(v),n=num(v.replace('-',''));if(!n){alert('Valor inválido.');return}
-    var c=Math.round(n*100)*(neg?-1:1);if((r.saldoC||0)+c<0){alert('O crédito não pode ficar negativo. Ele tem '+rc(r.saldoC)+'.');return}
-    if(!confirm((neg?'Tirar ':'Colocar ')+rc(Math.abs(c))+(neg?' do':' no')+' crédito de '+(r.nome||'')+'?\nCrédito vai ficar: '+rc((r.saldoC||0)+c)))return;
-    var b=db.batch();b.update(ref,{saldoC:firebase.firestore.FieldValue.increment(c)});b.set(db.collection('tk_rev_recargas').doc(),{rev:r.id,revNome:r.nome||'',valorC:c,obs:neg?'Correção':'Crédito do Alex',criadoEm:firebase.firestore.FieldValue.serverTimestamp(),por:(au.currentUser&&au.currentUser.email)||''});
-    b.commit().then(function(){if(!neg&&confirm('Crédito colocado! Avisar '+(r.nome||'')+' no WhatsApp?'))location.href=zapUrl(r.zap,'Olá, '+(r.nome||'')+'! Recebi seu Pix ✅ Coloquei '+rc(c)+' de crédito na sua revenda do TudoOkê TV. Seu crédito agora: '+rc((r.saldoC||0)+c)+'.')}).catch(function(e){alert('Erro: '+e.code)})},'#16a34a');
+  if(r.status=='aprovado'){bt(RVCR[r.id]?'✖ Fechar crédito':'➕ Adicionar crédito',function(){RVCR[r.id]=!RVCR[r.id];pintaRev()},'#16a34a');
    bt('🚫 Bloquear',function(){if(confirm('Bloquear '+(r.nome||'')+'? Ele não consegue mais gerar códigos. Os códigos que ele já gerou continuam funcionando.'))ref.update({status:'bloqueado'})},'#7f1d1d')}
   bt('WhatsApp',function(){location.href=zapUrl(r.zap,'Olá, '+(r.nome||'')+'! ')},'#16a34a');
   bt(RVAB[r.id]?'Fechar detalhes':'Ver vendas e créditos',function(){RVAB[r.id]=!RVAB[r.id];pintaRev()});
   bt('Apagar',function(){apagaRev(r,ven,rec)},'#3a1a66');
-  d.appendChild(w);
+  PEDS.filter(function(p){return p.rev==r.id&&p.status=='pendente'}).forEach(function(p){d.appendChild(pedBox(p,r))});
+  d.appendChild(w);if(RVCR[r.id]&&r.status=='aprovado')d.appendChild(credBox(r));
   if(RVAB[r.id]){var x=document.createElement('div');x.className='mut';var h='<p><b style="letter-spacing:0">Vendas</b></p>';
    if(!ven.length)h+='<p>Nenhuma venda.</p>';ven.forEach(function(v){h+='<div>'+new Date(v.t).toLocaleDateString('pt-BR')+' • '+escR(NOME[v.dias]||v.plano)+' • '+escR(v.cliente||'Sem nome')+' • '+fmt(v.cod||'????????')+' • preço '+rc(v.precoC)+' • sua parte '+rc(v.custoC)+'</div>'});
    h+='<p><b style="letter-spacing:0">Créditos colocados</b></p>';if(!rec.length)h+='<p>Nenhum crédito ainda.</p>';rec.forEach(function(v){h+='<div>'+new Date(v.t).toLocaleString('pt-BR')+' • '+((v.valorC||0)<0?'':'+')+rc(v.valorC)+' • '+escR(v.obs||'')+'</div>'});
+   var pp=PEDS.filter(function(p){return p.rev==r.id});h+='<p><b style="letter-spacing:0">Pedidos de crédito</b></p>';if(!pp.length)h+='<p>Nenhum pedido.</p>';pp.forEach(function(p){h+='<div>'+new Date(p.t).toLocaleString('pt-BR')+' • '+escR(pedItens(p))+' = '+rc(p.totalC)+' • '+({pendente:'⏳ Pendente',aprovada:'✅ Aprovada',recusada:'❌ Recusada'}[p.status]||escR(p.status))+(p.motivo?' ('+escR(p.motivo)+')':'')+'</div>'});
    h+='<p><b style="letter-spacing:0">Testes</b>: '+tes+' (aparecem na lista de códigos com a marca do revendedor)</p>';x.innerHTML=h;d.appendChild(x)}
   B.appendChild(d)})}
+
+/* ---- crédito por plano + pedidos de crédito dos revendedores (tk_credito_pedidos) ---- */
+var PRECOS=null,PEDS=[],PEDVISTO=null,RVCR={},RVQ={},AC=null;
+var PL3=[{id:'mensal',nome:'Mensal',dias:30,q:'qMensal'},{id:'semestral',nome:'Semestral',dias:180,q:'qSemestral'},{id:'anual',nome:'Anual',dias:365,q:'qAnual'}];
+function TSv(){return firebase.firestore.FieldValue.serverTimestamp()}
+function quem(){return (au.currentUser&&au.currentUser.email)||''}
+function pctAt(){return Number((RVCFG||RVCFG0).percentAlex)||0}
+/* sua parte em centavos = preço ATUAL do plano x percentAlex (mesma conta da revenda e das regras) */
+function unC(id){return PRECOS&&Number(PRECOS[id])>0&&pctAt()>0?Math.round(Number(PRECOS[id])*pctAt()):0}
+function nomeRev(id){var r=REVS.filter(function(x){return x.id==id})[0];return r?r.nome||'':'Revendedor'}
+function pedItens(p){var a=[];PL3.forEach(function(l){var q=+p[l.q]||0;if(q>0)a.push(q+' '+l.nome)});return a.join(' + ')||'—'}
+function vaiPed(id){$('pedAv').style.display='none';var e=document.getElementById('ped_'+id);if(!e){$('cRev').scrollIntoView({behavior:'smooth'});return}e.scrollIntoView({behavior:'smooth',block:'center'});e.classList.remove('flash');void e.offsetWidth;e.classList.add('flash')}
+function mostraAviso(p,n,novo){$('pedAvT').textContent=(novo?'📥 Novo pedido de crédito: ':'📥 Pedido de crédito esperando: ')+(p.revNome||nomeRev(p.rev))+' — '+pedItens(p)+' = '+rc(p.totalC)+(n>1?' (+'+(n-1)+' outro'+(n>2?'s':'')+')':'');$('pedAv').style.display='block';$('pedAvIr').onclick=function(){vaiPed(p.id)}}
+function bip(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state=='suspended')AC.resume();[0,0.22].forEach(function(t,i){var o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=i?1320:880;g.gain.setValueAtTime(0.0001,AC.currentTime+t);g.gain.exponentialRampToValueAtTime(0.35,AC.currentTime+t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,AC.currentTime+t+0.18);o.connect(g);g.connect(AC.destination);o.start(AC.currentTime+t);o.stop(AC.currentTime+t+0.2)});window.__BIPS=(window.__BIPS||0)+1}catch(e){}}
+document.addEventListener('click',function(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state=='suspended')AC.resume()}catch(e){}},true);
+function notifSys(t,b,id){if(!('Notification' in window)||Notification.permission!='granted')return;var o={body:b,icon:'painel-192.png',badge:'painel-192.png',tag:'pedido-'+id,vibrate:[300,100,300]};
+ function vel(){try{var n=new Notification(t,o);n.onclick=function(){window.focus();vaiPed(id);n.close()}}catch(e){}}
+ if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(function(r){if(r&&r.showNotification){o.data={ped:id};r.showNotification(t,o).catch(vel)}else vel()}).catch(vel);else vel();window.__NOTIFS=(window.__NOTIFS||0)+1}
+function avisaNovo(p,n){mostraAviso(p,n,true);bip();try{navigator.vibrate&&navigator.vibrate([300,100,300])}catch(e){}notifSys('📥 Novo pedido de crédito',(p.revNome||nomeRev(p.rev))+' — '+pedItens(p)+' = '+rc(p.totalC),p.id);
+ var t0=document.title;document.title='📥 Pedido de crédito!';setTimeout(function(){document.title=t0},8000)}
+$('pedAvX').onclick=function(){$('pedAv').style.display='none'};$('nPedCr').onclick=function(){var p=PEDS.filter(function(x){return x.status=='pendente'});if(p.length)vaiPed(p[p.length-1].id)};
+function pintaNotif(){var c=$('cAvisos');if(!('Notification' in window)){c.style.display='block';$('bNotif').style.display='none';$('notifMsg').textContent='🔔 Avisos de pedido: este aparelho não mostra notificação do sistema; o painel toca um som e mostra o aviso no topo enquanto estiver aberto.';return}
+ var pm=Notification.permission;c.style.display='block';$('bNotif').style.display=pm=='granted'?'none':'block';
+ $('notifMsg').textContent=pm=='granted'?'🔔 Avisos ligados: quando um revendedor pedir crédito, toca um som e aparece notificação (com o painel aberto ou em segundo plano).':pm=='denied'?'Os avisos estão bloqueados neste aparelho. Libere em Configurações > Apps > Notificações. O som e o aviso no topo continuam funcionando com o painel aberto.':'Toque para receber notificação no celular quando um revendedor pedir crédito (com o painel aberto ou em segundo plano).'}
+$('bNotif').onclick=function(){try{var r=Notification.requestPermission(function(){pintaNotif()});if(r&&r.then)r.then(function(){pintaNotif();if(Notification.permission=='granted')notifSys('🔔 Avisos ligados','Você vai ser avisado aqui quando um revendedor pedir crédito.','teste')})}catch(e){pintaNotif()}};
+pintaNotif();
+function pedBox(p,r){var x=document.createElement('div');x.className='ped';x.id='ped_'+p.id;
+ x.innerHTML='<b></b><div class="mut"></div><div class="mut">Ele já deve ter mandado o comprovante no WhatsApp. Confira no banco antes de aprovar.</div>';
+ x.querySelector('b').textContent='📥 Pedido de crédito: '+pedItens(p)+' = '+rc(p.totalC);
+ x.querySelectorAll('.mut')[0].textContent=new Date(p.t).toLocaleString('pt-BR')+' • '+PL3.filter(function(l){return (+p[l.q]||0)>0}).map(function(l){return p[l.q]+'× '+rc(p['un'+l.nome+'C'])}).join(' + ');
+ var w=document.createElement('div');w.className='row';function bt(t,f,c){var e=document.createElement('button');e.className='s';e.textContent=t;e.style.background=c;e.style.flex='1';e.onclick=f;w.appendChild(e);return e}
+ bt('✅ Aprovar e pôr crédito',function(){aprovaPed(p,r,this)},'#16a34a');bt('❌ Recusar',function(){recusaPed(p,r)},'#7f1d1d');x.appendChild(w);return x}
+function aprovaPed(p,r,b){if(!confirm('Confirmou no banco que caiu o Pix de '+rc(p.totalC)+' de '+(r.nome||'')+'?\nPedido: '+pedItens(p)+'\nO crédito dele vai de '+rc(r.saldoC)+' para '+rc((r.saldoC||0)+p.totalC)+'.'))return;
+ var pr=db.collection('tk_credito_pedidos').doc(p.id),rr=db.collection('tk_revendedores').doc(r.id),rec=db.collection('tk_rev_recargas').doc();if(b)b.disabled=true;
+ db.runTransaction(function(tx){return tx.get(pr).then(function(d){if(!d.exists||d.data().status!='pendente')throw {code:'ja-resolvido'};var v=d.data().totalC;
+  tx.update(pr,{status:'aprovada',resolvidoEm:TSv(),por:quem(),recarga:rec.id});tx.update(rr,{saldoC:firebase.firestore.FieldValue.increment(v)});
+  tx.set(rec,{rev:r.id,revNome:r.nome||'',valorC:v,obs:'Pedido aprovado: '+pedItens(p),pedido:p.id,mensal:+p.qMensal||0,semestral:+p.qSemestral||0,anual:+p.qAnual||0,criadoEm:TSv(),por:quem()})})})
+ .then(function(){if(confirm('Crédito colocado! Avisar '+(r.nome||'')+' no WhatsApp?'))location.href=zapUrl(r.zap,'Olá, '+(r.nome||'')+'! Recebi seu Pix ✅ Aprovei seu pedido de crédito ('+pedItens(p)+' = '+rc(p.totalC)+'). Seu crédito agora: '+rc((r.saldoC||0)+p.totalC)+'.')})
+ .catch(function(e){if(b)b.disabled=false;alert(e.code=='ja-resolvido'?'Esse pedido já foi resolvido.':'Erro: '+e.code)})}
+function recusaPed(p,r){var m=prompt('Recusar o pedido de '+(r.nome||'')+' ('+pedItens(p)+' = '+rc(p.totalC)+')?\nMotivo (opcional, ele vai ver):','');if(m===null)return;
+ db.collection('tk_credito_pedidos').doc(p.id).update({status:'recusada',motivo:m.trim().slice(0,120),resolvidoEm:TSv(),por:quem()})
+ .then(function(){if(confirm('Pedido recusado. Avisar '+(r.nome||'')+' no WhatsApp?'))location.href=zapUrl(r.zap,'Olá, '+(r.nome||'')+'! Não consegui aprovar seu pedido de crédito ('+pedItens(p)+' = '+rc(p.totalC)+')'+(m.trim()?': '+m.trim():'.')+' Me chame aqui para resolvermos.')}).catch(function(e){alert('Erro: '+e.code)})}
+function credBox(r){var q=RVQ[r.id]||(RVQ[r.id]={mensal:0,semestral:0,anual:0,livre:''}),x=document.createElement('div');x.className='crBox';
+ var ok=PL3.every(function(l){return unC(l.id)>0});
+ x.innerHTML='<b style="letter-spacing:0;color:#4ade80">➕ Adicionar crédito para '+escR(r.nome||'')+'</b><p class="mut">'+(ok?'Escolha os planos (cada um vale a sua parte: '+String(pctAt()).replace('.',',')+'% do preço atual) e/ou digite um valor livre.':'Os preços ainda não carregaram. Use o valor livre.')+'</p>';
+ function tot(){var t=0;PL3.forEach(function(l){t+=q[l.id]*unC(l.id)});var lv=String(q.livre||'').trim(),neg=/^-/.test(lv),n=num(lv.replace('-',''));return {pl:t,lv:n?Math.round(n*100)*(neg?-1:1):0,lvRuim:!!lv&&!n}}
+ function atual(){var T=tot();PL3.forEach(function(l){var e=x.querySelector('.cr_'+l.id);if(!e)return;var n=q[l.id];e.className='crOp cr_'+l.id+(n>0?' sel':'');e.querySelector('.sub').textContent=n>0?n+' × '+rc(unC(l.id))+' = '+rc(n*unC(l.id)):'';var i=e.querySelector('input');if(document.activeElement!==i)i.value=n});
+  x.querySelector('.crT').textContent=rc(T.pl+T.lv);x.querySelector('.crS').textContent='Crédito vai ficar: '+rc((r.saldoC||0)+T.pl+T.lv)+(T.lvRuim?' • valor livre inválido':'')}
+ if(ok)PL3.forEach(function(l){var e=document.createElement('div');e.className='crOp cr_'+l.id;
+  e.innerHTML='<div class="tt"><b style="letter-spacing:0;color:#fff"></b><span class="pg"></span></div><div class="mut"></div><div class="qt"><button type="button">−</button><input type="number" inputmode="numeric" min="0" max="999"><button type="button">+</button><span class="sub"></span></div>';
+  e.querySelector('b').textContent=l.nome+' ('+l.dias+' dias)';e.querySelector('.pg').textContent=rc(unC(l.id))+' cada';e.querySelector('.mut').textContent='Cliente paga '+rc(Math.round(Number(PRECOS[l.id])*100))+' • sua parte '+String(pctAt()).replace('.',',')+'%';
+  var bs=e.querySelectorAll('button'),inp=e.querySelector('input');function poe(n){q[l.id]=Math.max(0,Math.min(999,parseInt(n,10)||0));atual()}
+  bs[0].onclick=function(){poe(q[l.id]-1)};bs[1].onclick=function(){poe(q[l.id]+1)};inp.oninput=function(){poe(this.value)};x.appendChild(e)});
+ var lv=document.createElement('label');lv.style.cssText='display:block;font-size:13px;margin-top:6px';lv.innerHTML='Outro valor em R$ (opcional; para corrigir um erro use menos, ex.: -10)<input class="crLv" type="text" inputmode="decimal" placeholder="0,00">';
+ lv.querySelector('input').value=q.livre;lv.querySelector('input').oninput=function(){q.livre=this.value;atual()};x.appendChild(lv);
+ var tt=document.createElement('div');tt.className='crTot';tt.innerHTML='Total: <b class="crT"></b><div class="mut crS"></div>';x.appendChild(tt);
+ var w=document.createElement('div');w.className='row';var c=document.createElement('button');c.className='s crOk';c.textContent='✅ Confirmar e pôr crédito';c.style.cssText='flex:2;background:#16a34a;padding:11px;font-size:14px';
+ var k=document.createElement('button');k.className='s';k.textContent='Cancelar';k.style.flex='1';k.onclick=function(){RVCR[r.id]=false;delete RVQ[r.id];pintaRev()};w.appendChild(c);w.appendChild(k);x.appendChild(w);
+ c.onclick=function(){var T=tot(),v=T.pl+T.lv,its=PL3.filter(function(l){return q[l.id]>0}).map(function(l){return q[l.id]+'× '+l.nome});
+  if(T.lvRuim){alert('Valor livre inválido.');return}if(!v){alert('Escolha um plano ou digite um valor.');return}
+  if((r.saldoC||0)+v<0){alert('O crédito não pode ficar negativo. Ele tem '+rc(r.saldoC)+'.');return}
+  var desc=its.join(' + ')+(T.lv?(its.length?' + ':'')+(T.lv<0?'correção ':'valor livre ')+rc(T.lv):'');
+  if(!confirm((v<0?'Tirar ':'Colocar ')+rc(Math.abs(v))+(v<0?' do':' no')+' crédito de '+(r.nome||'')+'?\n'+desc+'\nCrédito vai ficar: '+rc((r.saldoC||0)+v)))return;c.disabled=true;
+  var b=db.batch(),ref=db.collection('tk_revendedores').doc(r.id);b.update(ref,{saldoC:firebase.firestore.FieldValue.increment(v)});
+  b.set(db.collection('tk_rev_recargas').doc(),{rev:r.id,revNome:r.nome||'',valorC:v,obs:its.length?'Crédito do Alex: '+desc:(v<0?'Correção':'Crédito do Alex'),mensal:q.mensal,semestral:q.semestral,anual:q.anual,livreC:T.lv,pct:pctAt(),criadoEm:TSv(),por:quem()});
+  b.commit().then(function(){RVCR[r.id]=false;delete RVQ[r.id];pintaRev();if(v>0&&confirm('Crédito colocado! Avisar '+(r.nome||'')+' no WhatsApp?'))location.href=zapUrl(r.zap,'Olá, '+(r.nome||'')+'! Recebi seu Pix ✅ Coloquei '+rc(v)+' de crédito na sua revenda do TudoOkê TV ('+desc+'). Seu crédito agora: '+rc((r.saldoC||0)+v)+'.')}).catch(function(e){c.disabled=false;alert('Erro: '+e.code)})};
+ setTimeout(atual,0);return x}
 function apagaRev(r,ven,rec){if(!confirm('Apagar o cadastro de '+(r.nome||'')+'? Some também o histórico de vendas e créditos dele.'+((r.saldoC||0)>0?'\nAtenção: ele ainda tem '+rc(r.saldoC)+' de crédito.':'')))return;
  var lics=TODOS.filter(function(l){return l.revendedor==r.id}),tl=lics.length&&confirm('Apagar também os '+lics.length+' código(s) que ele gerou? (Se apagar, as TVs desses clientes param de funcionar.)\nOK = apagar os códigos • Cancelar = manter os códigos'),refs=[db.collection('tk_revendedores').doc(r.id)];
- ven.forEach(function(v){refs.push(db.collection('tk_rev_vendas').doc(v.id))});rec.forEach(function(v){refs.push(db.collection('tk_rev_recargas').doc(v.id))});if(tl)lics.forEach(function(l){refs.push(db.collection('licencas').doc(l.id))});
+ ven.forEach(function(v){refs.push(db.collection('tk_rev_vendas').doc(v.id))});rec.forEach(function(v){refs.push(db.collection('tk_rev_recargas').doc(v.id))});PEDS.filter(function(p){return p.rev==r.id}).forEach(function(p){refs.push(db.collection('tk_credito_pedidos').doc(p.id))});if(tl)lics.forEach(function(l){refs.push(db.collection('licencas').doc(l.id))});
  var ps=[];for(var i=0;i<refs.length;i+=400){var b=db.batch();refs.slice(i,i+400).forEach(function(f){b.delete(f)});ps.push(b.commit())}
  Promise.all(ps).then(function(){alert('Apagado.')}).catch(function(e){alert('Erro: '+e.code)})}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('painel-sw.js',{scope:'./'}).catch(function(){});

@@ -88,4 +88,34 @@
               || (request.resource.data.dias == 180 && request.resource.data.plano == 'Semestral')
               || (request.resource.data.dias == 365 && request.resource.data.plano == 'Anual'))));
     }
+    // ----- Pedidos de crédito do revendedor (v2 2026-11-25) -----
+    // tk_credito_pedidos/{pid}: o revendedor aprovado cria só pedido PRÓPRIO, com status 'pendente' e valores conferidos
+    // (preço atual x percentAlex). Ele lê só os dele e pode apagar (cancelar) só os seus que ainda estão pendentes.
+    // Só o admin (mlAdmin) lê todos, aprova/recusa (muda status) e põe o crédito (em tk_revendedores, que o revendedor não pode mexer).
+    function tkQ(q) {
+      return q is int && q >= 0 && q <= 999;
+    }
+    match /tk_credito_pedidos/{pid} {
+      allow read: if mlAdmin() || (request.auth != null && resource.data.rev == request.auth.uid);
+      allow create: if tkRevAprovado()
+        && request.resource.data.keys().hasOnly(['rev', 'revNome', 'qMensal', 'qSemestral', 'qAnual', 'unMensalC', 'unSemestralC', 'unAnualC', 'pct', 'totalC', 'resumo', 'status', 'criadoEm'])
+        && request.resource.data.keys().hasAll(['rev', 'revNome', 'qMensal', 'qSemestral', 'qAnual', 'unMensalC', 'unSemestralC', 'unAnualC', 'pct', 'totalC', 'resumo', 'status', 'criadoEm'])
+        && request.resource.data.rev == request.auth.uid
+        && request.resource.data.status == 'pendente'
+        && request.resource.data.criadoEm == request.time
+        && tkTxt(request.resource.data.revNome, 0, 40)
+        && tkTxt(request.resource.data.resumo, 0, 200)
+        && tkQ(request.resource.data.qMensal) && tkQ(request.resource.data.qSemestral) && tkQ(request.resource.data.qAnual)
+        && tkPct() is number && tkPct() > 0 && tkPct() <= 100
+        && request.resource.data.pct == tkPct()
+        && request.resource.data.unMensalC == math.round(tkPreco('mensal') * tkPct())
+        && request.resource.data.unSemestralC == math.round(tkPreco('semestral') * tkPct())
+        && request.resource.data.unAnualC == math.round(tkPreco('anual') * tkPct())
+        && request.resource.data.totalC == request.resource.data.qMensal * request.resource.data.unMensalC
+             + request.resource.data.qSemestral * request.resource.data.unSemestralC
+             + request.resource.data.qAnual * request.resource.data.unAnualC
+        && request.resource.data.totalC > 0;
+      allow update: if mlAdmin();
+      allow delete: if mlAdmin() || (request.auth != null && resource.data.rev == request.auth.uid && resource.data.status == 'pendente');
+    }
     // ===== fim TudoOkê Revenda =====

@@ -30,6 +30,7 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
 .cpOp .tt{display:flex;justify-content:space-between;align-items:center;gap:6px}.cpOp .tt b{font-size:16px}.cpOp .pg{color:#4ade80;font-size:19px;font-weight:bold}
 .qt{display:flex;align-items:center;gap:6px;margin-top:6px}.qt button{width:44px;height:44px;padding:0;font-size:22px;background:#3a1a66}.qt input{width:64px;text-align:center;margin:0;padding:9px}
 .qt .sub{flex:1;text-align:right;font-weight:bold;color:#ffd54a}.cpTot{text-align:center;font-size:16px;margin:8px 0}.cpTot b{font-size:24px;color:#4ade80}
+.stP{background:#b45309}.stA{background:#16a34a}.stR{background:#7f1d1d}.pedOk{background:#0f3d2e;border:2px solid #22c55e;border-radius:10px;padding:10px;margin:8px 0;font-size:14px}
 .cpRes{background:#0f0322;border-radius:10px;padding:10px;font-size:14px;line-height:1.5}.cpChave{font-size:20px;font-weight:bold;color:#ffd54a;text-align:center;word-break:break-all;background:#0f0322;border:2px dashed #ffd54a;border-radius:10px;padding:10px;margin:6px 0}
 </style><script src="confirma-sair.js?v=1"></script>
 </head><body>
@@ -68,6 +69,7 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
     <button id="cpOk" class="w verde" disabled>Confirmar compra</button><p class="e" id="eComp"></p>
    </div>
    <div id="cpPasso2" style="display:none">
+    <div class="pedOk" id="cpPedOk"></div>
     <div class="cpRes" id="cpRes"></div>
     <p class="mut" style="margin-top:10px">1) Pague o Pix para a chave do Alex:</p>
     <div class="cpChave" id="cpChave"></div><p class="mut" id="cpNomePix" style="text-align:center"></p>
@@ -76,9 +78,10 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
      <button id="bPixCp" class="w s" style="padding:10px">Copiar código Pix copia e cola</button></details>
     <p class="mut" style="margin-top:10px">2) Mande o comprovante para o Alex:</p>
     <button id="bAvisa" class="w verde">📤 Enviar comprovante no WhatsApp</button>
-    <button id="cpVolta" class="w s" style="padding:10px">⬅️ Mudar plano ou quantidade</button>
+    <button id="cpVolta" class="w s" style="padding:10px">⬅️ Mudar plano ou quantidade (cancela este pedido)</button>
    </div>
   </div>
+  <div id="pedsBox" style="display:none;margin-top:10px"><b style="color:#ffd54a">📥 Seus pedidos de crédito</b><div id="peds"></div></div>
  </div>
  <div class="card"><h2>📋 Quanto custa para você</h2><div id="tabPreco" class="mut">Carregando…</div>
   <p class="mut">"Você vende por" é o preço sugerido para o cliente. Se o Alex mudar os preços, muda aqui na hora.</p></div>
@@ -125,7 +128,7 @@ firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=func
 /* Preços e percentual NÃO ficam fixos: vêm de ml_publico/tudooke_precos e ml_publico/tudooke_revenda (o Alex muda no painel dele). */
 var PLANOS=[{id:'teste',nome:'Teste 3 dias',dias:3},{id:'mensal',nome:'Mensal',dias:30},{id:'semestral',nome:'Semestral',dias:180},{id:'anual',nome:'Anual',dias:365}];
 var NOME={1:'Teste 1 dia',3:'Teste 3 dias',30:'Mensal',180:'Semestral',365:'Anual'},ZAP_ALEX0='5592995015662';
-var U=null,REV=null,PRECO=null,CFG=null,PIX=null,SEL='teste',LICS=[],VENDAS=[],RECS=[],ULT=null,ABA='v',subs=[];
+var PEDS=[],CP_PED=null,U=null,REV=null,PRECO=null,CFG=null,PIX=null,SEL='teste',LICS=[],VENDAS=[],RECS=[],ULT=null,ABA='v',subs=[];
 function vis(v){['vLogin','vCad','vEspera','vApp'].forEach(function(x){$(x).style.display=x==v?'block':'none'})}
 function reais(c){return 'R$ '+(Number(c||0)/100).toFixed(2).replace('.',',')}
 function fmt(c){return c.slice(0,4)+'-'+c.slice(4)}
@@ -175,6 +178,7 @@ $('bEspZap').onclick=function(){location.href=zapUrl(zapAlex(),'Olá, Alex! Sou 
 function escutaListas(){
  subs.push(db.collection('licencas').where('revendedor','==',U.uid).onSnapshot(function(s){LICS=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pintaL()},function(e){$('lista').textContent='Erro: '+e.code}));
  subs.push(db.collection('tk_rev_vendas').where('rev','==',U.uid).onSnapshot(function(s){VENDAS=s.docs.map(function(d){var x=d.data();x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pintaH()},function(){}));
+ subs.push(db.collection('tk_credito_pedidos').where('rev','==',U.uid).onSnapshot(function(s){PEDS=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pintaPeds()},function(e){console.log('pedidos',e.code)}));
  subs.push(db.collection('tk_rev_recargas').where('rev','==',U.uid).onSnapshot(function(s){RECS=s.docs.map(function(d){var x=d.data();x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pintaH()},function(){}))}
 
 function pintaTudo(){if(!REV||REV.status!='aprovado')return;var s=REV.saldoC||0;$('saldo').textContent=reais(s);$('saldo').className='saldo'+(s<=0?' zero':'');
@@ -253,18 +257,34 @@ function pintaCompra(){var O=$('cpOpcoes');if(!O)return;
  var s=cpSoma();$('cpTotal').textContent=reais(s.t);$('cpLucro').textContent=s.t>0?'Vendendo pelo preço sugerido, seu lucro: '+reais(s.l):'';$('cpOk').disabled=!(s.t>0);
  if(CP_PASSO==2)pintaPasso2()}
 function cpMsgItens(){return cpItens().map(function(i){return i.q+'x '+i.nome+' ('+reais(i.un)+' cada) = '+reais(i.tot)}).join('\n')}
-function pintaPasso2(){var s=cpSoma(),it=cpItens();if(!it.length){cpPasso(1);return}
- $('cpRes').innerHTML='<b style="color:#ffd54a">Seu pedido</b><br>'+it.map(function(i){return esc(i.q+'× '+i.nome)+' — '+reais(i.tot)}).join('<br>')+'<br><b>Total: <span style="color:#4ade80;font-size:20px">'+reais(s.t)+'</span></b>';
- if(PIX&&PIX.chave){$('cpChave').textContent=PIX.chave;$('cpNomePix').textContent=PIX.nome?'Vai aparecer no banco: '+PIX.nome:'';$('cpCopia').style.display='';$('cpCC').style.display='';$('pixTxt').value=pixCC(PIX.chave,PIX.nome,PIX.cidade,s.t/100,'TKREV')}
+function pintaPasso2(){if(!CP_PED){cpPasso(1);return}var s={t:CP_PED.totalC},P0=PEDS.filter(function(x){return x.id==CP_PED.id})[0],st=P0?P0.status:'pendente';
+ $('cpPedOk').innerHTML=st=='aprovada'?'✅ <b>Pedido aprovado!</b> O Alex já colocou o crédito.':st=='recusada'?'❌ <b>Pedido recusado</b> pelo Alex'+(P0.motivo?': '+esc(P0.motivo):'')+'. Fale com ele no WhatsApp.':'📥 <b>Pedido nº '+CP_PED.id.slice(0,6).toUpperCase()+' enviado ao Alex.</b> Pague o Pix e mande o comprovante. Quando ele aprovar, o crédito entra sozinho aqui.';
+ $('cpRes').innerHTML='<b style="color:#ffd54a">Seu pedido</b><br>'+CP_PED.html+'<br><b>Total: <span style="color:#4ade80;font-size:20px">'+reais(s.t)+'</span></b>';
+ if(PIX&&PIX.chave){$('cpChave').textContent=PIX.chave;$('cpNomePix').textContent=PIX.nome?'Vai aparecer no banco: '+PIX.nome:'';$('cpCopia').style.display='';$('cpCC').style.display='';$('pixTxt').value=pixCC(PIX.chave,PIX.nome,PIX.cidade,s.t/100,'TKREV'+CP_PED.id.slice(0,6).toUpperCase())}
  else{$('cpChave').textContent='Peça a chave Pix ao Alex no WhatsApp';$('cpNomePix').textContent='';$('cpCopia').style.display='none';$('cpCC').style.display='none'}}
 function cpPasso(n){CP_PASSO=n;$('cpPasso1').style.display=n==1?'block':'none';$('cpPasso2').style.display=n==2?'block':'none';if(n==2)pintaPasso2()}
-$('bCompra').onclick=function(){var b=$('compraBox'),abre=b.style.display=='none';b.style.display=abre?'block':'none';if(abre){cpPasso(1);pintaCompra()}};
-$('cpOk').onclick=function(){$('eComp').textContent='';if(!(cpSoma().t>0)){$('eComp').textContent='Escolha pelo menos 1 conta.';return}cpPasso(2);$('compraBox').scrollIntoView({block:'start'})};
-$('cpVolta').onclick=function(){cpPasso(1)};
+$('bCompra').onclick=function(){var b=$('compraBox'),abre=b.style.display=='none';b.style.display=abre?'block':'none';if(abre){var P0=CP_PED&&PEDS.filter(function(x){return x.id==CP_PED.id})[0];if(CP_PASSO==2&&CP_PED&&(!P0||P0.status=='pendente'))cpPasso(2);else{CP_PED=null;cpPasso(1);pintaCompra()}}};
+/* Confirmar compra: grava a SOLICITAÇÃO em tk_credito_pedidos (status pendente). As regras do banco conferem preço x percentual. */
+$('cpOk').onclick=function(){var b=this;$('eComp').textContent='';if(!(cpSoma().t>0)){$('eComp').textContent='Escolha pelo menos 1 conta.';return}b.disabled=true;$('eComp').textContent='Enviando pedido ao Alex…';
+ Promise.all([db.collection('ml_publico').doc('tudooke_precos').get({source:'server'}),db.collection('ml_publico').doc('tudooke_revenda').get({source:'server'})]).then(function(r){PRECO=r[0].exists?r[0].data():null;CFG=r[1].exists?r[1].data():null;if(!pronto())throw {code:'sem-preco'};
+  var it=cpItens(),s=cpSoma();if(!it.length)throw {code:'vazio'};var ref=db.collection('tk_credito_pedidos').doc(),resumo=it.map(function(i){return i.q+'x '+i.nome}).join(' + ');
+  var dados={rev:U.uid,revNome:REV.nome||'',qMensal:QTD.mensal,qSemestral:QTD.semestral,qAnual:QTD.anual,unMensalC:custoC('mensal'),unSemestralC:custoC('semestral'),unAnualC:custoC('anual'),pct:Number(CFG.percentAlex),totalC:s.t,resumo:resumo.slice(0,200),status:'pendente',criadoEm:TS()};
+  return ref.set(dados).then(function(){CP_PED={id:ref.id,totalC:s.t,msg:cpMsgItens(),html:it.map(function(i){return esc(i.q+'× '+i.nome)+' — '+reais(i.tot)}).join('<br>')}})})
+ .then(function(){$('eComp').textContent='';cpPasso(2);$('compraBox').scrollIntoView({block:'start'})})
+ .catch(function(e){var c=e&&e.code;$('eComp').textContent=c=='sem-preco'?'Os preços ainda não foram configurados pelo Alex.':c=='vazio'?'Escolha pelo menos 1 conta.':c=='permission-denied'?'Não deu certo: o preço pode ter mudado agora. Confira os valores e confirme de novo.':'Não deu certo ('+c+'). Tente de novo.';pintaCompra()})
+ .finally(function(){b.disabled=!(cpSoma().t>0)})};
+function cancelaPed(id){return db.collection('tk_credito_pedidos').doc(id).delete()}
+$('cpVolta').onclick=function(){var p=CP_PED;CP_PED=null;cpPasso(1);if(p){var P0=PEDS.filter(function(x){return x.id==p.id})[0];if(!P0||P0.status=='pendente')cancelaPed(p.id).catch(function(){})}};
+function pintaPeds(){var B=$('peds');if(!B)return;$('pedsBox').style.display=PEDS.length?'block':'none';B.innerHTML='';
+ PEDS.slice(0,10).forEach(function(p){var d=document.createElement('div');d.className='it';var st={pendente:['stP','⏳ Pendente'],aprovada:['stA','✅ Aprovada'],recusada:['stR','❌ Recusada']}[p.status]||['stP',p.status];
+  d.innerHTML='<div><span style="font-weight:bold"></span><span class="tag '+st[0]+'">'+st[1]+'</span></div><div class="mut"></div>';
+  d.querySelector('span').textContent=(p.resumo||'').replace(/(\d+)x /g,'$1 ')+' = '+reais(p.totalC);d.querySelector('.mut').textContent=new Date(p.t).toLocaleString('pt-BR')+(p.status=='pendente'?' • esperando o Alex confirmar o Pix':'')+(p.motivo?' • motivo: '+p.motivo:'');
+  if(p.status=='pendente'){var c=document.createElement('button');c.className='s';c.textContent='Cancelar pedido';c.style.marginTop='4px';c.onclick=function(){if(confirm('Cancelar este pedido de crédito?')){if(CP_PED&&CP_PED.id==p.id){CP_PED=null;cpPasso(1)}cancelaPed(p.id).catch(function(e){alert('Erro: '+e.code)})}};d.appendChild(c)}
+  B.appendChild(d)});if(CP_PASSO==2)pintaPasso2()}
 $('cpCopia').onclick=function(){if(PIX&&PIX.chave)copia(PIX.chave,this)};
 $('bPixCp').onclick=function(){copia($('pixTxt').value,this)};
-$('bAvisa').onclick=function(){var s=cpSoma();if(!(s.t>0)){cpPasso(1);return}
- location.href=zapUrl(zapAlex(),'Olá, Alex! Sou '+(REV.nome||'')+', revendedor do TudoOkê TV ('+(U.email||'')+').\nQuero comprar crédito:\n'+cpMsgItens()+'\nTotal: '+reais(s.t)+'\nJá fiz o Pix. Segue o comprovante.')};
+$('bAvisa').onclick=function(){if(!CP_PED){cpPasso(1);return}
+ location.href=zapUrl(zapAlex(),'Olá, Alex! Sou '+(REV.nome||'')+', revendedor do TudoOkê TV ('+(U.email||'')+').\nPedido de crédito nº '+CP_PED.id.slice(0,6).toUpperCase()+' (já está no seu painel):\n'+CP_PED.msg+'\nTotal: '+reais(CP_PED.totalC)+'\nJá fiz o Pix. Segue o comprovante.')};
 [].forEach.call(document.querySelectorAll('.mCp'),function(b){b.onclick=function(){copia(MAT[b.getAttribute('data-m')](),b)}});
 [].forEach.call(document.querySelectorAll('.mWa'),function(b){b.onclick=function(){location.href=zapUrl('',MAT[b.getAttribute('data-m')]())}});
 $('mTeste').onclick=function(){SEL='teste';pintaTudo();$('novo').style.display='none';$('eGera').textContent='Digite o nome e o WhatsApp do cliente (se quiser) e toque em Gerar código. Depois toque em Mandar no WhatsApp: a mensagem já vai pronta.';window.scrollTo(0,$('planos').offsetTop-80);setTimeout(function(){$('cli').focus()},300)};
