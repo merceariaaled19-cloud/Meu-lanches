@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-25T04:34",
+"atualizado": "2026-11-25T10:30",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -18,6 +18,12 @@
 "cat": "Notícias",
 "logo": "https://i.imgur.com/Ht4jCab.png",
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
+},
+{
+"nome": "Canal 38",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/co7TCWC.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8503/LVW8503_d0V5oduFlK/playlist.m3u8"
 },
 {
 "nome": "Canal Metropolitano de Noticias",
@@ -92,12 +98,6 @@
 "url": "https://5cf4a2c2512a2.streamlock.net/8104/8104/playlist.m3u8"
 },
 {
-"nome": "TV Zoom",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/jCGrjf5.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9730/LVW9730_LmUwslM8jt/playlist.m3u8"
-},
-{
 "nome": "TVideoNews",
 "cat": "Notícias",
 "logo": "https://i.imgur.com/vstHOYx.png",
@@ -120,6 +120,12 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/jl39ula.png",
 "url": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8"
+},
+{
+"nome": "Boas Novas",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/ZqhizdP.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8"
 },
 {
 "nome": "Catve FM",
@@ -176,12 +182,6 @@
 "url": "https://fpa-gateway.tvcultura.com.br:8181/memfs/606caef0-a290-413d-9f1f-8fcdb3a73831.m3u8"
 },
 {
-"nome": "EUTV",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/8PxpamC.png",
-"url": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
-},
-{
 "nome": "Fala Litoral",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/NF6PL8O.png",
@@ -224,12 +224,6 @@
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-15748/LVW15748_Yed7yzLuRC/playlist.m3u8"
 },
 {
-"nome": "Rede Brasil",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/TXJKwzZ.png",
-"url": "https://redebrasil.nuvemplay.live/hls/stream.m3u8"
-},
-{
 "nome": "Rede Meio Norte",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/KVdTi0M.png",
@@ -248,22 +242,16 @@
 "url": "https://video01.logicahost.com.br/websptv/websptv/playlist.m3u8"
 },
 {
+"nome": "Rede TV! Mais",
+"cat": "Variedades",
+"logo": "https://i.ibb.co/F0Tm2WP/2103f4c07b851d64b4c96955765a9a95.png",
+"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8"
+},
+{
 "nome": "RedeTV! Parana",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/D8R0Af4.png",
 "url": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8"
-},
-{
-"nome": "SBT Interior",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/IkZfa4j.png",
-"url": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8"
-},
-{
-"nome": "SBT Nacional",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/tc1ALuu.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/chunklist.m3u8"
 },
 {
 "nome": "SBT Nova Mutum",
@@ -404,12 +392,6 @@
 "url": "https://stmv1.voxtvhd.com.br/9030/9030/playlist.m3u8"
 },
 {
-"nome": "TV Vila Real",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/Z1uWe7g.png",
-"url": "https://cdn.jmvstream.com/w/LVW-10841/LVW10841_mT77z9o2cP/playlist.m3u8"
-},
-{
 "nome": "TV+Pet",
 "cat": "Variedades",
 "logo": "https://www.tvmaispet.com.br/images/tvpet-logo.png",
@@ -530,6 +512,12 @@
 "url": "https://8hzcavccys.zoeweb.tv/redeminas/ngrp:redeminas_all/playlist.m3u8"
 },
 {
+"nome": "TV Life America",
+"cat": "Educação e Cultura",
+"logo": "https://i.imgur.com/HZI0ilU.png",
+"url": "https://streaming.cloudecast.com/hls/tvlifeamerica/index.m3u8"
+},
+{
 "nome": "TV UFOP",
 "cat": "Educação e Cultura",
 "logo": "https://raw.githubusercontent.com/daniloroxette/tvufop/refs/heads/main/images/tvufop_logo.png",
@@ -578,10 +566,10 @@
 "url": "https://strv.painelvox.top/plenitude/plenitude/playlist.m3u8"
 },
 {
-"nome": "Rede Gospel",
+"nome": "RIT TV",
 "cat": "Religiosos",
-"logo": "https://i.imgur.com/mttSwgO.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
+"logo": "https://i.imgur.com/Unjs1wi.png",
+"url": "https://acesso.ecast.site:3648/live/ritlive.m3u8"
 },
 {
 "nome": "TV Maanaim",
