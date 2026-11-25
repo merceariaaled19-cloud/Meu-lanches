@@ -1,4 +1,4 @@
-const C='painel-v9';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['painel.html','confirma-sair.js?v=1','painel-192.png','painel-512.png'])));self.skipWaiting()});
+const C='painel-v10';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['painel.html','confirma-sair.js?v=1','painel-192.png','painel-512.png'])));self.skipWaiting()});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C&&x.startsWith('painel')).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==location.origin)return;e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(C).then(x=>x.put(e.request,c));return r}).catch(()=>caches.match(e.request)))});
 self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(l=>{for(const c of l){if(c.url.includes('painel')&&'focus' in c)return c.focus()}return clients.openWindow('painel.html')}))});

@@ -37,18 +37,19 @@ button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;ga
  <div class="pedAv" id="pedAv" style="display:none"><b id="pedAvT"></b><div class="row"><button class="s" id="pedAvIr" style="flex:2;background:#16a34a;font-size:15px;padding:11px">👉 Ver o pedido</button><button class="s" id="pedAvX" style="flex:1">Fechar</button></div></div>
  <div class="card" id="cAvisos" style="display:none;padding:10px"><button class="s" id="bNotif" style="width:100%;padding:12px;font-size:15px;background:#0e7490">🔔 Ativar avisos de pedido de crédito</button><p class="mut" id="notifMsg" style="margin:6px 0 0"></p></div>
  <div class="card" id="cApps"><b>📲 Apps para baixar</b>
-  <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">📲 App do ADM (este painel)</b> <span class="mut">is.gd/tudookeadmapp</span>
-   <div class="row" style="margin-top:6px"><button class="s" id="apAdmBx" style="flex:1 1 100%;background:#7c3aed">📲 Baixar app do ADM</button><button class="s" id="apAdmCp" style="flex:1">Copiar link</button><button class="s" id="apAdmWa" style="flex:1;background:#16a34a">WhatsApp</button></div></div>
+  <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">📺 App para os clientes</b> <span class="mut">is.gd/tudookebox (TV Box) • TV smart: is.gd/tudooke</span>
+   <div class="row" style="margin-top:6px"><button class="s" id="apCliCp" style="flex:1">Copiar link</button><button class="s" id="apCliWa" style="flex:1;background:#16a34a">Enviar no WhatsApp</button></div></div>
+  <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">🤝 Cadastro do revendedor</b> <span class="mut">is.gd/tudookerevenda</span>
+   <div class="row" style="margin-top:6px"><button class="s" id="apCadCp" style="flex:1">Copiar link</button><button class="s" id="apCadWa" style="flex:1;background:#16a34a">Enviar no WhatsApp</button></div></div>
   <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">📲 App do revendedor</b> <span class="mut">is.gd/tudookerevendaapp</span>
-   <div class="row" style="margin-top:6px"><button class="s apRevBx" style="flex:1 1 100%;background:#7c3aed">📲 Baixar app do revendedor</button><button class="s apRevCp" style="flex:1">Copiar link</button><button class="s apRevWa" style="flex:1;background:#16a34a">WhatsApp</button></div></div>
+   <div class="row" style="margin-top:6px"><button class="s" id="apRevCp" style="flex:1">Copiar link</button><button class="s" id="apRevWa" style="flex:1;background:#16a34a">Enviar no WhatsApp</button></div></div>
   <p class="mut" style="margin:0">Android: depois de baixar, abra o arquivo e toque em Instalar (se pedir, permita "instalar apps desconhecidos").</p></div>
  <div class="card"><b>🔗 Link para seus clientes</b><p class="mut">A pessoa abre, faz o cadastro, ganha 3 dias grátis e o app. Depois compra pelo Pix lá mesmo.</p>
   <div class="row"><button class="s" id="lkCp" style="flex:1">Copiar link</button><button class="s" id="lkWa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
  <div class="card" id="cRev"><b>🤝 Revendedores</b> <span class="tag ag" id="nRevAg" style="display:none"></span> <span class="tag" id="nPedCr" style="display:none;background:#0e7490;cursor:pointer"></span>
   <p class="mut">Revendedor compra crédito com você (Pix) e você põe o crédito aqui. Cada conta paga que ele gera desconta do crédito dele a sua parte do preço. Testes de 3 dias são livres.</p>
-  <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">🔗 Link para revendedores</b> <span class="mut" id="lkRevTxt">is.gd/tudookerevenda</span>
-   <div class="row" style="margin-top:6px"><button class="s" id="lkRevCp" style="flex:1">Copiar link</button><button class="s" id="lkRevWa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
-  <p class="mut" style="margin:0 0 6px">O app do revendedor está no card "📲 Apps para baixar", lá em cima. O botão "Mandar no WhatsApp" acima já leva o cadastro + o app.</p>
+  <button class="s" id="lkRevWa" style="width:100%;padding:10px;margin:8px 0 4px;background:#16a34a">📨 Convidar revendedor no WhatsApp</button>
+  <p class="mut" style="margin:0 0 6px">O convite já leva o cadastro + o app do revendedor. Os links separados estão no card "📲 Apps para baixar", lá em cima.</p>
   <div class="row" style="flex-wrap:nowrap;align-items:end"><label style="flex:1;font-size:13px;min-width:0">Sua parte (%)<input id="rvPct" type="text" inputmode="decimal" placeholder="50"></label><label style="flex:2;font-size:13px;min-width:0">Seu WhatsApp (revendedor chama aqui)<input id="rvZap" type="tel" placeholder="92995015662"></label></div>
   <button class="s" id="rvSalva" style="width:100%;padding:10px">Salvar % e WhatsApp</button><p class="mut" id="rvMsg"></p>
   <div id="pedTopo" class="ped" style="display:none;cursor:pointer"></div>
@@ -155,15 +156,15 @@ $('prSalva').onclick=function(){var m=num($('prM').value),se=num($('prS').value)
  .then(function(){$('prMsg').textContent='✅ Preços salvos. A página de assinar já mostra os novos valores.'})
  .catch(function(e){$('prMsg').textContent='Não salvou ('+e.code+'). Só as contas de administrador podem mudar preços.'}).finally(function(){b.disabled=false})};
 /* ---- revendedores (crédito pré-pago) ---- */
-var LKREV='https://is.gd/tudookerevenda',LKREVL=location.href.replace(/painel\.html.*$/,'revenda.html'),REVS=[],RVEN=[],RREC=[],RVAB={},unRv,RVCFG0={percentAlex:50,zapAlex:'5592995015662'},RVCFG=null,RVAG0=-1;
-$('lkRevCp').onclick=function(){copia(LKREV,this)};
-var APREV='https://is.gd/tudookerevendaapp',APREVL='https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeRevenda.apk',APADM='https://is.gd/tudookeadmapp',APADML='https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkePainel.apk';
+var LKREV='https://is.gd/tudookerevenda',REVS=[],RVEN=[],RREC=[],RVAB={},unRv,RVCFG0={percentAlex:50,zapAlex:'5592995015662'},RVCFG=null,RVAG0=-1;
+var APREV='https://is.gd/tudookerevendaapp',APCLI='https://is.gd/tudookebox',APSMART='https://is.gd/tudooke';
 $('lkRevWa').onclick=function(){location.href=zapUrl('','🎤 Quer revender o TudoOkê TV (karaokê com nota na TV Box e TV smart)?\n1) Faça seu cadastro de revendedor aqui: '+LKREV+'\n2) Baixe o app de revendedor (Android): '+APREV)};
-[].forEach.call(document.querySelectorAll('.apRevBx'),function(b){b.onclick=function(){location.href=APREVL}});
-[].forEach.call(document.querySelectorAll('.apRevCp'),function(b){b.onclick=function(){copia(APREV,this)}});
-[].forEach.call(document.querySelectorAll('.apRevWa'),function(b){b.onclick=function(){location.href=zapUrl('','📲 App de revendedor do TudoOkê TV (Android): '+APREV+'\nSe ainda não tem cadastro, faça aqui: '+LKREV)}});
-$('apAdmBx').onclick=function(){location.href=APADML};$('apAdmCp').onclick=function(){copia(APADM,this)};
-$('apAdmWa').onclick=function(){location.href=zapUrl('','📲 App do ADM do TudoOkê TV (Android): '+APADM)};
+$('apCliCp').onclick=function(){copia(APCLI,this)};
+$('apCliWa').onclick=function(){location.href=zapUrl('','🎤 App TudoOkê TV (karaokê com nota)\n📦 TV Box: abra o navegador da TV Box e digite '+APCLI+' para baixar e instalar.\n📺 TV smart: abra o navegador da TV e digite '+APSMART+'\nDepois é só digitar o seu código.')};
+$('apCadCp').onclick=function(){copia(LKREV,this)};
+$('apCadWa').onclick=function(){location.href=zapUrl('','🤝 Cadastro de revendedor do TudoOkê TV: '+LKREV)};
+$('apRevCp').onclick=function(){copia(APREV,this)};
+$('apRevWa').onclick=function(){location.href=zapUrl('','📲 App de revendedor do TudoOkê TV (Android): '+APREV+'\nSe ainda não tem cadastro, faça aqui: '+LKREV)};
 function rc(c){return 'R$ '+(Number(c||0)/100).toFixed(2).replace('.',',')}
 function escR(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function escutaRev(){if(unRv)return;var cf=db.collection('ml_publico').doc('tudooke_revenda');
