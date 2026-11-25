@@ -137,7 +137,10 @@ $('cCep').addEventListener('input', async function(){
 
 /* ---------- cadastro guardado no aparelho ---------- */
 var CAD = null;
-function leCad(){ try { return JSON.parse(localStorage.getItem('ok_cliente') || 'null'); } catch (e) { return null; } }
+/* chave só do cliente (a antiga 'ok_cliente' é apagada e nunca lida: no mesmo site ficam dados do app do Alex) */
+var CAD_K = 'okcli_cadastro_v2';
+try { localStorage.removeItem('ok_cliente'); } catch (e) {}
+function leCad(){ try { var g = JSON.parse(localStorage.getItem(CAD_K) || 'null'); return g && g.porCliente === 1 ? g : null; } catch (e) { return null; } }
 function poeCad(g){
   $('cNome').value = g.nome || ''; $('cLoja').value = g.loja || ''; $('cZap').value = g.zap || '';
   if (g.endr){ $('cCep').value = g.endr.cep || ''; $('cRua').value = g.endr.rua || ''; $('cNum').value = g.endr.num || ''; $('cBairro').value = g.endr.bairro || ''; $('cCidade').value = g.endr.cidade || ''; $('cUf').value = g.endr.uf || ''; CEP_ULT = (g.endr.cep || '').replace(/\D/g, ''); }
@@ -162,7 +165,7 @@ $('form').onsubmit = async function(ev){
   if (SEG == 'outro'){ segNome = $('segOutro').value.trim().slice(0, 30); if (segNome.length < 2){ erro('Digite qual é o seu ramo.'); $('segOutro').focus(); return; } }
   if (nome.length < 2){ abreCad(); erro('Digite o seu nome.'); $('cNome').focus(); return; }
   if (loja.length < 2){ abreCad(); erro(ehFesta() ? 'Digite o nome da empresa ou de quem organiza.' : 'Digite o nome da loja ou empresa.'); $('cLoja').focus(); return; }
-  if (zap.replace(/\D/g, '').length < 10){ abreCad(); erro('Digite o WhatsApp com DDD. Ex.: (92) 99999-9999'); $('cZap').focus(); return; }
+  if (zap.replace(/\D/g, '').length < 10){ abreCad(); erro('Digite o WhatsApp com DDD. Ex.: (92) 90000-0000'); $('cZap').focus(); return; }
   var prods = [], fotos = {};
   if (ehFesta()){
     var F = {nome: $('fNome').value.trim().slice(0, 60), dia: $('fDia').value, hora: $('fHora').value, local: $('fLocal').value.trim().slice(0, 80), atracoes: $('fAtracoes').value.trim().slice(0, 100), entrada: $('fEntrada').value.trim().slice(0, 60), contato: ($('fContato').value.trim() || zap).slice(0, 60)};
@@ -189,8 +192,8 @@ $('form').onsubmit = async function(ev){
   var end = endDe(endr);
   var ped = {codigo: COD, cliente: nome.slice(0, 60), loja: loja.slice(0, 50), zap: zap.slice(0, 20), end: end.slice(0, 90), endr: endr, logo: LOGO, produtos: prods, nFotos: prods.length, status: 'novo'};
   /* guarda o cadastro neste aparelho antes de enviar (se a internet cair, não perde) */
-  CAD = {nome: ped.cliente, loja: ped.loja, zap: ped.zap, endr: endr, logo: LOGO, seg: SEG, segNome: segNome};
-  try { localStorage.setItem('ok_cliente', JSON.stringify(CAD)); } catch (e) { try { var c2 = JSON.parse(JSON.stringify(CAD)); c2.logo = ''; localStorage.setItem('ok_cliente', JSON.stringify(c2)); } catch (e2) {} }
+  CAD = {porCliente: 1, nome: ped.cliente, loja: ped.loja, zap: ped.zap, endr: endr, logo: LOGO, seg: SEG, segNome: segNome};
+  try { localStorage.setItem(CAD_K, JSON.stringify(CAD)); } catch (e) { try { var c2 = JSON.parse(JSON.stringify(CAD)); c2.logo = ''; localStorage.setItem(CAD_K, JSON.stringify(c2)); } catch (e2) {} }
   $('bEnviar').disabled = true; $('enviando').classList.remove('oculto'); $('envSt').textContent = 'Enviando… não feche esta tela.'; $('envPr').style.width = '5%';
   try {
     await DB.envia(ped, fotos, function(p){ $('envPr').style.width = Math.round(p * 100) + '%'; });
@@ -213,8 +216,6 @@ function mostraForm(){ $('carregando').classList.add('oculto'); $('form').classL
 DB.link(COD).then(function(L){
   if (!L || L.ativo === false){ $('carregando').classList.add('oculto'); $('invalido').classList.remove('oculto'); return; }
   LINK = L; if (!SEG_URL && L.seg && CSEG[L.seg]) SEG = L.seg; aplicaSegCli(); pinta();
-  if (L.loja && !$('cLoja').value){ $('cLoja').value = L.loja; }
-  if (L.cliente && !$('cNome').value){ $('cNome').value = L.cliente; }
-  if (L.cliente) $('ola').innerHTML = 'Olá, <b>' + esc(L.cliente) + '</b>! 👋<br>' + $('ola').innerHTML;
+  /* nunca preenche nada com dados do link (nome, loja): o cadastro começa vazio, só com exemplos em cinza */
   mostraForm();
 }).catch(function(){ LINK = {}; mostraForm(); /* se não conseguiu ler o link, deixa tentar enviar mesmo assim */ });

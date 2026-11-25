@@ -43,7 +43,7 @@ a.bt{text-decoration:none}
 <div id="carregando" class="intro">Carregando…</div>
 <div id="invalido" class="card oculto"><h2>😕 Este link não vale mais</h2><p>Peça um link novo para quem te mandou.</p></div>
 
-<form id="form" class="oculto" autocomplete="on" novalidate>
+<form id="form" class="oculto" autocomplete="off" novalidate>
   <p class="intro" id="ola">Escolha o seu <b>ramo</b>, faça o <b>cadastro</b> e mande as <b>fotos</b>.<br>A gente faz o <b>comercial com locutor</b> para você! 🎤</p>
 
   <div class="card"><h2>1️⃣ Qual é o seu ramo?</h2>
@@ -54,16 +54,16 @@ a.bt{text-decoration:none}
   <div class="card"><h2>2️⃣ Seu cadastro</h2>
     <div id="cadResumo" class="cadres oculto"></div>
     <div id="cadForm">
-      <label class="l">Seu nome *</label><input id="cNome" maxlength="60" autocomplete="name" placeholder="Ex.: Seu nome">
-      <label class="l" id="lLoja">Nome da loja ou empresa *</label><input id="cLoja" maxlength="50" autocomplete="organization" placeholder="Ex.: Mercadinho Sol Nascente">
-      <label class="l">WhatsApp *</label><input id="cZap" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="(92) 99999-9999">
+      <label class="l">Seu nome *</label><input id="cNome" maxlength="60" autocomplete="off" name="okc_n" placeholder="Ex.: Maria Exemplo">
+      <label class="l" id="lLoja">Nome da loja ou empresa *</label><input id="cLoja" maxlength="50" autocomplete="off" name="okc_l" placeholder="Ex.: Mercadinho Sol Nascente">
+      <label class="l">WhatsApp *</label><input id="cZap" type="tel" inputmode="tel" maxlength="20" autocomplete="off" name="okc_z" placeholder="Ex.: (92) 90000-0000">
       <label class="l">Endereço <small class="d">(opcional, aparece no fim do vídeo)</small></label>
       <div class="endbox">
         <label class="l">CEP <small class="d">(preenche a rua sozinho)</small></label>
-        <input id="cCep" inputmode="numeric" maxlength="9" placeholder="Ex.: 69000-000">
+        <input id="cCep" autocomplete="off" name="okc_c" inputmode="numeric" maxlength="9" placeholder="Ex.: 69000-000">
         <div class="st" id="cepSt"></div>
-        <label class="l">Rua</label><input id="cRua" maxlength="60" placeholder="Ex.: Rua das Flores">
-        <div class="lin"><div><label class="l">Número</label><input id="cNum" inputmode="numeric" maxlength="10" placeholder="Ex.: 120"></div><div><label class="l">Bairro</label><input id="cBairro" maxlength="40" placeholder="Ex.: Centro"></div></div>
+        <label class="l">Rua</label><input id="cRua" autocomplete="off" name="okc_r" maxlength="60" placeholder="Ex.: Rua das Flores">
+        <div class="lin"><div><label class="l">Número</label><input id="cNum" autocomplete="off" name="okc_nu" inputmode="numeric" maxlength="10" placeholder="Ex.: 100"></div><div><label class="l">Bairro</label><input id="cBairro" autocomplete="off" name="okc_b" maxlength="40" placeholder="Ex.: Centro"></div></div>
         <input id="cCidade" type="hidden"><input id="cUf" type="hidden">
       </div>
       <label class="l">Logo <small class="d">(opcional)</small></label>
@@ -83,7 +83,7 @@ a.bt{text-decoration:none}
     <label class="l">Local *</label><input id="fLocal" maxlength="80" placeholder="Ex.: Quadra da Rua das Palmeiras, 120">
     <label class="l">Atrações <small class="d">(opcional)</small></label><input id="fAtracoes" maxlength="100" placeholder="Ex.: Banda Brisa do Norte e DJ da casa">
     <label class="l">Entrada / valor <small class="d">(opcional)</small></label><input id="fEntrada" maxlength="60" placeholder="Ex.: R$ 20 / Entrada gratuita">
-    <label class="l">Contato para ingresso <small class="d">(opcional; se ficar vazio, vai o seu WhatsApp)</small></label><input id="fContato" maxlength="60" placeholder="Ex.: (92) 99999-9999">
+    <label class="l">Contato para ingresso <small class="d">(opcional; se ficar vazio, vai o seu WhatsApp)</small></label><input id="fContato" maxlength="60" placeholder="Ex.: (92) 90000-0000">
     <label class="l">Foto ou cartaz da festa <small class="d">(opcional)</small></label>
     <div class="pfoto" id="fFotoPrev">🎉</div>
     <div class="lin"><button type="button" class="bt peq" id="fCamB">📷 Tirar foto</button><button type="button" class="bt cz peq" id="fGalB">🖼️ Galeria</button></div>
@@ -95,10 +95,10 @@ a.bt{text-decoration:none}
   <button type="submit" class="bt vd" id="bEnviar" style="font-size:24px;padding:20px">📤 Enviar</button>
 </form>
 
-<div id="fim" class="card fim oculto"><div class="ok">✅</div><h2>Recebido!</h2><p style="font-size:20px">O Alex vai preparar seu comercial. 🎬<br>Logo ele te chama no WhatsApp.</p><button class="bt cz peq" id="bOutro">Mandar outro pedido</button></div>
+<div id="fim" class="card fim oculto"><div class="ok">✅</div><h2>Recebido!</h2><p style="font-size:20px">Vamos preparar o seu comercial. 🎬<br>Logo a gente te chama no WhatsApp.</p><button class="bt cz peq" id="bOutro">Mandar outro pedido</button></div>
 </main>
 <input type="file" id="fCam" accept="image/*" capture="environment" class="oculto">
 <input type="file" id="fGal" accept="image/*" class="oculto">
 <input type="file" id="fLogo" accept="image/*" class="oculto">
-<script src="cliente.js?v=3"></script>
+<script src="cliente.js?v=4"></script>
 </body></html>
