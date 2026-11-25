@@ -70,6 +70,15 @@ $('bGoogle').onclick = function(){ var p = new firebase.auth.GoogleAuthProvider(
       if (/popup-blocked|not-supported|web-storage/.test(c)){ $('msgLogin').textContent = 'Abrindo o Google nesta tela…'; au.signInWithRedirect(p); return; }
       if (/network/.test(c)){ $('msgLogin').textContent = 'Sem internet. Confira a conexão e tente de novo.'; return; }
       $('msgLogin').textContent = 'Não entrou: ' + (c || e); }); };
+function erroLogin(c){ return /wrong-password|invalid-credential|invalid-login/.test(c) ? 'E-mail ou senha errados. Se ainda não tem senha, toque em Criar senha.' : /user-not-found/.test(c) ? 'Esse e-mail ainda não tem senha. Toque em Criar senha.' : /too-many/.test(c) ? 'Muitas tentativas. Espere uns minutos.' : /network/.test(c) ? 'Sem internet. Confira a conexão.' : /invalid-email/.test(c) ? 'Confira o e-mail digitado.' : 'Não entrou: ' + c; }
+$('bEmail').onclick = function(){ var em = $('lEm').value.trim().toLowerCase(), se = $('lSe').value; if (!em || !se){ $('msgLogin').textContent = 'Digite o e-mail e a senha.'; return; }
+  $('msgLogin').textContent = 'Entrando…'; au.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){}).then(function(){ return au.signInWithEmailAndPassword(em, se); })
+    .then(function(){ $('msgLogin').textContent = ''; }).catch(function(e){ $('msgLogin').textContent = erroLogin((e && e.code) || String(e)); }); };
+$('bSenha').onclick = function(){ var em = $('lEm').value.trim().toLowerCase(); if (!em){ $('msgLogin').textContent = 'Digite seu e-mail primeiro, depois toque aqui.'; return; }
+  if (ADMINS.indexOf(em) < 0){ $('msgLogin').textContent = 'Use um dos e-mails de administrador.'; return; }
+  au.languageCode = 'pt'; au.sendPasswordResetEmail(em).then(function(){ $('msgLogin').textContent = 'Pronto! Mandei um e-mail para ' + em + '. Abra, toque no link, crie a senha e volte aqui para entrar. (Olhe também no Spam.)'; })
+    .catch(function(e){ var c = (e && e.code) || ''; if (/user-not-found/.test(c)) au.createUserWithEmailAndPassword(em, Math.random().toString(36).slice(2) + 'Aa9!').then(function(){ return au.signOut(); }).then(function(){ return au.sendPasswordResetEmail(em); }).then(function(){ $('msgLogin').textContent = 'Pronto! Mandei um e-mail para ' + em + '. Abra, crie a senha e volte aqui. (Olhe no Spam.)'; }).catch(function(x){ $('msgLogin').textContent = erroLogin(x.code || String(x)); });
+      else $('msgLogin').textContent = erroLogin(c); }); };
 $('bSair').onclick = function(){ if (TESTE) return; if (confirm('Sair da conta?')) au.signOut(); };
 
 /* ================= lista ================= */
