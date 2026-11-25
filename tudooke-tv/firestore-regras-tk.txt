@@ -1,0 +1,91 @@
+    // ===== TudoOkê Revenda (tudooke-tv/revenda.html) — crédito pré-pago, v1 2026-11-25 =====
+    // tk_revendedores/{uid}: cadastro do revendedor (status aguardando/aprovado/bloqueado, saldoC = crédito em centavos).
+    // Só admin (mlAdmin) aprova, bloqueia e põe crédito. O revendedor só tira do saldo o custo exato
+    // (preço atual do plano x percentAlex de ml_publico/tudooke_revenda) junto com a venda e a licença, e o saldo nunca fica negativo.
+    // Teste de 1 dia: livre (sem custo) para revendedor aprovado.
+    function tkTxt(v, mn, mx) {
+      return v is string && v.size() >= mn && v.size() <= mx;
+    }
+    function tkRevAprovado() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/tk_revendedores/$(request.auth.uid))
+        && get(/databases/$(database)/documents/tk_revendedores/$(request.auth.uid)).data.status == 'aprovado';
+    }
+    function tkPreco(p) {
+      return get(/databases/$(database)/documents/ml_publico/tudooke_precos).data[p];
+    }
+    function tkPct() {
+      return get(/databases/$(database)/documents/ml_publico/tudooke_revenda).data.percentAlex;
+    }
+    match /tk_revendedores/{uid} {
+      allow read: if mlAdmin() || (request.auth != null && request.auth.uid == uid);
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['nome', 'zap', 'email', 'status', 'saldoC', 'criadoEm'])
+        && tkTxt(request.resource.data.nome, 2, 40)
+        && request.resource.data.zap is string && request.resource.data.zap.matches('^55[0-9]{10,11}$')
+        && tkTxt(request.resource.data.get('email', ''), 0, 120)
+        && request.resource.data.status == 'aguardando'
+        && request.resource.data.saldoC == 0
+        && request.resource.data.criadoEm == request.time;
+      allow update: if mlAdmin() || (request.auth != null && request.auth.uid == uid && (
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nome', 'zap'])
+            && tkTxt(request.resource.data.nome, 2, 40)
+            && request.resource.data.zap is string && request.resource.data.zap.matches('^55[0-9]{10,11}$'))
+          || (resource.data.status == 'aprovado'
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['saldoC', 'ultVenda'])
+            && request.resource.data.ultVenda is string
+            && !exists(/databases/$(database)/documents/tk_rev_vendas/$(request.resource.data.ultVenda))
+            && getAfter(/databases/$(database)/documents/tk_rev_vendas/$(request.resource.data.ultVenda)).data.rev == uid
+            && request.resource.data.saldoC == resource.data.saldoC - getAfter(/databases/$(database)/documents/tk_rev_vendas/$(request.resource.data.ultVenda)).data.custoC
+            && request.resource.data.saldoC >= 0)));
+      allow delete: if mlAdmin();
+    }
+    match /tk_rev_vendas/{vid} {
+      allow read: if mlAdmin() || (request.auth != null && resource.data.rev == request.auth.uid);
+      allow create: if tkRevAprovado()
+        && request.resource.data.keys().hasOnly(['rev', 'revNome', 'cod', 'plano', 'dias', 'precoC', 'pct', 'custoC', 'cliente', 'zap', 'criadoEm'])
+        && request.resource.data.rev == request.auth.uid
+        && ((request.resource.data.plano == 'mensal' && request.resource.data.dias == 30)
+          || (request.resource.data.plano == 'semestral' && request.resource.data.dias == 180)
+          || (request.resource.data.plano == 'anual' && request.resource.data.dias == 365))
+        && tkPct() is number && tkPct() > 0 && tkPct() <= 100
+        && request.resource.data.pct == tkPct()
+        && request.resource.data.precoC == math.round(tkPreco(request.resource.data.plano) * 100)
+        && request.resource.data.custoC == math.round(tkPreco(request.resource.data.plano) * tkPct())
+        && request.resource.data.custoC > 0
+        && request.resource.data.criadoEm == request.time
+        && tkTxt(request.resource.data.get('revNome', ''), 0, 40)
+        && tkTxt(request.resource.data.get('cliente', ''), 0, 40)
+        && tkTxt(request.resource.data.get('zap', ''), 0, 20)
+        && request.resource.data.cod is string && request.resource.data.cod.size() == 8
+        && !exists(/databases/$(database)/documents/licencas/$(request.resource.data.cod))
+        && getAfter(/databases/$(database)/documents/licencas/$(request.resource.data.cod)).data.venda == vid
+        && getAfter(/databases/$(database)/documents/tk_revendedores/$(request.auth.uid)).data.ultVenda == vid
+        && getAfter(/databases/$(database)/documents/tk_revendedores/$(request.auth.uid)).data.saldoC
+           == get(/databases/$(database)/documents/tk_revendedores/$(request.auth.uid)).data.saldoC - request.resource.data.custoC;
+      allow update, delete: if mlAdmin();
+    }
+    match /tk_rev_recargas/{id} {
+      allow read: if mlAdmin() || (request.auth != null && resource.data.rev == request.auth.uid);
+      allow write: if mlAdmin();
+    }
+    match /licencas/{cod} {
+      allow list: if request.auth != null && resource.data.revendedor == request.auth.uid;
+      allow create: if tkRevAprovado() && cod.size() == 8
+        && request.resource.data.keys().hasOnly(['dias', 'plano', 'cliente', 'zap', 'device', 'ativadoEm', 'criadoEm', 'revendedor', 'revNome', 'venda'])
+        && request.resource.data.revendedor == request.auth.uid
+        && request.resource.data.device == '' && request.resource.data.ativadoEm == null
+        && request.resource.data.criadoEm == request.time
+        && tkTxt(request.resource.data.get('cliente', ''), 0, 40)
+        && tkTxt(request.resource.data.get('zap', ''), 0, 20)
+        && tkTxt(request.resource.data.get('revNome', ''), 0, 40)
+        && ((request.resource.data.dias == 1 && request.resource.data.plano == 'Teste 1 dia' && !('venda' in request.resource.data))
+          || (request.resource.data.venda is string
+            && !exists(/databases/$(database)/documents/tk_rev_vendas/$(request.resource.data.venda))
+            && getAfter(/databases/$(database)/documents/tk_rev_vendas/$(request.resource.data.venda)).data.cod == cod
+            && getAfter(/databases/$(database)/documents/tk_rev_vendas/$(request.resource.data.venda)).data.dias == request.resource.data.dias
+            && ((request.resource.data.dias == 30 && request.resource.data.plano == 'Mensal')
+              || (request.resource.data.dias == 180 && request.resource.data.plano == 'Semestral')
+              || (request.resource.data.dias == 365 && request.resource.data.plano == 'Anual'))));
+    }
+    // ===== fim TudoOkê Revenda =====

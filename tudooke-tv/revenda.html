@@ -1,0 +1,194 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Revenda TudoOkê TV</title>
+<meta name="theme-color" content="#0f3d2e"><link rel="manifest" href="revenda.webmanifest"><link rel="icon" href="revenda-192.png"><link rel="apple-touch-icon" href="revenda-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0b0418;color:#fff}
+header{background:linear-gradient(90deg,#1a0636,#0f3d2e);border-bottom:3px solid #22c55e;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:19px;margin:0}h2{font-size:17px;margin:0 0 8px;color:#ffd54a}main{padding:14px;max-width:720px;margin:auto}
+.card{background:#1a0636;border-radius:14px;padding:14px;margin-bottom:14px}
+input{width:100%;padding:12px;font-size:16px;border-radius:10px;border:2px solid #4a2380;background:#0f0322;color:#fff;margin:6px 0}
+button{padding:12px 16px;font-size:15px;border:0;border-radius:10px;background:#ff3fa4;color:#fff;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5}button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.w{width:100%;margin-top:6px}.verde{background:#16a34a}
+.row{display:flex;gap:8px;flex-wrap:wrap}.mut{opacity:.75;font-size:13px;margin:4px 0}
+.planos{display:grid;grid-template-columns:1fr 1fr;gap:6px}.planos label{background:#0f0322;border:2px solid #4a2380;border-radius:10px;padding:10px;text-align:center;cursor:pointer;font-size:14px}
+.planos input{display:none}.planos label.sel{border-color:#ffd54a;background:#2b0a4f}.planos small{display:block;opacity:.8;margin-top:3px}
+.cod{font-size:30px;letter-spacing:4px;color:#ffd54a;text-align:center;margin:10px 0;font-weight:bold}
+.saldo{font-size:34px;font-weight:bold;color:#4ade80;text-align:center;margin:6px 0}.saldo.zero{color:#f87171}
+.it{border-top:1px solid #33175c;padding:10px 0}.it b{color:#ffd54a;letter-spacing:2px}.tag{font-size:12px;padding:2px 8px;border-radius:9px;margin-left:6px}
+.novo{background:#2563eb}.ok{background:#16a34a}.venc{background:#b91c1c}.ag{background:#b45309}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:7px 4px;border-bottom:1px solid #33175c;text-align:left}th{color:#ffd54a;font-size:12px}td.v{text-align:right;white-space:nowrap}
+.e{color:#ff8a8a;min-height:18px}.aviso{background:#3b1d0a;border:1px solid #b45309;border-radius:10px;padding:10px;margin:8px 0}
+.tot{display:flex;gap:8px;text-align:center}.tot div{flex:1;background:#0f0322;border-radius:10px;padding:8px;font-size:13px}.tot b{display:block;font-size:22px}
+textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f0322;color:#fff;border:2px solid #4a2380;padding:8px}
+.abas{display:flex;gap:6px;margin-bottom:8px}.abas button{flex:1;background:#0f0322;border:2px solid #4a2380;font-size:13px;padding:8px}.abas button.on{border-color:#ffd54a;color:#ffd54a}
+</style><script src="confirma-sair.js?v=1"></script>
+</head><body>
+<header><h1>🤝 Revenda TudoOkê TV</h1><button class="s" id="sair" style="display:none">Sair</button></header>
+<main>
+<div class="card" id="vLogin" style="display:none">
+ <h2>Seja revendedor do TudoOkê TV</h2>
+ <p class="mut">Karaokê com nota para TV Box e TV smart. Você vende para seus clientes e gera os códigos aqui. Testes de 1 dia são grátis e à vontade.</p>
+ <button id="bG" class="w" style="background:#fff;color:#222">Entrar com Google</button>
+ <p class="mut" style="text-align:center">ou com e-mail</p>
+ <input id="em" type="email" placeholder="Seu e-mail" autocomplete="email"><input id="se" type="password" placeholder="Senha (mínimo 6)" autocomplete="current-password">
+ <button id="bCria" class="w">Criar conta</button><button id="bEnt" class="w s" style="padding:12px">Já tenho conta, entrar</button>
+ <p class="e" id="eLog"></p>
+</div>
+<div class="card" id="vCad" style="display:none">
+ <h2>Seu cadastro de revendedor</h2>
+ <input id="cNome" placeholder="Seu nome" maxlength="40"><input id="cZap" type="tel" placeholder="Seu WhatsApp com DDD. Ex.: 92991234567" maxlength="20">
+ <button id="bCad" class="w">Enviar cadastro</button><p class="e" id="eCad"></p>
+</div>
+<div class="card" id="vEspera" style="display:none">
+ <h2 id="espT"></h2><p id="espM"></p>
+ <button id="bEspZap" class="w verde">Falar com o Alex no WhatsApp</button>
+</div>
+<div id="vApp" style="display:none">
+ <div class="card"><h2>💰 Seu crédito</h2><div class="saldo" id="saldo">R$ 0,00</div>
+  <p class="mut" style="text-align:center">Cada conta paga que você gera tira do seu crédito. Teste de 1 dia é grátis.</p>
+  <button id="bCompra" class="w verde">Comprar crédito</button>
+  <div id="compraBox" style="display:none;margin-top:8px">
+   <p class="mut">1) Digite quanto quer comprar. 2) Pague o Pix. 3) Avise o Alex. O crédito entra quando ele confirmar.</p>
+   <input id="cVal" type="text" inputmode="decimal" placeholder="Valor em R$. Ex.: 100,00">
+   <div id="pixArea" style="display:none"><p class="mut" id="pixInfo"></p><textarea id="pixTxt" readonly></textarea>
+    <button id="bPixCp" class="w s" style="padding:12px">Copiar código Pix</button></div>
+   <button id="bAvisa" class="w verde">Já paguei, avisar o Alex no WhatsApp</button><p class="e" id="eComp"></p>
+  </div>
+ </div>
+ <div class="card"><h2>📋 Quanto custa para você</h2><div id="tabPreco" class="mut">Carregando…</div>
+  <p class="mut">"Você vende por" é o preço sugerido para o cliente. Se o Alex mudar os preços, muda aqui na hora.</p></div>
+ <div class="card"><h2>🎤 Gerar conta para cliente</h2>
+  <div class="planos" id="planos"></div>
+  <input id="cli" placeholder="Nome do cliente" maxlength="40"><input id="zap" type="tel" placeholder="WhatsApp do cliente com DDD (opcional)" maxlength="20">
+  <button id="gera" class="w">Gerar código</button><div id="eGera" class="e"></div>
+  <div id="novo" style="display:none"><div class="cod" id="cod"></div><p class="mut" id="novoInfo" style="text-align:center"></p>
+   <div class="row"><button class="s" id="cp" style="flex:1">Copiar</button><button class="s verde" id="wa" style="flex:1">Mandar no WhatsApp</button></div></div>
+ </div>
+ <div class="card"><h2>📺 Seus clientes</h2>
+  <div class="tot"><div><b id="tN">0</b>Sem usar</div><div><b id="tA">0</b>Ativos</div><div><b id="tV">0</b>Vencidos</div></div>
+  <input id="bus" placeholder="Buscar cliente ou código"><div id="lista" class="mut">Carregando…</div></div>
+ <div class="card"><h2>🧾 Histórico</h2>
+  <div class="abas"><button id="abV" class="on">Vendas</button><button id="abR">Créditos comprados</button></div>
+  <div id="hist" class="mut">Carregando…</div></div>
+ <p class="mut" style="text-align:center"><span id="quem"></span> • <a href="#" id="editar" style="color:#ffd54a">Editar meus dados</a></p>
+ <div class="card"><h2>⬇️ Para seus clientes</h2><p class="mut">O cliente baixa o app na TV Box pelo navegador: <b style="color:#ffd54a">is.gd/tudookebox</b>. Na TV smart: abre o navegador e digita <b style="color:#ffd54a">is.gd/tudooke</b>. Depois digita o código que você mandou.</p></div>
+</div>
+</main>
+<script>
+var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
+firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)},TS=function(){return firebase.firestore.FieldValue.serverTimestamp()};
+/* Preços e percentual NÃO ficam fixos: vêm de ml_publico/tudooke_precos e ml_publico/tudooke_revenda (o Alex muda no painel dele). */
+var PLANOS=[{id:'teste',nome:'Teste 1 dia',dias:1},{id:'mensal',nome:'Mensal',dias:30},{id:'semestral',nome:'Semestral',dias:180},{id:'anual',nome:'Anual',dias:365}];
+var NOME={1:'Teste 1 dia',30:'Mensal',180:'Semestral',365:'Anual'},ZAP_ALEX0='5592995015662';
+var U=null,REV=null,PRECO=null,CFG=null,PIX=null,SEL='teste',LICS=[],VENDAS=[],RECS=[],ULT=null,ABA='v',subs=[];
+function vis(v){['vLogin','vCad','vEspera','vApp'].forEach(function(x){$(x).style.display=x==v?'block':'none'})}
+function reais(c){return 'R$ '+(Number(c||0)/100).toFixed(2).replace('.',',')}
+function fmt(c){return c.slice(0,4)+'-'+c.slice(4)}
+function dt(ms){return new Date(ms).toLocaleDateString('pt-BR')}
+function ms(t){return t&&t.toMillis?t.toMillis():Date.now()}
+function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
+function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(8);crypto.getRandomValues(r);for(var i=0;i<8;i++)s+=a[r[i]%a.length];return s}
+function num(t){t=String(t||'').replace(/[R$\s]/g,'');if(t.indexOf(',')>=0)t=t.replace(/\./g,'').replace(',','.');var v=Math.round(parseFloat(t)*100)/100;return v>0&&v<100000?v:0}
+function zapUrl(n,t){if(/Android/i.test(navigator.userAgent))return 'intent://send?'+(n?'phone='+n+'&':'')+'text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;end';return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(t)}
+function zapAlex(){return (CFG&&CFG.zapAlex)||ZAP_ALEX0}
+function erroTxt(e){var c=e&&e.code||'';return {'auth/email-already-in-use':'Esse e-mail já tem conta. Toque em "Já tenho conta".','auth/invalid-credential':'E-mail ou senha errados.','auth/wrong-password':'Senha errada.','auth/user-not-found':'Conta não encontrada. Toque em "Criar conta".','auth/weak-password':'A senha precisa de 6 letras ou números.','auth/invalid-email':'E-mail inválido.'}[c]||('Não deu certo ('+c+'). Tente de novo.')}
+function copia(t,b){function ok(){if(b){var o=b.textContent;b.textContent='Copiado! ✅';setTimeout(function(){b.textContent=o},1500)}}
+ function velho(){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity=0;document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand('copy')}catch(e){}a.remove();if(r)ok();else prompt('Copie:',t)}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,velho);else velho()}
+/* Pix copia e cola (BR Code), igual ao assinar.html */
+function pixTxt(t,m){return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9 .\-]/g,'').toUpperCase().slice(0,m)}
+function crc16(s){var c=0xFFFF;for(var i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(var j=0;j<8;j++)c=(c&0x8000)?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return('0000'+c.toString(16).toUpperCase()).slice(-4)}
+function pixCC(ch,no,ci,v,tx){function f(i,x){return i+('0'+x.length).slice(-2)+x}var k=String(ch||'').trim();if(/^[\d.\-\/ ]+$/.test(k))k=k.replace(/\D/g,'');
+ var p=f('00','01')+f('26',f('00','br.gov.bcb.pix')+f('01',k))+f('52','0000')+f('53','986')+(v?f('54',Number(v).toFixed(2)):'')+f('58','BR')+f('59',pixTxt(no,25)||'RECEBEDOR')+f('60',pixTxt(ci,15)||'MANAUS')+f('62',f('05',pixTxt(tx,25).replace(/[^A-Z0-9]/g,'')||'***'))+'6304';return p+crc16(p)}
+/* custo do revendedor em centavos = preço do plano x percentual do Alex (a regra do banco confere a mesma conta) */
+function precoC(id){return Math.round(Number(PRECO[id])*100)}
+function custoC(id){return Math.round(Number(PRECO[id])*Number(CFG.percentAlex))}
+function pronto(){return PRECO&&CFG&&PRECO.mensal>0&&PRECO.semestral>0&&PRECO.anual>0&&CFG.percentAlex>0}
+
+$('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});au.signInWithPopup(p).catch(function(e){if(/popup|not-supported/.test(e.code))au.signInWithRedirect(p);else $('eLog').textContent=erroTxt(e)})};
+$('bCria').onclick=function(){$('eLog').textContent='';au.createUserWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){$('eLog').textContent=erroTxt(e)})};
+$('bEnt').onclick=function(){$('eLog').textContent='';au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){$('eLog').textContent=erroTxt(e)})};
+$('sair').onclick=function(){confirmaSair(function(){au.signOut()},{texto:'Você vai sair do painel de revendedor.'})};au.getRedirectResult().catch(function(){});
+function para(){subs.forEach(function(f){try{f()}catch(e){}});subs=[]}
+au.onAuthStateChanged(function(u){U=u;para();REV=null;$('sair').style.display=u?'block':'none';if(!u){vis('vLogin');return}
+ subs.push(db.collection('ml_publico').doc('tudooke_precos').onSnapshot(function(d){PRECO=d.exists?d.data():null;pintaTudo()},function(){}));
+ subs.push(db.collection('ml_publico').doc('tudooke_revenda').onSnapshot(function(d){CFG=d.exists?d.data():null;pintaTudo()},function(){}));
+ db.collection('ml_publico').doc('pix').get().then(function(d){PIX=d.exists?d.data():null}).catch(function(){});
+ subs.push(db.collection('tk_revendedores').doc(u.uid).onSnapshot(function(d){
+  if(!d.exists){REV=null;if(u.displayName&&!$('cNome').value)$('cNome').value=u.displayName;vis('vCad');return}
+  var prim=!REV||REV.status!=d.data().status;REV=d.data();
+  if(REV.status!='aprovado'){vis('vEspera');var ag=REV.status=='aguardando';$('espT').textContent=ag?'⏳ Cadastro enviado!':'🚫 Revenda bloqueada';
+   $('espM').textContent=ag?'Agora o Alex precisa aprovar o seu cadastro. Assim que ele aprovar, esta tela muda sozinha e você já pode gerar os códigos.':'Seu acesso de revendedor está bloqueado. Fale com o Alex.';return}
+  vis('vApp');if(prim)escutaListas();pintaTudo()},function(e){vis('vLogin');$('eLog').textContent='Erro: '+e.code}))});
+$('bCad').onclick=function(){var n=$('cNome').value.trim(),z=nz($('cZap').value),b=this;if(n.length<2){$('eCad').textContent='Digite seu nome.';return}if(!/^55\d{10,11}$/.test(z)){$('eCad').textContent='Digite o WhatsApp com DDD.';return}
+ b.disabled=true;$('eCad').textContent='Enviando…';
+ var ja=REV;(ja?db.collection('tk_revendedores').doc(U.uid).update({nome:n,zap:z}):db.collection('tk_revendedores').doc(U.uid).set({nome:n,zap:z,email:U.email||'',status:'aguardando',saldoC:0,criadoEm:TS()}))
+ .then(function(){$('eCad').textContent='';if(ja){vis(REV.status=='aprovado'?'vApp':'vEspera');pintaTudo()}}).catch(function(e){$('eCad').textContent='Não deu certo ('+e.code+').'}).finally(function(){b.disabled=false})};
+$('editar').onclick=function(e){e.preventDefault();$('cNome').value=REV.nome||'';$('cZap').value=(REV.zap||'').slice(2);$('bCad').textContent='Salvar meus dados';vis('vCad')};
+$('bEspZap').onclick=function(){location.href=zapUrl(zapAlex(),'Olá, Alex! Sou '+((REV&&REV.nome)||'')+' e fiz o cadastro de revendedor do TudoOkê TV ('+(U.email||'')+'). Pode aprovar?')};
+
+function escutaListas(){
+ subs.push(db.collection('licencas').where('revendedor','==',U.uid).onSnapshot(function(s){LICS=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pintaL()},function(e){$('lista').textContent='Erro: '+e.code}));
+ subs.push(db.collection('tk_rev_vendas').where('rev','==',U.uid).onSnapshot(function(s){VENDAS=s.docs.map(function(d){var x=d.data();x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pintaH()},function(){}));
+ subs.push(db.collection('tk_rev_recargas').where('rev','==',U.uid).onSnapshot(function(s){RECS=s.docs.map(function(d){var x=d.data();x.t=ms(x.criadoEm);return x}).sort(function(a,b){return b.t-a.t});pintaH()},function(){}))}
+
+function pintaTudo(){if(!REV||REV.status!='aprovado')return;var s=REV.saldoC||0;$('saldo').textContent=reais(s);$('saldo').className='saldo'+(s<=0?' zero':'');
+ $('quem').textContent=(REV.nome||'')+' • '+(U.email||'');
+ if(!pronto()){$('tabPreco').innerHTML='<div class="aviso">O Alex ainda está configurando os preços da revenda. Por enquanto dá para gerar só testes de 1 dia.</div>'}
+ else{var h='<table><tr><th>Plano</th><th>Você paga</th><th>Você vende por</th></tr>';PLANOS.forEach(function(p){if(p.id=='teste')h+='<tr><td>Teste 1 dia</td><td class="v">Grátis</td><td class="v">Grátis</td></tr>';else h+='<tr><td>'+p.nome+' ('+p.dias+' dias)</td><td class="v"><b style="color:#4ade80;letter-spacing:0">'+reais(custoC(p.id))+'</b></td><td class="v">'+reais(precoC(p.id))+'</td></tr>'});$('tabPreco').innerHTML=h+'</table>'}
+ var P=$('planos');P.innerHTML='';PLANOS.forEach(function(p){var l=document.createElement('label');var pago=p.id!='teste';var sub=pago?(pronto()?'custa '+reais(custoC(p.id)):'indisponível'):'grátis';
+  l.innerHTML='<input type="radio" name="pl" value="'+p.id+'"><b></b><small></small>';l.querySelector('b').textContent=p.nome+(pago?' • '+p.dias+' dias':'');l.querySelector('small').textContent=sub;
+  if(p.id==SEL)l.className='sel';l.onclick=function(){SEL=p.id;[].forEach.call(P.children,function(c){c.className=''});l.className='sel';avisoSaldo()};P.appendChild(l)});avisoSaldo()}
+function avisoSaldo(){var e=$('eGera');e.textContent='';$('gera').disabled=false;if(SEL=='teste'||!REV)return;
+ if(!pronto()){e.textContent='Os preços ainda não foram configurados pelo Alex.';$('gera').disabled=true;return}
+ if((REV.saldoC||0)<custoC(SEL)){e.textContent='Crédito insuficiente: este plano custa '+reais(custoC(SEL))+' e você tem '+reais(REV.saldoC||0)+'. Peça crédito ao Alex.';$('gera').disabled=true}}
+
+function texto(c,d,n){return (n?'Olá, '+n+'! ':'')+'Seu código do TudoOkê TV ('+NOME[d]+'): '+fmt(c)+'\nAbra o app na TV Box (baixe em is.gd/tudookebox) ou na TV smart pelo navegador em is.gd/tudooke e digite o código. Ele fica preso a esse aparelho.'}
+$('gera').onclick=function(){var b=this,cl=$('cli').value.trim(),z=nz($('zap').value),p=PLANOS.filter(function(x){return x.id==SEL})[0],c=gcod();$('eGera').textContent='';
+ if(z&&z.length>20)z=z.slice(0,20);b.disabled=true;$('novo').style.display='none';
+ var base={dias:p.dias,plano:p.nome,cliente:cl,zap:z,device:'',ativadoEm:null,criadoEm:TS(),revendedor:U.uid,revNome:REV.nome||''},licRef=db.collection('licencas').doc(c),pr;
+ if(p.id=='teste'){pr=licRef.set(base)}
+ else{/* lê preço e percentual direto do servidor, para não usar valor velho */
+  pr=Promise.all([db.collection('ml_publico').doc('tudooke_precos').get({source:'server'}),db.collection('ml_publico').doc('tudooke_revenda').get({source:'server'})]).then(function(r){PRECO=r[0].exists?r[0].data():null;CFG=r[1].exists?r[1].data():null;if(!pronto())throw {code:'sem-preco'};
+   var pc=precoC(p.id),cc=custoC(p.id),pct=Number(CFG.percentAlex),revRef=db.collection('tk_revendedores').doc(U.uid),vRef=db.collection('tk_rev_vendas').doc();
+   if(!confirm('Gerar '+p.nome+' para '+(cl||'cliente')+'?\nVai sair '+reais(cc)+' do seu crédito.\nPreço sugerido para o cliente: '+reais(pc)))throw {code:'cancelado'};
+   return db.runTransaction(function(tx){return tx.get(revRef).then(function(d){var s=d.data().saldoC||0;if(s<cc)throw {code:'sem-saldo'};
+    base.venda=vRef.id;tx.set(licRef,base);
+    tx.set(vRef,{rev:U.uid,revNome:REV.nome||'',cod:c,plano:p.id,dias:p.dias,precoC:pc,pct:pct,custoC:cc,cliente:cl,zap:z,criadoEm:TS()});
+    tx.update(revRef,{saldoC:s-cc,ultVenda:vRef.id})})})})}
+ pr.then(function(){ULT={id:c,dias:p.dias,cliente:cl,zap:z};$('cod').textContent=fmt(c);$('novoInfo').textContent=p.nome+(cl?' • '+cl:'');$('novo').style.display='block';$('cli').value='';$('zap').value=''})
+ .catch(function(e){var c2=e&&e.code;if(c2=='cancelado')return;$('eGera').textContent=c2=='sem-saldo'?'Crédito insuficiente. Peça crédito ao Alex.':c2=='sem-preco'?'Os preços ainda não foram configurados pelo Alex.':c2=='permission-denied'?'Não deu certo. O preço pode ter mudado agora ou o crédito acabou. Confira a tabela e tente de novo.':'Não deu certo ('+c2+'). Tente de novo.';pintaTudo()})
+ .finally(function(){b.disabled=false;avisoSaldo()})};
+$('cp').onclick=function(){copia(texto(ULT.id,ULT.dias,ULT.cliente),this)};
+$('wa').onclick=function(){location.href=zapUrl(ULT.zap,texto(ULT.id,ULT.dias,ULT.cliente))};
+
+$('bus').oninput=pintaL;
+function pintaL(){var q=$('bus').value.trim().toUpperCase().replace('-',''),n=0,a=0,v=0,L=$('lista'),ag=Date.now();L.innerHTML='';
+ if(!LICS.length)L.textContent='Nenhum código ainda. Gere o primeiro acima.';
+ LICS.forEach(function(x){var ve=x.ativadoEm&&x.ativadoEm.toMillis?x.ativadoEm.toMillis()+x.dias*864e5:0,st=!x.device?'novo':ve>ag?'ok':'venc';if(st=='novo')n++;else if(st=='ok')a++;else v++;
+  if(q&&x.id.indexOf(q)<0&&(x.cliente||'').toUpperCase().indexOf(q)<0)return;
+  var d=document.createElement('div');d.className='it';var h=document.createElement('div'),b=document.createElement('b');b.textContent=fmt(x.id);h.appendChild(b);var t=document.createElement('span');t.className='tag '+st;t.textContent=st=='novo'?'Sem usar':st=='ok'?'Ativo':'Vencido';h.appendChild(t);d.appendChild(h);
+  var m=document.createElement('div');m.className='mut';m.textContent=(x.cliente||'Sem nome')+(x.zap?' • '+x.zap.slice(2):'')+' • '+(x.plano||NOME[x.dias])+(x.device?(st=='ok'?' • vale até ':' • venceu em ')+dt(ve):' • gerado em '+dt(x.t));d.appendChild(m);
+  var r=document.createElement('div');r.className='row';function bt(tx,f,c){var e=document.createElement('button');e.className='s';e.textContent=tx;if(c)e.style.background=c;e.onclick=f;r.appendChild(e)}
+  bt('Copiar',function(){copia(texto(x.id,x.dias,x.cliente),this)});bt('WhatsApp',function(){location.href=zapUrl(x.zap,texto(x.id,x.dias,x.cliente))},'#16a34a');
+  if(st=='venc'||(st=='ok'&&ve-ag<5*864e5))bt('Renovar',function(){$('cli').value=x.cliente||'';$('zap').value=(x.zap||'').slice(2);window.scrollTo(0,$('planos').offsetTop-80);$('eGera').textContent='Escolha o plano e toque em Gerar: sai um código novo para o cliente digitar na TV.'});
+  d.appendChild(r);L.appendChild(d)});
+ $('tN').textContent=n;$('tA').textContent=a;$('tV').textContent=v}
+$('abV').onclick=function(){ABA='v';this.className='on';$('abR').className='';pintaH()};$('abR').onclick=function(){ABA='r';this.className='on';$('abV').className='';pintaH()};
+function pintaH(){var H=$('hist'),L=ABA=='v'?VENDAS:RECS;if(!L.length){H.textContent=ABA=='v'?'Nenhuma venda ainda.':'Nenhum crédito comprado ainda.';return}
+ var h='<table>';if(ABA=='v'){var tot=0;h+='<tr><th>Data</th><th>Plano / cliente</th><th>Saiu do crédito</th></tr>';L.forEach(function(x){tot+=x.custoC||0;h+='<tr><td>'+dt(x.t)+'</td><td>'+esc(NOME[x.dias]||x.plano)+'<br><span class="mut">'+esc(x.cliente||'Sem nome')+' • '+fmt(x.cod||'????????')+'</span></td><td class="v">'+reais(x.custoC)+'</td></tr>'});
+  h+='</table><p class="mut">'+L.length+' venda(s) • total que saiu do crédito: '+reais(tot)+'</p>'}
+ else{var tr=0;h+='<tr><th>Data</th><th>Obs.</th><th>Valor</th></tr>';L.forEach(function(x){tr+=x.valorC||0;h+='<tr><td>'+dt(x.t)+'</td><td>'+esc(x.obs||'Crédito do Alex')+'</td><td class="v" style="color:'+((x.valorC||0)<0?'#f87171':'#4ade80')+'">'+((x.valorC||0)<0?'':'+ ')+reais(x.valorC)+'</td></tr>'});h+='</table><p class="mut">Total: '+reais(tr)+'</p>'}
+ H.innerHTML=h}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+$('bCompra').onclick=function(){var b=$('compraBox');b.style.display=b.style.display=='none'?'block':'none'};
+$('cVal').oninput=function(){var v=num(this.value);if(!v||!PIX||!PIX.chave){$('pixArea').style.display='none';return}
+ $('pixTxt').value=pixCC(PIX.chave,PIX.nome,PIX.cidade,v,'TKREV');$('pixInfo').textContent='Pix de R$ '+v.toFixed(2).replace('.',',')+' • vai aparecer no banco: '+(PIX.nome||'');$('pixArea').style.display='block'};
+$('bPixCp').onclick=function(){copia($('pixTxt').value,this)};
+$('bAvisa').onclick=function(){var v=num($('cVal').value);$('eComp').textContent='';if(!v){$('eComp').textContent='Digite o valor que você pagou.';return}
+ location.href=zapUrl(zapAlex(),'Olá, Alex! Sou '+(REV.nome||'')+', revendedor do TudoOkê TV ('+(U.email||'')+'). Fiz um Pix de R$ '+v.toFixed(2).replace('.',',')+' para comprar crédito. Vou mandar o comprovante aqui. Meu crédito agora: '+reais(REV.saldoC||0)+'.')};
+if('serviceWorker' in navigator)navigator.serviceWorker.register('revenda-sw.js',{scope:'./revenda'}).catch(function(){});
+</script></body></html>
