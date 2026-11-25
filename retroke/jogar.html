@@ -10,6 +10,7 @@ html,body{background:#000}
 #carrega .capa{width:24vmin}
 #carrega h1{font-size:4.6vmin}
 #carrega p{font-size:2.6vmin;opacity:.8}
+.barra{width:min(70vmin,80vw);height:2vmin;background:#ffffff22;border-radius:1vmin;overflow:hidden}.barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd400,#ff8a00);transition:width .2s}
 .roda{width:8vmin;height:8vmin;border-radius:50%;border:1vmin solid #ffffff22;border-top-color:#ffd400;animation:gira 1s linear infinite}
 @keyframes gira{to{transform:rotate(360deg)}}
 #menu .caixa{width:min(760px,94vw)}
@@ -30,6 +31,7 @@ body.tv .ejs_virtualGamepad_parent{display:none!important}
 <body>
 <div id="game"></div>
 <div id="carrega"><div class="capa" id="cCapa"></div><h1 id="cNome">Carregando…</h1><div class="roda"></div><p id="cMsg">Preparando o emulador…</p>
+ <div class="barra" id="cBarra" style="display:none"><i></i></div>
  <button class="f bt" id="cVolta" style="display:none;width:auto">⬅ Voltar</button></div>
 <button id="bMenu" aria-label="Menu">☰</button>
 <div id="avisoPad"></div>
@@ -66,7 +68,8 @@ body.tv .ejs_virtualGamepad_parent{display:none!important}
 function destrava(){ (window.__acs || []).forEach(function(c){ try { if (c.state !== 'running') c.resume(); } catch (e) {} }); }
 </script>
 <script src="lib/peerjs.min.js"></script>
-<script src="comum.js?v=3"></script>
+<script src="comum.js?v=4"></script>
+<script src="nuvem.js?v=1"></script>
 <script src="confirma-sair.js?v=1"></script>
 <script>
 (function(){
@@ -80,15 +83,25 @@ $('cVolta').onclick = sair;
 function erro(msg){ $('cMsg').innerHTML = msg; $('cVolta').style.display = ''; document.querySelector('.roda').style.display = 'none'; setTimeout(function(){ $('cVolta').focus(); }, 50); if (B) B.modoJogo(false); }
 
 /* ---------- carrega o jogo ---------- */
-RK.get('jogos', ID).then(function(j){
+RK.jogo(ID).then(function(j){
   if (!j) { erro('Jogo não encontrado.'); return; }
   J = j; S = RK.SYS[j.sys];
   $('cNome').textContent = j.nome; $('mNome').textContent = j.nome; $('mInfo').textContent = S.nome + ' · jogo pausado';
-  if (j.capa) { $('cCapa').innerHTML = '<img src="' + RK.esc(j.capa) + '">'; $('mCapa').src = j.capa; } else { $('cCapa').innerHTML = '<div class="sem" style="background:linear-gradient(160deg,' + S.cor + ',' + S.cor2 + ')"><i>' + S.ico + '</i></div>'; $('mCapa').style.display = 'none'; }
-  var rom = j.origem === 'idb' ? RK.get('roms', j.id).then(function(b){ if (!b) throw new Error('arquivo sumiu'); return (b instanceof File && b.name === j.arq) ? b : new File([b], j.arq); }) : Promise.resolve(j.url);
+  var cp = j.capa || j.capaUrl;
+  if (cp) { $('cCapa').innerHTML = '<img src="' + RK.esc(cp) + '">'; $('mCapa').src = cp; } else { $('cCapa').innerHTML = '<div class="sem" style="background:linear-gradient(160deg,' + S.cor + ',' + S.cor2 + ')"><i>' + S.ico + '</i></div>'; $('mCapa').style.display = 'none'; }
+  /* jogo da nuvem: baixa na primeira vez (barrinha), depois abre do aparelho */
+  var rom = RK.arquivo(j, function(p, rec, tot){
+    $('cBarra').style.display = ''; $('cBarra').firstChild.style.width = Math.round(p * 100) + '%';
+    $('cMsg').textContent = '☁️ Baixando o jogo… ' + Math.round(p * 100) + '%' + (tot ? ' (' + RK.tamanho(rec) + ' de ' + RK.tamanho(tot) + ')' : '');
+  }).then(function(r){ $('cBarra').style.display = 'none'; return r; }, function(e){
+    if (j.origem === 'nuvem') throw new Error(navigator.onLine === false || /internet|fetch|network/i.test(e && e.message) ? 'SEMNET' : (e && e.message));
+    throw e; });
   var est = CONT ? RK.get('estados', j.id) : Promise.resolve(null);
   return Promise.all([rom, est]).then(function(r){ inicia(r[0], r[1]); });
-}).catch(function(e){ erro('Não consegui abrir este jogo (' + RK.esc(e && e.message || e) + ').<br>Se ele estava no pen drive, confira se o pen drive está ligado.'); });
+}).catch(function(e){
+  if (e && e.message === 'SEMNET') { erro('☁️ Este jogo ainda não foi baixado para este aparelho.<br>Conecte na internet e toque nele de novo: ele baixa uma vez só e depois funciona sem internet.'); return; }
+  if (J && J.origem === 'nuvem') { erro('Não consegui baixar este jogo (' + RK.esc(e && e.message || e) + ').<br>Confira a internet e tente de novo.'); return; }
+  erro('Não consegui abrir este jogo (' + RK.esc(e && e.message || e) + ').<br>Se ele estava no pen drive, confira se o pen drive está ligado.'); });
 
 function controlesPadrao(){
   var g = {0:'BUTTON_1', 8:'BUTTON_2', 1:'BUTTON_3', 9:'BUTTON_4', 2:'SELECT', 3:'START', 4:'DPAD_UP', 5:'DPAD_DOWN', 6:'DPAD_LEFT', 7:'DPAD_RIGHT',
@@ -109,6 +122,7 @@ function inicia(rom, est){
   window.EJS_startOnLoaded = true;
   window.EJS_color = '#ffb800';
   window.EJS_CacheLimit = 0;
+  if (B) window.EJS_disableDatabases = true; /* no app os núcleos ficam guardados pelo próprio app (não duplica) */
   window.EJS_threads = false; window.EJS_semUpdate = true;
   window.EJS_defaultControls = controlesPadrao();
   window.EJS_Buttons = {netplay:false, exitEmulation:false, cacheManager:false, contextMenu:false};
@@ -125,7 +139,7 @@ function inicia(rom, est){
 }
 function comecouJogo(){
   comecou = true; $('carrega').style.display = 'none'; RK.semNav = true;
-  J.ult = Date.now(); RK.put('jogos', J);
+  J.ult = Date.now(); RK.guarda(J);
   setTimeout(function(){ try { E.elements.parent.focus(); } catch (e) {} }, 100);
   if (CONT) setTimeout(function(){ RK.toast('▶ Continuando de onde você parou'); }, 600);
   else RK.toast('Aperte Voltar para abrir o menu (salvar e sair)', 4000);
@@ -142,18 +156,33 @@ function foto(){
       im.onerror = function(){ ok(null); }; im.src = u; }, function(){ ok(null); }); } catch (e) { clearTimeout(t); ok(null); }
   });
 }
-function salva(quieto){
+/* manda para a nuvem se a pessoa entrou na conta (sem conta: só no aparelho) */
+function nuvem(est, forca, quieto){
+  if (!RK.nuvem || !RK.nuvem.ligado() || !est) return Promise.resolve('fora');
+  return RK.nuvem.sobe(J, est, forca).then(function(r){
+    if (!quieto && r === 'ok') RK.toast('💾 Salvo no aparelho e ☁️ na nuvem!');
+    if (!quieto && r === 'grande') RK.toast('💾 Salvo no aparelho. Este salvamento é grande demais para a nuvem.', 4500);
+    return r; }, function(){ if (!quieto) RK.toast('💾 Salvo no aparelho. ☁️ Sem internet: vai para a nuvem depois.', 4500); return 'erro'; });
+}
+var ultEst = null;
+function salva(quieto, praNuvem){
   if (!comecou || !E || !E.gameManager || salvando) return Promise.resolve(false);
   salvando = true;
   var dados;
   try { E.gameManager.saveSaveFiles(); } catch (e) {}
   try { dados = E.gameManager.getState(); } catch (e) { salvando = false; if (!quieto) RK.toast('Este jogo não deixa salvar o ponto exato. O salvamento do próprio jogo continua valendo.'); return Promise.resolve(false); }
-  return (menuOn ? Promise.resolve(ultimaFoto) : foto()).then(function(img){ if (img) ultimaFoto = img; return RK.put('estados', {data:dados, img:img || ultimaFoto, t:Date.now()}, J.id); })
-    .then(function(){ salvando = false; if (!quieto) RK.toast('💾 Salvo! Na próxima vez é só tocar em Continuar.'); return true; },
+  return (menuOn ? Promise.resolve(ultimaFoto) : foto()).then(function(img){ if (img) ultimaFoto = img; ultEst = {data:dados, img:img || ultimaFoto, t:Date.now()}; return RK.put('estados', ultEst, J.id); })
+    .then(function(){ salvando = false; if (!quieto) RK.toast('💾 Salvo! Na próxima vez é só tocar em Continuar.');
+      if (praNuvem || !quieto) { var n = nuvem(ultEst, !quieto, quieto); if (praNuvem) return n.then(function(){ return true; }); } else nuvem(ultEst, false, true);
+      return true; },
           function(){ salvando = false; if (!quieto) RK.toast('Não consegui salvar (memória cheia?)'); return false; });
 }
 window.autosave = function(){ salva(true); };
-function salvaESai(){ $('mInfo').textContent = 'Salvando…'; salva(true).then(function(){ setTimeout(sair, 500); }); }
+function salvaESai(){
+  $('mInfo').textContent = RK.nuvem && RK.nuvem.ligado() ? 'Salvando no aparelho e na nuvem…' : 'Salvando…';
+  var feito = false, vai = function(){ if (!feito) { feito = true; setTimeout(sair, 300); } };
+  salva(true, true).then(vai, vai); setTimeout(vai, 9000);
+}
 
 /* ---------- menu ---------- */
 function abreMenu(){

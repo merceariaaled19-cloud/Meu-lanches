@@ -1,0 +1,207 @@
+{
+ "versao": 1,
+ "atualizado": "2026-11-25",
+ "aviso": "Só jogos homebrew com licença livre (ver demos/LICENCAS.txt). Nunca jogos comerciais.",
+ "jogos": [
+  {
+   "id": "demo-lawn",
+   "sys": "nes",
+   "nome": "Lawn Mower",
+   "desc": "Corte a grama sem bater nas flores",
+   "autor": "Shiru",
+   "lic": "domínio público",
+   "arq": "demos/LawnMower.nes",
+   "tam": 24592,
+   "capa": "demos/LawnMower.jpg",
+   "pag": "https://shiru.untergrund.net/software.shtml"
+  },
+  {
+   "id": "demo-lan",
+   "sys": "nes",
+   "nome": "Lan Master",
+   "desc": "Quebra-cabeça de ligar os cabos da rede",
+   "autor": "Shiru",
+   "lic": "domínio público",
+   "arq": "demos/LanMaster.nes",
+   "tam": 40976,
+   "capa": "demos/LanMaster.jpg",
+   "pag": "https://shiru.untergrund.net/software.shtml"
+  },
+  {
+   "id": "demo-chase",
+   "sys": "nes",
+   "nome": "Chase",
+   "desc": "Pegue os itens e fuja dos inimigos",
+   "autor": "Shiru",
+   "lic": "domínio público",
+   "arq": "demos/Chase.nes",
+   "tam": 24592,
+   "capa": "demos/Chase.jpg",
+   "pag": "https://shiru.untergrund.net/software.shtml"
+  },
+  {
+   "id": "demo-zoom",
+   "sys": "nes",
+   "nome": "Zooming Secretary",
+   "desc": "Atenda os telefones do escritório",
+   "autor": "Shiru e PinWizz",
+   "lic": "CC BY",
+   "arq": "demos/ZoomingSecretary.nes",
+   "tam": 40976,
+   "capa": "demos/ZoomingSecretary.jpg",
+   "pag": "https://shiru.untergrund.net/software.shtml"
+  },
+  {
+   "id": "demo-golf",
+   "sys": "nes",
+   "nome": "NESert Golfing",
+   "desc": "Golfe no deserto, uma tacada por vez",
+   "autor": "Brad Smith",
+   "lic": "CC BY 4.0",
+   "arq": "demos/NESertGolfing.nes",
+   "tam": 32784,
+   "capa": "demos/NESertGolfing.jpg",
+   "pag": "https://github.com/bbbradsmith/NESertGolfing"
+  },
+  {
+   "id": "demo-snek",
+   "sys": "nes",
+   "nome": "Snek - cobrinha",
+   "desc": "O clássico jogo da cobrinha",
+   "autor": "Zorchenhimer",
+   "lic": "MIT",
+   "arq": "demos/Snek.nes",
+   "tam": 24592,
+   "capa": "demos/Snek.jpg",
+   "pag": "https://github.com/zorchenhimer/nes-snek"
+  },
+  {
+   "id": "demo-blaster",
+   "sys": "nes",
+   "nome": "Big City Sliding Blaster",
+   "desc": "Ação na cidade grande",
+   "autor": "NovaSquirrel",
+   "lic": "zlib",
+   "arq": "demos/SlidingBlaster.nes",
+   "tam": 24592,
+   "capa": "demos/SlidingBlaster.jpg",
+   "pag": "https://github.com/NovaSquirrel/SlidingBlaster"
+  },
+  {
+   "id": "livre-tennis",
+   "sys": "nes",
+   "nome": "8-Bit Table Tennis",
+   "desc": "Pingue-pongue para 2 jogadores",
+   "autor": "Michael Billington",
+   "lic": "MIT",
+   "arq": "demos/TableTennis.nes",
+   "tam": 40976,
+   "capa": "demos/TableTennis.jpg",
+   "pag": "https://github.com/mike42/8bit-table-tennis"
+  },
+  {
+   "id": "livre-grunio",
+   "sys": "nes",
+   "nome": "Gruniożerca",
+   "desc": "Arcade polonês simples e viciante",
+   "autor": "Łukasz Kur e Ryszard Brzukała (emunes.pl)",
+   "lic": "domínio público (Unlicense); músicas de Ozzed CC BY-SA 3.0",
+   "arq": "demos/Gruniozerca.nes",
+   "tam": 40976,
+   "capa": "demos/Gruniozerca.jpg",
+   "pag": "https://github.com/arhneu/gruniozerca"
+  },
+  {
+   "id": "livre-ghosts",
+   "sys": "nes",
+   "nome": "Ghosts and Graves",
+   "desc": "Quebra-cabeça de fantasmas e túmulos",
+   "autor": "Anthony Bongers",
+   "lic": "domínio público (Unlicense)",
+   "arq": "demos/GhostsAndGraves.nes",
+   "tam": 73744,
+   "capa": "demos/GhostsAndGraves.jpg",
+   "pag": "https://github.com/AnthonyBongers/GhostsAndGraves"
+  },
+  {
+   "id": "livre-dabg",
+   "sys": "nes",
+   "nome": "Double Action Blaster Guys",
+   "desc": "Plataforma de ação, 52 fases, 1 ou 2 jogadores",
+   "autor": "NovaSquirrel",
+   "lic": "zlib",
+   "arq": "demos/DoubleActionBlasterGuys.nes",
+   "tam": 32784,
+   "capa": "demos/DoubleActionBlasterGuys.jpg",
+   "pag": "https://github.com/NovaSquirrel/DABG"
+  },
+  {
+   "id": "livre-tobu",
+   "sys": "nes",
+   "nome": "Tobu NES",
+   "desc": "Pule bem alto para buscar o gatinho",
+   "autor": "stevenchadburrow",
+   "lic": "domínio público (Unlicense); arte CC0",
+   "arq": "demos/TobuNES.nes",
+   "tam": 40976,
+   "capa": "demos/TobuNES.jpg",
+   "pag": "https://stevenchadburrow.itch.io/tobu-nes"
+  },
+  {
+   "id": "demo-gothic",
+   "sys": "snes",
+   "nome": "Gothicvania",
+   "desc": "Aventura de terror no cemitério",
+   "autor": "donth77 (arte de ansimuz)",
+   "lic": "MIT; arte CC0",
+   "arq": "demos/Gothicvania.sfc",
+   "tam": 524288,
+   "capa": "demos/Gothicvania.jpg",
+   "pag": "https://github.com/donth77/snes-homebrew"
+  },
+  {
+   "id": "livre-skyfury",
+   "sys": "snes",
+   "nome": "Super Sky Fury",
+   "desc": "Avião de caça em Mode 7, com chefão",
+   "autor": "Naveed Farbakhsh",
+   "lic": "MIT",
+   "arq": "demos/SuperSkyFury.sfc",
+   "tam": 1048576,
+   "capa": "demos/SuperSkyFury.jpg",
+   "pag": "https://naveedster.github.io/super-sky-fury/"
+  },
+  {
+   "id": "livre-castle",
+   "sys": "snes",
+   "nome": "Castle Platformer",
+   "desc": "Plataforma simples no castelo",
+   "autor": "The UnDisbeliever",
+   "lic": "MIT; arte CC0 (OpenGameArt)",
+   "arq": "demos/CastlePlatformer.sfc",
+   "tam": 131072,
+   "capa": "demos/CastlePlatformer.jpg",
+   "pag": "https://github.com/undisbeliever/castle_platformer"
+  }
+ ],
+ "links": [
+  {
+   "id": "link-stb",
+   "sys": "nes",
+   "nome": "Super Tilt Bro.",
+   "desc": "Luta de plataforma (estilo Smash)",
+   "autor": "sgadrat",
+   "lic": "WTFPL",
+   "pag": "https://sgadrat.itch.io/super-tilt-bro"
+  },
+  {
+   "id": "link-sblob",
+   "sys": "n64",
+   "nome": "Sblobber 64",
+   "desc": "Quebra-cabeça com uma gosma",
+   "autor": "vrgl117 games",
+   "lic": "código MIT",
+   "pag": "https://github.com/vrgl117-games/sblobber64/releases"
+  }
+ ]
+}

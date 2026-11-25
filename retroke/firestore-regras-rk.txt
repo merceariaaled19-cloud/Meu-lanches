@@ -1,0 +1,22 @@
+    // ===== Retrô Okê — salvamentos na nuvem (2026-11-25) =====
+    // Cada pessoa só lê e grava os próprios salvamentos (login opcional no app/site retroke/).
+    match /rk_saves/{uid}/estados/{jogo} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && jogo.size() <= 100
+        && request.resource.data.keys().hasOnly(['t', 'sys', 'nome', 'n', 'z', 'tam', 'img'])
+        && request.resource.data.t is int
+        && request.resource.data.sys in ['nes', 'snes', 'n64', 'psx']
+        && request.resource.data.nome is string && request.resource.data.nome.size() <= 80
+        && request.resource.data.n is int && request.resource.data.n >= 1 && request.resource.data.n <= 4
+        && request.resource.data.z is bool
+        && request.resource.data.tam is int && request.resource.data.tam <= 2800000
+        && request.resource.data.img is string && request.resource.data.img.size() <= 60000;
+    }
+    match /rk_saves/{uid}/partes/{parte} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && parte.size() <= 103 && parte.matches('.+_[0-3]$')
+        && request.resource.data.keys().hasOnly(['d'])
+        && request.resource.data.d is bytes && request.resource.data.d.size() <= 700000;
+    }

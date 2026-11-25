@@ -47,46 +47,86 @@ RK.todos = function(loja){ return RK.tx(loja, 'readonly', function(s){ return s.
 RK.jogos = function(sys){ return RK.todos('jogos').then(function(l){ return (l||[]).filter(function(j){ return !sys || j.sys === sys; }); }); };
 RK.novoId = function(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
 
-/* jogos de demonstração (homebrew grátis com licença que deixa redistribuir; ver demos/LICENCAS.txt) */
-RK.DEMOS = [
-  {id:'demo-lawn', sys:'nes', nome:'Lawn Mower (demonstração grátis)', arq:'LawnMower.nes', origem:'url', url:'demos/LawnMower.nes', capa:'demos/LawnMower.jpg', demo:1},
-  {id:'demo-lan', sys:'nes', nome:'Lan Master (demonstração grátis)', arq:'LanMaster.nes', origem:'url', url:'demos/LanMaster.nes', capa:'demos/LanMaster.jpg', demo:1},
-  {id:'demo-chase', sys:'nes', nome:'Chase (grátis)', arq:'Chase.nes', origem:'url', url:'demos/Chase.nes', capa:'demos/Chase.jpg', demo:1},
-  {id:'demo-zoom', sys:'nes', nome:'Zooming Secretary (grátis)', arq:'ZoomingSecretary.nes', origem:'url', url:'demos/ZoomingSecretary.nes', capa:'demos/ZoomingSecretary.jpg', demo:1},
-  {id:'demo-golf', sys:'nes', nome:'NESert Golfing (grátis)', arq:'NESertGolfing.nes', origem:'url', url:'demos/NESertGolfing.nes', capa:'demos/NESertGolfing.jpg', demo:1},
-  {id:'demo-snek', sys:'nes', nome:'Snek - cobrinha (grátis)', arq:'Snek.nes', origem:'url', url:'demos/Snek.nes', capa:'demos/Snek.jpg', demo:1},
-  {id:'demo-blaster', sys:'nes', nome:'Big City Sliding Blaster (grátis)', arq:'SlidingBlaster.nes', origem:'url', url:'demos/SlidingBlaster.nes', capa:'demos/SlidingBlaster.jpg', demo:1},
-  {id:'demo-gothic', sys:'snes', nome:'Gothicvania (grátis)', arq:'Gothicvania.sfc', origem:'url', url:'demos/Gothicvania.sfc', capa:'demos/Gothicvania.jpg', demo:1}
-];
-/* "Mais jogos grátis" (2026-11-25): só homebrew feito por fãs com licença que deixa copiar e distribuir.
-   Nunca jogos comerciais nem sites de ROMs. Com arq: vem dentro do app (toca e joga). Sem arq: só abre a página oficial do autor.
-   Licenças em demos/LICENCAS.txt */
-RK.MAIS = [
-  {id:'livre-tennis', sys:'nes', nome:'8-Bit Table Tennis', desc:'Pingue-pongue para 2 jogadores', autor:'Michael Billington', lic:'MIT', arq:'TableTennis.nes', capa:'demos/TableTennis.jpg', pag:'https://github.com/mike42/8bit-table-tennis'},
-  {id:'livre-grunio', sys:'nes', nome:'Gruniożerca', desc:'Arcade polonês simples e viciante', autor:'Łukasz Kur e Ryszard Brzukała (emunes.pl)', lic:'domínio público (Unlicense); músicas de Ozzed CC BY-SA 3.0', arq:'Gruniozerca.nes', capa:'demos/Gruniozerca.jpg', pag:'https://github.com/arhneu/gruniozerca'},
-  {id:'livre-ghosts', sys:'nes', nome:'Ghosts and Graves', desc:'Quebra-cabeça de fantasmas e túmulos', autor:'Anthony Bongers', lic:'domínio público (Unlicense)', arq:'GhostsAndGraves.nes', capa:'demos/GhostsAndGraves.jpg', pag:'https://github.com/AnthonyBongers/GhostsAndGraves'},
-  {id:'livre-dabg', sys:'nes', nome:'Double Action Blaster Guys', desc:'Plataforma de ação, 52 fases, 1 ou 2 jogadores', autor:'NovaSquirrel', lic:'zlib', arq:'DoubleActionBlasterGuys.nes', capa:'demos/DoubleActionBlasterGuys.jpg', pag:'https://github.com/NovaSquirrel/DABG'},
-  {id:'livre-tobu', sys:'nes', nome:'Tobu NES', desc:'Pule bem alto para buscar o gatinho', autor:'stevenchadburrow', lic:'domínio público (Unlicense); arte CC0', arq:'TobuNES.nes', capa:'demos/TobuNES.jpg', pag:'https://stevenchadburrow.itch.io/tobu-nes'},
-  {id:'link-stb', sys:'nes', nome:'Super Tilt Bro.', desc:'Luta de plataforma (estilo Smash)', autor:'sgadrat', lic:'WTFPL', pag:'https://sgadrat.itch.io/super-tilt-bro'},
-  {id:'livre-skyfury', sys:'snes', nome:'Super Sky Fury', desc:'Avião de caça em Mode 7, com chefão', autor:'Naveed Farbakhsh', lic:'MIT', arq:'SuperSkyFury.sfc', capa:'demos/SuperSkyFury.jpg', pag:'https://naveedster.github.io/super-sky-fury/'},
-  {id:'livre-castle', sys:'snes', nome:'Castle Platformer', desc:'Plataforma simples no castelo', autor:'The UnDisbeliever', lic:'MIT; arte CC0 (OpenGameArt)', arq:'CastlePlatformer.sfc', capa:'demos/CastlePlatformer.jpg', pag:'https://github.com/undisbeliever/castle_platformer'},
-  {id:'link-sblob', sys:'n64', nome:'Sblobber 64', desc:'Quebra-cabeça com uma gosma', autor:'vrgl117 games', lic:'código MIT', pag:'https://github.com/vrgl117-games/sblobber64/releases'}
-];
-/* coloca um jogo grátis na lista do aparelho */
-RK.addMais = function(x){
-  if (!x.arq) return Promise.reject(new Error('só página'));
-  var j = {id:x.id, sys:x.sys, nome:x.nome + ' (grátis)', arq:x.arq, origem:'url', url:'demos/' + x.arq, capa:x.capa, demo:1, add:Date.now()};
-  return RK.get('jogos', x.id).then(function(ja){ return ja || RK.put('jogos', j).then(function(){ return j; }); });
+/* ---------- JOGOS EM NUVEM (2026-11-25) ----------
+   O catálogo (catalogo.json no site) lista os jogos grátis com licença livre. Todos aparecem na lista
+   como se estivessem instalados; o arquivo só baixa quando a pessoa toca para jogar e fica guardado
+   no aparelho (store 'roms', mesma chave do id). Dá para jogo novo sem atualizar o APK. */
+RK.URL = function(rel){ return /^https?:/.test(rel) ? rel : (RK.B ? RK.SITE + rel : rel); };
+RK._cat = null;
+RK.catalogo = function(){
+  if (RK._cat) return RK._cat;
+  function salvo(){ try { var c = JSON.parse(localStorage.rkCat || 'null'); if (c && c.jogos) return c; } catch (e) {} return null; }
+  function rede(u, ms){ return new Promise(function(ok, erro){ var t = setTimeout(function(){ erro(new Error('demora')); }, ms);
+    fetch(u, {cache:'no-store'}).then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.json(); }).then(function(c){ clearTimeout(t); ok(c); }, function(e){ clearTimeout(t); erro(e); }); }); }
+  var guardado = salvo();
+  var fresco = (navigator.onLine === false ? Promise.reject(new Error('sem internet')) : rede(RK.URL('catalogo.json') + '?t=' + Math.floor(Date.now() / 6e5), guardado ? 4000 : 9000))
+    .then(function(c){ if (!c || !c.jogos) throw new Error('catálogo vazio'); localStorage.rkCat = JSON.stringify(c); return c; });
+  RK._cat = fresco.catch(function(){
+    if (guardado) return guardado;
+    return fetch('catalogo.json').then(function(r){ return r.json(); }).catch(function(){ return {jogos:[], links:[]}; }); /* cópia de dentro do APK */
+  }).then(function(c){ c.porId = {}; (c.jogos || []).forEach(function(x){ c.porId[x.id] = x; }); return c; });
+  return RK._cat;
 };
-/* semeia cada demo uma vez só (se a pessoa tirar da lista, não volta) */
-RK.semeia = function(){
-  var ja = {}; try { ja = JSON.parse(localStorage.rkDemosIds || '{}'); } catch (e) {}
-  if (localStorage.rkDemos && !localStorage.rkDemosIds) { ja['demo-lawn'] = 1; ja['demo-lan'] = 1; }
-  var novos = RK.DEMOS.filter(function(j){ return !ja[j.id]; });
-  if (!novos.length) return Promise.resolve();
-  return Promise.all(novos.map(function(j){ j.add = Date.now(); ja[j.id] = 1; return RK.put('jogos', j); }))
-    .then(function(){ localStorage.rkDemos = '1'; localStorage.rkDemosIds = JSON.stringify(ja); });
+/* junta o que vem do catálogo com o que está guardado no aparelho (última vez jogado, baixado) */
+RK.doCat = function(x, st){
+  st = st || {};
+  return {id:x.id, sys:x.sys, nome:x.nome, desc:x.desc, autor:x.autor, lic:x.lic, pag:x.pag, arq:x.arq.split('/').pop(), url:RK.URL(x.arq), tam:x.tam,
+    capaUrl:x.capa ? RK.URL(x.capa) : '', capa:st.capaD || '', cat:1, origem:'nuvem', baixado:st.baixado || 0, ult:st.ult || 0, add:st.add || 0};
 };
+RK.jogos = function(sys){
+  return Promise.all([RK.todos('jogos'), RK.catalogo()]).then(function(r){
+    var L = r[0] || [], C = r[1], meus = {}, out = [];
+    L.forEach(function(j){ meus[j.id] = j; });
+    (C.jogos || []).forEach(function(x){ out.push(RK.doCat(x, meus[x.id])); delete meus[x.id]; });
+    for (var k in meus) { var j = meus[k]; if (j.demo && (j.origem === 'url') && /^demos\//.test(j.url || '')) continue; /* demo antigo que saiu do catálogo */ out.push(j); }
+    return out.filter(function(j){ return !sys || j.sys === sys; });
+  });
+};
+RK.jogo = function(id){ return RK.jogos().then(function(L){ for (var i = 0; i < L.length; i++) if (L[i].id === id) return L[i]; return null; }); };
+/* guarda só o que é do aparelho (o resto vem sempre do catálogo) */
+RK.guarda = function(j){
+  if (!j.cat) return RK.put('jogos', j);
+  return RK.get('jogos', j.id).then(function(st){ st = st && st.cat ? st : {id:j.id, sys:j.sys, cat:1};
+    st.ult = j.ult || st.ult || 0; st.baixado = j.baixado || 0; if (j.capa && /^data:/.test(j.capa)) st.capaD = j.capa; return RK.put('jogos', st); });
+};
+/* baixa o arquivo do jogo (com progresso 0..1) e guarda no aparelho */
+RK.baixa = function(j, prog){
+  if (navigator.onLine === false) return Promise.reject(new Error('sem internet'));
+  return fetch(j.url, {cache:'no-store'}).then(function(r){
+    if (!r.ok) throw new Error('o site respondeu ' + r.status);
+    var total = +r.headers.get('content-length') || j.tam || 0;
+    if (!r.body || !r.body.getReader) return r.blob();
+    var rd = r.body.getReader(), partes = [], rec = 0;
+    return (function le(){ return rd.read().then(function(x){
+      if (x.done) return new Blob(partes);
+      partes.push(x.value); rec += x.value.length; prog && prog(total ? Math.min(1, rec / total) : 0, rec, total); return le(); }); })();
+  }).then(function(b){
+    if (!b.size) throw new Error('arquivo vazio');
+    j.baixado = Date.now(); j.tam = b.size; prog && prog(1, b.size, b.size);
+    return RK.put('roms', b, j.id).then(function(){ return RK.guarda(j); }).then(function(){ return b; });
+  });
+};
+/* arquivo do jogo: do aparelho; se for da nuvem e ainda não baixou, baixa agora */
+RK.arquivo = function(j, prog){
+  if (j.origem === 'url') return Promise.resolve(j.url);
+  return RK.get('roms', j.id).then(function(b){
+    if (b) return (b instanceof File && b.name === j.arq) ? b : new File([b], j.arq);
+    if (j.origem !== 'nuvem') throw new Error('arquivo sumiu');
+    return RK.baixa(j, prog).then(function(b2){ return new File([b2], j.arq); });
+  });
+};
+/* liberar espaço: apaga só o arquivo baixado (o jogo continua na lista e o salvamento fica) */
+RK.libera = function(j){ j.baixado = 0; return RK.del('roms', j.id).then(function(){ return RK.guarda(j); }); };
+RK.baixados = function(){ return RK.jogos().then(function(L){ return L.filter(function(j){ return j.cat && j.baixado; }); }); };
+/* capa do catálogo: guarda uma cópia pequena no aparelho para aparecer sem internet */
+RK.guardaCapas = function(L){
+  if (navigator.onLine === false || RK._capando) return;
+  var fila = L.filter(function(j){ return j.cat && !j.capa && j.capaUrl; }); if (!fila.length) return;
+  RK._capando = true;
+  (function prox(){ var j = fila.shift(); if (!j) { RK._capando = false; return; }
+    RK.imgParaDados(j.capaUrl, 256).then(function(d){ j.capa = d; return RK.guarda(j); }).catch(function(){}).then(prox); })();
+};
+RK.semeia = function(){ return Promise.resolve(); }; /* antigo: demos agora vêm do catálogo */
 
 /* ---------- descobrir o console pelo arquivo ---------- */
 RK.extDe = function(n){ var m = /\.([a-z0-9]+)$/i.exec(n || ''); return m ? m[1].toLowerCase() : ''; };
@@ -111,7 +151,7 @@ RK.norm = function(s){
 RK._listas = {};
 RK.lista = function(sys){
   if (RK._listas[sys]) return RK._listas[sys];
-  RK._listas[sys] = fetch('capas/' + sys + '.txt').then(function(r){ return r.text(); }).then(function(t){
+  RK._listas[sys] = fetch(RK.URL('capas/' + sys + '.txt')).then(function(r){ return r.text(); }).then(function(t){
     return t.split('\n').filter(Boolean).map(function(n){ return {n:n, k:RK.norm(n)}; });
   }).catch(function(){ RK._listas[sys] = null; return []; });
   return RK._listas[sys];
@@ -161,7 +201,7 @@ RK.imgParaDados = function(url, larg){
 };
 /* procura a capa de um jogo e guarda no aparelho */
 RK.buscaCapa = function(j){
-  if (j.capa || j.semCapa) return Promise.resolve(j);
+  if (j.cat || j.capa || j.semCapa) return Promise.resolve(j);
   return RK.candidatas(j.sys, j.arq || j.nome, 3).then(function(c){
     var lista = c.filter(function(x){ return x.nota >= 0.72; });
     if (!lista.length) { j.semCapa = 1; return RK.put('jogos', j).then(function(){ return j; }); }
@@ -193,6 +233,7 @@ RK.addCaminho = function(p, nome, tam, sys){
   });
 };
 RK.remover = function(j){
+  if (j.cat) return RK.libera(j);
   return RK.del('jogos', j.id).then(function(){ return RK.del('roms', j.id); }).then(function(){ return RK.del('estados', j.id); });
 };
 RK.tamanho = function(b){ if (!b) return ''; return b > 1048576 ? (b / 1048576).toFixed(b > 104857600 ? 0 : 1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; };
@@ -273,7 +314,7 @@ RK.nav = function(raizFn){
   document.addEventListener('keydown', function(ev){
     if (RK.semNav) return;
     var k = ev.keyCode, dir = {37:'l', 38:'u', 39:'r', 40:'d'}[k];
-    if (ev.target && ev.target.tagName === 'INPUT' && ev.target.type === 'text' && (k === 37 || k === 39)) return;
+    if (ev.target && ev.target.tagName === 'INPUT' && ev.target.type !== 'checkbox' && (k === 37 || k === 39)) return;
     if (dir) { ev.preventDefault(); move(dir); }
   });
   /* controle (Gamepad API) no navegador da TV/PC */

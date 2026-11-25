@@ -60,10 +60,17 @@ header{display:flex;align-items:center;justify-content:space-between;padding:3vm
 .mrow img,.mrow .mi{width:9vmin;height:12vmin;object-fit:cover;border-radius:1vmin;background:#ffffff14;display:flex;align-items:center;justify-content:center;font-size:5vmin}
 .mrow .bt{margin:0}.mrow .pg{width:auto;white-space:nowrap}
 .mrow .ok{color:#7f5;font-weight:800}
+.capa .nv{position:absolute;right:.8vmin;top:.8vmin;z-index:1;background:#000b;border-radius:2vmin;padding:.3vmin 1.2vmin;font-size:1.8vmin;font-weight:800}
+.capa .gr{position:absolute;left:.8vmin;top:.8vmin;z-index:1;background:#16a34a;border-radius:2vmin;padding:.3vmin 1.2vmin;font-size:1.6vmin;font-weight:800}
+.campo{display:block;width:100%;background:#ffffff14;border:2px solid #ffffff33;border-radius:1.6vmin;padding:1.8vmin 2.2vmin;font-size:2.8vmin;color:#fff;margin:1vmin 0;font-family:inherit}
+.campo:focus{border-color:#ffd400;background:#ffd4001a;transform:none}
+.erow{display:grid;grid-template-columns:7vmin 1fr auto;gap:1.6vmin;align-items:center;margin:.8vmin 0}
+.erow img,.erow .mi{width:7vmin;height:9vmin;object-fit:cover;border-radius:.8vmin;background:#ffffff14}
+.erow .bt{margin:0;width:auto;white-space:nowrap}
 body.cel .so-tv,body.web .so-tv{display:none!important}
 body.tv .so-cel{display:none!important}
 body.apk .so-web{display:none!important}
-@media (orientation:portrait){.logo small{display:none}.outro{height:26vmin}.outro b{font-size:4.4vmin}.mrow{grid-template-columns:14vmin 1fr}.mrow img,.mrow .mi{width:14vmin;height:18vmin}.mrow .pg{grid-column:2}}
+@media (orientation:portrait){.campo{font-size:4.2vmin}.capa .nv,.capa .gr{font-size:2.8vmin}.erow{grid-template-columns:11vmin 1fr}.erow img,.erow .mi{width:11vmin;height:14vmin}.erow .bt{grid-column:2}.logo small{display:none}.outro{height:26vmin}.outro b{font-size:4.4vmin}.mrow{grid-template-columns:14vmin 1fr}.mrow img,.mrow .mi{width:14vmin;height:18vmin}.mrow .pg{grid-column:2}}
 @media (orientation:portrait){
  header{padding:4vmin 4vmin 1vmin}.logo{font-size:7vmin}#hora{font-size:6vmin}#data{font-size:3vmin}
  .tela{padding:1vmin 4vmin 8vmin}.tit{font-size:4.4vmin}
@@ -95,6 +102,8 @@ body.apk .so-web{display:none!important}
   <div class="tit">⚙️ Mais</div>
   <div class="linha">
    <button class="f mini" id="bCel"><i>📱</i>Celular vira controle</button>
+   <button class="f mini" id="bConta"><i>☁️</i><span id="bContaT">Salvar na nuvem</span></button>
+   <button class="f mini" id="bEspaco"><i>🧹</i>Liberar espaço</button>
    <button class="f mini" id="bAjuda"><i>❓</i>Como colocar jogos</button>
    <button class="f mini so-tv" id="bApps"><i>🔳</i>Todos os apps</button>
    <button class="f mini so-tv" id="bWifi"><i>📶</i>Wi-Fi</button>
@@ -121,6 +130,8 @@ body.apk .so-web{display:none!important}
   <button class="f bt" id="jZero">🔄 Começar do zero</button>
   <button class="f bt" id="jCapaB">🖼️ Trocar capa</button>
   <button class="f bt" id="jRem">🗑️ Tirar da lista</button>
+  <button class="f bt" id="jPag">🌐 Página do autor</button>
+  <p class="dica" id="jNuv" style="margin-top:1vmin"></p>
   <div class="ctrl" id="jCtrl"></div>
  </div>
 </div></div>
@@ -174,12 +185,13 @@ body.apk .so-web{display:none!important}
 <div class="modal" id="mAjuda"><div class="caixa" style="width:min(1000px,94vw)">
  <h2>❓ Como colocar jogos</h2>
  <div class="dica" style="font-size:2.6vmin">
+ <p><b>☁️ Jogos grátis na nuvem:</b> a lista já mostra todos os jogos grátis (feitos por fãs, com licença livre). É só tocar: ele baixa uma vez (barrinha) e depois abre até sem internet. Para apagar os baixados, use <b>🧹 Liberar espaço</b>.</p><br>
  <p>O app <b>não vem com jogos comerciais</b>. Você coloca os jogos que <b>você tem</b> (cópia dos seus cartuchos e CDs).</p><br>
  <p><b>Jeito 1 — Pen drive:</b> copie os jogos para o pen drive, ligue na TV Box, entre no console e toque em <b>➕ Adicionar jogos → Procurar no aparelho</b>.</p><br>
  <p><b>Jeito 2 — Pelo celular:</b> toque em <b>➕ Adicionar jogos → Mandar do celular</b>, leia o QR com o celular e escolha o arquivo.</p><br>
  <p><b>Tipos de arquivo:</b> Nintendinho <b>.nes</b> · Super Nintendo <b>.smc .sfc</b> · Nintendo 64 <b>.z64 .n64 .v64</b> · PS1 <b>.chd .pbp .bin .iso</b> (o melhor é <b>.chd</b> ou <b>.pbp</b>; jogo com .cue + vários .bin: coloque tudo num .zip). Arquivos .zip e .7z também servem.</p><br>
  <p><b>Capa:</b> aparece sozinha quando tem internet. Se vier errada, abra o jogo e toque em <b>Trocar capa</b>.</p><br>
- <p><b>Salvar:</b> o jogo salva sozinho quando você sai. Na próxima vez, toque em <b>▶ Continuar de onde parou</b>.</p><br>
+ <p><b>Salvar:</b> o jogo salva sozinho quando você sai. Na próxima vez, toque em <b>▶ Continuar de onde parou</b>. Entrando em <b>☁️ Salvar na nuvem</b>, dá para continuar em outro aparelho.</p><br>
  <p><b>Durante o jogo:</b> aperte <b>Voltar</b> no controle remoto (ou SELECT+START no controle) para abrir o menu.</p>
  </div>
  <button class="f bt" id="ajFecha" style="margin-top:2vmin">Fechar</button>
@@ -190,7 +202,7 @@ body.apk .so-web{display:none!important}
  <h2>📲 Baixar o app</h2>
  <button class="f bt big" id="dTv">📺 Para TV Box (vira a tela inicial)<small>RetroOkeTV.apk</small></button>
  <button class="f bt" id="dCel">📱 Para celular<small>RetroOkeCelular.apk — controle na tela</small></button>
- <p class="dica">No app os jogos ficam guardados no aparelho, acha jogos no pen drive e funciona sem internet depois de instalado. Pelo navegador também dá para jogar: é só abrir este mesmo link.</p>
+ <p class="dica">No app os jogos ficam guardados no aparelho, acha jogos no pen drive e os jogos já baixados funcionam sem internet. Pelo navegador também dá para jogar: é só abrir este mesmo link.</p>
  <button class="f bt" id="dFecha" style="margin-top:2vmin">Fechar</button>
 </div></div>
 
@@ -202,6 +214,39 @@ body.apk .so-web{display:none!important}
  <button class="f bt" id="maisFecha" style="margin-top:2vmin">Fechar</button>
 </div></div>
 
+<!-- LIBERAR ESPAÇO -->
+<div class="modal" id="mEspaco"><div class="caixa" style="width:min(1000px,94vw)">
+ <h2>🧹 Liberar espaço</h2>
+ <p class="dica">Os jogos grátis ficam na nuvem. Quando você joga, o jogo é baixado e fica guardado no aparelho para jogar sem internet. Aqui você apaga os que já baixou: <b>eles continuam na lista</b> e baixam de novo quando tocar. <b>O salvamento (onde você parou) não é apagado.</b></p>
+ <p class="dica" id="espSt" style="margin-top:1.4vmin;color:#ffd400"></p>
+ <div id="espLista" style="margin-top:1vmin"></div>
+ <button class="f bt" id="espTudo">🧹 Apagar todos os baixados</button>
+ <button class="f bt" id="espNuc" style="display:none">⚙️ Apagar os motores dos consoles<small id="espNucS"></small></button>
+ <button class="f bt" id="espFecha" style="margin-top:1vmin">Fechar</button>
+</div></div>
+
+<!-- CONTA NA NUVEM -->
+<div class="modal" id="mConta"><div class="caixa" style="width:min(900px,94vw)">
+ <h2>☁️ Salvar na nuvem</h2>
+ <p class="dica" id="ctTxt">Entrando numa conta, o ponto onde você parou fica guardado na internet. Em outra TV Box ou celular é só entrar na mesma conta e continuar de onde parou. <b>Sem conta, salva só neste aparelho</b> (como sempre foi).</p>
+ <div id="ctFora" style="margin-top:1.4vmin">
+  <button class="f bt big so-web" id="ctGoogle">🔵 Entrar com Google</button>
+  <p class="dica so-web" style="margin:1vmin 0">ou com e-mail e senha:</p>
+  <input class="f campo" id="ctEmail" type="email" placeholder="Seu e-mail" autocomplete="email" inputmode="email">
+  <input class="f campo" id="ctSenha" type="password" placeholder="Senha (6 letras ou números)" autocomplete="current-password">
+  <button class="f bt big" id="ctEntrar">➡️ Entrar</button>
+  <button class="f bt" id="ctCriar">🆕 Criar conta com este e-mail e senha</button>
+  <button class="f bt" id="ctEsq">🔑 Esqueci a senha / criar senha<small>Manda um e-mail para você criar uma senha nova. Quem entrou com Google no site também pode criar uma senha assim.</small></button>
+ </div>
+ <div id="ctDentro" style="display:none;margin-top:1.4vmin">
+  <p class="dica" style="font-size:2.8vmin">✅ Conectado como <b id="ctQuem"></b></p>
+  <button class="f bt big" id="ctSinc">🔄 Sincronizar agora<small>Traz da nuvem o que está mais novo lá e manda o que está mais novo aqui</small></button>
+  <button class="f bt" id="ctSair">🚪 Sair da conta<small>Os salvamentos continuam neste aparelho e na nuvem</small></button>
+ </div>
+ <p class="dica" id="ctMsg" style="margin-top:1.4vmin;color:#7cf;min-height:3vmin"></p>
+ <button class="f bt" id="ctFecha" style="margin-top:1vmin">Fechar</button>
+</div></div>
+
 <!-- LICENÇAS -->
 <div class="modal" id="mLic"><div class="caixa" style="width:min(1000px,94vw)">
  <h2>📜 Licenças</h2>
@@ -211,13 +256,15 @@ body.apk .so-web{display:none!important}
  <p>Capas: projeto <b>libretro-thumbnails</b> (github.com/libretro-thumbnails), buscadas na internet e guardadas só no seu aparelho.</p>
  <p>Jogos grátis de demonstração (homebrew, feitos por fãs, com licença que deixa distribuir): <b>Lawn Mower</b>, <b>Lan Master</b> e <b>Chase</b> (Shiru, domínio público); <b>Zooming Secretary</b> (Shiru e PinWizz, CC BY); <b>NESert Golfing</b> (Brad Smith, CC BY 4.0); <b>Snek</b> (Zorchenhimer, MIT); <b>Big City Sliding Blaster</b> (NovaSquirrel, zlib); <b>Gothicvania</b> do Super Nintendo (donth77, MIT; arte de ansimuz, CC0). Detalhes em demos/LICENCAS.txt.</p>
  <p>Mais jogos grátis (homebrew com licença livre): <b>8-Bit Table Tennis</b> (Michael Billington, MIT); <b>Gruniożerca</b> (Łukasz Kur e Ryszard Brzukała, domínio público; músicas de Ozzed, CC BY-SA 3.0); <b>Ghosts and Graves</b> (Anthony Bongers, domínio público); <b>Double Action Blaster Guys</b> (NovaSquirrel, zlib); <b>Tobu NES</b> (stevenchadburrow, domínio público; arte CC0); <b>Super Sky Fury</b> do Super Nintendo (Naveed Farbakhsh, MIT); <b>Castle Platformer</b> do Super Nintendo (The UnDisbeliever, MIT; arte CC0). Os outros da lista só abrem a página oficial do autor.</p>
+ <p>Os jogos grátis ficam no site (catalogo.json) e só baixam quando você toca para jogar. Salvamentos na nuvem: Firebase (Google), só se você entrar numa conta.</p>
  <p>Conexão com o celular: PeerJS (MIT). Nintendo, Super Nintendo, Nintendo 64 e PlayStation são marcas dos donos; este app não tem ligação com eles e não vem com jogos comerciais.</p>
  </div>
  <button class="f bt" id="licFecha" style="margin-top:2vmin">Fechar</button>
 </div></div>
 
 <script src="lib/peerjs.min.js"></script>
-<script src="comum.js?v=3"></script>
+<script src="comum.js?v=4"></script>
+<script src="nuvem.js?v=1"></script>
 <script src="confirma-sair.js?v=1"></script>
 <script>
 (function(){
@@ -254,9 +301,11 @@ relogio(); setInterval(relogio, 10000);
 /* ---------- desenho ---------- */
 function capaHTML(j, comNome){
   var s = SYS[j.sys] || SYS.nes;
-  var h = j.capa ? '<img src="' + RK.esc(j.capa) + '" alt="">' :
+  var cp = j.capa || j.capaUrl;
+  var h = cp ? (j.capa ? '' : '<div class="sem" style="background:linear-gradient(160deg,' + s.cor + ',' + s.cor2 + ')"><i>' + s.ico + '</i>' + RK.esc(j.nome) + '</div>') + '<img src="' + RK.esc(cp) + '" alt=""' + (j.capa ? '' : ' onerror="this.style.display=\'none\'"') + '>' :
     '<div class="sem" style="background:linear-gradient(160deg,' + s.cor + ',' + s.cor2 + ')"><i>' + s.ico + '</i>' + RK.esc(j.nome) + '</div>';
-  if (comNome && j.capa) h += '<div class="pl">' + RK.esc(j.nome) + '</div>';
+  if (comNome && cp) h += '<div class="pl">' + RK.esc(j.nome) + '</div>';
+  if (comNome && j.cat) h += '<span class="gr">GRÁTIS</span>' + (j.baixado ? '' : '<span class="nv">☁️</span>');
   return h;
 }
 function desenhaHome(){
@@ -302,12 +351,12 @@ function desenhaSys(focar){
     L.sort(function(a, b){ return (b.ult || 0) - (a.ult || 0) || (a.nome > b.nome ? 1 : -1); });
     var g = $('grade'), focoId = document.activeElement && document.activeElement.dataset.id; g.innerHTML = '';
     var ad = document.createElement('button'); ad.className = 'f add'; ad.innerHTML = '<i>➕</i>Adicionar jogos'; ad.onclick = abreAdd; g.appendChild(ad);
-    if (RK.MAIS.some(function(x){ return x.sys === k; })) { var mg = document.createElement('button'); mg.className = 'f add mais'; mg.innerHTML = '<i>🎁</i>Mais jogos grátis'; mg.onclick = abreMais; g.appendChild(mg); }
+    if ((CAT.links || []).some(function(x){ return x.sys === k; })) { var mg = document.createElement('button'); mg.className = 'f add mais'; mg.innerHTML = '<i>🎁</i>Mais jogos grátis'; mg.onclick = abreMais; g.appendChild(mg); }
     L.forEach(function(j){ var b = document.createElement('button'); b.className = 'f'; b.dataset.id = j.id;
       b.innerHTML = '<div class="capa">' + capaHTML(j, true) + '</div>'; b.onclick = function(){ abreJogo(j); }; g.appendChild(b); });
     if (focar) setTimeout(function(){ (g.children[1] || ad).focus(); }, 60);
     else if (focoId) { var f = g.querySelector('[data-id="' + focoId + '"]'); if (f) f.focus(); }
-    capasPendentes(L);
+    capasPendentes(L); RK.guardaCapas(L);
   });
 }
 var buscando = false;
@@ -347,6 +396,11 @@ function abreJogo(j){
   jogoAberto = j; var s = SYS[j.sys];
   $('jCapa').innerHTML = capaHTML(j, false); $('jNome').textContent = j.nome;
   $('jInfo').textContent = s.nome + (j.tam ? ' · ' + RK.tamanho(j.tam) : '') + (j.ult ? ' · jogou ' + RK.quando(j.ult) : '');
+  $('jCapaB').style.display = j.cat ? 'none' : ''; $('jPag').style.display = j.cat && j.pag ? '' : 'none';
+  $('jRem').dataset.conf = '';
+  if (j.cat) { $('jRem').style.display = j.baixado ? '' : 'none'; $('jRem').innerHTML = '🧹 Apagar do aparelho (liberar espaço)<small>Continua na lista e baixa de novo quando tocar. O salvamento fica.</small>';
+    $('jNuv').innerHTML = (j.baixado ? '📥 Já baixado: abre sem internet.' : '☁️ Na nuvem: baixa ' + RK.tamanho(j.tam) + ' quando você tocar para jogar (precisa de internet só na primeira vez).') + '<br>Grátis · ' + RK.esc(j.desc || '') + ' · ' + RK.esc(j.autor || '') + ' · licença ' + RK.esc(j.lic || ''); }
+  else { $('jRem').style.display = ''; $('jRem').innerHTML = '🗑️ Tirar da lista'; $('jNuv').innerHTML = ''; }
   var ct = RK.NOMES[j.sys], h = '';
   var dicas = {
     nes: [['Controle', 'botão de baixo = B · botão da direita = A · START/SELECT'], ['Controle remoto', 'OK = A · 1 = B · MENU = START · 0 = SELECT'], ['Voltar', 'abre o menu (salvar, sair)']],
@@ -357,16 +411,22 @@ function abreJogo(j){
   dicas.forEach(function(d){ h += '<b>' + d[0] + '</b><span>' + d[1] + '</span>'; });
   $('jCtrl').innerHTML = h;
   $('jFoto').style.display = 'none'; $('jCont').style.display = 'none'; $('jZero').classList.add('big');
-  RK.get('estados', j.id).then(function(e){
+  function mostraSalvo(e){
     if (e && e.data) { $('jCont').style.display = ''; $('jZero').classList.remove('big'); $('jContQ').textContent = 'Salvo ' + RK.quando(e.t);
-      if (e.img) { $('jFoto').src = e.img; $('jFoto').style.display = 'block'; } setTimeout(function(){ $('jCont').focus(); }, 80); }
-  });
+      if (e.img) { $('jFoto').src = e.img; $('jFoto').style.display = 'block'; } setTimeout(function(){ if (jogoAberto === j && document.activeElement && document.activeElement.id === 'jZero') $('jCont').focus(); }, 80); }
+  }
+  RK.get('estados', j.id).then(function(e){ mostraSalvo(e); if (e && e.data) setTimeout(function(){ $('jCont').focus(); }, 80); });
+  /* conta na nuvem: se lá estiver mais novo (jogou em outro aparelho), traz */
+  if (RK.nuvem.ligado() && navigator.onLine !== false) RK.nuvem.puxa(j).then(function(t){ if (!t || jogoAberto !== j) return;
+    RK.get('estados', j.id).then(function(e){ mostraSalvo(e); $('jContQ').textContent += ' ☁️ (trazido da nuvem)'; RK.toast('☁️ Trouxe da nuvem o ponto onde você parou'); }); }).catch(function(){});
   abre('mJogo', 'jZero');
 }
 function joga(cont){ var j = jogoAberto; if (!j) return; RK.bip(880, .1); location.href = 'jogar.html?id=' + encodeURIComponent(j.id) + '&c=' + (cont ? 1 : 0); }
 $('jCont').onclick = function(){ joga(true); };
 $('jZero').onclick = function(){ joga(false); };
+$('jPag').onclick = function(){ if (jogoAberto && jogoAberto.pag) abrePagina(jogoAberto.pag); };
 $('jRem').onclick = function(){ var j = jogoAberto; if (!j) return;
+  if (j.cat) { RK.libera(j).then(function(){ fecha(); RK.toast('🧹 ' + j.nome + ' apagado do aparelho. Continua na lista (☁️).'); desenhaSys(); }); return; }
   if ($('jRem').dataset.conf !== j.id) { $('jRem').dataset.conf = j.id; $('jRem').innerHTML = '🗑️ Aperte de novo para confirmar<small>O arquivo do jogo no pen drive não é apagado</small>'; return; }
   $('jRem').dataset.conf = ''; $('jRem').innerHTML = '🗑️ Tirar da lista';
   RK.remover(j).then(function(){ fecha(); RK.toast('Jogo tirado da lista'); desenhaSys(); });
@@ -391,27 +451,14 @@ $('jCapaB').onclick = function(){
 function abrePagina(u){ if (B && B.link) B.link(u); else window.open(u, '_blank'); }
 function abreMais(){
   var k = atual; $('maisSys').textContent = SYS[k].nome; var box = $('maisLista'); box.innerHTML = '';
-  RK.jogos(k).then(function(L){
-    var tem = {}; L.forEach(function(j){ tem[j.id] = j; });
-    RK.MAIS.filter(function(x){ return x.sys === k; }).forEach(function(x){
-      var r = document.createElement('div'); r.className = 'mrow';
-      r.innerHTML = (x.capa ? '<img src="' + RK.esc(x.capa) + '" alt="">' : '<div class="mi">🌐</div>');
-      var b = document.createElement('button'); b.className = 'f bt';
-      var info = '<small>' + RK.esc(x.desc) + ' · ' + RK.esc(x.autor) + ' · licença ' + RK.esc(x.lic) + '</small>';
-      function rotulo(){ b.innerHTML = x.arq ? (tem[x.id] ? '<span><span class="ok">✅ ' + RK.esc(x.nome) + '</span> — ▶ Jogar agora</span>' : '<span>➕ <b>' + RK.esc(x.nome) + '</b> — colocar na lista</span>') + info
-        : '<span>🌐 <b>' + RK.esc(x.nome) + '</b> — abrir a página do autor</span>' + info + '<small>Baixe lá o arquivo e use ➕ Adicionar jogos → Mandar do celular · ' + RK.esc(x.pag.replace(/^https:\/\//, '')) + '</small>'; }
-      rotulo();
-      b.onclick = function(){
-        if (!x.arq) { abrePagina(x.pag); return; }
-        if (tem[x.id]) { var j = tem[x.id]; fecha(); abreJogo(j); return; }
-        RK.addMais(x).then(function(j){ tem[x.id] = j; rotulo(); RK.bip(988, .1); RK.toast('✅ ' + x.nome + ' entrou na lista. Toque de novo para jogar.'); desenhaSys(); });
-      };
-      r.appendChild(b);
-      if (x.arq) { var pg = document.createElement('button'); pg.className = 'f bt pg'; pg.innerHTML = '🌐 Página do autor'; pg.onclick = function(){ abrePagina(x.pag); }; r.appendChild(pg); }
-      box.appendChild(r);
-    });
-    abre('mMais');
+  box.innerHTML = '<p class="dica" style="margin-bottom:1vmin">Os jogos grátis que dá para trazer já estão na sua lista (☁️). Estes outros só abrem a página oficial do autor:</p>';
+  (CAT.links || []).filter(function(x){ return x.sys === k; }).forEach(function(x){
+    var r = document.createElement('div'); r.className = 'mrow'; r.innerHTML = '<div class="mi">🌐</div>';
+    var b = document.createElement('button'); b.className = 'f bt';
+    b.innerHTML = '<span>🌐 <b>' + RK.esc(x.nome) + '</b> — abrir a página do autor</span><small>' + RK.esc(x.desc) + ' · ' + RK.esc(x.autor) + ' · licença ' + RK.esc(x.lic) + '</small><small>Baixe lá o arquivo e use ➕ Adicionar jogos → Mandar do celular · ' + RK.esc(x.pag.replace(/^https:\/\//, '')) + '</small>';
+    b.onclick = function(){ abrePagina(x.pag); }; r.appendChild(b); box.appendChild(r);
   });
+  abre('mMais');
 }
 
 /* ---------- TudoOkê Karaokê e TV Certa ---------- */
@@ -527,13 +574,76 @@ $('bBaixa').onclick = function(){ abre('mBaixa'); };
 $('dTv').onclick = function(){ location.href = 'apk/RetroOkeTV.apk'; };
 $('dCel').onclick = function(){ location.href = 'apk/RetroOkeCelular.apk'; };
 
+/* ---------- liberar espaço ---------- */
+function desenhaEspaco(){
+  RK.baixados().then(function(L){
+    var box = $('espLista'); box.innerHTML = ''; var tot = 0;
+    L.forEach(function(j){ tot += j.tam || 0;
+      var r = document.createElement('div'); r.className = 'erow';
+      r.innerHTML = (j.capa || j.capaUrl ? '<img src="' + RK.esc(j.capa || j.capaUrl) + '" alt="">' : '<div class="mi"></div>') + '<div><b>' + RK.esc(j.nome) + '</b><br><small style="opacity:.7">' + SYS[j.sys].nome + ' · ' + RK.tamanho(j.tam) + '</small></div>';
+      var b = document.createElement('button'); b.className = 'f bt'; b.innerHTML = '🧹 Apagar';
+      b.onclick = function(){ RK.libera(j).then(function(){ RK.toast('🧹 ' + j.nome + ' apagado do aparelho'); desenhaEspaco(); }); };
+      r.appendChild(b); box.appendChild(r); });
+    $('espSt').textContent = L.length ? L.length + (L.length === 1 ? ' jogo baixado' : ' jogos baixados') + ' · ' + RK.tamanho(tot) + ' no aparelho' : 'Nenhum jogo grátis baixado neste aparelho.';
+    $('espTudo').style.display = L.length ? '' : 'none';
+    if (B && B.nucleosTam) { var nt = +B.nucleosTam() || 0; $('espNuc').style.display = nt ? '' : 'none'; $('espNucS').textContent = RK.tamanho(nt) + ' guardados. Baixam de novo (com internet) quando você jogar.'; }
+    var f = box.querySelector('.f') || $('espFecha'); if (document.activeElement && !box.contains(document.activeElement)) setTimeout(function(){ f.focus(); }, 50); else f.focus();
+  });
+}
+$('bEspaco').onclick = function(){ abre('mEspaco', 'espFecha'); desenhaEspaco(); };
+$('espTudo').onclick = function(){ RK.baixados().then(function(L){ var p = Promise.resolve(); L.forEach(function(j){ p = p.then(function(){ return RK.libera(j); }); });
+  return p.then(function(){ RK.toast('🧹 Pronto! ' + L.length + ' jogos apagados do aparelho. Continuam na lista.'); desenhaEspaco(); }); }); };
+$('espFecha').onclick = fecha;
+$('espNuc').onclick = function(){ if (B && B.limpaNucleos) { B.limpaNucleos(); delete localStorage.rkNucleos; RK.toast('⚙️ Motores apagados. Baixam de novo quando precisar.'); desenhaEspaco(); } };
+$('mEspaco').addEventListener('click', function(ev){ if (ev.target === $('mEspaco')) fecha(); });
+
+/* ---------- conta na nuvem ---------- */
+function contaTela(u){
+  var dentro = !!(u || RK.nuvem.ligado());
+  $('ctFora').style.display = dentro ? 'none' : ''; $('ctDentro').style.display = dentro ? '' : 'none';
+  $('ctQuem').textContent = (u && u.email) || RK.nuvem.email() || 'sua conta';
+  $('bContaT').textContent = dentro ? 'Nuvem ligada ✅' : 'Salvar na nuvem';
+}
+RK.nuvem.aoMudar = function(u){ contaTela(u); };
+function ctMsg(t){ $('ctMsg').textContent = t; }
+$('bConta').onclick = function(){ ctMsg(''); contaTela(null); abre('mConta', RK.nuvem.ligado() ? 'ctSinc' : (B ? 'ctEmail' : 'ctGoogle'));
+  if (RK.nuvem.ligado()) RK.nuvem.usuario().then(function(u){ if (u) contaTela(u); else if (navigator.onLine !== false && !RK.nuvem.ligado()) contaTela(null); }); };
+function depoisDeEntrar(){ ctMsg('✅ Pronto! Agora seus salvamentos vão para a nuvem. Sincronizando…'); contaTela(null); setTimeout(function(){ $('ctSinc').focus(); }, 60); sinc(); }
+function campos(){ var em = $('ctEmail').value.trim(), se = $('ctSenha').value;
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { ctMsg('Digite o seu e-mail.'); $('ctEmail').focus(); return null; }
+  return {em:em, se:se}; }
+$('ctGoogle').onclick = function(){ ctMsg('Abrindo o Google…'); RK.nuvem.entrarGoogle().then(function(r){ if (r && r.user) depoisDeEntrar(); }, function(e){ ctMsg(RK.nuvem.erro(e)); }); };
+$('ctEntrar').onclick = function(){ var c = campos(); if (!c) return; if (c.se.length < 6) { ctMsg('Digite a senha (pelo menos 6).'); $('ctSenha').focus(); return; }
+  ctMsg('Entrando…'); RK.nuvem.entrarEmail(c.em, c.se).then(depoisDeEntrar, function(e){ ctMsg(RK.nuvem.erro(e)); }); };
+$('ctCriar').onclick = function(){ var c = campos(); if (!c) return; if (c.se.length < 6) { ctMsg('Escolha uma senha com pelo menos 6 letras ou números.'); $('ctSenha').focus(); return; }
+  ctMsg('Criando a conta…'); RK.nuvem.criar(c.em, c.se).then(depoisDeEntrar, function(e){ ctMsg(RK.nuvem.erro(e)); }); };
+$('ctEsq').onclick = function(){ var c = campos(); if (!c) return; ctMsg('Mandando o e-mail…');
+  RK.nuvem.esqueci(c.em).then(function(){ ctMsg('📧 Mandei um e-mail para ' + c.em + '. Abra, toque no link, crie a senha e volte aqui para entrar. (Olhe também no Spam.)'); }, function(e){ ctMsg(RK.nuvem.erro(e)); }); };
+[$('ctEmail'), $('ctSenha')].forEach(function(i){ i.addEventListener('keydown', function(ev){ if (ev.keyCode === 13) { ev.preventDefault(); (i.id === 'ctEmail' ? $('ctSenha') : $('ctEntrar')).focus(); } }); });
+function sinc(){ ctMsg('🔄 Sincronizando…'); return RK.nuvem.sincroniza(function(t){ ctMsg('🔄 ' + t); }).then(function(r){
+    if (!r) { ctMsg('Sem internet agora. Tente de novo depois.'); return; }
+    ctMsg('✅ Tudo em dia. Trouxe ' + r.trouxe + ', mandei ' + r.mandou + (r.grande ? ' (' + r.grande + ' grande demais para a nuvem)' : '') + '.'); window.volta(); },
+  function(e){ ctMsg(RK.nuvem.erro(e)); }); }
+$('ctSinc').onclick = sinc;
+$('ctSair').onclick = function(){ confirmaSair(function(){ RK.nuvem.sair().then(function(){ contaTela(null); ctMsg('Você saiu da conta. Agora salva só neste aparelho.'); setTimeout(function(){ $('ctFecha').focus(); }, 60); }); }, {texto:'Você sai da conta da nuvem. Os salvamentos continuam no aparelho.', classe:'f'}); };
+$('ctFecha').onclick = fecha;
+$('mConta').addEventListener('click', function(ev){ if (ev.target === $('mConta')) fecha(); });
+
 /* ---------- início ---------- */
-confereOutros();
-RK.semeia().then(function(){
+var CAT = {jogos:[], links:[]};
+confereOutros(); contaTela(null);
+RK.catalogo().then(function(c){ CAT = c; }).then(function(){
   var h = location.hash.slice(1);
   if (SYS[h]) { abreSys(h); } else { desenhaHome(); setTimeout(foco, 100); }
 });
 window.addEventListener('online', function(){ if (atual) desenhaSys(); });
+/* com conta: sincroniza uma vez quando abre (sem travar a tela) */
+if (RK.nuvem.ligado() && navigator.onLine !== false && !sessionStorage.rkSinc) setTimeout(function(){ sessionStorage.rkSinc = 1;
+  RK.nuvem.sincroniza().then(function(r){ if (r && r.trouxe) { RK.toast('☁️ Trouxe ' + r.trouxe + (r.trouxe === 1 ? ' salvamento' : ' salvamentos') + ' da nuvem'); window.volta(); } }, function(){}); }, 2500);
+/* app: deixa guardados os núcleos do Nintendinho e do Super Nintendo para jogar sem internet depois */
+if (B && navigator.onLine !== false && !localStorage.rkNucleos) setTimeout(function(){
+  Promise.all(['fceumm', 'snes9x'].map(function(c){ return fetch('ejs/cores/' + c + '-legacy-wasm.data').then(function(r){ if (!r.ok) throw 0; return r.arrayBuffer(); }); }))
+    .then(function(){ localStorage.rkNucleos = '1'; }, function(){}); }, 6000);
 })();
 </script>
 </body></html>
