@@ -1,8 +1,8 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Mande suas ofertas • Oferta Okê</title>
+<title>Mande seu pedido • Oferta Okê</title>
 <meta name="theme-color" content="#b30016"><link rel="icon" href="icon-192.png">
-<meta property="og:title" content="Mande as ofertas da sua loja"><meta property="og:description" content="Mande as fotos e os preços dos produtos. A gente faz o comercial com locutor."><meta property="og:image" content="https://merceariaaled19-cloud.github.io/Meu-lanches/ofertaok/icon-512.png">
+<meta property="og:title" content="Peça o comercial do seu negócio"><meta property="og:description" content="Escolha o ramo, mande as fotos e os preços. A gente faz o comercial com locutor."><meta property="og:image" content="https://merceariaaled19-cloud.github.io/Meu-lanches/ofertaok/icon-512.png">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
@@ -32,6 +32,10 @@ a.bt{text-decoration:none}
 .prog{height:16px;border-radius:9px;background:#f0e2e4;overflow:hidden;margin:8px 0}.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#d0101f,#ffd400);transition:width .3s}
 .fim{text-align:center;padding:26px 14px}.fim .ok{font-size:80px}.fim h2{font-size:30px;margin:8px 0}
 .endbox{border:2px solid #f0e2e4;border-radius:14px;padding:4px 10px 10px;background:#fffafa}
+.segs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.segs button{font:inherit;font-size:17px;font-weight:700;text-align:left;padding:12px 10px;border-radius:14px;border:2px solid #e3d4d6;background:#fff;color:#1b0006;cursor:pointer;display:flex;align-items:center;gap:8px;min-height:54px}
+.segs button span{font-size:26px}.segs button.on{border-color:#d0101f;background:#ffe9ec;box-shadow:0 0 0 3px #ffd400}
+.cadres{border:2px solid #bbf7d0;background:#f0fdf4;border-radius:14px;padding:12px;font-size:18px;line-height:1.4}
 .oculto{display:none!important}
 </style></head><body>
 <header><img src="icon-192.png" alt=""><h1>OFERTA <span>OKÊ</span></h1></header>
@@ -40,27 +44,50 @@ a.bt{text-decoration:none}
 <div id="invalido" class="card oculto"><h2>😕 Este link não vale mais</h2><p>Peça um link novo para quem te mandou.</p></div>
 
 <form id="form" class="oculto" autocomplete="on" novalidate>
-  <p class="intro" id="ola">Mande as <b>fotos</b> e os <b>preços</b> dos produtos.<br>A gente faz o <b>comercial com locutor</b> para você! 🎤</p>
+  <p class="intro" id="ola">Escolha o seu <b>ramo</b>, faça o <b>cadastro</b> e mande as <b>fotos</b>.<br>A gente faz o <b>comercial com locutor</b> para você! 🎤</p>
 
-  <div class="card"><h2>🏪 Sua loja</h2>
-    <label class="l">Nome da loja *</label><input id="cLoja" maxlength="50" autocomplete="organization" placeholder="Ex.: Mercadinho Bom Preço">
-    <label class="l">WhatsApp da loja *</label><input id="cZap" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="(92) 99999-9999">
-    <label class="l">Endereço <small class="d">(opcional, aparece no fim do vídeo)</small></label>
-    <div class="endbox">
-      <label class="l">CEP <small class="d">(preenche a rua sozinho)</small></label>
-      <input id="cCep" inputmode="numeric" maxlength="9" placeholder="Ex.: 69000-000">
-      <div class="st" id="cepSt"></div>
-      <label class="l">Rua</label><input id="cRua" maxlength="60" placeholder="Ex.: Rua das Flores">
-      <div class="lin"><div><label class="l">Número</label><input id="cNum" inputmode="numeric" maxlength="10" placeholder="Ex.: 120"></div><div><label class="l">Bairro</label><input id="cBairro" maxlength="40" placeholder="Ex.: Centro"></div></div>
-      <input id="cCidade" type="hidden"><input id="cUf" type="hidden">
-    </div>
-    <label class="l">Logo da loja <small class="d">(opcional)</small></label>
-    <div class="lin" style="align-items:center"><div id="logoPrev" class="pfoto" style="max-width:90px;font-size:36px;margin:0">🏪</div><button type="button" class="bt cz peq" id="bLogo">🖼️ Escolher logo</button></div>
+  <div class="card"><h2>1️⃣ Qual é o seu ramo?</h2>
+    <div class="segs" id="segGrid"></div>
+    <div id="segOutroBox" class="oculto"><label class="l">Qual é o seu ramo? *</label><input id="segOutro" maxlength="30" placeholder="Ex.: Floricultura, Gráfica, Escola…"></div>
   </div>
 
-  <div class="card"><h2><span id="tProds">🛒 Seus produtos</span> <small class="d">(até 6)</small></h2>
+  <div class="card"><h2>2️⃣ Seu cadastro</h2>
+    <div id="cadResumo" class="cadres oculto"></div>
+    <div id="cadForm">
+      <label class="l">Seu nome *</label><input id="cNome" maxlength="60" autocomplete="name" placeholder="Ex.: Seu nome">
+      <label class="l" id="lLoja">Nome da loja ou empresa *</label><input id="cLoja" maxlength="50" autocomplete="organization" placeholder="Ex.: Mercadinho Sol Nascente">
+      <label class="l">WhatsApp *</label><input id="cZap" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="(92) 99999-9999">
+      <label class="l">Endereço <small class="d">(opcional, aparece no fim do vídeo)</small></label>
+      <div class="endbox">
+        <label class="l">CEP <small class="d">(preenche a rua sozinho)</small></label>
+        <input id="cCep" inputmode="numeric" maxlength="9" placeholder="Ex.: 69000-000">
+        <div class="st" id="cepSt"></div>
+        <label class="l">Rua</label><input id="cRua" maxlength="60" placeholder="Ex.: Rua das Flores">
+        <div class="lin"><div><label class="l">Número</label><input id="cNum" inputmode="numeric" maxlength="10" placeholder="Ex.: 120"></div><div><label class="l">Bairro</label><input id="cBairro" maxlength="40" placeholder="Ex.: Centro"></div></div>
+        <input id="cCidade" type="hidden"><input id="cUf" type="hidden">
+      </div>
+      <label class="l">Logo <small class="d">(opcional)</small></label>
+      <div class="lin" style="align-items:center"><div id="logoPrev" class="pfoto" style="max-width:90px;font-size:36px;margin:0">🏪</div><button type="button" class="bt cz peq" id="bLogo">🖼️ Escolher logo</button></div>
+      <p class="st">🔒 Fica guardado só neste celular, para você não digitar de novo na próxima vez.</p>
+    </div>
+  </div>
+
+  <div class="card" id="prodCard"><h2>3️⃣ <span id="tProds">🛒 Seus produtos</span> <small class="d">(até 6)</small></h2>
     <div id="prods"></div>
     <button type="button" class="bt am" id="bAdd">➕ Mais um produto</button>
+  </div>
+
+  <div class="card oculto" id="festaCard"><h2>3️⃣ 🎉 Sua festa ou evento</h2>
+    <label class="l">Nome da festa ou evento *</label><input id="fNome" maxlength="60" placeholder="Ex.: Arraial da Vila Feliz">
+    <div class="lin"><div><label class="l">Dia *</label><input id="fDia" type="date"></div><div><label class="l">Hora *</label><input id="fHora" type="time" step="900"></div></div>
+    <label class="l">Local *</label><input id="fLocal" maxlength="80" placeholder="Ex.: Quadra da Rua das Palmeiras, 120">
+    <label class="l">Atrações <small class="d">(opcional)</small></label><input id="fAtracoes" maxlength="100" placeholder="Ex.: Banda Brisa do Norte e DJ da casa">
+    <label class="l">Entrada / valor <small class="d">(opcional)</small></label><input id="fEntrada" maxlength="60" placeholder="Ex.: R$ 20 / Entrada gratuita">
+    <label class="l">Contato para ingresso <small class="d">(opcional; se ficar vazio, vai o seu WhatsApp)</small></label><input id="fContato" maxlength="60" placeholder="Ex.: (92) 99999-9999">
+    <label class="l">Foto ou cartaz da festa <small class="d">(opcional)</small></label>
+    <div class="pfoto" id="fFotoPrev">🎉</div>
+    <div class="lin"><button type="button" class="bt peq" id="fCamB">📷 Tirar foto</button><button type="button" class="bt cz peq" id="fGalB">🖼️ Galeria</button></div>
+    <div class="st" id="fFotoSt"></div>
   </div>
 
   <div id="erro" class="erro"></div>
@@ -68,10 +95,10 @@ a.bt{text-decoration:none}
   <button type="submit" class="bt vd" id="bEnviar" style="font-size:24px;padding:20px">📤 Enviar</button>
 </form>
 
-<div id="fim" class="card fim oculto"><div class="ok">✅</div><h2>Recebido!</h2><p style="font-size:20px">O Alex vai preparar seu comercial. 🎬<br>Logo ele te chama no WhatsApp.</p><button class="bt cz peq" id="bOutro">Mandar outras ofertas</button></div>
+<div id="fim" class="card fim oculto"><div class="ok">✅</div><h2>Recebido!</h2><p style="font-size:20px">O Alex vai preparar seu comercial. 🎬<br>Logo ele te chama no WhatsApp.</p><button class="bt cz peq" id="bOutro">Mandar outro pedido</button></div>
 </main>
 <input type="file" id="fCam" accept="image/*" capture="environment" class="oculto">
 <input type="file" id="fGal" accept="image/*" class="oculto">
 <input type="file" id="fLogo" accept="image/*" class="oculto">
-<script src="cliente.js?v=2"></script>
+<script src="cliente.js?v=3"></script>
 </body></html>
