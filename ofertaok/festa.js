@@ -6,6 +6,7 @@
 var VOZES_FESTA = {
   marcao: {nome: 'Marcão do Som', sexo: 'M', gem: 'Alnilam', jeito: 'voz firme e forte'},
   ricardo: {nome: 'Ricardo FM', sexo: 'M', gem: 'Iapetus', jeito: 'voz clara de rádio'},
+  beto: {nome: 'Beto Folião', sexo: 'M', gem: 'Fenrir', jeito: 'voz grossa, forte e animada de bloco'},
   duda: {nome: 'Duda Folia', sexo: 'F', gem: 'Pulcherrima', jeito: 'voz animada e para frente'},
   raio: {nome: 'DJ Raio', sexo: 'M', gem: 'Fenrir', jeito: 'voz empolgada de festa'},
   ze: {nome: 'Zé Sanfona', sexo: 'M', gem: 'Achird', jeito: 'voz amiga e alegre'},
@@ -36,14 +37,22 @@ var ESTILOS_FESTA = [
    bordoes: ['Um evento para ninguém esquecer.', 'Uma noite especial espera por você.', 'Garanta já o seu lugar.'],
    fechas: ['Te vejo lá!', 'Não perca!', 'Garanta o seu lugar!'], titulo: 'TÁ CHEGANDO',
    ia: 'Estilo spot de rádio FM: abertura curta de impacto, frases limpas, profissional, assinatura no fim com nome do evento, data e local.'},
-  {id: 'carnaval', emoji: '🎭', nome: 'Carnaval / Bloco', desc: 'Clima de folia, batucada e marchinha.', voz: 'duda', bed: 'carnaval', duck: 0.15, musLvl: 0.62,
-   papel: 'carnival street-block (bloco de carnaval) announcer, joyful and loud', cena: 'A Brazilian street carnival (bloco) with drums, the announcer calling the crowd on a microphone.',
-   notas: 'Super joyful carnival party voice, playful and loud, like inviting everyone to the street parade; big smile.', ritmo: 'Fast and bouncy, slower on date, time and place.',
-   fx: {rate: 1.05, hp: 120, low: 1, mid: 2, pres: 5, high: 2, drive: 0.12, eco: 0.08, ecoT: 0.09, eco2: 0.15, room: 0.08}, cor: {a: '#9333ea', b: '#3b0764', c: '#f59e0b'},
-   chamadas: ['Alô, foliões! O bloco vai passar!', 'Atenção, folia! Separa a fantasia!', 'É carnaval, minha gente!'],
-   bordoes: ['Traz o confete e a serpentina!', 'Vem pular com a gente!', 'Ninguém fica parado!'],
-   fechas: ['Vem pra folia!', 'Te espero no bloco!', 'Bora pular!'], titulo: 'É FOLIA!',
-   ia: 'Estilo carnaval/bloco de rua: alegria, confete, fantasia, batucada, "vem pular"; sem citar marchinhas ou bordões de artistas.'},
+  /* Carnaval v12 (25/11): ajustado pelo ESTILO de um locutor de bloco que o Alex mandou de referência (medido: homem adulto, voz grave e
+     projetada, energia altíssima quase gritando, ~130 palavras/min, fala contínua com respiros de 0,2–0,35 s, alonga a última vogal e sobe
+     no fim das frases, voz bem comprimida e na cara com leve eco de rua, marchinha/frevo ~140 bpm com metais sempre presente ~12 dB abaixo
+     da voz, apitos). Voz própria do Gemini (Fenrir), NUNCA clone nem imitação da pessoa; nomes, frases marcantes e bordões dele não são usados. */
+  {id: 'carnaval', emoji: '🎭', nome: 'Carnaval / Bloco', desc: 'Locutor de bloco: voz grossa e animada, marchinha com metais e apito.', voz: 'beto', bed: 'marchinha', duck: 0.18, musLvl: 0.7, ganho: 1.35, amostraV: 2,
+   abreNome: true, fechaNome: true, apito: true, maxIA: 12,
+   papel: 'carnival street-block (bloco de carnaval) party announcer on a big loudspeaker', cena: 'A Brazilian neighborhood carnival block party: a brass marchinha band and drums playing, the announcer calling the crowd on a big loudspeaker.',
+   notas: 'Adult male street-party announcer (30 to 45 years old), deep, full and projected voice, very high energy and a big smile, almost shouting with joy. Chest voice with weight. Varies the pitch a lot: big rising emphasis on the party name and the date, stretches the last vowel of key words and rises in pitch at the end of each sentence; punches the names of attractions and sponsors; reads the sponsor list fast and proud.',
+   ritmo: 'Fast and continuous like a street-party spot, only short breaths between sentences; slightly slower on date, time and price.',
+   fx: {rate: 0.93, hp: 90, low: 5, mid: 1, pres: 5, high: 3, drive: 0.1, comp: 1, eco: 0.17, ecoT: 0.17, eco2: 0.3, room: 0.16}, cor: {a: '#9333ea', b: '#3b0764', c: '#f59e0b'},
+   chamadas: ['Atenção, foliões do bairro!', 'Alô, alô, foliões! Atenção!', 'Atenção, galera da folia!'],
+   abre: ['A folia já está confirmada!', 'O carnaval do bairro tá confirmado!', 'Tá chegando a hora do bloco sair!'],
+   convite: ['Separa a fantasia, que é pra cantar e pular sem parar!', 'Vem pular, cantar e se divertir com a gente!', 'É marchinha, é batucada, é alegria sem parar!'],
+   bordoes: ['Traz o confete e a serpentina!', 'Ninguém vai ficar parado!', 'Chama a família e os amigos pra folia!'],
+   fechas: ['a alegria toma conta da rua!', 'a folia é com a gente!', 'é carnaval de verdade!'], titulo: 'É FOLIA!',
+   ia: 'Estilo locutor de bloco de carnaval de bairro, alegre e vibrante, no formato de chamada de carro de som/rádio. ESTRUTURA: 1ª linha = só o nome do evento (como vinheta); 2ª = chamada aos foliões (do bairro ou do local); depois a data e a hora; um convite para cantar e pular com marchinha e batucada; as atrações (de preferência uma linha por atração, dizendo que vão animar do começo ao fim); repetição "anota aí" com dia, hora e local; entrada/abadá se houver ("adquira seu abadá…", "garanta já…"); se houver patrocínio/apoio, uma ou duas linhas lendo a lista com orgulho ("Patrocínio: …" / "Apoio: …"); última linha = nome do evento + frase curta de alegria. Use chamadas genéricas (foliões, folia, fantasia, confete, marchinha, batucada, "não deixa ninguém parado"); nunca copie bordões de locutores, artistas ou blocos reais.'},
   {id: 'aparelhagem', emoji: '🔊', nome: 'Aparelhagem / Festa do Norte', desc: 'Tecnomelody e aparelhagem: grave, eco forte, energia lá em cima.', voz: 'raio', bed: 'aparelhagem', duck: 0.12, musLvl: 0.65,
    papel: 'northern Brazil sound-system (aparelhagem) party MC, huge hype, big echo', cena: 'A giant northern Brazil sound system party (aparelhagem, tecnomelody) with lights and smoke, the MC on the microphone with heavy echo.',
    notas: 'Huge hype party MC voice, deep and powerful, drags the big words, shouts the name of the party with pride; heavy echo.', ritmo: 'Punchy, with dramatic pauses before the party name.',
@@ -116,7 +125,7 @@ function vozFestaObj(est, vozId){
     cena: est.cena, notas: est.notas, ritmo: est.ritmo, fx: est.fx};
 }
 /* músicas de fundo do app (feitas no próprio celular, sem direitos autorais) */
-var MUSICAS_FESTA = [{id: 'animada', nome: '🎺 Animada (palmas e metais)'}, {id: 'grave', nome: '📻 Batida grave'}, {id: 'radio', nome: '🎵 Pop de rádio'}, {id: 'carnaval', nome: '🥁 Batucada de carnaval'},
+var MUSICAS_FESTA = [{id: 'marchinha', nome: '🎺 Marchinha / frevo (metais e apito)'}, {id: 'animada', nome: '🎺 Animada (palmas e metais)'}, {id: 'grave', nome: '📻 Batida grave'}, {id: 'radio', nome: '🎵 Pop de rádio'}, {id: 'carnaval', nome: '🥁 Batucada de carnaval'},
   {id: 'forro', nome: '🪗 Forró (zabumba e triângulo)'}, {id: 'aparelhagem', nome: '🔊 Eletrônica / aparelhagem'}, {id: 'infantil', nome: '🎈 Infantil (sininhos)'}, {id: 'suave', nome: '🎹 Suave / elegante'}, {id: 'gospel', nome: '🙏 Gospel suave'}];
 
 /* ---------- sintetizador das músicas ---------- */
@@ -128,11 +137,17 @@ function musicaFesta(ctx, dest, dur, bed){
   function bumbo(t, f0, f1, vol, len){ var o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + len * 0.5); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + len); o.connect(g); g.connect(bus); o.start(t); o.stop(t + len + 0.02); }
   function chiado(t, tipo, f, vol, len, q){ var s = ctx.createBufferSource(); s.buffer = nz; var fl = ctx.createBiquadFilter(); fl.type = tipo; fl.frequency.value = f; if (q) fl.Q.value = q; var g = ctx.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + len); s.connect(fl); fl.connect(g); g.connect(bus); s.start(t); s.stop(t + len + 0.02); }
   var C = {I: [261.6, 329.6, 392.0], V: [196.0, 246.9, 293.7], vi: [220.0, 261.6, 329.6], IV: [174.6, 220.0, 261.6]}, prog = [C.I, C.V, C.vi, C.IV], raiz = [65.41, 49.0, 55.0, 43.65];
-  var cfg = {radio: 112, carnaval: 104, forro: 112, aparelhagem: 140, infantil: 120, suave: 72, gospel: 84}, bpm = cfg[bed] || 120, bt = 60 / bpm;
+  var cfg = {marchinha: 140, radio: 112, carnaval: 104, forro: 112, aparelhagem: 140, infantil: 120, suave: 72, gospel: 84}, bpm = cfg[bed] || 120, bt = 60 / bpm;
   for (var b = 0, t = 0; t < dur; b++, t = b * bt){
     var cp = Math.floor(b / 4) % 4, ch = prog[cp], rz = raiz[cp];
     if (bed == 'radio'){ bumbo(t, 140, 48, 0.8, 0.22); if (b % 2) chiado(t, 'bandpass', 1800, 0.35, 0.12, 0.8); chiado(t + bt / 2, 'highpass', 7000, 0.08, 0.04);
       tom(t, rz, bt * 0.45, 'triangle', 0.45, 800); tom(t + bt / 2, rz * 2, bt * 0.3, 'triangle', 0.3, 800); ch.forEach(function(f){ tom(t + bt / 2, f, bt * 0.35, 'square', 0.035, 2400); }); }
+    else if (bed == 'marchinha'){ /* marchinha/frevo ~140 bpm: surdo em todos os tempos (2º mais forte), caixa em semicolcheias com acento, prato no 1, metais com frase de 4 compassos */
+      bumbo(t, 95, 52, b % 2 ? 0.6 : 0.36, 0.26); for (var q = 0; q < 4; q++) chiado(t + q * bt / 4, 'bandpass', 2600, q == 0 ? 0.16 : (q == 2 ? 0.2 : 0.07), 0.05, 1.6);
+      if (b % 8 == 0) chiado(t, 'highpass', 6000, 0.12, 0.6); tom(t, rz * 2, bt * 0.45, 'triangle', 0.28, 900); tom(t + bt / 2, rz * 3, bt * 0.3, 'triangle', 0.14, 900);
+      var fr = [0, 2, 4, 2, 0, 4, 5, 4, 2, 4, 2, 0, -1, 0, 2, 0], esc = [261.6, 293.7, 329.6, 349.2, 392.0, 440.0, 493.9], nota = fr[b % 16], fm = nota < 0 ? 246.9 : esc[nota];
+      [1, 1.5].forEach(function(mu, ii){ tom(t, fm * mu * (ii ? 1 : 2) / (ii ? 1 : 1), bt * 0.42, 'sawtooth', ii ? 0.03 : 0.06, 2600, 0.015); }); if (b % 4 == 3) tom(t + bt / 2, fm * 2, bt * 0.3, 'sawtooth', 0.05, 2800, 0.01);
+      if (b % 16 == 15) ch.forEach(function(f){ tom(t + bt / 2, f * 2, bt * 0.5, 'sawtooth', 0.04, 3200); }); }
     else if (bed == 'carnaval'){ /* surdo de marcação no 2º tempo, caixa e tamborim em semicolcheias, metais a cada compasso */
       bumbo(t, 90, 55, b % 2 ? 0.95 : 0.55, 0.35); for (var k = 0; k < 4; k++) chiado(t + k * bt / 4, 'bandpass', 3200, k == 2 ? 0.22 : (k % 2 ? 0.08 : 0.13), 0.05, 2);
       if (b % 2) chiado(t + bt * 0.5, 'bandpass', 1500, 0.28, 0.09, 1); tom(t, rz * 2, bt * 0.4, 'triangle', 0.4, 900);
@@ -180,36 +195,45 @@ function contatoFalado(c){ c = String(c || '').trim(); return /^[\d\s()+\-.]{8,}
 function linhasTemplate(F, est, s){
   function P(a){ return sorteia(a, s); }
   var L = [], nome = F.nome || 'a festa', dia = diaFalado(F.dia), hora = horaFalada(F.hora, true);
+  if (est.abreNome){ /* carnaval: vinheta com o nome, chamada, abertura, data, convite, atrações… (estrutura de chamada de bloco) */
+    L.push(nome + '!'); L.push(P(est.chamadas) + ' ' + sorteia(est.abre, s + 1));
+    if (dia || hora) L.push(cap((dia ? dia : '') + (dia && hora ? ', ' : '') + (hora || '')) + '!');
+    if (F.local) L.push('Local: ' + F.local + '.');
+    L.push(sorteia(est.convite, s + 2));
+    if (F.atracoes) L.push('Com ' + F.atracoes + ', animando a galera do começo ao fim!');
+  } else {
   L.push(P(est.chamadas));
   L.push(est.id == 'elegante' || est.id == 'gospel' ? nome + '.' : sorteia(['Vem aí: ' + nome + '!', 'Vai rolar: ' + nome + '!', 'Não perca: ' + nome + '!'], s + 1));
   if (dia || hora) L.push(cap((dia ? dia : '') + (dia && hora ? ', ' : '') + (hora || '')) + '.');
   if (F.local) L.push('Local: ' + F.local + '.');
   if (F.atracoes) L.push((est.id == 'elegante' || est.id == 'gospel' ? 'Com ' : 'Com ') + F.atracoes + (est.id == 'elegante' || est.id == 'gospel' ? '.' : '!'));
-  if (F.entrada) L.push('Entrada: ' + valorFalado(F.entrada) + '.');
+  }
+  if (F.entrada) L.push(est.abreNome && /abad/i.test(F.entrada) ? 'Garanta já o seu abadá: ' + valorFalado(F.entrada.replace(/^\s*abad[áa]s?\s*(de|por|:|-)?\s*/i, '')) + '!' : 'Entrada: ' + valorFalado(F.entrada) + (est.abreNome ? '!' : '.'));
   L.push(P(est.bordoes));
   var rep = ['Anota aí', 'Repetindo', 'Não esquece'][s % 3]; if (est.id == 'elegante' || est.id == 'gospel') rep = 'Anote';
   var dcur = diaCurtoFalado(F.dia), hcur = horaFalada(F.hora, false);
   L.push(rep + ': ' + nome + (dcur ? ', ' + dcur : '') + (hcur ? ', ' + hcur : '') + (F.local ? ', no local ' + F.local : '') + '.');
   if (F.contato) L.push('Informações: ' + contatoFalado(F.contato) + '.');
-  L.push(P(est.fechas));
+  if (F.patroc) L.push(/^(patroc|apoio)/i.test(F.patroc) ? cap(F.patroc) + (/[.!]$/.test(F.patroc) ? '' : '.') : 'Patrocínio: ' + F.patroc + '.');
+  L.push(est.fechaNome ? nome + ': ' + P(est.fechas) : P(est.fechas));
   return L;
 }
 function cap(t){ t = String(t || ''); return t.charAt(0).toUpperCase() + t.slice(1); }
 async function iaFesta(F, est, avisa){
-  var dados = {nome_da_festa: F.nome, dia_falado: diaFalado(F.dia), hora_falada: horaFalada(F.hora, true), dia_curto: diaCurtoFalado(F.dia), hora_curta: horaFalada(F.hora, false), local: F.local, atracoes: F.atracoes || '', entrada_falada: valorFalado(F.entrada || ''), contato_falado: F.contato ? contatoFalado(F.contato) : ''};
+  var dados = {nome_da_festa: F.nome, dia_falado: diaFalado(F.dia), hora_falada: horaFalada(F.hora, true), dia_curto: diaCurtoFalado(F.dia), hora_curta: horaFalada(F.hora, false), local: F.local, atracoes: F.atracoes || '', entrada_falada: valorFalado(F.entrada || ''), patrocinio_e_apoio: F.patroc || '', contato_falado: F.contato ? contatoFalado(F.contato) : ''};
   var prompt = 'Você é redator de chamadas de festa para carro de som e rádio no Brasil. Escreva o texto que o LOCUTOR vai falar (20 a 40 segundos), português do Brasil, popular e fácil de entender na rua.\n' +
     'Estilo: ' + est.nome + '. ' + est.ia + '\n' +
     'Dados (use exatamente estas formas faladas, sem algarismos): ' + JSON.stringify(dados) + '\n' +
-    'Regras: devolva de 6 a 10 LINHAS curtas (no máximo 16 palavras cada); a 1ª é a chamada de atenção; nas primeiras linhas diga o quê, quando (dia_falado e hora_falada) e onde (local); fale as atrações e a entrada se houver; ' +
+    'Regras: devolva de 6 a ' + (est.maxIA || 10) + ' LINHAS curtas (no máximo 16 palavras cada); a 1ª é a chamada de atenção; nas primeiras linhas diga o quê, quando (dia_falado e hora_falada) e onde (local); fale as atrações e a entrada se houver; se houver patrocinio_e_apoio, leia os nomes exatamente como escritos (sem inventar nenhum); ' +
     'perto do fim REPITA nome, dia_curto, hora_curta e local; se houver contato, uma linha com contato_falado; última linha é a chamada final curta. ' +
     'Bordões só genéricos (nunca de pessoa famosa, artista, DJ, aparelhagem ou programa real). Não invente brinde, desconto, horário, preço, atração ou local que não está nos dados. Sem emojis.';
   var o = await gemTexto(prompt, {type: 'OBJECT', properties: {linhas: {type: 'ARRAY', items: {type: 'STRING'}}}, required: ['linhas']}, avisa);
-  var L = (o.linhas || []).map(function(x){ return String(x || '').replace(/\s+/g, ' ').trim(); }).filter(Boolean).slice(0, 12);
+  var L = (o.linhas || []).map(function(x){ return String(x || '').replace(/\s+/g, ' ').trim(); }).filter(Boolean).slice(0, (est.maxIA || 10) + 2);
   if (L.length < 4) throw new Error('resposta curta');
   var tudo = L.join(' ').toLowerCase(), pn = (F.nome || '').toLowerCase().split(/\s+/)[0] || '', pl = (F.local || '').toLowerCase().split(/\s+/)[0] || '';
   var d = dataObj(F.dia), nDia = d ? (d.getDate() == 1 ? 'primeiro' : extenso(d.getDate())) : '';
   /* confere o essencial; se faltar, completa com a linha de repetição do modelo */
-  if ((pn && tudo.indexOf(pn) < 0) || (pl && tudo.indexOf(pl) < 0) || (nDia && tudo.indexOf(nDia) < 0)){ var T = linhasTemplate(F, est, 0); L.splice(Math.max(1, L.length - 1), 0, T.filter(function(x){ return /^(Anota aí|Anote|Repetindo|Não esquece):/.test(x); })[0] || T[2]); }
+  if ((pn && tudo.indexOf(pn) < 0) || (pl && tudo.indexOf(pl) < 0) || (nDia && tudo.indexOf(nDia) < 0) || (F.patroc && tudo.indexOf((F.patroc.toLowerCase().replace(/^(patroc[íi]nio|apoio)\s*:?\s*/, '').split(/[\s,]+/)[0] || '')) < 0)){ var T = linhasTemplate(F, est, 0); L.splice(Math.max(1, L.length - 1), 0, T.filter(function(x){ return /^(Anota aí|Anote|Repetindo|Não esquece):/.test(x); })[0] || T[2]); }
   return L;
 }
 
@@ -222,7 +246,7 @@ async function mixarFesta(falaWav, voz, est, linhas, mus){
   else linhas.forEach(function(l){ var dur = Math.max(1.6, l.length / 15); pos.push({t: t, dur: dur}); t += dur + FT_VAO; });
   var falaFim = t - FT_VAO, total = falaFim + FT_FIM, sr = 44100, ctx = new OfflineAudioContext(2, Math.ceil(sr * total), sr);
   var lim = ctx.createDynamicsCompressor(); lim.threshold.value = -6; lim.knee.value = 0; lim.ratio.value = 20; lim.attack.value = 0.002; lim.release.value = 0.1;
-  var master = ctx.createGain(); master.gain.value = 0.9; master.connect(lim); lim.connect(ctx.destination);
+  var master = ctx.createGain(); master.gain.value = est.ganho || 0.9; master.connect(lim); lim.connect(ctx.destination);
   var mg = ctx.createGain(); mg.connect(master);
   if (mus && mus.buf){ var ms = ctx.createBufferSource(); ms.buffer = mus.buf; ms.loop = true; var nm = ctx.createGain(); nm.gain.value = mus.norm || 1; ms.connect(nm); nm.connect(mg); ms.start(0); ms.stop(total); }
   else musicaFesta(ctx, mg, total, (mus && mus.bed) || est.bed);
@@ -235,6 +259,7 @@ async function mixarFesta(falaWav, voz, est, linhas, mus){
     pos.forEach(function(p){ var src = ctx.createBufferSource(); src.buffer = fala; src.playbackRate.value = voz.fx.rate || 1; src.connect(ent); src.start(p.t, p.ini, p.fim - p.ini); }); }
   /* vinheta: whoosh + metais (ou sininho na infantil; suave nas calmas) */
   var sfx = ctx.createGain(); sfx.gain.value = est.id == 'elegante' || est.id == 'gospel' ? 0.35 : 0.8; sfx.connect(master);
+  if (est.apito){ apito(ctx, sfx, 0.1, 3); apito(ctx, sfx, Math.max(0, falaFim + 0.15), 2); apito(ctx, sfx, Math.max(0, total - 1.4), 3); }
   efeitoSom(ctx, sfx, 0.05, 'whoosh'); if (est.id == 'infantil' || est.id == 'elegante' || est.id == 'gospel') efeitoSom(ctx, sfx, 0.5, 'ding'); else metais(ctx, sfx, 0.35, true);
   efeitoSom(ctx, sfx, Math.max(0, falaFim + 0.1), est.id == 'infantil' ? 'ding' : 'whoosh');
   var buf = await ctx.startRendering();
@@ -283,7 +308,7 @@ function desenhaFesta(g, W, H, t, P){
   if (ver) y += bh0 + 30 * S; else y += 10 * S;
   /* informações (só as que cabem acima da legenda) */
   var info = []; var dA = diaArte(F.dia), hA = horaArte(F.hora); if (dA || hA) info.push(['📅', dA + (dA && hA ? '  •  ' : '') + (hA ? '⏰ ' + hA : '')]);
-  if (F.local) info.push(['📍', F.local]); if (F.atracoes) info.push(['🎤', F.atracoes]); if (F.entrada) info.push(['🎟️', F.entrada]); if (F.contato) info.push(['📞', /^[\d\s()+\-.]{8,}$/.test(F.contato) ? foneBonito(F.contato) : F.contato]);
+  if (F.local) info.push(['📍', F.local]); if (F.atracoes) info.push(['🎤', F.atracoes]); if (F.entrada) info.push(['🎟️', F.entrada]); if (F.patroc) info.push(['🤝', F.patroc]); if (F.contato) info.push(['📞', /^[\d\s()+\-.]{8,}$/.test(F.contato) ? foneBonito(F.contato) : F.contato]);
   var hh = (ver ? 56 : 50) * S, iy = y + hh / 2, ix = colX, iw2 = ver ? W * 0.9 : W * 0.48, limite = H - baixo - (ver ? 150 + 70 : 110 + 48) * S - 8 * S;
   info.forEach(function(it, i){ if (iy + hh / 2 > limite) return; var a = eOut((t - 0.8 - i * 0.3) / 0.4); if (a > 0){ g.save(); g.globalAlpha = a; g.translate((1 - a) * 60 * S, 0);
     var tx = it[0] + ' ' + it[1]; g.font = 'bold ' + Math.round(30 * S) + 'px ' + FONTE2; cabeTexto(g, tx, iw2 - 36 * S, 30 * S, 'bold', FONTE2); var tw = Math.min(iw2, g.measureText(tx).width + 40 * S);
@@ -309,17 +334,17 @@ async function decodificaMusica(ab){ var c = new OfflineAudioContext(2, 44100, 4
 /* ---------- editor da festa ---------- */
 var MUS_CEL = null; /* {buf, norm, nome, k} da música enviada */
 var FESTA_IA = {ult: '', t: 0, timer: null}, FVID = {};
-function novaFesta(){ editarFesta({seg: 'festa', festa: {nome: '', dia: '', hora: '', local: '', atracoes: '', entrada: '', contato: '', foto: ''}, estilo: 'carro', vozF: '', musica: {tipo: 'app', bed: ''}, linhas: null, textoEditado: false}); }
+function novaFesta(){ editarFesta({seg: 'festa', festa: {nome: '', dia: '', hora: '', local: '', atracoes: '', entrada: '', patroc: '', contato: '', foto: ''}, estilo: 'carro', vozF: '', musica: {tipo: 'app', bed: ''}, linhas: null, textoEditado: false}); }
 function editarFesta(o){
   OF = o; OF.seg = 'festa'; OF.festa = OF.festa || {}; TEMP = {}; VID = {}; FVID = {}; sujo = false; MUS_CEL = null; FESTA_IA.ult = '';
   mostra('festaEd'); var F = OF.festa;
-  ['nome', 'dia', 'hora', 'local', 'atracoes', 'entrada', 'contato'].forEach(function(k){ $('f_' + k).value = F[k] || ''; });
+  ['nome', 'dia', 'hora', 'local', 'atracoes', 'entrada', 'patroc', 'contato'].forEach(function(k){ $('f_' + k).value = F[k] || ''; });
   pintaFotoFesta(); pintaEstilos(); pintaVozesF(); pintaMusicas(); $('fVids').innerHTML = ''; $('fAudio').innerHTML = ''; $('fSt').textContent = ''; $('fIaSt').textContent = '';
   $('fApagar').classList.toggle('oculto', !OF.id);
   if (OF.musica && OF.musica.tipo == 'arq' && OF.musica.k) musGet(OF.musica.k).then(async function(ab){ if (ab && OF.musica && OF.musica.k){ try { var d = await decodificaMusica(ab); MUS_CEL = {buf: d.buf, norm: d.norm, nome: OF.musica.nome, k: OF.musica.k}; } catch (e) {} } pintaMusicas(); });
   if (!OF.linhas || !OF.linhas.length) refazTextoFesta(false); else pintaTextoFesta();
 }
-function leFesta(){ var F = OF.festa; ['nome', 'dia', 'hora', 'local', 'atracoes', 'entrada', 'contato'].forEach(function(k){ F[k] = $('f_' + k).value.trim(); }); }
+function leFesta(){ var F = OF.festa; ['nome', 'dia', 'hora', 'local', 'atracoes', 'entrada', 'patroc', 'contato'].forEach(function(k){ F[k] = $('f_' + k).value.trim(); }); }
 function pintaFotoFesta(){ var f = OF.festa.foto; $('fFotoPrev').innerHTML = f ? '<img src="' + f + '">' : '🎉'; $('fFotoTira').classList.toggle('oculto', !f); }
 function pintaEstilos(){
   $('fEstilos').innerHTML = ESTILOS_FESTA.map(function(e){ var v = VOZES_FESTA[e.voz]; return '<div class="voz est' + (OF.estilo == e.id ? ' on' : '') + '" onclick="escEstilo(\'' + e.id + '\')"><div class="tx"><b>' + e.emoji + ' ' + esc(e.nome) + '</b><small>' + esc(e.desc) + '</small><small class="vn">🎙️ ' + esc(v.nome) + ' (' + (v.sexo == 'F' ? 'voz feminina' : 'voz masculina') + ')</small></div><button class="ouvir" onclick="event.stopPropagation();ouvirEstilo(\'' + e.id + '\',this)">▶️ Ouvir amostra</button></div>'; }).join('');
@@ -337,7 +362,7 @@ window.escEstilo = function(id){ OF.estilo = id; OF.vozF = ''; if (OF.musica && 
 var OUV_F = null;
 window.ouvirEstilo = function(id, b){
   if (OUV_F){ var era = OUV_F.id; try { OUV_F.a.pause(); } catch (e) {} OUV_F = null; pintaEstilos(); if (era == id) return; }
-  var a = new Audio('festas/' + id + '.mp3?v=1'); b.textContent = '⏳ …'; OUV_F = {id: id, a: a};
+  var a = new Audio('festas/' + id + '.mp3?v=' + (estiloFesta(id).amostraV || 1)); b.textContent = '⏳ …'; OUV_F = {id: id, a: a};
   a.onplaying = function(){ b.textContent = '⏹️ Parar'; }; a.onended = function(){ if (OUV_F && OUV_F.a === a){ OUV_F = null; b.textContent = '▶️ Ouvir amostra'; } };
   a.onerror = function(){ b.textContent = '▶️ Ouvir amostra'; OUV_F = null; toast('Não tocou a amostra. Confira a internet.', '#b91c1c'); };
   a.play().catch(function(){ b.textContent = '▶️ Ouvir amostra'; });
@@ -351,7 +376,7 @@ function festaPronta(){ var F = OF.festa; return F.nome && F.dia && F.hora && F.
 function agendaIA(){ clearTimeout(FESTA_IA.timer); FESTA_IA.timer = setTimeout(function(){ if (festaPronta() && !OF.textoEditado) textoIA(true); }, 2500); }
 async function textoIA(auto){
   leFesta(); if (!festaPronta()){ if (!auto) toast('Preencha nome, dia, hora e local da festa.', '#b91c1c', 3500); return; }
-  var est = estiloFesta(OF.estilo), k = JSON.stringify([OF.festa.nome, OF.festa.dia, OF.festa.hora, OF.festa.local, OF.festa.atracoes, OF.festa.entrada, OF.festa.contato, OF.estilo]);
+  var est = estiloFesta(OF.estilo), k = JSON.stringify([OF.festa.nome, OF.festa.dia, OF.festa.hora, OF.festa.local, OF.festa.atracoes, OF.festa.entrada, OF.festa.patroc, OF.festa.contato, OF.estilo]);
   if (auto && (k == FESTA_IA.ult || Date.now() - FESTA_IA.t < 15000)) return; FESTA_IA.ult = k; FESTA_IA.t = Date.now();
   var b = $('fIA'); b.disabled = true; $('fIaSt').textContent = '🤖 A IA está escrevendo no estilo ' + est.nome + '…';
   try { var L = await iaFesta(OF.festa, est, function(m){ $('fIaSt').textContent = m; });
@@ -367,7 +392,7 @@ function validaFesta(){ leFesta(); leTextoFesta(); var F = OF.festa;
 
 /* ligações dos campos */
 (function(){
-  ['nome', 'dia', 'hora', 'local', 'atracoes', 'entrada', 'contato'].forEach(function(k){ $('f_' + k).addEventListener('input', function(){ if (!OF || OF.seg != 'festa') return; sujo = true; leFesta(); if (!OF.textoEditado){ var est = estiloFesta(OF.estilo); OF.linhas = linhasTemplate(OF.festa, est, OF.semente || 1); OF.textoIA = false; pintaTextoFesta(); agendaIA(); } }); });
+  ['nome', 'dia', 'hora', 'local', 'atracoes', 'entrada', 'patroc', 'contato'].forEach(function(k){ $('f_' + k).addEventListener('input', function(){ if (!OF || OF.seg != 'festa') return; sujo = true; leFesta(); if (!OF.textoEditado){ var est = estiloFesta(OF.estilo); OF.linhas = linhasTemplate(OF.festa, est, OF.semente || 1); OF.textoIA = false; pintaTextoFesta(); agendaIA(); } }); });
   $('fTexto').addEventListener('input', function(){ OF.textoEditado = true; sujo = true; leTextoFesta(); clearTimeout(FESTA_IA.timer); });
   $('fIA').onclick = function(){ FESTA_IA.ult = ''; OF.textoEditado = false; textoIA(false); };
   $('fRefaz').onclick = function(){ OF.semente = Math.floor(Math.random() * 1000); refazTextoFesta(false); sujo = true; toast('Texto novo pronto ✅'); };
@@ -463,3 +488,11 @@ window.compartilhaFesta = async function(f){
   if (navigator.canShare && navigator.canShare({files: [arq]})){ try { await navigator.share({files: [arq], title: OF.festa.nome, text: OF.festa.nome + ' 🎉'}); } catch (e) {} }
   else toast('Este celular não deixa compartilhar direto. Toque em ⬇️ Baixar e mande pelo WhatsApp.', '#b45309', 5000);
 };
+
+/* apito de carnaval (trinado de apito de árbitro/folia), sintetizado */
+function apito(ctx, dest, t, n){
+  for (var i = 0; i < (n || 1); i++){ var t0 = t + i * 0.32, len = i == (n || 1) - 1 ? 0.45 : 0.2, o = ctx.createOscillator(), lf = ctx.createOscillator(), lg = ctx.createGain(), g = ctx.createGain(), bp = ctx.createBiquadFilter();
+    o.type = 'sine'; o.frequency.value = 2900; lf.frequency.value = 32; lg.gain.value = 140; lf.connect(lg); lg.connect(o.frequency); bp.type = 'bandpass'; bp.frequency.value = 2900; bp.Q.value = 3;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(0.16, t0 + 0.02); g.gain.setValueAtTime(0.16, t0 + len - 0.04); g.gain.linearRampToValueAtTime(0.0001, t0 + len);
+    o.connect(bp); bp.connect(g); g.connect(dest); o.start(t0); o.stop(t0 + len + 0.02); lf.start(t0); lf.stop(t0 + len + 0.02); }
+}

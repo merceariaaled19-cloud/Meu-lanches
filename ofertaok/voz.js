@@ -168,8 +168,8 @@ function cadeiaFx(ctx, fx, destino){
   var pr = ctx.createBiquadFilter(); pr.type = 'peaking'; pr.frequency.value = 3200; pr.Q.value = 0.9; pr.gain.value = fx.pres || 0;
   var hi = ctx.createBiquadFilter(); hi.type = 'highshelf'; hi.frequency.value = 7500; hi.gain.value = fx.high || 0;
   var sh = ctx.createWaveShaper(); sh.curve = curvaDrive(fx.drive || 0); sh.oversample = '2x';
-  var co = ctx.createDynamicsCompressor(); co.threshold.value = -24; co.knee.value = 6; co.ratio.value = 4; co.attack.value = 0.004; co.release.value = 0.15;
-  var mk = ctx.createGain(); mk.gain.value = 1.5;
+  var co = ctx.createDynamicsCompressor(); co.threshold.value = fx.comp ? -32 : -24; co.knee.value = 6; co.ratio.value = fx.comp ? 8 : 4; co.attack.value = 0.004; co.release.value = 0.15;
+  var mk = ctx.createGain(); mk.gain.value = fx.comp ? 2.1 : 1.5;
   hp.connect(lo); lo.connect(mi); mi.connect(pr); pr.connect(hi); hi.connect(sh); sh.connect(co); co.connect(mk); mk.connect(destino);
   if (fx.eco){ var dl = ctx.createDelay(1); dl.delayTime.value = fx.ecoT || 0.1; var fb = ctx.createGain(); fb.gain.value = fx.eco2 || 0.2; var em = ctx.createGain(); em.gain.value = fx.eco;
     var ef = ctx.createBiquadFilter(); ef.type = 'bandpass'; ef.frequency.value = 1800; ef.Q.value = 0.5;
