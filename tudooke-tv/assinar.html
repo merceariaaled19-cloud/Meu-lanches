@@ -22,7 +22,7 @@ ol{padding-left:20px;margin:6px 0}li{margin:4px 0}
 <header><h1>🎤 TudoOkê TV</h1><p>Karaokê com nota na sua TV Box</p></header>
 <main>
 <div class="card" id="vLogin" style="display:none">
- <h2>Teste 1 dia grátis</h2>
+ <h2>Teste 3 dias grátis</h2>
  <p class="mut">Crie sua conta para ganhar o teste. Seus dados ficam salvos aqui.</p>
  <button id="bG" style="background:#fff;color:#222">Entrar com Google</button>
  <p class="mut" style="text-align:center">ou com e-mail</p>
@@ -106,11 +106,11 @@ au.onAuthStateChanged(function(u){U=u;if(unL){unL();unL=null}if(unP){unP();unP=n
  db.collection('tk_clientes').doc(u.uid).get().then(function(d){if(d.exists){CLI=d.data();app()}else{if(u.displayName)$('nome').value=u.displayName;vis('vDados')}}).catch(function(e){vis('vLogin');$('eLog').textContent='Erro: '+e.code})});
 $('bTeste').onclick=function(){var n=$('nome').value.trim(),z=nz($('zap').value),b=this;if(n.length<2){$('eDad').textContent='Digite seu nome.';return}if(z.length<12){$('eDad').textContent='Digite o WhatsApp com DDD.';return}
  b.disabled=true;$('eDad').textContent='Gerando seu teste…';var c=gcod(),bt=db.batch();
- bt.set(db.collection('licencas').doc(c),{dias:1,plano:'Teste 1 dia',cliente:n,zap:z,device:'',ativadoEm:null,criadoEm:TS(),dono:U.uid,email:U.email||''});
+ bt.set(db.collection('licencas').doc(c),{dias:3,plano:'Teste 3 dias',cliente:n,zap:z,device:'',ativadoEm:null,criadoEm:TS(),dono:U.uid,email:U.email||''});
  bt.set(db.collection('tk_clientes').doc(U.uid),{nome:n,zap:z,email:U.email||'',teste:c,criadoEm:TS()});
  bt.commit().then(function(){CLI={nome:n,zap:z,teste:c};app(c)}).catch(function(e){$('eDad').textContent='Não deu certo ('+e.code+'). Esta conta já usou o teste?'}).finally(function(){b.disabled=false})};
 function app(novo){vis('vApp');$('quem').textContent=(CLI.nome||'')+' • '+(U.email||'');
- if(novo){$('cNovo').style.display='block';$('cNovo').innerHTML='<h2>🎁 Seu teste grátis</h2><div class="cod">'+fmt(novo)+'</div><p class="mut">Vale 1 dia a partir de quando você digitar na TV Box.</p>'}
+ if(novo){$('cNovo').style.display='block';$('cNovo').innerHTML='<h2>🎁 Seu teste grátis</h2><div class="cod">'+fmt(novo)+'</div><p class="mut">Vale 3 dias a partir de quando você digitar na TV Box.</p>'}
  unL=db.collection('licencas').where('dono','==',U.uid).onSnapshot(pintaL,function(e){$('lics').textContent='Erro: '+e.code});
  unP=db.collection('tk_pagamentos').where('uid','==',U.uid).onSnapshot(pintaP,function(){});
  Promise.all([db.collection('ml_publico').doc('pix').get().then(function(d){PIX=d.exists?d.data():null}).catch(function(){}),db.collection('ml_publico').doc('tudooke_precos').get().then(function(d){aplicaPrecos(d.exists?d.data():null)}).catch(function(){})]).then(desenhaPlanos)}

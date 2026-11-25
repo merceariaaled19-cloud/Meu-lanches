@@ -29,12 +29,20 @@ button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;ga
  <button id="bE" style="width:100%">Entrar</button><p id="msg"></p>
 </div>
 <div id="app" style="display:none">
- <div class="card"><b>🔗 Link para seus clientes</b><p class="mut">A pessoa abre, faz o cadastro, ganha 1 dia grátis e o app. Depois compra pelo Pix lá mesmo.</p>
+ <div class="card" id="cApps"><b>📲 Apps para baixar</b>
+  <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">📲 App do ADM (este painel)</b> <span class="mut">is.gd/tudookeadmapp</span>
+   <div class="row" style="margin-top:6px"><button class="s" id="apAdmBx" style="flex:1 1 100%;background:#7c3aed">📲 Baixar app do ADM</button><button class="s" id="apAdmCp" style="flex:1">Copiar link</button><button class="s" id="apAdmWa" style="flex:1;background:#16a34a">WhatsApp</button></div></div>
+  <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">📲 App do revendedor</b> <span class="mut">is.gd/tudookerevendaapp</span>
+   <div class="row" style="margin-top:6px"><button class="s apRevBx" style="flex:1 1 100%;background:#7c3aed">📲 Baixar app do revendedor</button><button class="s apRevCp" style="flex:1">Copiar link</button><button class="s apRevWa" style="flex:1;background:#16a34a">WhatsApp</button></div></div>
+  <p class="mut" style="margin:0">Android: depois de baixar, abra o arquivo e toque em Instalar (se pedir, permita "instalar apps desconhecidos").</p></div>
+ <div class="card"><b>🔗 Link para seus clientes</b><p class="mut">A pessoa abre, faz o cadastro, ganha 3 dias grátis e o app. Depois compra pelo Pix lá mesmo.</p>
   <div class="row"><button class="s" id="lkCp" style="flex:1">Copiar link</button><button class="s" id="lkWa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
  <div class="card" id="cRev"><b>🤝 Revendedores</b> <span class="tag ag" id="nRevAg" style="display:none"></span>
-  <p class="mut">Revendedor compra crédito com você (Pix) e você põe o crédito aqui. Cada conta paga que ele gera desconta do crédito dele a sua parte do preço. Testes de 1 dia são livres.</p>
+  <p class="mut">Revendedor compra crédito com você (Pix) e você põe o crédito aqui. Cada conta paga que ele gera desconta do crédito dele a sua parte do preço. Testes de 3 dias são livres.</p>
   <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">🔗 Link para revendedores</b> <span class="mut" id="lkRevTxt">is.gd/tudookerevenda</span>
    <div class="row" style="margin-top:6px"><button class="s" id="lkRevCp" style="flex:1">Copiar link</button><button class="s" id="lkRevWa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
+  <div style="background:#0f0322;border-radius:10px;padding:10px;margin:8px 0"><b style="font-size:14px">📲 App do revendedor</b> <span class="mut">is.gd/tudookerevendaapp</span>
+   <div class="row" style="margin-top:6px"><button class="s apRevBx" style="flex:1 1 100%;background:#7c3aed">📲 Baixar app do revendedor</button><button class="s apRevCp" style="flex:1">Copiar link</button><button class="s apRevWa" style="flex:1;background:#16a34a">WhatsApp</button></div></div>
   <div class="row" style="flex-wrap:nowrap;align-items:end"><label style="flex:1;font-size:13px;min-width:0">Sua parte (%)<input id="rvPct" type="text" inputmode="decimal" placeholder="50"></label><label style="flex:2;font-size:13px;min-width:0">Seu WhatsApp (revendedor chama aqui)<input id="rvZap" type="tel" placeholder="92995015662"></label></div>
   <button class="s" id="rvSalva" style="width:100%;padding:10px">Salvar % e WhatsApp</button><p class="mut" id="rvMsg"></p>
   <div id="revs" class="mut">Carregando…</div>
@@ -46,7 +54,7 @@ button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;ga
   <button id="prSalva" style="width:100%">Salvar preços</button><p class="mut" id="prMsg"></p></div>
  <div class="card">
   <div class="planos">
-   <label><input type="radio" name="pl" value="1"><span>Teste<br>1 dia</span></label>
+   <label><input type="radio" name="pl" value="3"><span>Teste<br>3 dias</span></label>
    <label><input type="radio" name="pl" value="30" checked><span>Mensal<br>30 dias</span></label>
    <label><input type="radio" name="pl" value="180"><span>Semestral<br>180 dias</span></label>
    <label><input type="radio" name="pl" value="365"><span>Anual<br>365 dias</span></label>
@@ -63,7 +71,7 @@ button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;ga
 <script>
 var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
 firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)};
-var NOME={1:'Teste 1 dia',30:'Mensal',180:'Semestral',365:'Anual'},TODOS=[],ULT='';
+var NOME={1:'Teste 1 dia',3:'Teste 3 dias',30:'Mensal',180:'Semestral',365:'Anual'},TODOS=[],ULT='';
 function msg(t){$('msg').textContent=t}
 $('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});au.signInWithPopup(p).catch(function(e){if(e.code=='auth/popup-blocked'||e.code=='auth/operation-not-supported-in-this-environment')au.signInWithRedirect(p);else msg('Não entrou: '+e.code)})};
 $('bE').onclick=function(){au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){msg('Não entrou: '+e.code)})};
@@ -99,7 +107,7 @@ function pinta(){var q=$('bus').value.trim().toUpperCase().replace('-',''),n=0,a
   bt('Copiar',function(){copia(texto(x.id,x.dias,x.cliente),this)});
   bt('WhatsApp',function(){location.href=link(x)},'#16a34a');
   if(x.device){
-   bt('Renovar',function(){var p=prompt('Renovar por quantos dias? 1 = teste, 30 = mensal, 180 = semestral, 365 = anual','30');p=+p;if(!p)return;
+   bt('Renovar',function(){var p=prompt('Renovar por quantos dias? 3 = teste, 30 = mensal, 180 = semestral, 365 = anual','30');p=+p;if(!p)return;
     var up=stt=='ok'?{dias:x.dias+p}:{dias:p,ativadoEm:firebase.firestore.FieldValue.serverTimestamp()};db.collection('licencas').doc(x.id).update(up).then(function(){var nv=stt=='ok'?ve+p*864e5:Date.now()+p*864e5;if(x.zap||confirm('Mandar aviso da renovação no WhatsApp?'))location.href=zapUrl(x.zap,(x.cliente?'Olá, '+x.cliente+'! ':'')+'Sua licença do TudoOkê TV foi renovada até '+dt(nv)+'. Código: '+fmt(x.id)+'. É só fechar e abrir o app.')}).catch(function(e){alert('Erro: '+e.code)})});
    bt('Trocar box',function(){if(confirm('Soltar esse código do box atual? O cliente digita de novo no box novo e continua com os dias que faltam.'))db.collection('licencas').doc(x.id).update({device:'',ativadoEm:null,dias:Math.max(1,Math.ceil((ve-Date.now())/864e5))})});
   }
@@ -109,7 +117,7 @@ function pinta(){var q=$('bus').value.trim().toUpperCase().replace('-',''),n=0,a
  $('tN').textContent=n;$('tA').textContent=a;$('tV').textContent=v}
 
 /* ---- assinaturas pelo link ---- */
-var LINK=location.href.replace(/painel\.html.*$/,'assinar.html'),TXTL='🎤 TudoOkê TV: karaokê com nota na sua TV Box! Teste 1 dia grátis: '+LINK;
+var LINK=location.href.replace(/painel\.html.*$/,'assinar.html'),TXTL='🎤 TudoOkê TV: karaokê com nota na sua TV Box! Teste 3 dias grátis: '+LINK;
 $('lkCp').onclick=function(){copia(LINK,this)};$('lkWa').onclick=function(){location.href=zapUrl('',TXTL)};
 var PLN={30:'Mensal',180:'Semestral',365:'Anual'},unPg,PG0=-1;
 function reais(v){return 'R$ '+Number(v).toFixed(2).replace('.',',')}
@@ -142,7 +150,13 @@ $('prSalva').onclick=function(){var m=num($('prM').value),se=num($('prS').value)
 /* ---- revendedores (crédito pré-pago) ---- */
 var LKREV='https://is.gd/tudookerevenda',LKREVL=location.href.replace(/painel\.html.*$/,'revenda.html'),REVS=[],RVEN=[],RREC=[],RVAB={},unRv,RVCFG0={percentAlex:50,zapAlex:'5592995015662'},RVCFG=null,RVAG0=-1;
 $('lkRevCp').onclick=function(){copia(LKREV,this)};
-$('lkRevWa').onclick=function(){location.href=zapUrl('','🎤 Quer revender o TudoOkê TV (karaokê com nota na TV Box e TV smart)? Faça seu cadastro de revendedor aqui: '+LKREV)};
+var APREV='https://is.gd/tudookerevendaapp',APREVL='https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeRevenda.apk',APADM='https://is.gd/tudookeadmapp',APADML='https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkePainel.apk';
+$('lkRevWa').onclick=function(){location.href=zapUrl('','🎤 Quer revender o TudoOkê TV (karaokê com nota na TV Box e TV smart)?\n1) Faça seu cadastro de revendedor aqui: '+LKREV+'\n2) Baixe o app de revendedor (Android): '+APREV)};
+[].forEach.call(document.querySelectorAll('.apRevBx'),function(b){b.onclick=function(){location.href=APREVL}});
+[].forEach.call(document.querySelectorAll('.apRevCp'),function(b){b.onclick=function(){copia(APREV,this)}});
+[].forEach.call(document.querySelectorAll('.apRevWa'),function(b){b.onclick=function(){location.href=zapUrl('','📲 App de revendedor do TudoOkê TV (Android): '+APREV+'\nSe ainda não tem cadastro, faça aqui: '+LKREV)}});
+$('apAdmBx').onclick=function(){location.href=APADML};$('apAdmCp').onclick=function(){copia(APADM,this)};
+$('apAdmWa').onclick=function(){location.href=zapUrl('','📲 App do ADM do TudoOkê TV (Android): '+APADM)};
 function rc(c){return 'R$ '+(Number(c||0)/100).toFixed(2).replace('.',',')}
 function escR(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function escutaRev(){if(unRv)return;var cf=db.collection('ml_publico').doc('tudooke_revenda');
@@ -157,7 +171,7 @@ $('rvSalva').onclick=function(){var p=num($('rvPct').value),z=nz($('rvZap').valu
  db.collection('ml_publico').doc('tudooke_revenda').set({percentAlex:p,zapAlex:z,atualizadoEm:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){RVCFG={percentAlex:p,zapAlex:z};$('rvMsg').textContent='✅ Salvo. Os revendedores já veem o custo novo.'}).catch(function(e){$('rvMsg').textContent='Não salvou ('+e.code+').'}).finally(function(){b.disabled=false})};
 function pintaRev(){var B=$('revs');if(!B)return;var ag=REVS.filter(function(x){return x.status=='aguardando'}).length;$('nRevAg').style.display=ag?'inline':'none';$('nRevAg').textContent=ag+' esperando aprovação';
  if(!REVS.length){B.innerHTML='<p class="mut">Nenhum revendedor ainda. Mande o link acima.</p>';return}B.innerHTML='';
- REVS.forEach(function(r){var ven=RVEN.filter(function(v){return v.rev==r.id}),rec=RREC.filter(function(v){return v.rev==r.id}),tes=TODOS.filter(function(l){return l.revendedor==r.id&&l.dias==1}).length;
+ REVS.forEach(function(r){var ven=RVEN.filter(function(v){return v.rev==r.id}),rec=RREC.filter(function(v){return v.rev==r.id}),tes=TODOS.filter(function(l){return l.revendedor==r.id&&(l.dias==1||l.dias==3)&&!l.venda}).length;
   var vend=ven.reduce(function(a,v){return a+(v.precoC||0)},0),parte=ven.reduce(function(a,v){return a+(v.custoC||0)},0),pago=rec.reduce(function(a,v){return a+(v.valorC||0)},0);
   var d=document.createElement('div');d.className='it';var st={aguardando:['ag','Aguardando'],aprovado:['ok','Aprovado'],bloqueado:['blq','Bloqueado']}[r.status]||['ag',r.status];
   d.innerHTML='<div><b style="letter-spacing:0">'+escR(r.nome||'Sem nome')+'</b><span class="tag '+st[0]+'">'+st[1]+'</span></div><div class="mut">'+escR((r.zap||'').slice(2))+' • '+escR(r.email||'')+'</div>'+

@@ -29,7 +29,7 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
 <main>
 <div class="card" id="vLogin" style="display:none">
  <h2>Seja revendedor do TudoOkê TV</h2>
- <p class="mut">Karaokê com nota para TV Box e TV smart. Você vende para seus clientes e gera os códigos aqui. Testes de 1 dia são grátis e à vontade.</p>
+ <p class="mut">Karaokê com nota para TV Box e TV smart. Você vende para seus clientes e gera os códigos aqui. Testes de 3 dias são grátis e à vontade.</p>
  <button id="bG" class="w" style="background:#fff;color:#222">Entrar com Google</button>
  <p class="mut" style="text-align:center">ou com e-mail</p>
  <input id="em" type="email" placeholder="Seu e-mail" autocomplete="email"><input id="se" type="password" placeholder="Senha (mínimo 6)" autocomplete="current-password">
@@ -48,7 +48,7 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
 </div>
 <div id="vApp" style="display:none">
  <div class="card"><h2>💰 Seu crédito</h2><div class="saldo" id="saldo">R$ 0,00</div>
-  <p class="mut" style="text-align:center">Cada conta paga que você gera tira do seu crédito. Teste de 1 dia é grátis.</p>
+  <p class="mut" style="text-align:center">Cada conta paga que você gera tira do seu crédito. Teste de 3 dias é grátis.</p>
   <button id="bCompra" class="w verde">Comprar crédito</button>
   <div id="compraBox" style="display:none;margin-top:8px">
    <p class="mut">1) Digite quanto quer comprar. 2) Pague o Pix. 3) Avise o Alex. O crédito entra quando ele confirmar.</p>
@@ -82,8 +82,8 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
 var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
 firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)},TS=function(){return firebase.firestore.FieldValue.serverTimestamp()};
 /* Preços e percentual NÃO ficam fixos: vêm de ml_publico/tudooke_precos e ml_publico/tudooke_revenda (o Alex muda no painel dele). */
-var PLANOS=[{id:'teste',nome:'Teste 1 dia',dias:1},{id:'mensal',nome:'Mensal',dias:30},{id:'semestral',nome:'Semestral',dias:180},{id:'anual',nome:'Anual',dias:365}];
-var NOME={1:'Teste 1 dia',30:'Mensal',180:'Semestral',365:'Anual'},ZAP_ALEX0='5592995015662';
+var PLANOS=[{id:'teste',nome:'Teste 3 dias',dias:3},{id:'mensal',nome:'Mensal',dias:30},{id:'semestral',nome:'Semestral',dias:180},{id:'anual',nome:'Anual',dias:365}];
+var NOME={1:'Teste 1 dia',3:'Teste 3 dias',30:'Mensal',180:'Semestral',365:'Anual'},ZAP_ALEX0='5592995015662';
 var U=null,REV=null,PRECO=null,CFG=null,PIX=null,SEL='teste',LICS=[],VENDAS=[],RECS=[],ULT=null,ABA='v',subs=[];
 function vis(v){['vLogin','vCad','vEspera','vApp'].forEach(function(x){$(x).style.display=x==v?'block':'none'})}
 function reais(c){return 'R$ '+(Number(c||0)/100).toFixed(2).replace('.',',')}
@@ -138,8 +138,8 @@ function escutaListas(){
 
 function pintaTudo(){if(!REV||REV.status!='aprovado')return;var s=REV.saldoC||0;$('saldo').textContent=reais(s);$('saldo').className='saldo'+(s<=0?' zero':'');
  $('quem').textContent=(REV.nome||'')+' • '+(U.email||'');
- if(!pronto()){$('tabPreco').innerHTML='<div class="aviso">O Alex ainda está configurando os preços da revenda. Por enquanto dá para gerar só testes de 1 dia.</div>'}
- else{var h='<table><tr><th>Plano</th><th>Você paga</th><th>Você vende por</th></tr>';PLANOS.forEach(function(p){if(p.id=='teste')h+='<tr><td>Teste 1 dia</td><td class="v">Grátis</td><td class="v">Grátis</td></tr>';else h+='<tr><td>'+p.nome+' ('+p.dias+' dias)</td><td class="v"><b style="color:#4ade80;letter-spacing:0">'+reais(custoC(p.id))+'</b></td><td class="v">'+reais(precoC(p.id))+'</td></tr>'});$('tabPreco').innerHTML=h+'</table>'}
+ if(!pronto()){$('tabPreco').innerHTML='<div class="aviso">O Alex ainda está configurando os preços da revenda. Por enquanto dá para gerar só testes de 3 dias.</div>'}
+ else{var h='<table><tr><th>Plano</th><th>Você paga</th><th>Você vende por</th></tr>';PLANOS.forEach(function(p){if(p.id=='teste')h+='<tr><td>Teste 3 dias</td><td class="v">Grátis</td><td class="v">Grátis</td></tr>';else h+='<tr><td>'+p.nome+' ('+p.dias+' dias)</td><td class="v"><b style="color:#4ade80;letter-spacing:0">'+reais(custoC(p.id))+'</b></td><td class="v">'+reais(precoC(p.id))+'</td></tr>'});$('tabPreco').innerHTML=h+'</table>'}
  var P=$('planos');P.innerHTML='';PLANOS.forEach(function(p){var l=document.createElement('label');var pago=p.id!='teste';var sub=pago?(pronto()?'custa '+reais(custoC(p.id)):'indisponível'):'grátis';
   l.innerHTML='<input type="radio" name="pl" value="'+p.id+'"><b></b><small></small>';l.querySelector('b').textContent=p.nome+(pago?' • '+p.dias+' dias':'');l.querySelector('small').textContent=sub;
   if(p.id==SEL)l.className='sel';l.onclick=function(){SEL=p.id;[].forEach.call(P.children,function(c){c.className=''});l.className='sel';avisoSaldo()};P.appendChild(l)});avisoSaldo()}

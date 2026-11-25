@@ -2,7 +2,7 @@
     // tk_revendedores/{uid}: cadastro do revendedor (status aguardando/aprovado/bloqueado, saldoC = crédito em centavos).
     // Só admin (mlAdmin) aprova, bloqueia e põe crédito. O revendedor só tira do saldo o custo exato
     // (preço atual do plano x percentAlex de ml_publico/tudooke_revenda) junto com a venda e a licença, e o saldo nunca fica negativo.
-    // Teste de 1 dia: livre (sem custo) para revendedor aprovado.
+    // Teste de 3 dias: livre (sem custo) para revendedor aprovado.
     function tkTxt(v, mn, mx) {
       return v is string && v.size() >= mn && v.size() <= mx;
     }
@@ -79,7 +79,7 @@
         && tkTxt(request.resource.data.get('cliente', ''), 0, 40)
         && tkTxt(request.resource.data.get('zap', ''), 0, 20)
         && tkTxt(request.resource.data.get('revNome', ''), 0, 40)
-        && ((request.resource.data.dias == 1 && request.resource.data.plano == 'Teste 1 dia' && !('venda' in request.resource.data))
+        && ((request.resource.data.dias == 3 && request.resource.data.plano == 'Teste 3 dias' && !('venda' in request.resource.data))
           || (request.resource.data.venda is string
             && !exists(/databases/$(database)/documents/tk_rev_vendas/$(request.resource.data.venda))
             && getAfter(/databases/$(database)/documents/tk_rev_vendas/$(request.resource.data.venda)).data.cod == cod
