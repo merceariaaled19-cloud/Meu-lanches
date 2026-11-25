@@ -16,7 +16,7 @@ var PDB = TESTE ? {
   criaLink: function(o){ var id = OKV.novoId(); o.ativo = true; o.criadoEm = firebase.firestore.FieldValue.serverTimestamp(); return db.collection('ok_links').doc(id).set(o).then(function(){ return id; }); }
 };
 function imgOk(u){ return typeof u == 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(u) ? u : ''; }
-function msgCliente(url){ return 'Olá! 👋 Quer um comercial com locutor para as ofertas da sua loja? 🎤🛒\nToque no link, mande as fotos e os preços dos produtos que eu preparo o vídeo pra você:\n' + url; }
+function msgCliente(url){ return 'Olá! 👋 Quer um comercial com locutor para as ofertas da sua loja? 🎤\nToque no link, mande as fotos e os preços dos produtos que eu preparo o vídeo pra você:\n' + url; }
 
 /* ---------- link para o cliente ---------- */
 function pintaLinkBox(url, quem){
@@ -25,11 +25,13 @@ function pintaLinkBox(url, quem){
   $('lkCopia').onclick = function(){ copia(msgCliente(url)); };
   $('lkZap').href = 'https://wa.me/?text=' + encodeURIComponent(msgCliente(url));
 }
-$('bLinkCli').onclick = function(){ var b = $('linkBox'), abre = b.classList.contains('oculto'); b.classList.toggle('oculto', !abre); if (abre){ pintaLinkBox(CLI_CURTO, ''); $('lkNome').value = ''; $('lkLoja').value = ''; } };
+function segLink(){ var s = SEG_ID; return SEGS[s] && !SEGS[s].festa ? s : 'mercado'; }
+function linkGeral(){ var s = segLink(); return s == 'mercado' ? CLI_CURTO : CLI_BASE + '?c=alex&s=' + s; }
+$('bLinkCli').onclick = function(){ var b = $('linkBox'), abre = b.classList.contains('oculto'); b.classList.toggle('oculto', !abre); if (abre){ pintaLinkBox(linkGeral(), ''); $('lkNome').value = ''; $('lkLoja').value = ''; $('lkSeg').textContent = SEGS[SEG_ID].festa ? 'O link do cliente é para lojas mandarem produtos e preços (vai como 🛒 Mercadinho). Para outro ramo, escolha o ramo lá em cima.' : 'Ramo do link: ' + SEGS[segLink()].emoji + ' ' + segNome(segLink()) + ' (troque lá em cima se quiser).'; } };
 $('lkCria').onclick = async function(){
   var nome = $('lkNome').value.trim(), loja = $('lkLoja').value.trim(); if (!nome && !loja){ toast('Digite o nome do cliente ou da loja.', '#b91c1c'); return; }
   var b = this; b.disabled = true;
-  try { var id = await PDB.criaLink({cliente: nome.slice(0, 60), loja: loja.slice(0, 50)}); pintaLinkBox(CLI_BASE + '?c=' + id, nome || loja); toast('Link criado ✅'); }
+  try { var id = await PDB.criaLink({cliente: nome.slice(0, 60), loja: loja.slice(0, 50), seg: segLink()}); pintaLinkBox(CLI_BASE + '?c=' + id, nome || loja); toast('Link criado ✅'); }
   catch (x) { toast('Não criou o link: ' + (x.code == 'permission-denied' ? 'sem permissão (regras ainda não publicadas ou conta sem acesso).' : (x.code || x.message)), '#b91c1c', 5000); }
   b.disabled = false;
 };
@@ -64,12 +66,13 @@ window.abrePedido = async function(i){
     if (o){ toast('Abrindo o comercial deste pedido…'); editar(o); return; } }
   toast('⏳ Montando o comercial…', '#2563eb', 6000);
   var F = {}; try { F = await PDB.fotos(p.id); } catch (x) { toast('Não baixou as fotos: ' + (x.code || x.message) + '. Vou montar sem elas.', '#b45309', 5000); }
-  var prods = (p.produtos || []).slice(0, 6).map(function(x, k){ return {nome: String(x.nome || '').slice(0, 60), preco: +x.preco || null, de: +x.de || null, un: ['kg', 'un', 'pacote', 'litro', 'duzia', 'bandeja', 'caixa', 'fardo'].indexOf(x.un) >= 0 ? x.un : '', foto: '', tipoFoto: '', _f: imgOk(F[String(k)])}; });
+  var prods = (p.produtos || []).slice(0, 6).map(function(x, k){ return {nome: String(x.nome || '').slice(0, 60), preco: +x.preco || null, de: +x.de || null, un: (x.un && UN_ROT[x.un]) ? x.un : '', foto: '', tipoFoto: '', _f: imgOk(F[String(k)])}; });
   if (!prods.length) prods = [{nome: '', preco: null, de: null, un: '', foto: '', tipoFoto: ''}];
   for (var k = 0; k < prods.length; k++){ if (prods[k]._f){ try { var im = await carregaImg(prods[k]._f), c = novaTela(im.naturalWidth, im.naturalHeight); c.getContext('2d').drawImage(im, 0, 0); prods[k].foto = telaParaDado(c, 640, 110000, false); prods[k].tipoFoto = 'foto'; } catch (e) {} } }
   var fs = prods.map(function(x){ var f = x._f; delete x._f; return f; });
   var e = p.endr && typeof p.endr == 'object' ? {cep: String(p.endr.cep || ''), rua: String(p.endr.rua || ''), num: String(p.endr.num || ''), comp: String(p.endr.comp || ''), bairro: String(p.endr.bairro || ''), cidade: String(p.endr.cidade || ''), uf: String(p.endr.uf || '')} : null;
-  var of = {loja: String(p.loja || '').slice(0, 50), zap: String(p.zap || '').slice(0, 20), end: String(p.end || '').slice(0, 90), logo: imgOk(p.logo), produtos: prods, voz: 'ze', roteiro: null, roteiroEditado: false, pedidoId: p.id, cliente: p.cliente || ''};
+  var sgp = String(((p.produtos || [])[0] || {}).seg || ''); if (!SEGS[sgp] || SEGS[sgp].festa) sgp = 'mercado';
+  var of = {seg: sgp, loja: String(p.loja || '').slice(0, 50), zap: String(p.zap || '').slice(0, 20), end: String(p.end || '').slice(0, 90), logo: imgOk(p.logo), produtos: prods, voz: 'ze', roteiro: null, roteiroEditado: false, pedidoId: p.id, cliente: p.cliente || ''};
   if (e && (e.rua || e.cep || e.bairro)) of.endr = e;
   editar(of);
   /* oferece ✨ Perfeita e a foto oficial, mas deixa marcada a foto que o cliente mandou */

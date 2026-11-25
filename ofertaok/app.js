@@ -6,7 +6,7 @@ var $ = function(i){ return document.getElementById(i); };
 var db = null, au = null, U = null, OF = null, TEMP = {}, VID = {}, CHAVE = null, LOJAS = [], AC = null, ALVO = 0, OUVINDO = null;
 function toast(t, cor, ms){ var e = $('toast'); e.textContent = t; e.style.background = cor || '#16a34a'; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(function(){ e.style.display = 'none'; }, ms || 2800); }
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); }
-function mostra(id){ if (id != 'editor') paraTudo('saiu'); ['entrar', 'home', 'editor'].forEach(function(s){ $(s).classList.toggle('oculto', s != id); }); window.scrollTo(0, 0); }
+function mostra(id){ if (id != 'editor') paraTudo('saiu'); ['entrar', 'home', 'editor', 'festaEd'].forEach(function(s){ $(s).classList.toggle('oculto', s != id); }); $('segTopo').classList.toggle('oculto', id == 'entrar'); if (window.pintaSegBar) pintaSegBar(); window.scrollTo(0, 0); }
 function audioCtx(){ if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state == 'suspended') AC.resume(); return AC; }
 function hoje(){ var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
 function addD(s, n){ var d = new Date(s + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
@@ -89,14 +89,14 @@ function abreHome(){
     if (!L.length){ $('lista').innerHTML = '<p class="vazio">Nenhum comercial ainda. Toque em <b>➕ Fazer comercial novo</b>.</p>'; return; }
     window.LISTA = L;
     $('lista').innerHTML = L.map(function(o, i){ var p = (o.produtos || [])[0], d = ms(o.atualizadoEm);
-      return '<div class="item" onclick="abreOferta(' + i + ')">' + (p && p.foto ? '<img src="' + p.foto + '">' : '<div class="ph">🛒</div>') +
-        '<div><b>' + esc(o.loja || 'Sem nome') + '</b><small>' + (o.produtos || []).length + ' produto(s) • ' + esc(vozPorId(o.voz).nome) + (d ? ' • ' + new Date(d).toLocaleDateString('pt-BR') : '') + '</small>' +
+      return '<div class="item" onclick="abreOferta(' + i + ')">' + (p && p.foto ? '<img src="' + p.foto + '">' : (o.festa && o.festa.foto ? '<img src="' + o.festa.foto + '">' : '<div class="ph">' + segDe(o.seg).emoji + '</div>')) +
+        '<div><b>' + esc(o.seg == 'festa' ? ((o.festa && o.festa.nome) || 'Festa sem nome') : (o.loja || 'Sem nome')) + '</b><small>' + segDe(o.seg).emoji + ' ' + esc(segNome(o.seg || 'mercado').replace(/^Outro$/, o.segNome || 'Outro')) + ' • ' + (o.seg == 'festa' ? esc((o.festa && o.festa.dia ? o.festa.dia.split('-').reverse().join('/') : '')) : (o.produtos || []).length + ' item(ns)') + ' • ' + esc(o.seg == 'festa' ? estiloFesta(o.estilo).nome : vozPorId(o.voz).nome) + (d ? ' • ' + new Date(d).toLocaleDateString('pt-BR') : '') + '</small>' +
         (o.videos && o.videos.h ? '<br><span class="tag">📺 código ' + esc(o.videos.h.id) + '</span>' : '') + (o.anuncioId ? '<span class="tag">no TelaOkê</span>' : '') + '</div></div>'; }).join('');
   }).catch(function(e){ $('lista').innerHTML = '<p class="erro">Não carregou: ' + esc(e.code || e.message || e) + '</p>'; });
 }
-window.abreOferta = function(i){ editar(JSON.parse(JSON.stringify(window.LISTA[i]))); };
-$('bNovo').onclick = function(){ editar({loja: '', zap: '', end: '', logo: '', produtos: [{nome: '', preco: null, de: null, un: '', foto: '', tipoFoto: ''}], voz: 'ze', roteiro: null, roteiroEditado: false}); };
-$('bVoltar').onclick = function(){ if (sujo && !confirm('Sair sem salvar as mudanças?')) return; abreHome(); };
+window.abreOferta = function(i){ var o = JSON.parse(JSON.stringify(window.LISTA[i])); if (o.seg == 'festa') editarFesta(o); else editar(o); };
+$('bNovo').onclick = function(){ if (SEGS[SEG_ID].festa){ novaFesta(); return; } var sg = SEGS[SEG_ID]; editar({seg: SEG_ID, segNome: SEG_ID == 'outro' ? segOutroNome() : undefined, loja: '', zap: '', end: '', logo: '', produtos: [{nome: '', preco: null, de: null, un: sg.unPadrao || '', aPartir: false, foto: '', tipoFoto: ''}], voz: 'ze', roteiro: null, roteiroEditado: false}); };
+$('bVoltar').onclick = function(){ if (!sujo){ abreHome(); return; } confirmaSair(function(){ sujo = false; abreHome(); }, {titulo: 'Sair sem salvar?', texto: 'As mudanças deste comercial ainda não foram salvas.'}); };
 
 /* ================= endereço (CEP -> rua, bairro, cidade) ================= */
 var CAMPOS_END = ['eCep', 'eRua', 'eBairro', 'eCidade', 'eUf', 'eNum', 'eComp'];
@@ -158,7 +158,7 @@ window.addEventListener('pagehide', function(){ paraTudo('oculto'); });
 /* ================= editor ================= */
 var sujo = false;
 function editar(o){
-  OF = o; TEMP = {}; VID = {}; sujo = false; mostra('editor'); $('pedAviso').classList.add('oculto');
+  if (!o.seg || !SEGS[o.seg] || SEGS[o.seg].festa) o.seg = o.seg && SEGS[o.seg] && !SEGS[o.seg].festa ? o.seg : 'mercado'; OF = o; TEMP = {}; VID = {}; sujo = false; mostra('editor'); aplicaSegEditor(false); $('pedAviso').classList.add('oculto');
   $('eLoja').value = o.loja || ''; $('eZap').value = o.zap || ''; pintaEndereco();
   pintaLogo(); pintaProdutos(); pintaVozes(); if (!OF.roteiro) refazRoteiro(); else pintaRoteiro();
   $('vids').innerHTML = ''; $('tCod').innerHTML = OF.videos && OF.videos.h ? caixaCodigo(OF.videos.h.id) : ''; $('tSt').textContent = '';
@@ -172,25 +172,31 @@ $('fLogo').onchange = async function(){ var f = this.files[0]; this.value = ''; 
 
 /* ---------- produtos ---------- */
 function pintaProdutos(){
+  var SG = segAtual();
   $('prods').innerHTML = OF.produtos.map(function(p, i){
     return '<div class="prod" id="pr' + i + '"><div class="tp"><span>Produto ' + (i + 1) + '</span>' + (OF.produtos.length > 1 ? '<button class="bt cz peq" style="width:auto;margin:0" onclick="tiraProd(' + i + ')">🗑️</button>' : '') + '</div>' +
-      '<div class="pfoto" id="pf' + i + '">' + (p.foto ? '<img src="' + p.foto + '">' : '📦') + '</div>' +
+      '<div class="pfoto" id="pf' + i + '">' + (p.foto ? '<img src="' + p.foto + '">' : (SG.vt && SG.vt.emoji || '📦')) + '</div>' +
       '<div class="lin"><button class="bt peq" onclick="pedeFoto(' + i + ',1)">📷 Tirar foto</button><button class="bt cz peq" onclick="pedeFoto(' + i + ',0)">🖼️ Galeria</button></div>' +
       '<div class="st" id="ps' + i + '"></div><div class="esc oculto" id="pe' + i + '"></div>' +
-      '<label class="l">Nome do produto *</label><input id="pn' + i + '" maxlength="60" value="' + esc(p.nome) + '" placeholder="Ex.: Arroz Tio João 5kg">' +
-      '<button class="bt cz peq" onclick="procuraOficial(' + i + ')">🔎 Procurar foto oficial pelo nome</button>' +
-      '<div class="lin"><div><label class="l">Preço (R$) *</label><input id="pp' + i + '" inputmode="decimal" value="' + (p.preco ? precoBR(p.preco) : '') + '" placeholder="7,99"></div>' +
+      '<label class="l">' + esc(cap(SG.item)) + ' *</label><input id="pn' + i + '" maxlength="60" value="' + esc(p.nome) + '" placeholder="' + esc(SG.exItem) + '">' +
+      (SG.oficial ? '<button class="bt cz peq" onclick="procuraOficial(' + i + ')">🔎 Procurar foto oficial pelo nome</button>' : '') +
+      '<div class="lin"><div><label class="l">Preço (R$) *</label><input id="pp' + i + '" inputmode="decimal" value="' + (p.preco ? precoBR(p.preco) : '') + '" placeholder="' + esc(SG.exPreco) + '"></div>' +
       '<div><label class="l">Preço antigo <small class="d">(de)</small></label><input id="pd' + i + '" inputmode="decimal" value="' + (p.de ? precoBR(p.de) : '') + '" placeholder="opcional"></div></div>' +
-      '<label class="l">Vende por</label><select id="pu' + i + '">' + [['', '— (não falar)'], ['kg', 'quilo (kg)'], ['un', 'unidade'], ['pacote', 'pacote'], ['litro', 'litro'], ['duzia', 'dúzia'], ['bandeja', 'bandeja'], ['caixa', 'caixa'], ['fardo', 'fardo']].map(function(u){ return '<option value="' + u[0] + '"' + (p.un == u[0] ? ' selected' : '') + '>' + u[1] + '</option>'; }).join('') + '</select></div>';
+      '<label class="l">' + (SG.saude || SG.item == 'serviço' ? 'Cobrado por' : 'Vende por') + '</label><select id="pu' + i + '">' + unLista(p.un).map(function(u){ return '<option value="' + u + '"' + ((p.un || '') == u ? ' selected' : '') + '>' + esc(UN_ROT[u] || u) + '</option>'; }).join('') + '</select>' +
+      '<label class="chk" style="font-size:15px;padding:8px"><input type="checkbox" id="pa' + i + '"' + (p.aPartir ? ' checked' : '') + '> Falar "a partir de"</label>' +
+      (SG.parcelas || p.pn ? '<div class="lin"><div><label class="l">Parcelas <small class="d">(opcional)</small></label><input id="pq' + i + '" inputmode="numeric" maxlength="3" value="' + (p.pn || '') + '" placeholder="Ex.: 10"></div><div><label class="l">Valor da parcela</label><input id="pv' + i + '" inputmode="decimal" value="' + (p.pv ? precoBR(p.pv) : '') + '" placeholder="Ex.: 99,90"></div></div>' : '') + '</div>';
   }).join('');
   OF.produtos.forEach(function(p, i){
-    ['pn', 'pp', 'pd', 'pu'].forEach(function(k){ $(k + i).addEventListener(k == 'pu' ? 'change' : 'input', function(){ leProd(i); sujo = true; mudouDados(); }); });
+    ['pn', 'pp', 'pd', 'pu', 'pa', 'pq', 'pv'].forEach(function(k){ if ($(k + i)) $(k + i).addEventListener(k == 'pu' || k == 'pa' ? 'change' : 'input', function(){ leProd(i); sujo = true; mudouDados(); }); });
     if (TEMP[i]) pintaEscolha(i);
   });
   $('bAddProd').classList.toggle('oculto', OF.produtos.length >= 6);
 }
-function leProd(i){ var p = OF.produtos[i]; p.nome = $('pn' + i).value.trim(); p.preco = lePreco($('pp' + i).value) || null; p.de = lePreco($('pd' + i).value) || null; p.un = $('pu' + i).value; }
-$('bAddProd').onclick = function(){ if (OF.produtos.length >= 6) return; OF.produtos.push({nome: '', preco: null, de: null, un: '', foto: '', tipoFoto: ''}); sujo = true; pintaProdutos(); mudouDados(); setTimeout(function(){ $('pr' + (OF.produtos.length - 1)).scrollIntoView({behavior: 'smooth'}); }, 50); };
+function leProd(i){ var p = OF.produtos[i]; p.nome = $('pn' + i).value.trim(); p.preco = lePreco($('pp' + i).value) || null; p.de = lePreco($('pd' + i).value) || null; p.un = $('pu' + i).value; p.aPartir = !!($('pa' + i) && $('pa' + i).checked);
+  if ($('pq' + i)){ var q = parseInt($('pq' + i).value, 10); p.pn = q > 1 && q <= 120 ? q : null; p.pv = lePreco($('pv' + i).value) || null; } }
+function cap(t){ t = String(t || ''); return t.charAt(0).toUpperCase() + t.slice(1); }
+function unLista(atual){ var l = (segAtual().un || SEGS.mercado.un).slice(); if (l.indexOf('') < 0) l.push(''); if (atual && l.indexOf(atual) < 0 && UN_ROT[atual]) l.push(atual); return l; }
+$('bAddProd').onclick = function(){ if (OF.produtos.length >= 6) return; OF.produtos.push({nome: '', preco: null, de: null, un: segAtual().unPadrao || '', aPartir: false, foto: '', tipoFoto: ''}); sujo = true; pintaProdutos(); mudouDados(); setTimeout(function(){ $('pr' + (OF.produtos.length - 1)).scrollIntoView({behavior: 'smooth'}); }, 50); };
 window.tiraProd = function(i){ if (!confirm('Tirar o produto ' + (i + 1) + '?')) return; OF.produtos.splice(i, 1); var nt = {}; Object.keys(TEMP).forEach(function(k){ k = +k; if (k < i) nt[k] = TEMP[k]; else if (k > i) nt[k - 1] = TEMP[k]; }); TEMP = nt; sujo = true; pintaProdutos(); mudouDados(); };
 window.pedeFoto = function(i, cam){ ALVO = i; (cam ? $('fCam') : $('fGal')).click(); };
 $('fCam').onchange = $('fGal').onchange = function(){ var f = this.files[0]; this.value = ''; if (f) trataFoto(ALVO, f); };
@@ -225,7 +231,7 @@ function melhorPadrao(i){
 async function trataFoto(i, arq, manterSua){
   var c; try { c = await arquivoParaTela(arq, 1024); } catch (e) { toast('Não abriu essa foto.', '#b91c1c'); return; }
   if (TEMP[i] && TEMP[i].rodando) paraRobo('trocou');
-  var T = TEMP[i] = {ops: [], esc: 0, tocou: !!manterSua, orig: c, status: 'Procurando a foto oficial… Para tirar o fundo, toque em ✨ Perfeita.'};
+  var T = TEMP[i] = {ops: [], esc: 0, tocou: !!manterSua, orig: c, status: segAtual().oficial ? 'Procurando a foto oficial… Para tirar o fundo, toque em ✨ Perfeita.' : 'Foto pronta! Para tirar o fundo, toque em ✨ Perfeita.'};
   addOp(i, {tipo: 'foto', c: c, titulo: '📷 Sua foto', base: true}); aplicaEscolha(i);
   T.ops.push({botao: true, perf: true, titulo: '✨ Perfeita', rotulo: 'Toque para tirar o fundo'}); pintaEscolha(i); sujo = true;
   await buscaParaProduto(i, c);
@@ -233,7 +239,7 @@ async function trataFoto(i, arq, manterSua){
   var escolhida = T.ops[T.esc]; T.ops = T.ops.filter(function(o){ return !o.carregando || o.perf; }); T.esc = Math.max(0, T.ops.indexOf(escolhida));
   melhorPadrao(i);
   var nOf = T.ops.filter(function(o){ return o.tipo == 'oficial'; }).length;
-  if (!T.rodando) T.status = (nOf ? 'Achei ' + nOf + ' foto(s) oficial(is). ' : 'Não achei foto oficial deste produto. ') + 'Toque na foto que ficou melhor (a marcada ✓ é a que vai no vídeo).' + (T.avisoPerf ? ' ' + T.avisoPerf : (T.ops.some(function(o){ return o.tipo == 'recorte'; }) ? '' : ' ✨ Perfeita tira o fundo.'));
+  if (!T.rodando) T.status = (nOf ? 'Achei ' + nOf + ' foto(s) oficial(is). ' : segAtual().oficial ? 'Não achei foto oficial deste produto. ' : '') + 'Toque na foto que ficou melhor (a marcada ✓ é a que vai no vídeo).' + (T.avisoPerf ? ' ' + T.avisoPerf : (T.ops.some(function(o){ return o.tipo == 'recorte'; }) ? '' : ' ✨ Perfeita tira o fundo.'));
   pintaEscolha(i);
 }
 /* ✨ Perfeita: só quando o usuário toca. Robô num worker; se falhar, melhora a luz da própria foto */
@@ -262,6 +268,7 @@ window.fazPerfeita = async function(i){
 };
 /* identifica o produto (código de barras > nome digitado > IA lendo o rótulo) e busca fotos oficiais */
 async function buscaParaProduto(i, c){
+  if (!segAtual().oficial) return; /* catálogos oficiais são de mercado/pet; outros ramos usam a foto da pessoa (+ ✨ Perfeita) */
   var T = TEMP[i], ean = '', nome = $('pn' + i) ? $('pn' + i).value.trim() : ''; T.fonteNome = nome ? 'digitado' : ''; T.marca = '';
   if (c){ ean = await leCodigoBarras(c); if (ean){ T.fonteNome = 'ean'; T.status = 'Li o código de barras ' + ean + '. Procurando a foto oficial…'; pintaEscolha(i); } }
   if (!ean && !nome && c){ T.status = 'Lendo o rótulo do produto…'; pintaEscolha(i);
@@ -304,7 +311,7 @@ window.ouvir = async function(id, b){
 function refazRoteiro(){ OF.roteiro = montaRoteiro(OF); OF.roteiroEditado = false; pintaRoteiro(); }
 function pintaRoteiro(){
   var r = OF.roteiro, h = '<label class="l">Abertura</label><textarea id="r_a">' + esc(r.abre) + '</textarea>';
-  OF.produtos.forEach(function(p, i){ h += '<label class="l">Produto ' + (i + 1) + (p.nome ? ' — ' + esc(p.nome) : '') + '</label><textarea id="r_' + i + '">' + esc(r.itens[i] || '') + '</textarea>'; });
+  OF.produtos.forEach(function(p, i){ h += '<label class="l">' + cap(segAtual().item) + ' ' + (i + 1) + (p.nome ? ' — ' + esc(p.nome) : '') + '</label><textarea id="r_' + i + '">' + esc(r.itens[i] || '') + '</textarea>'; });
   h += '<label class="l">Final</label><textarea id="r_f">' + esc(r.fecha) + '</textarea>'; $('rot').innerHTML = h;
   [].forEach.call($('rot').querySelectorAll('textarea'), function(t){ t.addEventListener('input', function(){ leRoteiro(); OF.roteiroEditado = true; sujo = true; }); });
 }
@@ -312,13 +319,20 @@ function leRoteiro(){ var r = OF.roteiro; r.abre = $('r_a').value.trim(); r.fech
 var MD_T = null;
 function mudouDados(){ clearTimeout(MD_T); MD_T = setTimeout(function(){
   if (!OF.roteiroEditado || (OF.roteiro && OF.roteiro.itens.length != OF.produtos.length)){ OF.roteiro = montaRoteiro(OF, OF.semente || (OF.semente = Math.floor(Math.random() * 1000))); OF.roteiroEditado = false; pintaRoteiro(); } }, 500); }
+$('bRotIA').onclick = async function(){
+  var e = valida(); if (e){ toast(e, '#b91c1c', 4000); return; }
+  var b = this, st0 = b.textContent; b.disabled = true; $('rotSt').textContent = '🤖 A IA está escrevendo para ' + segNome(OF.seg) + '…';
+  try { var r = await iaRoteiro(OF, function(m){ $('rotSt').textContent = m; }); OF.roteiro = r; OF.roteiroEditado = true; pintaRoteiro(); sujo = true; $('rotSt').textContent = '✅ Texto da IA pronto. Pode mudar as palavras à vontade.'; }
+  catch (x) { $('rotSt').textContent = '❌ A IA não respondeu agora (' + (x.message == 'sem-chave' ? 'chave da IA não salva no ADM do Meu Lanche' : x.message) + '). O texto pronto continua aí.'; }
+  b.disabled = false; b.textContent = st0;
+};
 $('bRot').onclick = function(){ OF.semente = Math.floor(Math.random() * 1000); OF.roteiro = montaRoteiro(OF, OF.semente); OF.roteiroEditado = false; pintaRoteiro(); sujo = true; toast('Texto novo pronto ✅'); };
 
 /* ---------- validação ---------- */
 function valida(){
   OF.loja = $('eLoja').value.trim(); OF.zap = $('eZap').value.trim(); leEndereco(); OF.produtos.forEach(function(p, i){ leProd(i); }); leRoteiro();
   if (OF.loja.length < 2) return 'Digite o nome da loja (passo 1).';
-  for (var i = 0; i < OF.produtos.length; i++){ var p = OF.produtos[i]; if (!p.nome) return 'Digite o nome do produto ' + (i + 1) + '.'; if (!(p.preco > 0)) return 'Digite o preço do produto ' + (i + 1) + ' (ex.: 7,99).'; }
+  var it = segAtual().item || 'produto'; for (var i = 0; i < OF.produtos.length; i++){ var p = OF.produtos[i]; if (!p.nome) return 'Digite o nome do ' + it + ' ' + (i + 1) + '.'; if (!(p.preco > 0)) return 'Digite o preço do ' + it + ' ' + (i + 1) + ' (ex.: ' + segAtual().exPreco + ').'; }
   return '';
 }
 
@@ -353,12 +367,12 @@ async function gerar(o){
   if (o.vozId){ OF.voz = o.vozId; sujo = true; pintaVozes(); }
   var ac = audioCtx(), b = $('bGerar'), G = GERA = {cancelado: false}; b.disabled = true; GRAVANDO = true; $('gerando').classList.remove('oculto'); $('gAv').classList.remove('oculto'); $('vids').innerHTML = '';
   acoes('<button class="bt cz peq" onclick="cancelaGerar()">✖️ Cancelar</button>'); $('gerando').scrollIntoView({block: 'center', behavior: 'smooth'});
-  var voz = vozPorId(OF.voz), wav = null;
+  var voz = vozComSeg(vozPorId(OF.voz), OF.seg), wav = null; aplicaVisualSeg(OF.seg); limpaCacheVideo();
   try {
     var r = OF.roteiro, partes = [r.abre].concat(r.itens).concat([r.fecha]), texto = partes.join('\n\n'), mix;
     etapa(0); st('🎙️ Gerando a voz de ' + voz.nome + '…', 0.03); await respira();
     if (!o.semVoz){
-      var ck = 'v5|' + voz.id + '|' + hash(texto); wav = await idbGet(ck);
+      var ck = 'v5|' + voz.id + '|' + (OF.seg && OF.seg != 'mercado' ? OF.seg + '|' : '') + hash(texto); wav = await idbGet(ck);
       if (!wav){
         G.t0v = Date.now(); var key = await comTempo(pegaChave(), 15000, 'sem-chave');
         wav = await geraFala(texto, voz, key, function(m){ st(m, 0.03 + Math.min(0.2, (Date.now() - G.t0v) / 150000 * 0.2)); });

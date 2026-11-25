@@ -1,4 +1,7 @@
 /* Oferta Okê — desenho animado do comercial (canvas) e gravação do vídeo */
+/* cores e textos do segmento (seg.js troca antes de gravar) */
+var VC = {a: '#d0101f', b: '#7a0010', c: '#ff3b3b'};
+var VT = {t1: 'OFERTAS', t2: 'IMPERDÍVEIS!', f1: 'OFERTAS DA SEMANA', f2: 'SÓ NO', f2b: 'APROVEITE', fim: 'CORRE PRO', f3: 'CORRE QUE ACABA', aviso: 'Ofertas válidas enquanto durarem os estoques.', emoji: '📦'};
 var FONTE = '"Anton", "Arial Black", Impact, sans-serif', FONTE2 = '"Poppins", Arial, sans-serif';
 function eOut(x){ x = Math.min(1, Math.max(0, x)); return 1 - Math.pow(1 - x, 3); }
 function eBack(x){ x = Math.min(1, Math.max(0, x)); var c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
@@ -12,8 +15,8 @@ function textoContorno(g, txt, x, y, cor, contorno, lw){ g.lineJoin = 'round'; i
 /* fundo: vermelho com raios girando, faixas e brilhos */
 var FUNDO_CACHE = {};
 function fundoBase(W, H){
-  var k = W + 'x' + H; if (FUNDO_CACHE[k]) return FUNDO_CACHE[k];
-  var c = novaTela(W, H), g = c.getContext('2d'), gr = g.createRadialGradient(W / 2, H * 0.45, 10, W / 2, H * 0.45, Math.max(W, H) * 0.8); gr.addColorStop(0, '#ff3b3b'); gr.addColorStop(0.55, '#d0101f'); gr.addColorStop(1, '#7a0010');
+  var k = W + 'x' + H + VC.a + VC.b; if (FUNDO_CACHE[k]) return FUNDO_CACHE[k];
+  var c = novaTela(W, H), g = c.getContext('2d'), gr = g.createRadialGradient(W / 2, H * 0.45, 10, W / 2, H * 0.45, Math.max(W, H) * 0.8); gr.addColorStop(0, VC.c); gr.addColorStop(0.55, VC.a); gr.addColorStop(1, VC.b);
   g.fillStyle = gr; g.fillRect(0, 0, W, H); FUNDO_CACHE = {}; FUNDO_CACHE[k] = c; return c;
 }
 function fundo(g, W, H, t, S){
@@ -25,9 +28,9 @@ function fundo(g, W, H, t, S){
     g.fillStyle = 'rgba(255,255,255,' + a2.toFixed(2) + ')'; estrela(g, sx, sy, 6 * S, 2 * S, 4, t + k); g.fill(); }
 }
 function faixaTopo(g, W, H, S, loja, t){
-  var h = 74 * S; g.fillStyle = '#ffd400'; g.fillRect(0, 0, W, h); g.fillStyle = '#7a0010'; g.fillRect(0, h, W, 8 * S);
+  var h = 74 * S; g.fillStyle = '#ffd400'; g.fillRect(0, 0, W, h); g.fillStyle = VC.b; g.fillRect(0, h, W, 8 * S);
   g.save(); g.beginPath(); g.rect(0, 0, W, h); g.clip(); g.fillStyle = 'rgba(255,255,255,.35)'; var x = ((t * 0.5) % 1.6 - 0.3) * W; g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 60 * S, 0); g.lineTo(x + 20 * S, h); g.lineTo(x - 40 * S, h); g.fill(); g.restore();
-  g.textAlign = 'center'; g.textBaseline = 'middle'; var tm = cabeTexto(g, loja.toUpperCase(), W - 40 * S, 50 * S); textoContorno(g, loja.toUpperCase(), W / 2, h / 2 + 2 * S, '#c8001a', null);
+  g.textAlign = 'center'; g.textBaseline = 'middle'; var tm = cabeTexto(g, loja.toUpperCase(), W - 40 * S, 50 * S); textoContorno(g, loja.toUpperCase(), W / 2, h / 2 + 2 * S, VC.a, null);
 }
 function faixaBaixo(g, W, H, S, t, txt){
   var h = 52 * S, y = H - h; g.fillStyle = '#1b0006'; g.fillRect(0, y, W, h); g.fillStyle = '#ffd400'; g.fillRect(0, y, W, 5 * S);
@@ -40,22 +43,27 @@ function etiquetaPreco(g, cx, cy, R, p, t, ap){
   g.save(); g.translate(cx, cy); g.scale(s, s); g.rotate(-0.08);
   g.save(); g.rotate(t * 0.6); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = R * 0.12; g.shadowOffsetY = R * 0.05; g.fillStyle = '#ffd400'; estrela(g, 0, 0, R, R * 0.84, 22, 0); g.fill(); g.restore();
   g.fillStyle = '#ffe866'; g.beginPath(); g.arc(0, 0, R * 0.74, 0, Math.PI * 2); g.fill();
-  var v = (Math.round((+p.preco || 0) * 100) / 100).toFixed(2).split('.'), re = v[0], ce = ',' + v[1];
-  g.textBaseline = 'alphabetic'; g.textAlign = 'left'; g.fillStyle = '#d0101f';
-  var tamR = R * (re.length >= 3 ? 0.62 : re.length == 2 ? 0.82 : 0.95); g.font = Math.round(tamR) + 'px ' + FONTE; var wR = g.measureText(re).width;
-  g.font = Math.round(R * 0.38) + 'px ' + FONTE; var wC = g.measureText(ce).width; g.font = Math.round(R * 0.22) + 'px ' + FONTE; var wS = g.measureText('R$').width;
-  var tot = wS + R * 0.04 + wR + R * 0.02 + Math.max(wC, R * 0.3), x0 = -tot / 2, base = tamR * 0.34;
-  g.fillStyle = '#7a0010'; g.font = Math.round(R * 0.22) + 'px ' + FONTE; g.fillText('R$', x0, base - tamR * 0.46);
-  g.fillStyle = '#d0101f'; g.font = Math.round(tamR) + 'px ' + FONTE; g.fillText(re, x0 + wS + R * 0.04, base);
+  var v = (Math.round((+p.preco || 0) * 100) / 100).toFixed(2).split('.'), re = v[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.'), ce = ',' + v[1];
+  g.textBaseline = 'alphabetic'; g.textAlign = 'left'; g.fillStyle = VC.a;
+  var tamR = R * (re.length >= 3 ? 0.62 : re.length == 2 ? 0.82 : 0.95), wR, wC, wS, tot;
+  for (var vz = 0; vz < 12; vz++){ g.font = Math.round(tamR) + 'px ' + FONTE; wR = g.measureText(re).width;
+    g.font = Math.round(R * 0.38) + 'px ' + FONTE; wC = g.measureText(ce).width; g.font = Math.round(R * 0.22) + 'px ' + FONTE; wS = g.measureText('R$').width;
+    tot = wS + R * 0.04 + wR + R * 0.02 + Math.max(wC, R * 0.3); if (tot <= R * 1.38) break; tamR *= 0.9; }
+  var x0 = -tot / 2, base = tamR * 0.34;
+  if (p.aPartir){ g.fillStyle = VC.b; g.textAlign = 'center'; g.font = 'bold ' + Math.round(R * 0.13) + 'px ' + FONTE2; cabeTexto(g, 'A PARTIR DE', R * 1.0, R * 0.13, 'bold', FONTE2); g.fillText('A PARTIR DE', 0, -R * 0.5); g.textAlign = 'left'; }
+  g.fillStyle = VC.b; g.font = Math.round(R * 0.22) + 'px ' + FONTE; g.fillText('R$', x0, base - tamR * 0.46);
+  g.fillStyle = VC.a; g.font = Math.round(tamR) + 'px ' + FONTE; g.fillText(re, x0 + wS + R * 0.04, base);
   g.font = Math.round(R * 0.38) + 'px ' + FONTE; g.fillText(ce, x0 + wS + R * 0.06 + wR, base - tamR * 0.4);
-  var un = UNI_TAG[p.un || ''] || ''; if (un){ g.fillStyle = '#7a0010'; g.font = Math.round(R * 0.17) + 'px ' + FONTE2; g.font = 'bold ' + g.font; g.textAlign = 'center'; g.fillText(un.toUpperCase(), 0, base + R * 0.26); }
+  var un = UNI_TAG[p.un || ''] || ''; if (un){ g.fillStyle = VC.b; g.font = 'bold ' + Math.round(R * 0.17) + 'px ' + FONTE2; g.textAlign = 'center'; cabeTexto(g, un.toUpperCase(), R * 1.2, R * 0.17, 'bold', FONTE2); g.fillText(un.toUpperCase(), 0, base + R * 0.26); }
+  if (p.pn > 1 && p.pv > 0){ var tp = 'OU ' + p.pn + 'x DE R$ ' + precoBR(p.pv).replace(/\B(?=(\d{3})+(?!\d),)/g, '.'); g.font = 'bold ' + Math.round(R * 0.16) + 'px ' + FONTE2; cabeTexto(g, tp, R * 1.9, R * 0.16, 'bold', FONTE2);
+    var tw = g.measureText(tp).width + R * 0.2, th = R * 0.26; g.fillStyle = '#1b0006'; rr(g, -tw / 2, R * 0.86, tw, th, th / 2); g.fill(); g.fillStyle = '#ffd400'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(tp, 0, R * 0.86 + th / 2 + 1); }
   g.restore();
 }
 function seloDe(g, x, y, S, p, ap){
   if (!(p.de && +p.de > +p.preco) || ap <= 0) return; var a = eBack(ap);
   g.save(); g.translate(x, y); g.scale(a, a); g.rotate(-0.12); var w = 210 * S, h = 62 * S; g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.3)'; g.shadowBlur = 10 * S; rr(g, -w / 2, -h / 2, w, h, 12 * S); g.fill(); g.shadowBlur = 0;
   g.fillStyle = '#333'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = Math.round(30 * S) + 'px ' + FONTE; var tx = 'DE R$ ' + precoBR(p.de); cabeTexto(g, tx, w - 20 * S, 30 * S); g.fillText(tx, 0, 2 * S);
-  g.strokeStyle = '#d0101f'; g.lineWidth = 5 * S; g.beginPath(); g.moveTo(-w * 0.42, h * 0.18); g.lineTo(w * 0.42, -h * 0.18); g.stroke(); g.restore();
+  g.strokeStyle = VC.a; g.lineWidth = 5 * S; g.beginPath(); g.moveTo(-w * 0.42, h * 0.18); g.lineTo(w * 0.42, -h * 0.18); g.stroke(); g.restore();
 }
 function cartaoProdutoCru(g, x, y, w, h, img, tipo, S, t){
   g.save(); g.shadowColor = 'rgba(0,0,0,.4)'; g.shadowBlur = 30 * S; g.shadowOffsetY = 12 * S; g.fillStyle = '#fff'; rr(g, x, y, w, h, 28 * S); g.fill(); g.restore();
@@ -66,13 +74,14 @@ function cartaoProdutoCru(g, x, y, w, h, img, tipo, S, t){
     else { var m = tipo == 'recorte' ? 0.8 : 0.88, k2 = Math.min(w * m / iw, h * m / ih) * (1 + 0.025 * Math.sin(t * 2)), dw = iw * k2, dh = ih * k2, dx = x + (w - dw) / 2, dy = y + (h - dh) / 2 - (tipo == 'recorte' ? h * 0.03 : 0);
       if (tipo == 'recorte'){ g.fillStyle = 'rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(x + w / 2, dy + dh + 6 * S, dw * 0.42, 14 * S, 0, 0, Math.PI * 2); g.fill(); g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 18 * S; g.shadowOffsetY = 8 * S; }
       g.drawImage(img, dx, dy, dw, dh); } }
+  else { g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = Math.round(Math.min(w, h) * 0.45) + 'px sans-serif'; g.fillText(VT.emoji || '📦', x + w / 2, y + h / 2); }
   g.restore();
 }
 /* o cartão é desenhado uma vez numa tela guardada e depois só copiado (bem mais leve no celular) */
 var CARTAO_CACHE = [], CARTAO_ID = 0;
 function cartaoProduto(g, x, y, w, h, img, tipo, S, t){
   if (img && !img.__okid) img.__okid = ++CARTAO_ID;
-  var k = (img ? img.__okid : 0) + '|' + Math.round(w) + 'x' + Math.round(h) + '|' + tipo, c = null;
+  var k = (img ? img.__okid : 0) + '|' + (img ? '' : VT.emoji) + '|' + Math.round(w) + 'x' + Math.round(h) + '|' + tipo, c = null;
   for (var i = 0; i < CARTAO_CACHE.length; i++) if (CARTAO_CACHE[i].k == k){ c = CARTAO_CACHE[i].c; break; }
   var pad = Math.ceil(50 * S);
   if (!c){ c = novaTela(w + pad * 2, h + pad * 2); cartaoProdutoCru(c.getContext("2d"), pad, pad, w, h, img, tipo, S, 0); CARTAO_CACHE.push({k: k, c: c}); if (CARTAO_CACHE.length > 14) CARTAO_CACHE.shift(); }
@@ -91,6 +100,7 @@ function faixaNome(g, cx, cy, maxW, S, nome, ap){
 
 /* desenha um quadro */
 function desenhaQuadro(g, W, H, t, P){
+  if (P.festa && window.desenhaFesta) return desenhaFesta(g, W, H, t, P);
   var S = Math.min(W, H) / 720, ver = H > W, of = P.of, cena = P.cenas[0];
   for (var i = 0; i < P.cenas.length; i++) if (t >= P.cenas[i].t0) cena = P.cenas[i];
   fundo(g, W, H, t, S);
@@ -98,11 +108,11 @@ function desenhaQuadro(g, W, H, t, P){
   if (cena.tipo == 'abre'){
     var a = eBack(u / 0.6); g.save(); g.translate(W / 2, H * 0.42); g.scale(a, a); g.rotate(Math.sin(t * 3) * 0.03);
     g.fillStyle = '#ffd400'; estrela(g, 0, 0, 300 * S, 250 * S, 26, t * 0.5); g.fill();
-    g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = Math.round(150 * S) + 'px ' + FONTE; textoContorno(g, 'OFERTAS', 0, -30 * S, '#d0101f', '#fff', 14 * S);
-    g.font = Math.round(56 * S) + 'px ' + FONTE; textoContorno(g, 'IMPERDÍVEIS!', 0, 80 * S, '#1b0006', null); g.restore();
+    g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = Math.round(150 * S) + 'px ' + FONTE; cabeTexto(g, VT.t1, 560 * S, 150 * S); textoContorno(g, VT.t1, 0, -30 * S, VC.a, '#fff', 14 * S);
+    g.font = Math.round(56 * S) + 'px ' + FONTE; cabeTexto(g, VT.t2, 520 * S, 56 * S); textoContorno(g, VT.t2, 0, 80 * S, '#1b0006', null); g.restore();
     var b = eBack((u - 0.5) / 0.5); if (b > 0){ g.save(); g.translate(W / 2, H * (ver ? 0.72 : 0.83)); g.scale(b, b); g.textAlign = 'center'; g.textBaseline = 'middle';
-      var tm = cabeTexto(g, loja.toUpperCase(), W * 0.86, 80 * S); textoContorno(g, loja.toUpperCase(), 0, 0, '#fff', '#7a0010', 10 * S); g.restore(); }
-    faixaBaixo(g, W, H, S, t, 'OFERTAS DA SEMANA ★ ' + loja.toUpperCase()); return;
+      var tm = cabeTexto(g, loja.toUpperCase(), W * 0.86, 80 * S); textoContorno(g, loja.toUpperCase(), 0, 0, '#fff', VC.b, 10 * S); g.restore(); }
+    faixaBaixo(g, W, H, S, t, VT.f1 + ' ★ ' + loja.toUpperCase()); return;
   }
   if (cena.tipo == 'prod'){
     var p = of.produtos[cena.i] || {}, img = P.imgs[cena.i], ent = eBack(u / 0.5), sai = Math.max(0, (u - (d - 0.25)) / 0.25), lado = cena.i % 2 ? 1 : -1;
@@ -117,7 +127,7 @@ function desenhaQuadro(g, W, H, t, P){
       etiquetaPreco(g, px, py, pr, p, t, apr);
       if (apr > 0.6){ for (var k = 0; k < 8; k++){ var an = k / 8 * Math.PI * 2 + t, rd = pr * (1.12 + 0.08 * Math.sin(t * 5 + k)); g.fillStyle = 'rgba(255,255,255,.85)'; estrela(g, px + Math.cos(an) * rd, py + Math.sin(an) * rd, 9 * S, 3 * S, 4, t * 2); g.fill(); } } }
     var n = of.produtos.length; if (n > 1){ for (var j = 0; j < n; j++){ g.fillStyle = j == cena.i ? '#ffd400' : 'rgba(255,255,255,.45)'; g.beginPath(); g.arc(W / 2 + (j - (n - 1) / 2) * 26 * S, H - baixo - 18 * S, 7 * S, 0, Math.PI * 2); g.fill(); } }
-    faixaBaixo(g, W, H, S, t, 'SÓ NO ' + loja.toUpperCase() + ' ★ APROVEITE');
+    faixaBaixo(g, W, H, S, t, VT.f2 + ' ' + loja.toUpperCase() + ' ★ ' + VT.f2b);
     var fl = 1 - u / 0.15; if (fl > 0){ g.fillStyle = 'rgba(255,255,255,' + (fl * 0.6).toFixed(2) + ')'; g.fillRect(0, 0, W, H); }
     return;
   }
@@ -125,15 +135,15 @@ function desenhaQuadro(g, W, H, t, P){
   var e = eBack(u / 0.55), y = H * (ver ? 0.25 : 0.2); g.textAlign = 'center'; g.textBaseline = 'middle';
   if (P.logo){ var lr = (ver ? 110 : 85) * S * e; g.save(); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 20 * S; g.fillStyle = '#fff'; g.beginPath(); g.arc(W / 2, y, lr, 0, Math.PI * 2); g.fill(); g.restore();
     g.save(); g.beginPath(); g.arc(W / 2, y, lr * 0.92, 0, Math.PI * 2); g.clip(); var li = P.logo, lk = Math.max(lr * 2 / li.naturalWidth, lr * 2 / li.naturalHeight); g.drawImage(li, W / 2 - li.naturalWidth * lk / 2, y - li.naturalHeight * lk / 2, li.naturalWidth * lk, li.naturalHeight * lk); g.restore(); y += lr + 70 * S; }
-  else { g.save(); g.translate(W / 2, y); g.scale(e, e); g.font = Math.round(60 * S) + 'px ' + FONTE; textoContorno(g, 'CORRE PRO', 0, 0, '#ffd400', '#7a0010', 8 * S); g.restore(); y += 90 * S; }
+  else { g.save(); g.translate(W / 2, y); g.scale(e, e); g.font = Math.round(60 * S) + 'px ' + FONTE; cabeTexto(g, VT.fim, W * 0.86, 60 * S); textoContorno(g, VT.fim, 0, 0, '#ffd400', VC.b, 8 * S); g.restore(); y += 90 * S; }
   g.save(); g.translate(W / 2, y); var s2 = eBack((u - 0.2) / 0.5) * (1 + 0.03 * Math.sin(t * 6)); g.scale(s2, s2); g.font = Math.round(100 * S) + 'px ' + FONTE;
   var tl = cabeTexto(g, loja.toUpperCase(), W * 0.9, 110 * S), ls = [loja.toUpperCase()]; if (tl < 60 * S){ g.font = Math.round(80 * S) + 'px ' + FONTE; ls = quebra(g, loja.toUpperCase(), W * 0.88).slice(0, 2); tl = 80 * S; ls.forEach(function(l){ tl = Math.min(tl, cabeTexto(g, l, W * 0.88, 80 * S)); }); }
-  g.font = Math.round(tl) + 'px ' + FONTE; ls.forEach(function(l, i){ textoContorno(g, l, 0, (i - (ls.length - 1) / 2) * tl * 1.1, '#fff', '#7a0010', 10 * S); }); g.restore(); y += tl * 0.6 * ls.length + 60 * S;
+  g.font = Math.round(tl) + 'px ' + FONTE; ls.forEach(function(l, i){ textoContorno(g, l, 0, (i - (ls.length - 1) / 2) * tl * 1.1, '#fff', VC.b, 10 * S); }); g.restore(); y += tl * 0.6 * ls.length + 60 * S;
   var info = []; if (of.end) info.push(['📍', of.end]); if (of.zap) info.push(['📞', foneBonito(of.zap)]);
   info.forEach(function(it, i){ var a3 = eOut((u - 0.6 - i * 0.25) / 0.4); if (a3 <= 0) return; g.save(); g.globalAlpha = a3; g.font = 'bold ' + Math.round(34 * S) + 'px ' + FONTE2; cabeTexto(g, it[0] + ' ' + it[1], W * 0.86, 34 * S, 'bold', FONTE2);
     var tw = g.measureText(it[0] + ' ' + it[1]).width + 40 * S, hh = 58 * S; g.fillStyle = it[0] == '📞' ? '#16a34a' : 'rgba(0,0,0,.35)'; rr(g, W / 2 - tw / 2, y - hh / 2, tw, hh, hh / 2); g.fill(); g.fillStyle = '#fff'; g.fillText(it[0] + ' ' + it[1], W / 2, y + 2 * S); g.restore(); y += 74 * S; });
-  g.font = Math.round(22 * S) + 'px ' + FONTE2; g.fillStyle = 'rgba(255,255,255,.85)'; g.fillText('Ofertas válidas enquanto durarem os estoques.', W / 2, H - baixo - 30 * S);
-  faixaBaixo(g, W, H, S, t, 'CORRE QUE ACABA ★ ' + loja.toUpperCase());
+  g.font = Math.round(22 * S) + 'px ' + FONTE2; g.fillStyle = 'rgba(255,255,255,.85)'; cabeTexto(g, VT.aviso, W * 0.92, 22 * S, '', FONTE2); g.fillText(VT.aviso, W / 2, H - baixo - 30 * S);
+  faixaBaixo(g, W, H, S, t, VT.f3 + ' ★ ' + loja.toUpperCase());
 }
 function foneBonito(z){ z = String(z || '').replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, ''); if (z.length == 11) return '(' + z.slice(0, 2) + ') ' + z.slice(2, 7) + '-' + z.slice(7); if (z.length == 10) return '(' + z.slice(0, 2) + ') ' + z.slice(2, 6) + '-' + z.slice(6); return z; }
 

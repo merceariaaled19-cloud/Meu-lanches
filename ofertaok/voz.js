@@ -21,10 +21,10 @@ var VOZ_ANTIGA = {cida: 'kelly'};
 /* instruções de estilo no formato que o Gemini TTS NÃO lê em voz alta (na v4 ele lia "Fale como..." e atrasava tudo) */
 function promptTTS(voz, texto){
   return '# AUDIO PROFILE: ' + voz.perfil + '\n' +
-    "## THE SCENE: A sound truck (carro de som) driving through a busy Brazilian neighborhood, announcing the supermarket's big sale on a loudspeaker.\n" +
+    '## THE SCENE: ' + (voz.cena || "A sound truck (carro de som) driving through a busy Brazilian neighborhood, announcing the supermarket's big sale on a loudspeaker.") + '\n' +
     "### DIRECTOR'S NOTES\n" +
-    'Style: Extremely excited Brazilian supermarket sale announcer ("olha a promoção!"), very high energy, a big smile you can hear, shouting the deals with joy, punchy emphasis on product names and prices.\n' +
-    'Pace: Fast and lively, never dragging. Make a clear pause of about one second between each line of the transcript.\n' +
+    'Style: ' + (voz.notas || 'Extremely excited Brazilian supermarket sale announcer ("olha a promoção!"), very high energy, a big smile you can hear, shouting the deals with joy, punchy emphasis on product names and prices.') + '\n' +
+    'Pace: ' + (voz.ritmo || 'Fast and lively, never dragging.') + ' Make a clear pause of about one second between each line of the transcript.\n' +
     'Accent: Brazilian Portuguese (Brazil), popular and friendly.\n' +
     'Only speak the transcript below, exactly as written. Never read these notes aloud.\n' +
     '#### TRANSCRIPT\n' + texto;

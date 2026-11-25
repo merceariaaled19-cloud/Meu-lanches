@@ -59,10 +59,20 @@ a.bt{text-decoration:none}
 .badge{display:inline-block;background:#ffd400;color:#1b0006;border-radius:20px;padding:2px 10px;font-size:15px;font-weight:900;vertical-align:middle}
 .tag.novo{background:#ffd400;color:#1b0006}.tag.am{background:#fff3b0;color:#5b4500}.item.ped.novo{box-shadow:0 0 0 3px #ffd400,0 4px 14px rgba(0,0,0,.25)}
 .item.ped .ph{width:44px;height:44px;font-size:24px}.pacs{display:flex;flex-direction:column;gap:4px;flex:none}.pacs .bt{margin:0;width:48px;padding:8px;font-size:18px;box-shadow:0 3px 0 #7a0010}.pacs .bt.vd{box-shadow:0 3px 0 #0d6b30}.pacs .bt.cz{box-shadow:0 3px 0 #c9b9bb}
+.segtopo{position:sticky;top:63px;z-index:19;background:rgba(40,0,8,.94);backdrop-filter:blur(6px);padding:8px 0 6px;border-bottom:2px solid rgba(255,212,0,.5)}
+.segtopo .lbl{font-size:13px;font-weight:700;color:#ffd400;padding:0 14px 4px;max-width:760px;margin:0 auto}
+.segbar{display:flex;gap:8px;overflow-x:auto;padding:2px 12px 6px;scrollbar-width:none;max-width:760px;margin:0 auto}.segbar::-webkit-scrollbar{display:none}
+.segb{flex:none;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;border-radius:22px;padding:9px 14px;font:inherit;font-size:15px;font-weight:700;white-space:nowrap;cursor:pointer}
+.segb.on{background:#ffd400;color:#1b0006;border-color:#ffd400;box-shadow:0 0 0 2px #fff}
+#segOutro{max-width:760px;margin:4px auto 0;padding:0 12px;display:flex;gap:8px}#segOutro input{font-size:16px;padding:8px 10px}
+.voz.est .tx b{font-size:16px}.voz.est small.vn{color:#7a0010;font-weight:700;margin-top:4px}
+.legenda{background:#1b0006;color:#ffd400;border-radius:12px;padding:12px;font-weight:900;font-size:18px;text-align:center;min-height:52px}
 .op.perf{border:3px dashed #ffd400;background:#fff7d6}.op.perf .sp{color:#5b4500;font-size:13px;font-weight:900}
 </style><script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=1"></script>
 </head><body>
 <header><img src="icon-192.png" alt=""><h1>OFERTA <span>OKÊ</span></h1><button id="bSair" class="oculto">Sair</button></header>
+<div class="segtopo oculto" id="segTopo"><div class="lbl" id="segLbl">Seu ramo:</div><nav class="segbar" id="segBar" aria-label="Escolha o ramo"></nav>
+  <div id="segOutro" class="oculto"><input id="segOutroTx" maxlength="40" placeholder="Qual é o seu ramo? Ex.: Floricultura" oninput="salvaOutroNome(this.value)" onchange="pintaSegBar()"></div></div>
 <main>
 <section id="entrar" class="oculto">
   <img src="icon-512.png" alt="Oferta Okê"><h2>OFERTA OKÊ</h2><p>Faça comerciais de ofertas com locutor, para WhatsApp, Instagram e TV.</p>
@@ -82,7 +92,7 @@ a.bt{text-decoration:none}
   <button class="bt az" id="bLinkCli">🔗 Link para o cliente</button>
   <div class="card oculto" id="linkBox"><h2>🔗 Link para o cliente</h2>
     <p class="st" style="margin-top:0">Mande este link no WhatsApp. O cliente coloca as fotos e os preços dos produtos e o pedido aparece aqui em <b>📥 Pedidos dos clientes</b>.</p>
-    <div id="lkSai"></div>
+    <p class="st" id="lkSeg" style="font-weight:700;color:#1b0006"></p><div id="lkSai"></div>
     <label class="l">Link só para um cliente <small class="d">(opcional: já vem com o nome da loja)</small></label>
     <input id="lkNome" maxlength="60" placeholder="Nome do cliente (ex.: Seu João)" style="margin-bottom:6px"><input id="lkLoja" maxlength="50" placeholder="Nome da loja dele (opcional)">
     <button class="bt cz peq" id="lkCria">➕ Criar link deste cliente</button>
@@ -115,8 +125,8 @@ a.bt{text-decoration:none}
     <div class="lin" style="align-items:center"><div id="logoPrev" class="pfoto" style="max-width:90px;font-size:34px;margin:0">🏪</div><button class="bt cz peq" id="bLogo">🖼️ Escolher logo</button><button class="bt cz peq oculto" id="bLogoTira">✖ Tirar</button></div>
   </div>
 
-  <div class="card"><h2><span class="num">2</span> Os produtos</h2>
-    <p class="st" style="margin-top:0">Tire a foto do produto. O app deixa a foto bonita e também procura a foto oficial do produto. Você toca na que achar melhor.</p>
+  <div class="card"><h2><span class="num">2</span> <span id="tItens">Os produtos</span></h2>
+    <p class="st" style="margin-top:0" id="dItens">Tire a foto do produto. O app deixa a foto bonita e também procura a foto oficial do produto. Você toca na que achar melhor.</p>
     <div id="prods"></div>
     <button class="bt am" id="bAddProd">➕ Adicionar produto</button>
   </div>
@@ -128,7 +138,7 @@ a.bt{text-decoration:none}
   <div class="card roteiro"><h2><span class="num">4</span> O que o locutor vai falar</h2>
     <p class="st" style="margin-top:0">Já vem pronto, com o preço por extenso. Pode mudar as palavras se quiser.</p>
     <div id="rot"></div>
-    <button class="bt cz peq" id="bRot">🔄 Fazer outro texto</button>
+    <div class="lin"><button class="bt cz peq" id="bRot">🔄 Fazer outro texto</button><button class="bt az peq" id="bRotIA">🤖 Escrever com IA</button></div><div class="st" id="rotSt"></div>
   </div>
 
   <div class="card"><h2><span class="num">5</span> O vídeo</h2>
@@ -151,15 +161,58 @@ a.bt{text-decoration:none}
   <button class="bt vd" id="bSalvar">💾 Salvar comercial</button>
   <button class="bt cz peq" id="bApagar">🗑️ Apagar este comercial</button>
 </section>
+<section id="festaEd" class="oculto">
+  <button class="bt cz peq" id="fVoltar" style="max-width:220px">⬅️ Meus comerciais</button>
+  <div class="card"><h2><span class="num">1</span> A festa</h2>
+    <label class="l">Nome da festa ou evento *</label><input id="f_nome" maxlength="60" placeholder="Ex.: Festa do Açaí / Aniversário da Ana / Culto da Família">
+    <div class="lin"><div><label class="l">Dia *</label><input id="f_dia" type="date"></div><div><label class="l">Hora *</label><input id="f_hora" type="time" step="900"></div></div>
+    <label class="l">Local *</label><input id="f_local" maxlength="80" placeholder="Ex.: Quadra do Bairro, Rua das Flores, 120">
+    <label class="l">Atrações <small class="d">(opcional)</small></label><input id="f_atracoes" maxlength="100" placeholder="Ex.: Banda Forró Quente e DJ da casa">
+    <label class="l">Entrada / valor <small class="d">(opcional)</small></label><input id="f_entrada" maxlength="60" placeholder="Ex.: R$ 20 / Entrada gratuita / Mulher free até 23h">
+    <label class="l">Contato <small class="d">(opcional: WhatsApp ou onde comprar)</small></label><input id="f_contato" maxlength="60" placeholder="Ex.: (92) 99999-9999">
+    <label class="l">Foto ou arte da festa <small class="d">(opcional, aparece no vídeo)</small></label>
+    <div class="lin" style="align-items:center"><div id="fFotoPrev" class="pfoto" style="max-width:110px;font-size:40px;margin:0">🎉</div><button class="bt cz peq" id="fFotoBt">🖼️ Escolher foto</button><button class="bt cz peq oculto" id="fFotoTira">✖ Tirar</button></div>
+  </div>
+  <div class="card"><h2><span class="num">2</span> Estilo do locutor</h2>
+    <p class="st" style="margin-top:0">Toque em ▶️ para ouvir a amostra de cada um. O estilo muda o jeito de falar, o texto e os efeitos.</p>
+    <div class="vozes" id="fEstilos"></div>
+    <label class="l">Trocar a voz <small class="d">(opcional)</small></label><select id="fVoz"></select>
+  </div>
+  <div class="card"><h2><span class="num">3</span> Música de fundo</h2>
+    <select id="fMus"></select>
+    <div class="lin"><button class="bt cz peq" id="fMusOuvir">▶️ Ouvir a música</button><button class="bt am peq" id="fMusEnviar">📁 Usar música do celular</button></div>
+    <div class="st" id="fMusSt">A música abaixa sozinha quando o locutor fala e sobe no final.</div>
+  </div>
+  <div class="card roteiro"><h2><span class="num">4</span> O que o locutor vai falar</h2>
+    <p class="st" style="margin-top:0">O app escreve sozinho com os dados da festa. Mude o que quiser: <b>cada linha vira uma legenda</b>.</p>
+    <textarea id="fTexto" style="min-height:230px;font-size:17px;line-height:1.4"></textarea>
+    <div class="lin"><button class="bt az peq" id="fIA">🤖 Escrever com IA</button><button class="bt cz peq" id="fRefaz">🔄 Outro texto</button></div>
+    <div class="st" id="fIaSt"></div>
+  </div>
+  <div class="card"><h2><span class="num">5</span> Gerar o anúncio</h2>
+    <p class="st" style="margin-top:0">Sempre sai o 🎧 áudio. Marque se quer também o vídeo com a arte da festa e a legenda.</p>
+    <label class="chk"><input type="checkbox" id="ffV" checked> 📱 Vídeo celular (em pé) — WhatsApp, Status, Reels</label>
+    <label class="chk"><input type="checkbox" id="ffH"> 📺 Vídeo TV (deitado)</label>
+    <button class="bt" id="fGerar" style="font-size:22px;padding:20px">🎙️ Gerar o anúncio</button>
+    <div id="fGerando" class="oculto"><div class="st" id="fSt" style="font-weight:700;color:#1b0006" aria-live="polite"></div><div class="prog"><i id="fPr"></i></div><div class="aviso">⚠️ Deixe esta tela aberta até terminar.</div><div class="lin gac" id="fAc"></div></div>
+    <div id="fAudio"></div><div id="fVids"></div>
+  </div>
+  <button class="bt vd" id="fSalvar">💾 Salvar anúncio</button>
+  <button class="bt cz peq" id="fApagar">🗑️ Apagar este anúncio</button>
+</section>
 </main>
 <input type="file" id="fCam" accept="image/*" capture="environment" class="oculto">
 <input type="file" id="fGal" accept="image/*" class="oculto">
 <input type="file" id="fLogo" accept="image/*" class="oculto">
+<input type="file" id="fFotoArq" accept="image/*" class="oculto">
+<input type="file" id="fMusArq" accept="audio/*" class="oculto">
 <div id="toast"></div>
 <script src="okv.js?v=2"></script>
-<script src="voz.js?v=5"></script>
+<script src="voz.js?v=6"></script>
 <script src="foto.js?v=3"></script>
-<script src="video.js?v=3"></script>
-<script src="app.js?v=9"></script>
-<script src="pedidos.js?v=1"></script>
+<script src="video.js?v=4"></script>
+<script src="seg.js?v=1"></script>
+<script src="app.js?v=10"></script>
+<script src="pedidos.js?v=2"></script>
+<script src="festa.js?v=1"></script>
 </body></html>

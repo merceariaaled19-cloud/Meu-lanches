@@ -12,6 +12,31 @@ function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(
 function precoBR(v){ return (Math.round((+v || 0) * 100) / 100).toFixed(2).replace('.', ','); }
 function lePreco(s){ s = String(s || '').replace(/[^\d,\.]/g, ''); if (!s) return NaN; if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.'); return parseFloat(s); }
 
+
+/* ---------- ramo da loja (o link pode vir com seg; o geral aceita ?s=) ---------- */
+var UNS = {kg: 'quilo (kg)', un: 'unidade', pacote: 'pacote', litro: 'litro', duzia: 'dúzia', bandeja: 'bandeja', caixa: 'caixa', fardo: 'fardo', mes: 'por mês', trimestre: 'trimestre', semestre: 'semestre', ano: 'plano anual', aula: 'por aula', diaria: 'diária', dia: 'por dia', semana: 'por semana', hora: 'por hora', fds: 'fim de semana',
+  m2: 'metro quadrado (m²)', m3: 'metro cúbico (m³)', saco: 'saco', milheiro: 'milheiro', metro: 'metro', barra: 'barra', lata: 'lata', consulta: 'consulta', sessao: 'sessão', exame: 'exame', procedimento: 'procedimento', servico: 'serviço', combo: 'combo', porcao: 'porção', prato: 'prato', peca: 'peça', conjunto: 'conjunto', par: 'par', banho: 'banho', avista: 'à vista', pessoa: 'por pessoa', pacote2: 'pacote'};
+/* [emoji, título, nome do item, ex. loja, ex. item, ex. preço, unidades, rótulo da unidade] */
+var CSEG = {
+  mercado: ['🛒', 'Seus produtos', 'produto', 'Ex.: Mercadinho Bom Preço', 'Ex.: Arroz Tio João 5kg', '7,99', 'kg un pacote litro duzia bandeja caixa fardo', 'Vende por'],
+  veiculos: ['🚗', 'Seus veículos', 'veículo', 'Ex.: Center Car Veículos', 'Ex.: Onix 1.0 LT 2021', '69.900,00', 'avista', 'Condição'],
+  academia: ['💪', 'Seus planos', 'plano', 'Ex.: Academia Força Total', 'Ex.: Plano mensal musculação', '89,90', 'mes trimestre semestre ano aula diaria', 'Cobrado'],
+  aluguel: ['🏠', 'O que você aluga', 'item', 'Ex.: Imobiliária Lar Feliz', 'Ex.: Casa 2 quartos no Centro', '1.200,00', 'mes dia diaria semana hora fds', 'Cobrado'],
+  construcao: ['🧱', 'Seus produtos', 'produto', 'Ex.: Casa do Construtor', 'Ex.: Cimento CP II 50kg', '36,90', 'un saco m2 m3 metro barra milheiro lata kg', 'Vende por'],
+  clinica: ['🩺', 'Seus serviços', 'serviço', 'Ex.: Clínica Bem Viver', 'Ex.: Consulta com clínico geral', '120,00', 'consulta exame sessao procedimento', 'Cobrado por'],
+  salao: ['💇', 'Seus serviços', 'serviço', 'Ex.: Barbearia do Léo', 'Ex.: Corte + barba', '45,00', 'servico sessao pacote2', 'Cobrado por'],
+  lanchonete: ['🍔', 'Seu cardápio', 'item', 'Ex.: Lanchonete Sabor da Esquina', 'Ex.: X-Tudo + refri', '24,90', 'un combo porcao prato kg', 'Vende por'],
+  roupas: ['👗', 'Suas peças', 'peça', 'Ex.: Moda Bella', 'Ex.: Vestido midi floral', '79,90', 'peca conjunto par', 'Vende por'],
+  pet: ['🐾', 'Produtos e serviços', 'item', 'Ex.: Pet Shop Amigo Fiel', 'Ex.: Ração 15kg / Banho e tosa', '139,90', 'un kg pacote banho servico consulta', 'Vende por'],
+  eletronicos: ['📱', 'Seus produtos', 'produto', 'Ex.: Cell Center', 'Ex.: Galaxy A15 128GB', '999,00', 'un avista', 'Vende por'],
+  oficina: ['🔧', 'Seus serviços', 'serviço', 'Ex.: Auto Mecânica do Zé', 'Ex.: Troca de óleo + filtro', '149,90', 'servico hora peca', 'Cobrado por'],
+  outro: ['⭐', 'Produtos e serviços', 'item', 'Ex.: Nome do seu negócio', 'Ex.: Nome do produto ou serviço', '50,00', 'un servico mes dia hora pacote2 kg pessoa', 'Vende por']};
+var SEG = ((location.search.match(/[?&]s=([a-z]{3,15})/) || [])[1] || 'mercado'); if (!CSEG[SEG]) SEG = 'mercado';
+function cs(){ return CSEG[SEG] || CSEG.mercado; }
+function aplicaSegCli(){ var c = cs(), pl = {produto: 'dos produtos', 'serviço': 'dos serviços', plano: 'dos planos', 'veículo': 'dos veículos', 'peça': 'das peças'}[c[2]] || 'dos itens';
+  $('tProds').textContent = c[0] + ' ' + c[1]; $('cLoja').placeholder = c[3]; $('bAdd').textContent = '➕ Mais um' + (c[2] == 'peça' ? 'a peça' : ' ' + c[2]);
+  $('ola').innerHTML = $('ola').innerHTML.replace(/dos produtos|dos itens|dos serviços|dos planos|dos veículos|das peças/, pl); }
+
 /* ---------- dados (real ou teste) ---------- */
 var DB = TESTE ? {
   link: function(c){ var L = JSON.parse(localStorage.getItem('okteste_links') || '{}'); return Promise.resolve(c == 'alex' ? {ativo: true} : (L[c] || null)); },
@@ -49,22 +74,23 @@ async function comprime(arq, lado, alvo){
 }
 
 /* ---------- produtos ---------- */
+function cap(t){ t = String(t || ''); return t.charAt(0).toUpperCase() + t.slice(1); }
 function novoProd(){ return {nome: '', preco: '', de: '', un: '', foto: ''}; }
 function lePs(){ PRODS.forEach(function(p, i){ if (!$('pn' + i)) return; p.nome = $('pn' + i).value; p.preco = $('pp' + i).value; p.de = $('pd' + i).value; p.un = $('pu' + i).value; }); }
 function pinta(){
   $('prods').innerHTML = PRODS.map(function(p, i){
-    return '<div class="prod" id="pr' + i + '"><div class="tp"><span>Produto ' + (i + 1) + '</span>' + (PRODS.length > 1 ? '<button type="button" class="bt cz peq" style="width:auto;margin:0" onclick="tira(' + i + ')">🗑️ Tirar</button>' : '') + '</div>' +
-      '<div class="pfoto" id="pf' + i + '">' + (p.foto ? '<img src="' + p.foto + '" alt="">' : '📦') + '</div>' +
+    return '<div class="prod" id="pr' + i + '"><div class="tp"><span>' + cap(cs()[2]) + ' ' + (i + 1) + '</span>' + (PRODS.length > 1 ? '<button type="button" class="bt cz peq" style="width:auto;margin:0" onclick="tira(' + i + ')">🗑️ Tirar</button>' : '') + '</div>' +
+      '<div class="pfoto" id="pf' + i + '">' + (p.foto ? '<img src="' + p.foto + '" alt="">' : cs()[0]) + '</div>' +
       '<div class="lin"><button type="button" class="bt peq" onclick="pede(' + i + ',1)">📷 Tirar foto</button><button type="button" class="bt cz peq" onclick="pede(' + i + ',0)">🖼️ Galeria</button></div>' +
       '<div class="st" id="ps' + i + '"></div>' +
-      '<label class="l">Nome do produto *</label><input id="pn' + i + '" maxlength="60" value="' + esc(p.nome) + '" placeholder="Ex.: Arroz Tio João 5kg">' +
-      '<div class="lin"><div><label class="l">Preço R$ *</label><input id="pp' + i + '" inputmode="decimal" maxlength="10" value="' + esc(p.preco) + '" placeholder="7,99"></div>' +
+      '<label class="l">Nome do ' + esc(cs()[2]) + ' *</label><input id="pn' + i + '" maxlength="60" value="' + esc(p.nome) + '" placeholder="' + esc(cs()[4]) + '">' +
+      '<div class="lin"><div><label class="l">Preço R$ *</label><input id="pp' + i + '" inputmode="decimal" maxlength="10" value="' + esc(p.preco) + '" placeholder="' + esc(cs()[5]) + '"></div>' +
       '<div><label class="l">Antes era <small class="d">(opcional)</small></label><input id="pd' + i + '" inputmode="decimal" maxlength="10" value="' + esc(p.de) + '" placeholder="9,99"></div></div>' +
-      '<label class="l">Vende por</label><select id="pu' + i + '">' + [['', '— escolha (opcional)'], ['kg', 'quilo (kg)'], ['un', 'unidade'], ['pacote', 'pacote'], ['litro', 'litro'], ['duzia', 'dúzia'], ['bandeja', 'bandeja'], ['caixa', 'caixa'], ['fardo', 'fardo']].map(function(u){ return '<option value="' + u[0] + '"' + (p.un == u[0] ? ' selected' : '') + '>' + u[1] + '</option>'; }).join('') + '</select></div>';
+      '<label class="l">' + cs()[7] + '</label><select id="pu' + i + '">' + [['', '— escolha (opcional)']].concat(cs()[6].split(' ').map(function(u){ return [u, UNS[u] || u]; })).map(function(u){ return '<option value="' + u[0] + '"' + (p.un == u[0] ? ' selected' : '') + '>' + u[1] + '</option>'; }).join('') + '</select></div>';
   }).join('');
   $('bAdd').classList.toggle('oculto', PRODS.length >= 6);
 }
-window.tira = function(i){ lePs(); if (!confirm('Tirar o produto ' + (i + 1) + '?')) return; PRODS.splice(i, 1); pinta(); };
+window.tira = function(i){ lePs(); if (!confirm('Tirar o ' + cs()[2] + ' ' + (i + 1) + '?')) return; PRODS.splice(i, 1); pinta(); };
 window.pede = function(i, cam){ lePs(); ALVO = i; (cam ? $('fCam') : $('fGal')).click(); };
 $('bAdd').onclick = function(){ lePs(); if (PRODS.length >= 6) return; PRODS.push(novoProd()); pinta(); setTimeout(function(){ $('pr' + (PRODS.length - 1)).scrollIntoView({behavior: 'smooth'}); }, 50); };
 $('fCam').onchange = $('fGal').onchange = async function(){
@@ -102,12 +128,12 @@ $('form').onsubmit = async function(ev){
   for (var i = 0; i < PRODS.length; i++){
     var p = PRODS[i], nome = p.nome.trim(), pr = lePreco(p.preco), de = lePreco(p.de);
     if (!nome && !(pr > 0) && !p.foto) continue; /* produto vazio: ignora */
-    if (!nome){ erro('Digite o nome do produto ' + (i + 1) + '.'); $('pn' + i).focus(); return; }
-    if (!(pr > 0) || pr > 99999){ erro('Digite o preço do produto ' + (i + 1) + ' (ex.: 7,99).'); $('pp' + i).focus(); return; }
+    if (!nome){ erro('Digite o nome do ' + cs()[2] + ' ' + (i + 1) + '.'); $('pn' + i).focus(); return; }
+    if (!(pr > 0) || pr > 9999999){ erro('Digite o preço do ' + cs()[2] + ' ' + (i + 1) + ' (ex.: ' + cs()[5] + ').'); $('pp' + i).focus(); return; }
     if (p.foto) fotos[String(prods.length)] = p.foto;
-    prods.push({nome: nome.slice(0, 60), preco: Math.round(pr * 100) / 100, de: de > pr && de < 99999 ? Math.round(de * 100) / 100 : null, un: p.un || '', temFoto: !!p.foto});
+    prods.push({nome: nome.slice(0, 60), preco: Math.round(pr * 100) / 100, de: de > pr && de < 9999999 ? Math.round(de * 100) / 100 : null, un: p.un || '', temFoto: !!p.foto, seg: SEG});
   }
-  if (!prods.length){ erro('Coloque pelo menos 1 produto com nome e preço.'); return; }
+  if (!prods.length){ erro('Coloque pelo menos 1 ' + cs()[2] + ' com nome e preço.'); return; }
   var endr = {cep: $('cCep').value.trim(), rua: $('cRua').value.trim(), num: $('cNum').value.trim(), comp: '', bairro: $('cBairro').value.trim(), cidade: $('cCidade').value.trim(), uf: $('cUf').value.trim().toUpperCase().slice(0, 2)};
   var end = endr.rua; if (endr.num) end += (end ? ', ' : '') + endr.num; if (endr.bairro) end += (end ? ' - ' : '') + endr.bairro;
   var ped = {codigo: COD, cliente: (LINK && LINK.cliente || '').slice(0, 60), loja: loja.slice(0, 50), zap: zap.slice(0, 20), end: end.slice(0, 90), endr: endr, logo: LOGO, produtos: prods, nFotos: prods.length, status: 'novo'};
@@ -131,7 +157,7 @@ try { var g = JSON.parse(localStorage.getItem('ok_cliente') || 'null'); if (g){ 
 DB.link(COD).then(function(L){
   $('carregando').classList.add('oculto');
   if (!L || L.ativo === false){ $('invalido').classList.remove('oculto'); return; }
-  LINK = L; if (L.loja && !$('cLoja').value) $('cLoja').value = L.loja;
+  LINK = L; if (L.seg && CSEG[L.seg]) SEG = L.seg; aplicaSegCli(); pinta(); if (L.loja && !$('cLoja').value) $('cLoja').value = L.loja;
   if (L.cliente) $('ola').innerHTML = 'Olá, <b>' + esc(L.cliente) + '</b>! 👋<br>' + $('ola').innerHTML;
   $('form').classList.remove('oculto');
-}).catch(function(){ $('carregando').classList.add('oculto'); LINK = {}; $('form').classList.remove('oculto'); /* se não conseguiu ler o link, deixa tentar enviar mesmo assim */ });
+}).catch(function(){ $('carregando').classList.add('oculto'); LINK = {}; aplicaSegCli(); pinta(); $('form').classList.remove('oculto'); /* se não conseguiu ler o link, deixa tentar enviar mesmo assim */ });
