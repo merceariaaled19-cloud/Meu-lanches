@@ -35,6 +35,7 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
  <input id="em" type="email" placeholder="Seu e-mail" autocomplete="email"><input id="se" type="password" placeholder="Senha (mínimo 6)" autocomplete="current-password">
  <button id="bCria" class="w">Criar conta</button><button id="bEnt" class="w s" style="padding:12px">Já tenho conta, entrar</button>
  <p class="e" id="eLog"></p>
+ <p class="mut" style="text-align:center"><a class="apkRev" href="https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeRevenda.apk" style="color:#4ade80">📲 Baixar o app de revendedor (Android)</a></p>
 </div>
 <div class="card" id="vCad" style="display:none">
  <h2>Seu cadastro de revendedor</h2>
@@ -73,6 +74,7 @@ textarea{width:100%;height:80px;font-size:12px;border-radius:10px;background:#0f
   <div class="abas"><button id="abV" class="on">Vendas</button><button id="abR">Créditos comprados</button></div>
   <div id="hist" class="mut">Carregando…</div></div>
  <p class="mut" style="text-align:center"><span id="quem"></span> • <a href="#" id="editar" style="color:#ffd54a">Editar meus dados</a></p>
+ <p class="mut" style="text-align:center"><a class="apkRev" href="https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeRevenda.apk" style="color:#4ade80">📲 Baixar o app de revendedor (Android)</a></p>
  <div class="card"><h2>⬇️ Para seus clientes</h2><p class="mut">O cliente baixa o app na TV Box pelo navegador: <b style="color:#ffd54a">is.gd/tudookebox</b>. Na TV smart: abre o navegador e digita <b style="color:#ffd54a">is.gd/tudooke</b>. Depois digita o código que você mandou.</p></div>
 </div>
 </main>
@@ -190,5 +192,7 @@ $('cVal').oninput=function(){var v=num(this.value);if(!v||!PIX||!PIX.chave){$('p
 $('bPixCp').onclick=function(){copia($('pixTxt').value,this)};
 $('bAvisa').onclick=function(){var v=num($('cVal').value);$('eComp').textContent='';if(!v){$('eComp').textContent='Digite o valor que você pagou.';return}
  location.href=zapUrl(zapAlex(),'Olá, Alex! Sou '+(REV.nome||'')+', revendedor do TudoOkê TV ('+(U.email||'')+'). Fiz um Pix de R$ '+v.toFixed(2).replace('.',',')+' para comprar crédito. Vou mandar o comprovante aqui. Meu crédito agora: '+reais(REV.saldoC||0)+'.')};
+/* dentro do próprio app (APK), esconde o link de baixar o app */
+if(/; wv\)/.test(navigator.userAgent)||matchMedia('(display-mode: standalone)').matches)[].forEach.call(document.querySelectorAll('.apkRev'),function(a){a.parentNode.style.display='none'});
 if('serviceWorker' in navigator)navigator.serviceWorker.register('revenda-sw.js',{scope:'./revenda'}).catch(function(){});
 </script></body></html>
