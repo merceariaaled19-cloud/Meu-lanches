@@ -32,6 +32,10 @@ button.s{background:#3a1a66;padding:8px 10px;font-size:13px}.row{display:flex;ga
  <div class="card"><b>🔗 Link para seus clientes</b><p class="mut">A pessoa abre, faz o cadastro, ganha 1 dia grátis e o app. Depois compra pelo Pix lá mesmo.</p>
   <div class="row"><button class="s" id="lkCp" style="flex:1">Copiar link</button><button class="s" id="lkWa" style="flex:1;background:#16a34a">Mandar no WhatsApp</button></div></div>
  <div class="card"><b>💰 Pagamentos a confirmar (<span id="nPag">0</span>)</b><p class="mut">Olhe no seu banco. Se caiu, toque em "Caiu, liberar": o código é criado e aparece sozinho para o cliente.</p><div id="pags"></div></div>
+ <div class="card"><b>💲 Preços dos planos</b><p class="mut">É o que o cliente vê na página de assinar e o valor que vai no Pix. Mudou aqui, muda lá na hora.</p>
+  <div class="row" style="flex-wrap:nowrap"><label style="flex:1;font-size:13px;min-width:0">Mensal<input id="prM" type="text" inputmode="decimal" placeholder="14,90"></label><label style="flex:1;font-size:13px;min-width:0">Semestral<input id="prS" type="text" inputmode="decimal" placeholder="74,90"></label><label style="flex:1;font-size:13px;min-width:0">Anual<input id="prA" type="text" inputmode="decimal" placeholder="119,90"></label></div>
+  <label style="display:block;margin:6px 0"><input id="prL" type="checkbox" checked style="width:auto"> Mostrar selo "Preço de lançamento"</label>
+  <button id="prSalva" style="width:100%">Salvar preços</button><p class="mut" id="prMsg"></p></div>
  <div class="card">
   <div class="planos">
    <label><input type="radio" name="pl" value="1"><span>Teste<br>1 dia</span></label>
@@ -56,7 +60,7 @@ function msg(t){$('msg').textContent=t}
 $('bG').onclick=function(){var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});au.signInWithPopup(p).catch(function(e){if(e.code=='auth/popup-blocked'||e.code=='auth/operation-not-supported-in-this-environment')au.signInWithRedirect(p);else msg('Não entrou: '+e.code)})};
 $('bE').onclick=function(){au.signInWithEmailAndPassword($('em').value.trim(),$('se').value).catch(function(e){msg('Não entrou: '+e.code)})};
 $('sair').onclick=function(){confirmaSair(function(){au.signOut()},{texto:'Você vai sair do painel do TudoOkê TV.'})};au.getRedirectResult().catch(function(){});
-au.onAuthStateChanged(function(u){$('login').style.display=u?'none':'block';$('app').style.display=u?'block':'none';$('sair').style.display=u?'block':'none';if(u){escuta();escutaPag();}});
+au.onAuthStateChanged(function(u){$('login').style.display=u?'none':'block';$('app').style.display=u?'block':'none';$('sair').style.display=u?'block':'none';if(u){escuta();escutaPag();carregaPrecos();}});
 function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(8);crypto.getRandomValues(r);for(var i=0;i<8;i++)s+=a[r[i]%a.length];return s}
 function nz(z){z=String(z||'').replace(/\D/g,'');if(z&&z.length<=11)z='55'+z;return z}
 function zapUrl(n,t){if(/Android/i.test(navigator.userAgent))return 'intent://send?'+(n?'phone='+n+'&':'')+'text='+encodeURIComponent(t)+'#Intent;scheme=whatsapp;package=com.whatsapp;end';return 'https://wa.me/'+(n||'')+'?text='+encodeURIComponent(t)}
@@ -112,5 +116,19 @@ function escutaPag(){if(unPg)return;unPg=db.collection('tk_pagamentos').where('s
     if(confirm('Liberado! Código '+fmt(c)+' já aparece para o cliente. Mandar também no WhatsApp?'))location.href=zapUrl(x.zap,t)}).catch(function(e){b.disabled=false;alert('Erro: '+e.code)})},'#16a34a');
   bt('❌ Não caiu',function(){if(confirm('Marcar que o pagamento não caiu?'))db.collection('tk_pagamentos').doc(x.id).update({status:'recusado'})},'#7f1d1d');
   d.appendChild(r);B.appendChild(d)})},function(e){$('pags').innerHTML='<p class="mut">Erro: '+e.code+'</p>'})}
+
+/* ---- preços dos planos (ml_publico/tudooke_precos) ---- */
+var PRECO0={mensal:14.90,semestral:74.90,anual:119.90,lancamento:true};
+function brl(v){return Number(v).toFixed(2).replace('.',',')}
+function num(t){t=String(t||'').replace(/[R$\s]/g,'');if(t.indexOf(',')>=0)t=t.replace(/\./g,'').replace(',','.');var v=Math.round(parseFloat(t)*100)/100;return v>0&&v<10000?v:0}
+function carregaPrecos(){db.collection('ml_publico').doc('tudooke_precos').get().then(function(d){var x=d.exists?d.data():{};
+ $('prM').value=brl(x.mensal||PRECO0.mensal);$('prS').value=brl(x.semestral||PRECO0.semestral);$('prA').value=brl(x.anual||PRECO0.anual);$('prL').checked=typeof x.lancamento=='boolean'?x.lancamento:true;
+ $('prMsg').textContent=d.exists?'':'Usando os preços de lançamento padrão. Toque em Salvar para gravar.'}).catch(function(e){$('prMsg').textContent='Não carregou os preços ('+e.code+').'})}
+$('prSalva').onclick=function(){var m=num($('prM').value),se=num($('prS').value),a=num($('prA').value);
+ if(!m||!se||!a){$('prMsg').textContent='Confira os 3 preços (ex.: 14,90).';return}
+ if(!confirm('Salvar preços?\nMensal R$ '+brl(m)+'\nSemestral R$ '+brl(se)+'\nAnual R$ '+brl(a)))return;var b=this;b.disabled=true;
+ db.collection('ml_publico').doc('tudooke_precos').set({mensal:m,semestral:se,anual:a,lancamento:$('prL').checked,atualizadoEm:firebase.firestore.FieldValue.serverTimestamp(),por:(au.currentUser&&au.currentUser.email)||''})
+ .then(function(){$('prMsg').textContent='✅ Preços salvos. A página de assinar já mostra os novos valores.'})
+ .catch(function(e){$('prMsg').textContent='Não salvou ('+e.code+'). Só as contas de administrador podem mudar preços.'}).finally(function(){b.disabled=false})};
 if('serviceWorker' in navigator)navigator.serviceWorker.register('painel-sw.js',{scope:'./'}).catch(function(){});
 </script></body></html>

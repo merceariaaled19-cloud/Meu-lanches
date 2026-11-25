@@ -14,7 +14,7 @@ button,.bt{display:block;width:100%;padding:14px;font-size:16px;border:0;border-
 .cod{font-size:32px;letter-spacing:5px;color:#ffd54a;text-align:center;font-weight:bold;margin:8px 0}
 .lic{border-top:1px solid #33175c;padding:10px 0}.tag{font-size:12px;padding:3px 9px;border-radius:9px;margin-left:6px}.novo{background:#2563eb}.ok{background:#16a34a}.venc{background:#b91c1c}.ag{background:#b45309}
 .planos{display:grid;gap:10px}.pl{border:2px solid #4a2380;border-radius:14px;padding:12px;cursor:pointer;position:relative}.pl.sel{border-color:#ffd54a;background:#2b0a4f}
-.pl b{font-size:18px}.pl .v{float:right;font-size:20px;color:#ffd54a;font-weight:bold}.selo{position:absolute;top:-10px;right:12px;background:#16a34a;font-size:11px;padding:2px 8px;border-radius:8px}
+.pl b{font-size:18px}.pl .v{float:right;font-size:20px;color:#ffd54a;font-weight:bold}.lanc{background:linear-gradient(90deg,#e11d48,#7c3aed);color:#fff;font-weight:bold;text-align:center;border-radius:10px;padding:6px;font-size:15px}.selo{position:absolute;top:-10px;right:12px;background:#16a34a;font-size:11px;padding:2px 8px;border-radius:8px}
 textarea{width:100%;height:84px;font-size:12px;border-radius:10px;background:#0f0322;color:#fff;border:2px solid #4a2380;padding:8px}
 ol{padding-left:20px;margin:6px 0}li{margin:4px 0}
 </style><script src="confirma-sair.js?v=1"></script>
@@ -76,7 +76,11 @@ ol{padding-left:20px;margin:6px 0}li{margin:4px 0}
 <script>
 var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
 firebase.initializeApp(FB);var db=firebase.firestore(),au=firebase.auth(),$=function(i){return document.getElementById(i)},TS=function(){return firebase.firestore.FieldValue.serverTimestamp()};
-var PLANOS=[{id:'mensal',nome:'Mensal',dias:30,valor:29.90},{id:'semestral',nome:'Semestral',dias:180,valor:99.90,selo:'Economize 44%'},{id:'anual',nome:'Anual',dias:365,valor:199.90,selo:'Melhor preço'}];
+/* Preços: vêm do Firestore ml_publico/tudooke_precos (editável no painel do ADM). Estes são só o padrão se o documento não existir. */
+var PLANOS=[{id:'mensal',nome:'Mensal',dias:30,valor:14.90},{id:'semestral',nome:'Semestral',dias:180,valor:74.90},{id:'anual',nome:'Anual',dias:365,valor:119.90,selo:'Melhor preço'}],LANC=true;
+function aplicaPrecos(d){if(d){PLANOS.forEach(function(p){var v=Number(d[p.id]);if(v>0&&v<10000)p.valor=Math.round(v*100)/100});if(typeof d.lancamento=='boolean')LANC=d.lancamento}
+ var m=PLANOS[0].valor;PLANOS.forEach(function(p){if(p.id=='mensal')return;var e=Math.round((1-p.valor/(m*Math.round(p.dias/30)))*100);p.eco=e>=5?'Economize '+e+'%':''})}
+aplicaPrecos(null);
 var U=null,CLI=null,PIX=null,SEL=null,unL,unP;
 function vis(v){['vLogin','vDados','vApp'].forEach(function(x){$(x).style.display=x==v?'block':'none'})}
 function reais(v){return 'R$ '+Number(v).toFixed(2).replace('.',',')}
@@ -109,7 +113,7 @@ function app(novo){vis('vApp');$('quem').textContent=(CLI.nome||'')+' • '+(U.e
  if(novo){$('cNovo').style.display='block';$('cNovo').innerHTML='<h2>🎁 Seu teste grátis</h2><div class="cod">'+fmt(novo)+'</div><p class="mut">Vale 1 dia a partir de quando você digitar na TV Box.</p>'}
  unL=db.collection('licencas').where('dono','==',U.uid).onSnapshot(pintaL,function(e){$('lics').textContent='Erro: '+e.code});
  unP=db.collection('tk_pagamentos').where('uid','==',U.uid).onSnapshot(pintaP,function(){});
- db.collection('ml_publico').doc('pix').get().then(function(d){PIX=d.exists?d.data():null;desenhaPlanos()}).catch(function(){desenhaPlanos()})}
+ Promise.all([db.collection('ml_publico').doc('pix').get().then(function(d){PIX=d.exists?d.data():null}).catch(function(){}),db.collection('ml_publico').doc('tudooke_precos').get().then(function(d){aplicaPrecos(d.exists?d.data():null)}).catch(function(){})]).then(desenhaPlanos)}
 function pintaL(s){var L=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=x.criadoEm&&x.criadoEm.toMillis?x.criadoEm.toMillis():Date.now();return x}).sort(function(a,b){return b.t-a.t}),ag=Date.now();
  if(!L.length){$('lics').textContent='Nenhum código ainda.';return}$('lics').innerHTML='';
  L.forEach(function(x){var ve=x.ativadoEm?x.ativadoEm.toMillis()+x.dias*864e5:0,st=!x.device?'novo':ve>ag?'ok':'venc';
@@ -117,7 +121,8 @@ function pintaL(s){var L=s.docs.map(function(d){var x=d.data();x.id=d.id;x.t=x.c
   var b=document.createElement('button');b.className='bt2';b.textContent='Copiar código';b.style.padding='9px';b.onclick=function(){copia(fmt(x.id),b)};d.appendChild(b);$('lics').appendChild(d)})}
 function desenhaPlanos(){var P=$('planos');P.innerHTML='';
  if(!PIX||!PIX.chave){P.innerHTML='<p class="mut">Pagamento ainda não configurado. Fale com quem te mandou o link.</p>';return}
- PLANOS.forEach(function(p){var d=document.createElement('div');d.className='pl';d.innerHTML=(p.selo?'<span class="selo">'+p.selo+'</span>':'')+'<span class="v">'+reais(p.valor)+'</span><b>'+p.nome+'</b><div class="mut">'+p.dias+' dias</div>';
+ if(LANC){var lc=document.createElement('div');lc.className='lanc';lc.textContent='🚀 Preço de lançamento';P.appendChild(lc)}
+ PLANOS.forEach(function(p){var d=document.createElement('div');d.className='pl';var sl=[p.selo,p.eco].filter(Boolean).join(' • ');d.innerHTML=(sl?'<span class="selo">'+sl+'</span>':'')+'<span class="v">'+reais(p.valor)+'</span><b>'+p.nome+'</b><div class="mut">'+p.dias+' dias'+(LANC?' • <span style="color:#ffd54a">preço de lançamento</span>':'')+'</div>';
   d.onclick=function(){SEL=p;[].forEach.call(P.children,function(c){c.classList.remove('sel')});d.classList.add('sel');var t=pixCC(PIX.chave,PIX.nome,PIX.cidade,p.valor,'TK'+p.id);$('pixTxt').value=t;$('pixVal').textContent='• '+p.nome+' '+reais(p.valor);$('pixQuem').textContent='Vai aparecer no banco: '+(PIX.nome||'');$('pixBox').style.display='block'};P.appendChild(d)})}
 var BASEA='https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/';
 $('bApkCp').onclick=function(){copia(location.href.split('#')[0].split('?')[0],this)};
