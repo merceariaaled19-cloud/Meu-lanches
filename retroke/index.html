@@ -54,10 +54,16 @@ header{display:flex;align-items:center;justify-content:space-between;padding:3vm
 #lista input{width:3vmin;height:3vmin}
 .barra{height:1.4vmin;background:#ffffff22;border-radius:1vmin;overflow:hidden;margin-top:1vmin}.barra i{display:block;height:100%;width:0;background:#ffd400}
 .candid{display:grid;grid-template-columns:repeat(auto-fill,minmax(16vmin,1fr));gap:2vmin}
+.outro{height:18vmin;min-width:30vmin}.outro .ic{font-size:7vmin}.outro b{font-size:3.2vmin}
+.mais{border-color:#ffd40099;background:linear-gradient(160deg,#ffd40022,#ff6a0022)}
+.mrow{display:grid;grid-template-columns:9vmin 1fr auto;gap:1.6vmin;align-items:center;margin:1vmin 0}
+.mrow img,.mrow .mi{width:9vmin;height:12vmin;object-fit:cover;border-radius:1vmin;background:#ffffff14;display:flex;align-items:center;justify-content:center;font-size:5vmin}
+.mrow .bt{margin:0}.mrow .pg{width:auto;white-space:nowrap}
+.mrow .ok{color:#7f5;font-weight:800}
 body.cel .so-tv,body.web .so-tv{display:none!important}
 body.tv .so-cel{display:none!important}
 body.apk .so-web{display:none!important}
-@media (orientation:portrait){.logo small{display:none}}
+@media (orientation:portrait){.logo small{display:none}.outro{height:26vmin}.outro b{font-size:4.4vmin}.mrow{grid-template-columns:14vmin 1fr}.mrow img,.mrow .mi{width:14vmin;height:18vmin}.mrow .pg{grid-column:2}}
 @media (orientation:portrait){
  header{padding:4vmin 4vmin 1vmin}.logo{font-size:7vmin}#hora{font-size:6vmin}#data{font-size:3vmin}
  .tela{padding:1vmin 4vmin 8vmin}.tit{font-size:4.4vmin}
@@ -79,6 +85,11 @@ body.apk .so-web{display:none!important}
  <div class="tela" id="home">
   <div class="tit">🎮 Escolha o console</div>
   <div class="linha" id="consoles"></div>
+  <div class="tit">✨ Mais diversão</div>
+  <div class="linha" id="outros">
+   <button class="f cons outro" id="bKaraoke" style="background:linear-gradient(135deg,#ff3fa4,#7c3aed)"><span class="ic">🎤</span><span><b>TudoOkê Karaokê</b><small id="kSub">Cantar com nota e reações</small></span></button>
+   <button class="f cons outro" id="bTvCerta" style="background:linear-gradient(135deg,#e11d48,#1e3a8a)"><span class="ic">📺</span><span><b>TV Certa</b><small>Canais grátis</small></span></button>
+  </div>
   <div id="recBloco" style="display:none"><div class="tit">⏯️ Continuar jogando</div><div class="linha" id="recentes" style="flex-wrap:nowrap;overflow-x:auto;padding:1.4vmin .6vmin"></div></div>
   <div class="so-tv"><div class="tit">⭐ Meus apps</div><div class="linha" id="meusApps"></div></div>
   <div class="tit">⚙️ Mais</div>
@@ -183,6 +194,14 @@ body.apk .so-web{display:none!important}
  <button class="f bt" id="dFecha" style="margin-top:2vmin">Fechar</button>
 </div></div>
 
+<!-- MAIS JOGOS GRÁTIS -->
+<div class="modal" id="mMais"><div class="caixa" style="width:min(1100px,96vw)">
+ <h2>🎁 Mais jogos grátis — <span id="maisSys"></span></h2>
+ <p class="dica">Jogos <b>novos feitos por fãs</b> (homebrew), de graça e liberados pelos próprios autores para copiar e jogar. <b>Não são jogos comerciais.</b></p>
+ <div id="maisLista" style="margin-top:1.4vmin"></div>
+ <button class="f bt" id="maisFecha" style="margin-top:2vmin">Fechar</button>
+</div></div>
+
 <!-- LICENÇAS -->
 <div class="modal" id="mLic"><div class="caixa" style="width:min(1000px,94vw)">
  <h2>📜 Licenças</h2>
@@ -191,13 +210,14 @@ body.apk .so-web{display:none!important}
  <p>Núcleos libretro: <b>FCEUmm</b> (GPL-2.0), <b>Snes9x</b> (licença não comercial do Snes9x — uso grátis), <b>Mupen64Plus-Next</b> (GPL-2.0), <b>PCSX-ReARMed</b> (GPL-2.0). Código-fonte: github.com/EmulatorJS/build e github.com/libretro.</p>
  <p>Capas: projeto <b>libretro-thumbnails</b> (github.com/libretro-thumbnails), buscadas na internet e guardadas só no seu aparelho.</p>
  <p>Jogos grátis de demonstração (homebrew, feitos por fãs, com licença que deixa distribuir): <b>Lawn Mower</b>, <b>Lan Master</b> e <b>Chase</b> (Shiru, domínio público); <b>Zooming Secretary</b> (Shiru e PinWizz, CC BY); <b>NESert Golfing</b> (Brad Smith, CC BY 4.0); <b>Snek</b> (Zorchenhimer, MIT); <b>Big City Sliding Blaster</b> (NovaSquirrel, zlib); <b>Gothicvania</b> do Super Nintendo (donth77, MIT; arte de ansimuz, CC0). Detalhes em demos/LICENCAS.txt.</p>
+ <p>Mais jogos grátis (homebrew com licença livre): <b>8-Bit Table Tennis</b> (Michael Billington, MIT); <b>Gruniożerca</b> (Łukasz Kur e Ryszard Brzukała, domínio público; músicas de Ozzed, CC BY-SA 3.0); <b>Ghosts and Graves</b> (Anthony Bongers, domínio público); <b>Double Action Blaster Guys</b> (NovaSquirrel, zlib); <b>Tobu NES</b> (stevenchadburrow, domínio público; arte CC0); <b>Super Sky Fury</b> do Super Nintendo (Naveed Farbakhsh, MIT); <b>Castle Platformer</b> do Super Nintendo (The UnDisbeliever, MIT; arte CC0). Os outros da lista só abrem a página oficial do autor.</p>
  <p>Conexão com o celular: PeerJS (MIT). Nintendo, Super Nintendo, Nintendo 64 e PlayStation são marcas dos donos; este app não tem ligação com eles e não vem com jogos comerciais.</p>
  </div>
  <button class="f bt" id="licFecha" style="margin-top:2vmin">Fechar</button>
 </div></div>
 
 <script src="lib/peerjs.min.js"></script>
-<script src="comum.js?v=2"></script>
+<script src="comum.js?v=3"></script>
 <script src="confirma-sair.js?v=1"></script>
 <script>
 (function(){
@@ -282,6 +302,7 @@ function desenhaSys(focar){
     L.sort(function(a, b){ return (b.ult || 0) - (a.ult || 0) || (a.nome > b.nome ? 1 : -1); });
     var g = $('grade'), focoId = document.activeElement && document.activeElement.dataset.id; g.innerHTML = '';
     var ad = document.createElement('button'); ad.className = 'f add'; ad.innerHTML = '<i>➕</i>Adicionar jogos'; ad.onclick = abreAdd; g.appendChild(ad);
+    if (RK.MAIS.some(function(x){ return x.sys === k; })) { var mg = document.createElement('button'); mg.className = 'f add mais'; mg.innerHTML = '<i>🎁</i>Mais jogos grátis'; mg.onclick = abreMais; g.appendChild(mg); }
     L.forEach(function(j){ var b = document.createElement('button'); b.className = 'f'; b.dataset.id = j.id;
       b.innerHTML = '<div class="capa">' + capaHTML(j, true) + '</div>'; b.onclick = function(){ abreJogo(j); }; g.appendChild(b); });
     if (focar) setTimeout(function(){ (g.children[1] || ad).focus(); }, 60);
@@ -316,9 +337,9 @@ window.voltar = function(){
   return 'sair';
 };
 window.inicio = function(){ while (pilha.length) fecha(); if (atual) volta(); foco(); };
-window.volta = function(){ if (atual) desenhaSys(); else desenhaHome(); };
-['scFecha','celFecha','appsFecha','capaFecha','ajFecha','licFecha','dFecha'].forEach(function(i){ $(i).onclick = fecha; });
-['mJogo','mAdd','mScan','mCel','mApps','mCapa','mAjuda','mLic','mBaixa'].forEach(function(i){ $(i).addEventListener('click', function(ev){ if (ev.target === $(i)) fecha(); }); });
+window.volta = function(){ confereOutros(); if (atual) desenhaSys(); else desenhaHome(); };
+['scFecha','celFecha','appsFecha','capaFecha','ajFecha','licFecha','dFecha','maisFecha'].forEach(function(i){ $(i).onclick = fecha; });
+['mJogo','mAdd','mScan','mCel','mApps','mCapa','mAjuda','mLic','mBaixa','mMais'].forEach(function(i){ $(i).addEventListener('click', function(ev){ if (ev.target === $(i)) fecha(); }); });
 function foco(){ var r = raiz(), f = r.querySelector('.f'); if (f) f.focus(); }
 
 /* ---------- jogo ---------- */
@@ -364,6 +385,49 @@ $('jCapaB').onclick = function(){
     $('capaGrade').appendChild(sem);
     var f = $('capaGrade').querySelector('.f'); if (f) f.focus();
   });
+};
+
+/* ---------- mais jogos grátis (homebrew com licença livre) ---------- */
+function abrePagina(u){ if (B && B.link) B.link(u); else window.open(u, '_blank'); }
+function abreMais(){
+  var k = atual; $('maisSys').textContent = SYS[k].nome; var box = $('maisLista'); box.innerHTML = '';
+  RK.jogos(k).then(function(L){
+    var tem = {}; L.forEach(function(j){ tem[j.id] = j; });
+    RK.MAIS.filter(function(x){ return x.sys === k; }).forEach(function(x){
+      var r = document.createElement('div'); r.className = 'mrow';
+      r.innerHTML = (x.capa ? '<img src="' + RK.esc(x.capa) + '" alt="">' : '<div class="mi">🌐</div>');
+      var b = document.createElement('button'); b.className = 'f bt';
+      var info = '<small>' + RK.esc(x.desc) + ' · ' + RK.esc(x.autor) + ' · licença ' + RK.esc(x.lic) + '</small>';
+      function rotulo(){ b.innerHTML = x.arq ? (tem[x.id] ? '<span><span class="ok">✅ ' + RK.esc(x.nome) + '</span> — ▶ Jogar agora</span>' : '<span>➕ <b>' + RK.esc(x.nome) + '</b> — colocar na lista</span>') + info
+        : '<span>🌐 <b>' + RK.esc(x.nome) + '</b> — abrir a página do autor</span>' + info + '<small>Baixe lá o arquivo e use ➕ Adicionar jogos → Mandar do celular · ' + RK.esc(x.pag.replace(/^https:\/\//, '')) + '</small>'; }
+      rotulo();
+      b.onclick = function(){
+        if (!x.arq) { abrePagina(x.pag); return; }
+        if (tem[x.id]) { var j = tem[x.id]; fecha(); abreJogo(j); return; }
+        RK.addMais(x).then(function(j){ tem[x.id] = j; rotulo(); RK.bip(988, .1); RK.toast('✅ ' + x.nome + ' entrou na lista. Toque de novo para jogar.'); desenhaSys(); });
+      };
+      r.appendChild(b);
+      if (x.arq) { var pg = document.createElement('button'); pg.className = 'f bt pg'; pg.innerHTML = '🌐 Página do autor'; pg.onclick = function(){ abrePagina(x.pag); }; r.appendChild(pg); }
+      box.appendChild(r);
+    });
+    abre('mMais');
+  });
+}
+
+/* ---------- TudoOkê Karaokê e TV Certa ---------- */
+var TK_PAC = 'br.elo.karaoketv', TK_SITE = 'https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/assinar.html', TK_APK = 'https://merceariaaled19-cloud.github.io/Meu-lanches/tudooke-tv/TudoOkeTV.apk';
+var TV_PAC = 'io.github.merceariaaled19cloud.tvcerta', TV_SITE = 'https://merceariaaled19-cloud.github.io/Meu-lanches/tv/';
+function confereOutros(){ if (B && B.tem) $('kSub').textContent = B.tem(TK_PAC) ? 'Cantar com nota e reações' : (modo === 'tv' ? 'Toque para instalar o TudoOkê TV' : 'Cantar com nota e reações'); }
+$('bKaraoke').onclick = function(){
+  if (B && B.tem && B.tem(TK_PAC) && B.abre(TK_PAC)) return;
+  if (B && modo === 'tv') { RK.toast('Baixando o TudoOkê TV… depois toque em Instalar', 6000); B.link(TK_APK); return; }
+  abrePagina(TK_SITE);
+};
+$('bTvCerta').onclick = function(){
+  if (B && B.tem && B.tem(TV_PAC) && B.abre(TV_PAC)) return;
+  if (B && B.web) { B.web(TV_SITE); return; }
+  if (B) { abrePagina(TV_SITE); return; }
+  location.href = TV_SITE;
 };
 
 /* ---------- adicionar ---------- */
@@ -464,6 +528,7 @@ $('dTv').onclick = function(){ location.href = 'apk/RetroOkeTV.apk'; };
 $('dCel').onclick = function(){ location.href = 'apk/RetroOkeCelular.apk'; };
 
 /* ---------- início ---------- */
+confereOutros();
 RK.semeia().then(function(){
   var h = location.hash.slice(1);
   if (SYS[h]) { abreSys(h); } else { desenhaHome(); setTimeout(foco, 100); }

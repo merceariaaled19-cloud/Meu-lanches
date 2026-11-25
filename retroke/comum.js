@@ -58,6 +58,26 @@ RK.DEMOS = [
   {id:'demo-blaster', sys:'nes', nome:'Big City Sliding Blaster (grátis)', arq:'SlidingBlaster.nes', origem:'url', url:'demos/SlidingBlaster.nes', capa:'demos/SlidingBlaster.jpg', demo:1},
   {id:'demo-gothic', sys:'snes', nome:'Gothicvania (grátis)', arq:'Gothicvania.sfc', origem:'url', url:'demos/Gothicvania.sfc', capa:'demos/Gothicvania.jpg', demo:1}
 ];
+/* "Mais jogos grátis" (2026-11-25): só homebrew feito por fãs com licença que deixa copiar e distribuir.
+   Nunca jogos comerciais nem sites de ROMs. Com arq: vem dentro do app (toca e joga). Sem arq: só abre a página oficial do autor.
+   Licenças em demos/LICENCAS.txt */
+RK.MAIS = [
+  {id:'livre-tennis', sys:'nes', nome:'8-Bit Table Tennis', desc:'Pingue-pongue para 2 jogadores', autor:'Michael Billington', lic:'MIT', arq:'TableTennis.nes', capa:'demos/TableTennis.jpg', pag:'https://github.com/mike42/8bit-table-tennis'},
+  {id:'livre-grunio', sys:'nes', nome:'Gruniożerca', desc:'Arcade polonês simples e viciante', autor:'Łukasz Kur e Ryszard Brzukała (emunes.pl)', lic:'domínio público (Unlicense); músicas de Ozzed CC BY-SA 3.0', arq:'Gruniozerca.nes', capa:'demos/Gruniozerca.jpg', pag:'https://github.com/arhneu/gruniozerca'},
+  {id:'livre-ghosts', sys:'nes', nome:'Ghosts and Graves', desc:'Quebra-cabeça de fantasmas e túmulos', autor:'Anthony Bongers', lic:'domínio público (Unlicense)', arq:'GhostsAndGraves.nes', capa:'demos/GhostsAndGraves.jpg', pag:'https://github.com/AnthonyBongers/GhostsAndGraves'},
+  {id:'livre-dabg', sys:'nes', nome:'Double Action Blaster Guys', desc:'Plataforma de ação, 52 fases, 1 ou 2 jogadores', autor:'NovaSquirrel', lic:'zlib', arq:'DoubleActionBlasterGuys.nes', capa:'demos/DoubleActionBlasterGuys.jpg', pag:'https://github.com/NovaSquirrel/DABG'},
+  {id:'livre-tobu', sys:'nes', nome:'Tobu NES', desc:'Pule bem alto para buscar o gatinho', autor:'stevenchadburrow', lic:'domínio público (Unlicense); arte CC0', arq:'TobuNES.nes', capa:'demos/TobuNES.jpg', pag:'https://stevenchadburrow.itch.io/tobu-nes'},
+  {id:'link-stb', sys:'nes', nome:'Super Tilt Bro.', desc:'Luta de plataforma (estilo Smash)', autor:'sgadrat', lic:'WTFPL', pag:'https://sgadrat.itch.io/super-tilt-bro'},
+  {id:'livre-skyfury', sys:'snes', nome:'Super Sky Fury', desc:'Avião de caça em Mode 7, com chefão', autor:'Naveed Farbakhsh', lic:'MIT', arq:'SuperSkyFury.sfc', capa:'demos/SuperSkyFury.jpg', pag:'https://naveedster.github.io/super-sky-fury/'},
+  {id:'livre-castle', sys:'snes', nome:'Castle Platformer', desc:'Plataforma simples no castelo', autor:'The UnDisbeliever', lic:'MIT; arte CC0 (OpenGameArt)', arq:'CastlePlatformer.sfc', capa:'demos/CastlePlatformer.jpg', pag:'https://github.com/undisbeliever/castle_platformer'},
+  {id:'link-sblob', sys:'n64', nome:'Sblobber 64', desc:'Quebra-cabeça com uma gosma', autor:'vrgl117 games', lic:'código MIT', pag:'https://github.com/vrgl117-games/sblobber64/releases'}
+];
+/* coloca um jogo grátis na lista do aparelho */
+RK.addMais = function(x){
+  if (!x.arq) return Promise.reject(new Error('só página'));
+  var j = {id:x.id, sys:x.sys, nome:x.nome + ' (grátis)', arq:x.arq, origem:'url', url:'demos/' + x.arq, capa:x.capa, demo:1, add:Date.now()};
+  return RK.get('jogos', x.id).then(function(ja){ return ja || RK.put('jogos', j).then(function(){ return j; }); });
+};
 /* semeia cada demo uma vez só (se a pessoa tirar da lista, não volta) */
 RK.semeia = function(){
   var ja = {}; try { ja = JSON.parse(localStorage.rkDemosIds || '{}'); } catch (e) {}
