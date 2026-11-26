@@ -1,8 +1,8 @@
-const CACHE_NAME = "snack-app-v24";
+const CACHE_NAME = "snack-app-v25";
 const APP_FILES = [
   "./",
   "./index.html",
-  "./confirma-sair.js?v=1",
+  "./confirma-sair.js?v=1", "./voltar-pergunta.js?v=2",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",

@@ -181,4 +181,5 @@ window.addEventListener('online',function(){$('rede').style.display='none'});win
 setInterval(function(){var d=new Date();if(d.getHours()==4&&d.getMinutes()<2&&navigator.onLine)location.reload()},60000);
 if(db){escutaTela();setTimeout(function(){if(!TELA&&(ESTADO==''||ESTADO=='carr')&&ls('to_tv_cache'))usaCache()},10000)}
 if('serviceWorker' in navigator&&!window.TO_TESTE)navigator.serviceWorker.register('sw.js').catch(function(){});
-</script></body></html>
+</script><script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=2" data-nome="TelaOkê TV" data-pular-ua="TelaOkeTV"></script>
+</body></html>

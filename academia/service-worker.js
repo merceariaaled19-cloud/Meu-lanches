@@ -1,8 +1,8 @@
 // Projeto Z — service worker (cache-first, só mesma origem)
-const CACHE = "projetoz-v11";
+const CACHE = "projetoz-v12";
 const FILES = [
 "./",
-"./index.html",
+"./index.html", "./confirma-sair.js?v=1", "./voltar-pergunta.js?v=2",
 "./manifest.webmanifest",
 "./icon-192.png",
 "./icon-512.png",

@@ -196,4 +196,5 @@ function zap(){var by={};GR.filter(function(g){return g.ck&&g.o.length>1}).forEa
   var t="🧾 *Lista de compras (mais barato)*\n";Object.keys(by).forEach(function(fi){t+="\n🏪 *"+F[fi].nome+"*\n";by[fi].forEach(function(g){t+="• "+g.min.n+" — "+brl(g.min.p)+"\n"})});
   window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")}
 if("serviceWorker" in navigator){var _r=!!navigator.serviceWorker.controller;navigator.serviceWorker.register("service-worker.js").then(function(g){g.update()});navigator.serviceWorker.addEventListener("controllerchange",function(){if(_r&&!window._rl){window._rl=1;location.reload()}})}
-</script></body></html>
+</script><script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=2" data-nome="Cotação Certa"></script>
+</body></html>

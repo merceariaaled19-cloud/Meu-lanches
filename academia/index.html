@@ -1128,5 +1128,6 @@ if("serviceWorker" in navigator && location.protocol!=="file:") window.addEventL
 if("serviceWorker" in navigator){let _rl=false;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(_rl)return;_rl=true;location.reload();});}
 
 </script>
+<script src="confirma-sair.js?v=1"></script><script>/* Voltar do celular: janela aberta fecha; outra aba volta para o Início; no Início pergunta "Quer mesmo sair?" */window.voltarDentro=function(){if(voltaGenerico())return true;try{if(typeof TAB!=="undefined"&&TAB!=="home"&&typeof S!=="undefined"&&S.profile){go("home");return true}}catch(e){}return false};</script><script src="voltar-pergunta.js?v=2" data-nome="Projeto Z"></script>
 </body>
 </html>

@@ -154,4 +154,5 @@ function atualiza(){Object.keys(G).forEach(function(j){fetch('https://loteriasca
 fetch('dados.json?v='+Math.floor(Date.now()/36e5)).then(function(r){return r.json()}).then(function(d){D=d;cor();chips();tela();atualiza()}).catch(function(){$('load').textContent='Sem internet. Abra de novo com internet uma vez.'});
 cor();chips();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
-</script></body></html>
+</script><script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=2" data-nome="Loto Palpite" data-abas="#tG,#tE,#tM,#tB"></script>
+</body></html>

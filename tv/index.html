@@ -394,7 +394,12 @@ function voltarUm() {
   else if (!document.body.classList.contains('inicio')) { irInicio(); return true; }
   return false;
 }
-addEventListener('popstate', () => { if (!voltarUm()) history.pushState({s: 1}, ''); });
+/* Voltar (celular/controle): voltar-pergunta.js chama isto; fecha o que estiver aberto ou volta ao Início; no Início pergunta "Quer mesmo sair?" */
+window.voltarDentro = () => {
+  if ($('#yt').classList.contains('on') || $('#det').classList.contains('on') || $('#modal').classList.contains('on')) { voltarUm(); return true; }
+  if (!document.body.classList.contains('inicio')) { irInicio(); return true; }
+  return false;
+};
 $('#cont').onclick = e => {
   const c = e.target.closest('[data-h]'); if (!c) return; const x = hist[c.dataset.h];
   if (x.tipo === 'canal') { sairInicio(); abrirAba('vivo'); const i = todos.findIndex(t => t.id === x.id); if (i >= 0) tocar(i); }
@@ -436,5 +441,6 @@ document.addEventListener('keydown', e => {
 });
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
+<script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=2" data-nome="TV Certa"></script>
 </body>
 </html>

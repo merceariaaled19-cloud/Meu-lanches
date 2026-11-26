@@ -48,4 +48,5 @@ function whats(){const f=P.d.fone.replace(/\D/g,'');const n=f.length<=11?'55'+f:
 function colar(){const t=document.getElementById('cola').value;const m=t.match(/painel\.html#([A-Za-z0-9_-]+)/);if(!m){toast('Não achei o pedido nessa mensagem');return}try{mostra(dec(m[1]))}catch(e){toast('Pedido inválido')}}
 function lista(){document.getElementById('hist').innerHTML=hist.length?hist.map((h,i)=>{const tudo=h.i.every(it=>h.st[it.id]);return `<div class="cp" onclick="mostra(hist[${i}])"><span>${tudo?'✅':'🟠'} ${h.c} · ${h.d.nome}</span><b>${R(h.t)}</b></div>`}).join(''):'<small style="opacity:.6">Nenhum pedido ainda.</small>'}
 if(location.hash.length>5){try{mostra(dec(location.hash.slice(1)))}catch(e){toast('Pedido inválido')}}lista();
-</script></body></html>
+</script><script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=2" data-nome="painel da Gohan Import"></script>
+</body></html>

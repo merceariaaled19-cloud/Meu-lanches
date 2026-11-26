@@ -71,7 +71,7 @@ tr.sel td{background:#ccfbf1}
 #cupom table td{padding:1px 0;border:0;font-size:12px;font-family:"Courier New",monospace}
 #cupom img{max-width:40mm;max-height:20mm}
 </style>
-<script src="confirma-sair.js?v=1"></script>
+<script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=2" data-nome="PDV Mercadinho" data-abas="nav button[data-t]"></script>
 </head>
 <body>
 <div id="telaLogin" class="login">
@@ -90,7 +90,7 @@ tr.sel td{background:#ccfbf1}
    <label>E-mail</label><input id="crEmail" type="email" autocomplete="username">
    <label>Senha</label><input id="crSenha" type="password" autocomplete="new-password">
    <button class="pri" style="width:100%;margin-top:12px" onclick="criarConta()">CRIAR E ENTRAR</button>
-   <p style="text-align:center"><a href="#" onclick="trocaLogin(0);return false">Já tenho cadastro</a></p>
+   <p style="text-align:center"><a href="#" data-voltar="1" onclick="trocaLogin(0);return false">Já tenho cadastro</a></p>
   </div>
   <p id="lgMsg" style="color:#dc2626;text-align:center"></p>
   <p style="font-size:12px;color:#555;text-align:center">Entrando com o mesmo e-mail e senha, celular e PC ficam com o mesmo cadastro.</p>

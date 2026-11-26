@@ -997,5 +997,11 @@ function introIni(){ var el=document.getElementById("intro"); if(!el) return; va
 
 retoma();
 </script>
+<script src="confirma-sair.js?v=1"></script><script>/* Voltar do celular: janela aberta fecha; no duelo pergunta se quer sair do jogo; na escolha volta ao menu; no menu pergunta "Quer mesmo sair?" */
+window.voltarDentro=function(){var g=function(i){var e=document.getElementById(i);return e&&!e.classList.contains("esc")};
+ if(g("modal")){if(typeof MODALFIXO!=="undefined"&&MODALFIXO)return true;if(!voltaGenerico())document.getElementById("modal").classList.add("esc");return true}
+ if(g("jogo")){sairJogo();return true}
+ if(g("escolha")){voltaMenu();return true}
+ return voltaGenerico()};</script><script src="voltar-pergunta.js?v=2" data-nome="Duelo dos Monstros"></script>
 </body>
 </html>

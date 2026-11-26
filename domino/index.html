@@ -443,5 +443,6 @@ let entrando=false;async function entrarSala(){if(entrando)return;entrando=true;
 (function(){const q=new URLSearchParams(location.search).get('sala');if(q&&q.length==4){try{history.replaceState(null,'',location.pathname)}catch(e){}$('capa').classList.add('sai');$('menu').classList.remove('esc');mostra('m2');$('codIn').value=q.toUpperCase();setTimeout(entrarSala,500)}})();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('service-worker.js');
 </script>
+<script src="confirma-sair.js?v=1"></script><script>window.voltarDesligado=function(){var j=document.getElementById("jogo");return typeof S!=="undefined"&&!!S&&j&&!j.classList.contains("esc")};</script><script src="voltar-pergunta.js?v=2" data-nome="Duelo do Dominó"></script>
 </body>
 </html>

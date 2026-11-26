@@ -1,5 +1,5 @@
-const CACHE="domino-v9";
-const FILES=["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","icon-mask.png"];
+const CACHE="domino-v10";
+const FILES=["./","index.html", "confirma-sair.js?v=1", "voltar-pergunta.js?v=2","manifest.webmanifest","icon-192.png","icon-512.png","icon-mask.png"];
 self.addEventListener("install",e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{const u=new URL(e.request.url);if(e.request.method!=="GET")return;

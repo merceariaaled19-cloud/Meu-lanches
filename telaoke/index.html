@@ -68,4 +68,5 @@ $('fEnvia').onclick=function(){var l=$('fLoja').value.trim(),z=zapOk($('fZap').v
  if(!db)return falhou();b.disabled=true;b.textContent='Enviando…';var fim=false,t=setTimeout(function(){if(!fim){fim=true;falhou()}},8000);
  db.collection('to_interessados').add({loja:l,zap:z,origem:'site',criadoEm:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){if(fim)return;fim=true;clearTimeout(t);b.style.display='none';$('fOk').style.display='block'},function(){if(fim)return;fim=true;clearTimeout(t);falhou()})};
 if('serviceWorker' in navigator&&!window.TO_TESTE)navigator.serviceWorker.register('sw.js').catch(function(){});
-</script></body></html>
+</script><script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=2" data-nome="TelaOkê"></script>
+</body></html>

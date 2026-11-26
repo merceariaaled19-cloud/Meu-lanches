@@ -67,7 +67,7 @@ input,select.form{width:100%;padding:12px;border-radius:10px;border:1px solid #c
 .periodo-btns button{flex:1;background:#e5e7eb;color:#000;font-size:12px;padding:8px 4px}
 .periodo-btns button.ativo{background:#b91c1c;color:#fff}
 </style>
-<script src="confirma-sair.js?v=1"></script>
+<script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=2" data-nome="Meu Lanche"></script>
 </head>
 <body>
 <div class="center">
@@ -91,7 +91,7 @@ input,select.form{width:100%;padding:12px;border-radius:10px;border:1px solid #c
 <input id="cadLojaPix" placeholder="Tua chave PIX (CPF, celular ou e-mail)">
 <input id="cadLojaNomePix" placeholder="Nome que aparece no PIX">
 <button class="btn-pedido" onclick="criarConta()">CRIAR MINHA CONTA E ENTRAR</button>
-<button class="btn-voltar" onclick="mostrarLogin()">JA TENHO CONTA - ENTRAR</button>
+<button class="btn-voltar" data-voltar="1" onclick="mostrarLogin()">JA TENHO CONTA - ENTRAR</button>
 <p id="msgCadastro" style="font-size:12px;text-align:center;margin-top:8px"></p>
 </div>
 </div>
