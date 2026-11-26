@@ -1,0 +1,19 @@
+{
+  "id": "/Meu-lanches/cenasua/",
+  "name": "CenaSua — Seu rosto em cenas de IA",
+  "short_name": "CenaSua",
+  "description": "Coloque o seu próprio rosto em cenas de novela, ação, comédia, memes e desenho criadas por IA, com personagens fictícios.",
+  "lang": "pt-BR",
+  "start_url": "/Meu-lanches/cenasua/",
+  "scope": "/Meu-lanches/cenasua/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#12051f",
+  "theme_color": "#4a148c",
+  "categories": ["entertainment", "photo"],
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

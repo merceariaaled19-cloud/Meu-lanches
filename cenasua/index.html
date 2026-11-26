@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CenaSua — seu rosto em cenas de IA</title>
+<meta name="theme-color" content="#4a148c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" defer></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#12051f;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:18px}
+body{min-height:100vh;background:radial-gradient(circle at 20% 0%,#5b1a8a 0,#12051f 55%) fixed}
+.tela{display:none;padding:14px 14px 90px;max-width:560px;margin:0 auto}
+.tela.on{display:block}
+header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+header .logo{font-weight:900;font-size:28px;flex:1;letter-spacing:.3px}
+header .logo span{color:#ffd54f}
+.bt{border:0;border-radius:16px;padding:14px 16px;font-size:19px;font-weight:800;cursor:pointer;color:#fff;background:#7b1fa2;font-family:inherit;min-height:56px}
+.bt:active{transform:scale(.97)}
+.bt.grande{width:100%;font-size:22px;padding:18px;margin:8px 0}
+.bt.ouro{background:linear-gradient(135deg,#ffb300,#ff6f00);color:#1b0b00}
+.bt.verde{background:#1faa59}.bt.cinza{background:#3a2a4d}.bt.verm{background:#c62828}
+.bt.peq{min-height:44px;padding:10px 12px;font-size:16px;border-radius:12px}
+.card{background:#24103a;border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.card h2{margin:0 0 8px;font-size:22px}
+.card p{margin:6px 0;color:#e6d9f5;line-height:1.35}
+.grade{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cat{border-radius:18px;padding:16px 12px;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;position:relative;overflow:hidden;font-weight:800;font-size:18px;line-height:1.2}
+.cat .e{font-size:40px;position:absolute;top:10px;left:12px}
+.modelo{display:flex;gap:12px;align-items:center;background:#24103a;border-radius:18px;padding:10px;margin:10px 0;cursor:pointer}
+.modelo img{width:84px;height:150px;object-fit:cover;border-radius:12px;flex:none}
+.modelo b{font-size:20px}.modelo small{color:#cbb6e6;display:block;margin-top:6px}
+.eu{display:flex;align-items:center;gap:12px}
+.eu img{width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid #ffd54f}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chip{padding:10px 14px;border-radius:999px;background:#3a2a4d;font-weight:700;cursor:pointer;border:2px solid transparent;font-size:16px}
+.chip.on{background:#ffd54f;color:#2a1200}
+#camBox{position:relative;width:100%;aspect-ratio:3/4;background:#000;border-radius:22px;overflow:hidden}
+#cam{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+#oval{position:absolute;left:18%;top:12%;width:64%;height:70%;border:5px dashed #ffffffaa;border-radius:50%}
+#oval.ok{border-color:#3ddc84;border-style:solid}
+#instr{font-size:26px;font-weight:900;text-align:center;margin:12px 0 6px;min-height:64px}
+.passos{display:flex;justify-content:space-around;margin:6px 0}
+.passos div{opacity:.45;font-weight:800;font-size:15px;text-align:center}
+.passos div.feito{opacity:1;color:#3ddc84}.passos div.agora{opacity:1;color:#ffd54f}
+.miniCenas{display:flex;gap:10px;overflow-x:auto;padding:6px 0}
+.miniCenas canvas,.miniCenas img{height:260px;border-radius:14px;flex:none}
+textarea{width:100%;min-height:110px;border-radius:14px;border:0;padding:12px;font-size:19px;font-family:inherit}
+input[type=password],input[type=text]{width:100%;border-radius:12px;border:0;padding:12px;font-size:18px}
+video.res{width:100%;border-radius:18px;background:#000;max-height:70vh}
+.aviso{background:#3b1f12;border-left:6px solid #ffb300;padding:12px;border-radius:12px;margin:10px 0;line-height:1.35}
+.erro{background:#3b1220;border-left:6px solid #ff5277;padding:12px;border-radius:12px;margin:10px 0;line-height:1.35}
+.linha{display:flex;gap:10px;align-items:center}.linha>*{flex:1}
+.fala{background:#2f1849;border-radius:12px;padding:10px;margin:6px 0;font-size:19px}
+.vid{display:flex;gap:10px;align-items:center;background:#24103a;border-radius:14px;padding:8px;margin:8px 0}
+.vid video{width:70px;height:124px;object-fit:cover;border-radius:10px;background:#000}
+.vid .t{flex:1}.vid small{color:#cbb6e6}
+/* robô esperando */
+#espera{position:fixed;inset:0;background:rgba(10,2,20,.94);z-index:9000;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+#espera.on{display:flex}
+.robo{position:relative;width:150px;height:190px;animation:pula 1.1s ease-in-out infinite}
+.robo .cab{position:absolute;left:25px;top:28px;width:100px;height:78px;background:#b39ddb;border-radius:22px;box-shadow:inset 0 -8px 0 #9575cd}
+.robo .ant{position:absolute;left:72px;top:2px;width:6px;height:28px;background:#9575cd}
+.robo .ant:after{content:'';position:absolute;left:-7px;top:-12px;width:20px;height:20px;border-radius:50%;background:#ffd54f;box-shadow:0 0 18px #ffd54f;animation:pisca 1s infinite}
+.robo .olho{position:absolute;top:56px;width:20px;height:22px;background:#1b0b2e;border-radius:50%;animation:olho 3s infinite}
+.robo .o1{left:48px}.robo .o2{left:82px}
+.robo .boca{position:absolute;left:60px;top:86px;width:30px;height:10px;border-radius:0 0 14px 14px;background:#1b0b2e;animation:fala .35s infinite alternate}
+.robo .corpo{position:absolute;left:35px;top:112px;width:80px;height:66px;background:#7e57c2;border-radius:18px}
+.robo .corpo:after{content:'🎬';position:absolute;left:24px;top:14px;font-size:30px}
+.robo .br{position:absolute;top:118px;width:16px;height:52px;background:#9575cd;border-radius:10px;transform-origin:top center}
+.robo .b1{left:16px;animation:acena 0.8s infinite alternate}.robo .b2{left:118px;animation:acena2 0.8s infinite alternate}
+@keyframes pula{50%{transform:translateY(-12px)}}@keyframes pisca{50%{opacity:.3}}
+@keyframes olho{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes fala{to{height:3px}}@keyframes acena{from{transform:rotate(20deg)}to{transform:rotate(60deg)}}@keyframes acena2{from{transform:rotate(-20deg)}to{transform:rotate(-60deg)}}
+#esMsg{font-size:23px;font-weight:800;margin:18px 0 8px;max-width:440px}
+#esDica{color:#cbb6e6;min-height:44px;max-width:440px}
+.barra{width:86%;max-width:420px;height:16px;background:#3a2a4d;border-radius:10px;overflow:hidden;margin:12px 0}
+.barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd54f,#ff6f00);transition:width .3s}
+/* abertura */
+#abertura{position:fixed;inset:0;z-index:9500;background:#12051f;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s}
+#abertura h1{font-size:54px;margin:16px 0 4px;animation:entra 0.9s ease-out}
+#abertura h1 span{color:#ffd54f}
+#abertura p{color:#e1bee7;font-size:20px;margin:0;animation:entra 1.4s ease-out}
+@keyframes entra{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.luz{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(#ffd54f55,transparent 65%);animation:gira 3s linear infinite}
+@keyframes gira{from{transform:rotate(0) translateX(60px)}to{transform:rotate(360deg) translateX(60px)}}
+.pe{font-size:14px;color:#b9a2d6;text-align:center;margin-top:24px;line-height:1.4}
+</style>
+<script src="confirma-sair.js?v=1"></script><script src="voltar-pergunta.js?v=1"></script>
+</head><body>
+
+<div id="abertura"><div class="luz"></div><div class="robo"><div class="ant"></div><div class="cab"></div><div class="olho o1"></div><div class="olho o2"></div><div class="boca"></div><div class="br b1"></div><div class="br b2"></div><div class="corpo"></div></div>
+<h1>Cena<span>Sua</span></h1><p>Você é a estrela da cena!</p></div>
+
+<!-- INÍCIO -->
+<section class="tela" id="tInicio">
+ <header><div class="logo">🎬 Cena<span>Sua</span></div><button class="bt cinza peq" id="bAjustes" aria-label="Ajustes">⚙️</button><button class="bt verm peq" id="bSair">🚪 Sair</button></header>
+ <div class="card" id="cSemSelfie"><h2>1º passo: sua selfie ao vivo 🤳</h2><p>Para usar o app, tire uma selfie <b>ao vivo</b> pela câmera. O app pede para você piscar e virar a cabeça, para ter certeza de que é você mesmo.</p><p>🔒 Sua foto fica <b>só no seu celular</b>.</p><button class="bt grande ouro" id="bSelfie1">📷 Tirar minha selfie ao vivo</button></div>
+ <div class="card" id="cComSelfie" style="display:none"><div class="eu"><img id="imgEu" alt="Sua selfie"><div style="flex:1"><b>Você é a estrela! ⭐</b><div class="chips" id="chGen"><span class="chip" data-g="m">👨 Personagem homem</span><span class="chip" data-g="f">👩 Personagem mulher</span></div></div></div>
+  <div class="linha" style="margin-top:6px"><button class="bt cinza peq" id="bSelfie2">🔄 Nova selfie</button><button class="bt cinza peq" id="bGaleria">🖼️ Usar foto minha da galeria</button></div><input type="file" id="fGal" accept="image/*" hidden></div>
+ <div id="areaCats" style="display:none">
+  <h2 style="margin:18px 4px 8px">Escolha o tipo de cena</h2>
+  <div class="grade" id="gCats"></div>
+  <div class="card" style="margin-top:16px"><h2>✍️ Descreva sua cena</h2><p>Escreva do seu jeito e a IA cria a cena com você no papel principal.</p><button class="bt grande" id="bDescreva">✍️ Escrever minha cena</button></div>
+  <div class="card"><h2>🎞️ Meus vídeos</h2><div id="lVideos"><p>Nenhum vídeo ainda.</p></div></div>
+ </div>
+ <div class="pe">Todas as cenas são criadas por IA com personagens fictícios. Use só o seu próprio rosto.<br>Nada de famosos, pessoas reais, novelas ou filmes de verdade.</div>
+</section>
+
+<!-- SELFIE AO VIVO -->
+<section class="tela" id="tSelfie">
+ <header><button class="bt cinza peq voltar">⬅️ Voltar</button><div class="logo" style="font-size:22px">Selfie ao vivo</div></header>
+ <div id="camBox"><video id="cam" playsinline muted autoplay></video><div id="oval"></div></div>
+ <div id="instr">Abrindo a câmera…</div>
+ <div class="passos"><div id="p1">🙂<br>Rosto</div><div id="p2">👁️<br>Piscar</div><div id="p3">↔️<br>Virar</div><div id="p4">📸<br>De frente</div></div>
+ <div id="selErro"></div>
+ <label style="display:flex;gap:10px;align-items:center;margin:12px 4px;font-size:17px"><input type="checkbox" id="ckMeu" checked style="width:26px;height:26px"> Este rosto é meu (não é de outra pessoa).</label>
+</section>
+
+<!-- CATEGORIA -->
+<section class="tela" id="tCat">
+ <header><button class="bt cinza peq voltar">⬅️ Voltar</button><div class="logo" style="font-size:22px" id="catNome"></div></header>
+ <div id="catDesc"></div><div id="lModelos"></div>
+</section>
+
+<!-- MONTAGEM -->
+<section class="tela" id="tCriar">
+ <header><button class="bt cinza peq voltar">⬅️ Voltar</button><div class="logo" style="font-size:21px" id="crNome"></div></header>
+ <div class="miniCenas" id="crCenas"></div>
+ <div class="card"><h2>🗣️ Seu personagem vai falar?</h2>
+  <div class="chips" id="chVoz"><span class="chip on" data-v="ia">🤖 Voz da IA</span><span class="chip" data-v="minha">🎤 Minha voz</span><span class="chip" data-v="nada">🔇 Sem voz (só música)</span></div>
+  <div id="vozIA"><div class="chips" id="chTimbre"></div><p style="font-size:15px">A voz da IA é grátis, mas tem limite por minuto e por dia. Se estiver ocupada, o app espera e tenta de novo.</p></div>
+  <div id="vozMinha" style="display:none"><p>Leia as falas abaixo, com uma pausa entre elas:</p><div id="falasLer"></div><button class="bt verde grande" id="bGravar">🎤 Gravar minha voz</button><div id="gravInfo"></div></div>
+  <div id="falasEdit"></div>
+ </div>
+ <button class="bt grande ouro" id="bFazer">🎬 Fazer meu vídeo</button>
+ <button class="bt grande cinza" id="bFotos">🖼️ Salvar as fotos</button>
+ <div id="crErro"></div>
+</section>
+
+<!-- DESCREVA -->
+<section class="tela" id="tDesc">
+ <header><button class="bt cinza peq voltar">⬅️ Voltar</button><div class="logo" style="font-size:22px">✍️ Descreva sua cena</div></header>
+ <textarea id="txDesc" maxlength="300" placeholder="Ex.: eu num barco no rio ao pôr do sol, como em filme de aventura"></textarea>
+ <div class="chips" id="chEst"><span class="chip on" data-e="">📷 Realista</span><span class="chip" data-e="desenho">📺 Desenho</span><span class="chip" data-e="anime">⚡ Anime</span></div>
+ <div class="aviso">Só cenas inventadas, com você no papel principal. Não vale: nome de famosos ou pessoas reais, filmes/novelas/desenhos de verdade, nudez, violência, golpes ou zoar outras pessoas.</div>
+ <div id="dsErro"></div>
+ <button class="bt grande ouro" id="bCriarDesc">✨ Criar minha cena</button>
+</section>
+
+<!-- RESULTADO -->
+<section class="tela" id="tRes">
+ <header><button class="bt cinza peq voltar">⬅️ Início</button><div class="logo" style="font-size:22px">Seu vídeo 🎉</div></header>
+ <video class="res" id="vRes" controls playsinline></video>
+ <button class="bt grande verde" id="bZap">📲 Compartilhar no WhatsApp</button>
+ <button class="bt grande cinza" id="bBaixar">⬇️ Salvar no celular</button>
+ <button class="bt grande" id="bProxEp" style="display:none">▶️ Próximo episódio</button>
+ <button class="bt grande cinza" id="bOutro">🔁 Fazer outra cena</button>
+ <div class="pe">O vídeo tem a marca “feito com IA · CenaSua”. Ela não sai: é para todo mundo saber que é brincadeira feita com IA.</div>
+</section>
+
+<!-- AJUSTES -->
+<section class="tela" id="tAjustes">
+ <header><button class="bt cinza peq voltar">⬅️ Voltar</button><div class="logo" style="font-size:22px">⚙️ Ajustes</div></header>
+ <div class="card"><h2>🤖 Voz e texto com IA (opcional)</h2><p>As cenas prontas e as fotos funcionam sem nada disso. A voz da IA e o “descreva sua cena” mais caprichado usam o Gemini.</p>
+  <p id="ajChave">Verificando…</p>
+  <button class="bt peq" id="bEntrar">🔑 Entrar como dono (Google)</button>
+  <p style="margin-top:12px">Ou cole uma chave do Gemini (fica só neste celular):</p><input type="password" id="inChave" autocomplete="off" placeholder="chave do Gemini"><div class="linha" style="margin-top:8px"><button class="bt peq verde" id="bSalvaChave">Salvar chave</button><button class="bt peq cinza" id="bTiraChave">Apagar chave</button></div></div>
+ <div class="card"><h2>🔒 Seus dados</h2><p>Sua selfie, seus vídeos e suas fotos ficam só neste celular. Nada vai para servidor, a não ser o texto que você escreve no “descreva sua cena” (vai para a IA criar a imagem).</p><button class="bt verm peq" id="bApagar">🗑️ Apagar minha selfie e meus vídeos</button></div>
+ <div class="card"><h2>📜 Regras do CenaSua</h2><p>• Só o SEU rosto, com selfie ao vivo.<br>• Cenas e personagens sempre inventados pela IA.<br>• Nada de famosos, políticos, atores, novelas, filmes ou desenhos de verdade.<br>• Nada de nudez, violência, golpes ou zoar outras pessoas.<br>• A marca “feito com IA · CenaSua” fica em toda foto e vídeo.</p></div>
+</section>
+
+<div id="espera"><div class="robo"><div class="ant"></div><div class="cab"></div><div class="olho o1"></div><div class="olho o2"></div><div class="boca"></div><div class="br b1"></div><div class="br b2"></div><div class="corpo"></div></div>
+ <div id="esMsg">Preparando…</div><div class="barra"><i id="esBar"></i></div><div id="esDica"></div><button class="bt cinza peq" id="esCancela">Cancelar</button></div>
+
+<script src="rosto.js?v=1"></script>
+<script src="cenas.js?v=1"></script>
+<script src="filtro.js?v=1"></script>
+<script src="audio.js?v=1"></script>
+<script src="video.js?v=1"></script>
+<script src="app.js?v=1"></script>
+</body></html>
