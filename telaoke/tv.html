@@ -52,28 +52,44 @@
 <script>
 var FB={apiKey:"AIzaSyBxHBnTlyDTe4g13SG9cbsWv0FMM5KazwM",authDomain:"pdv-mercadinho-1c882.firebaseapp.com",projectId:"pdv-mercadinho-1c882",storageBucket:"pdv-mercadinho-1c882.firebasestorage.app",messagingSenderId:"572967904689",appId:"1:572967904689:web:e162701eeab1bc0be48990"};
 var db=null;if(!window.TO_TESTE){firebase.initializeApp(FB);db=firebase.firestore();
-try{db.enablePersistence({synchronizeTabs:true}).catch(function(){})}catch(e){}}
+try{db.settings({experimentalAutoDetectLongPolling:true,merge:true})}catch(e){}}
+/* v10: a TV não usa mais o cache do Firestore no aparelho (ele trazia anúncio excluído e horário velho). Apaga o que ficou das versões antigas. */
+try{if(window.indexedDB&&!window.TO_TESTE)indexedDB.deleteDatabase('firestore/[DEFAULT]/'+FB.projectId+'/main')}catch(e){}
 function $(i){return document.getElementById(i)}
 var BASE=location.href.split('#')[0].split('?')[0].replace(/tv\.html$/,'');var ADM=BASE+'admin.html';
 var Q={};location.search.replace(/[?&]([^=&]+)=([^&]*)/g,function(a,k,v){Q[k]=decodeURIComponent(v)});
 function gcod(){var a='ABCDEFGHJKMNPQRSTUVWXYZ23456789',s='',r=new Uint32Array(6);(window.crypto||window.msCrypto).getRandomValues(r);for(var i=0;i<6;i++)s+=a[r[i]%a.length];return s}
 function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){return null}}
 var COD=(Q.c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(COD.length==6)ls('to_tv_cod',COD);else COD=ls('to_tv_cod');if(!COD||COD.length!=6){COD=gcod();ls('to_tv_cod',COD)}
-var TELA=null,CAR=3,ADS=[],LISTA=[],POS=-1,CAM=0,TIMER=null,SEGURA=null,FALHAS=0,ESTADO='',unT=null,unC=null,unA=null,YTOK=false,YTFILA=[],ADS_OK=false;
+var TELA=null,CAR=3,ADS=[],LISTA=[],POS=-1,CAM=0,TIMER=null,SEGURA=null,FALHAS=0,ESTADO='',unT=null,unC=null,unA=null,YTOK=false,YTFILA=[],ADS_OK=false,SRV=false,ATUAL='',ULT_SYNC=0;
 function mostra(id){['par','ply','venc','vazio','carr','dorme'].forEach(function(x){$(x).style.display=x==id?(x=='ply'?'block':'flex'):'none'});ESTADO=id;var r=(id=='ply'&&TELA&&(TELA.relogio!==false||TELA.texto));$('rod').style.display=r?'flex':'none';$('ply').style.bottom=r?'7vh':'0'}
 function msOf(t){return t&&t.toMillis?t.toMillis():(t&&t.seconds?t.seconds*1000:(t||0))}
 /* ---------- pareamento ---------- */
 function telaPar(){$('cod').textContent=COD;$('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=6&data='+encodeURIComponent(ADM+'?parear='+COD);mostra('par');pararTudo()}
 function escutaTela(){if(unT)unT();unT=db.collection('to_telas').doc(COD).onSnapshot(function(d){
   if(!d.exists){TELA=null;if(unA){unA();unA=null}if(unC){unC();unC=null}ADS_OK=false;ls('to_tv_cache',null);telaPar();return}
-  var era=!!TELA;TELA=d.data();if(!era&&!d.metadata.fromCache)setTimeout(visto,1500);if(!unA)escutaAds();$('vCod').textContent=$('vzCod').textContent='TV: '+(TELA.nome||'')+' • código '+COD;rodape();montaLista()
- },function(e){console.log('tela',e);if(!TELA)usaCache()})}
+  var era=!!TELA;aplicaTela(d.data());if(!era&&!d.metadata.fromCache)setTimeout(visto,1500);if(!unA)escutaAds()
+ },function(e){console.log('tela',e);if(unT){try{unT()}catch(x){}}unT=null;if(!TELA)usaCache();setTimeout(function(){if(!unT)escutaTela()},15000)})}
+function aplicaTela(t){TELA=t;$('vCod').textContent=$('vzCod').textContent='TV: '+(TELA.nome||'')+' • código '+COD;if(SRV)salvaCache();rodape();montaLista()}
 /* TVs são do operador: lê todos os anúncios ligados (sem login) + tolerância de vencimento */
 function escutaAds(){
- unC=db.collection('to_config').doc('operacao').onSnapshot(function(d){var c=d.exists?d.data():{};CAR=c.carencia!=null&&c.carencia!==''?+c.carencia:3;salvaCache();montaLista()},function(){});
- unA=db.collection('to_anuncios').where('ativo','==',true).onSnapshot(function(s){ADS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});ADS_OK=true;$('rede').style.display=s.metadata.fromCache&&!navigator.onLine?'block':'none';salvaCache();okvPrefetch();montaLista()},function(e){console.log('anuncios',e)})}
+ unC=db.collection('to_config').doc('operacao').onSnapshot(function(d){var c=d.exists?d.data():{};CAR=c.carencia!=null&&c.carencia!==''?+c.carencia:3;if(SRV)salvaCache();montaLista()},function(){});
+ unA=db.collection('to_anuncios').where('ativo','==',true).onSnapshot(function(s){aplicaAds(s)},function(e){console.log('anuncios',e);if(unA){try{unA()}catch(x){}}unA=null;setTimeout(function(){if(!unA&&TELA)escutaAds()},15000)})}
+/* lista atual do servidor = a verdade: o que não está nela some do aparelho */
+function aplicaAds(s){ADS=s.docs.map(function(d){var x=d.data();x.id=d.id;return x});ADS_OK=true;
+ if(!s.metadata.fromCache){SRV=true;ULT_SYNC=Date.now();$('rede').style.display='none';salvaCache();limpaAparelho()}else $('rede').style.display=!navigator.onLine?'block':'none';
+ okvPrefetch();montaLista()}
+/* confere com o servidor de tempos em tempos (se a escuta travar, a TV não fica com lista/horário velhos) */
+function confereServidor(){if(!db||!navigator.onLine)return;
+ db.collection('to_telas').doc(COD).get({source:'server'}).then(function(d){if(!d.exists){if(TELA){TELA=null;ADS_OK=false;ls('to_tv_cache',null);telaPar()}return}aplicaTela(d.data());if(!unA)escutaAds();
+  return db.collection('to_anuncios').where('ativo','==',true).get({source:'server'}).then(aplicaAds)}).catch(function(e){console.log('confere',e)})}
+setInterval(confereServidor,3*60000);window.addEventListener('online',function(){setTimeout(confereServidor,3000)});
+function okvIdsAtuais(){var k={};(ADS||[]).forEach(function(a){var id=a.tipo=='mp4'&&okvId(a.url);if(id)k[id]=1});return k}
+function limpaAparelho(){var k=okvIdsAtuais();
+ Object.keys(OKVU).forEach(function(id){if(!k[id]){try{URL.revokeObjectURL(OKVU[id])}catch(e){}delete OKVU[id]}});
+ if(window.caches)caches.open('okv-1').then(function(c){return c.keys().then(function(ks){return Promise.all(ks.map(function(r){var id=(r.url.split('/okv-cache/')[1]||'').split(/[?#]/)[0];if(!k[id])return c.delete(r)}))})}).catch(function(){})}
 /* cache leve (além do cache do Firestore) */
-function salvaCache(){try{ls('to_tv_cache',JSON.stringify({tela:TELA,car:CAR,ads:ADS}))}catch(e){try{ls('to_tv_cache',JSON.stringify({tela:TELA,car:CAR,ads:ADS.filter(function(a){return a.tipo!='foto'})}))}catch(e2){}}}
+function salvaCache(){if(!SRV||!TELA)return;try{ls('to_tv_cache',JSON.stringify({tela:TELA,car:CAR,ads:ADS}))}catch(e){try{ls('to_tv_cache',JSON.stringify({tela:TELA,car:CAR,ads:ADS.filter(function(a){return a.tipo!='foto'})}))}catch(e2){}}}
 function usaCache(){try{var c=JSON.parse(ls('to_tv_cache')||'null');if(!c||!c.tela)return telaPar();TELA=c.tela;if(c.car!=null)CAR=+c.car;ADS=c.ads||[];ADS_OK=true;okvPrefetch();$('rede').style.display='block';rodape();montaLista()}catch(e){telaPar()}}
 function hoje(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
 function addD(s,n){var d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
@@ -90,6 +106,7 @@ function montaLista(){if(!TELA||!ADS_OK)return;
  var antes=LISTA.map(function(a){return a.id+(a.atualizadoEm&&a.atualizadoEm.seconds||'')}).join(),depois=L.map(function(a){return a.id+(a.atualizadoEm&&a.atualizadoEm.seconds||'')}).join();LISTA=L;
  if(!L.length){pararTudo();mostra('vazio');$('vzT').textContent='TV ligada! ✅ '+(TELA.nome||'');return}
  if(ESTADO!='ply'){mostra('ply');POS=-1;proximo();return}
+ if(ATUAL&&!L.some(function(a){return a.id==ATUAL})){POS=-1;proximo();return}
  if(antes!==depois&&!TIMER&&!SEGURA){proximo()}}
 /* ---------- horário de funcionamento (hora local do aparelho) ---------- */
 function minDe(v,d){var m=/^(\d{1,2}):(\d{2})$/.exec(v||'');if(!m)m=/^(\d{1,2}):(\d{2})$/.exec(d);return (+m[1])*60+(+m[2])}
@@ -108,11 +125,11 @@ function okvBaixa(id){if(OKVU[id])return Promise.resolve(OKVU[id]);if(OKVP[id])r
    return prox().then(function(){var bl=new Blob(ps,{type:m.mime||'video/mp4'});if(window.caches)caches.open('okv-1').then(function(c){c.put(okvChave(id),new Response(bl,{headers:{'Content-Type':bl.type}}))}).catch(function(){});return bl})})})
  .then(function(b){OKVU[id]=URL.createObjectURL(b);delete OKVP[id];return OKVU[id]},function(e){delete OKVP[id];throw e});return OKVP[id]}
 function okvPrefetch(){(ADS||[]).forEach(function(a){var id=a.tipo=='mp4'&&okvId(a.url);if(id&&!OKVU[id])okvBaixa(id).catch(function(){})})}
-function pararTudo(){clearTimeout(TIMER);clearTimeout(SEGURA);TIMER=SEGURA=null;[$('c0'),$('c1')].forEach(function(c){limpa(c);c.classList.remove('on')})}
+function pararTudo(){ATUAL='';clearTimeout(TIMER);clearTimeout(SEGURA);TIMER=SEGURA=null;[$('c0'),$('c1')].forEach(function(c){limpa(c);c.classList.remove('on')})}
 function limpa(c){var v=c.querySelector('video');if(v){try{v.pause();v.removeAttribute('src');v.load()}catch(e){}}if(c._yt){try{c._yt.destroy()}catch(e){}c._yt=null}c.innerHTML=''}
 function proximo(){clearTimeout(TIMER);clearTimeout(SEGURA);TIMER=SEGURA=null;if(!LISTA.length||ESTADO!='ply')return;
  if(FALHAS>=Math.max(2,LISTA.length)){FALHAS=0;TIMER=setTimeout(proximo,10000);return}
- POS=(POS+1)%LISTA.length;var a=LISTA[POS],nova=CAM?$('c0'):$('c1'),velha=CAM?$('c1'):$('c0');CAM=1-CAM;limpa(nova);
+ POS=(POS+1)%LISTA.length;var a=LISTA[POS];ATUAL=a.id;var nova=CAM?$('c0'):$('c1'),velha=CAM?$('c1'):$('c0');CAM=1-CAM;limpa(nova);
  $('rLoja').textContent=a.lojaNome?'🏪 '+a.lojaNome:'';
  function troca(){nova.classList.add('on');velha.classList.remove('on');setTimeout(function(){if(!velha.classList.contains('on'))limpa(velha)},1000)}
  function fim(){FALHAS=0;proximo()}function erro(){FALHAS++;proximo()}
@@ -145,7 +162,7 @@ function rodape(){if(!TELA)return;$('rHora').style.display=TELA.relogio!==false?
 /* ---------- controle remoto / tela cheia ---------- */
 function telaCheia(){var e=document.documentElement,f=e.requestFullscreen||e.webkitRequestFullscreen||e.mozRequestFullScreen;if(f&&!document.fullscreenElement&&!document.webkitFullscreenElement){try{var p=f.call(e);if(p&&p.catch)p.catch(function(){})}catch(x){}}$('dica').style.display='none'}
 var OKS=0,OKT=null;
-function info(){var i=$('info');i.innerHTML='📺 '+(TELA?(TELA.nome||'TV')+'<br>':'')+'Código: <b>'+COD+'</b><br><small>'+LISTA.length+' anúncio(s) • ➡ próximo</small>';i.style.display='block';clearTimeout(info.t);info.t=setTimeout(function(){i.style.display='none'},5000)}
+function info(){var i=$('info');i.innerHTML='📺 '+(TELA?(TELA.nome||'TV')+'<br>':'')+'Código: <b>'+COD+'</b><br><small>'+LISTA.length+' anúncio(s) • ⏰ '+(TELA?(TELA.sempre?'24h':(TELA.horaIni||'06:00')+'–'+(TELA.horaFim||'22:00')):'')+'<br>'+(ULT_SYNC?'conferido às '+new Date(ULT_SYNC).toTimeString().slice(0,5):'ainda não conferido')+' • ➡ próximo</small>';i.style.display='block';clearTimeout(info.t);info.t=setTimeout(function(){i.style.display='none'},5000)}
 document.addEventListener('keydown',function(e){var k=e.key||'',c=e.keyCode;
  if(k=='Enter'||c==13||c==23){telaCheia();info();OKS++;clearTimeout(OKT);OKT=setTimeout(function(){OKS=0},1500);if(OKS>=3&&ESTADO=='par'){OKS=0;COD=gcod();ls('to_tv_cod',COD);escutaTela();telaPar()}}
  else if(k=='ArrowRight'||c==39){if(ESTADO=='ply'){FALHAS=0;proximo()}}
@@ -162,6 +179,6 @@ setInterval(function(){if(TELA)montaLista()},30000); /* vira o dia / vence */
 window.addEventListener('online',function(){$('rede').style.display='none'});window.addEventListener('offline',function(){if(ESTADO=='ply')$('rede').style.display='block'});
 /* recarrega 1x por dia de madrugada para pegar versão nova */
 setInterval(function(){var d=new Date();if(d.getHours()==4&&d.getMinutes()<2&&navigator.onLine)location.reload()},60000);
-if(db){escutaTela();setTimeout(function(){if(ESTADO=='carr'){if(!navigator.onLine)usaCache();}},6000)}
+if(db){escutaTela();setTimeout(function(){if(!TELA&&(ESTADO==''||ESTADO=='carr')&&ls('to_tv_cache'))usaCache()},10000)}
 if('serviceWorker' in navigator&&!window.TO_TESTE)navigator.serviceWorker.register('sw.js').catch(function(){});
 </script></body></html>

@@ -27,7 +27,8 @@ var DB = TESTE ? (function(){
     novaLoja: function(o){ o.id = 'L' + Date.now(); MEM.lojas.push(o); return Promise.resolve(o.id); },
     anuncio: function(id, o){ id = id || 'A' + Date.now(); MEM.anuncios[id] = o; return Promise.resolve(id); },
     sobeVideo: function(blob, meta, prog){ var id = OKV.novoId(); MEM.videos[id] = {blob: blob, meta: meta}; if (prog) prog(1); return Promise.resolve(id); },
-    apagaVideo: function(id){ delete MEM.videos[id]; return Promise.resolve(); }
+    apagaVideo: function(id){ delete MEM.videos[id]; return Promise.resolve(); },
+    apagaAnuncio: function(id){ delete MEM.anuncios[id]; return Promise.resolve(); }
   };
 })() : {
   chave: function(){ return db.collection('ml_config').doc('geral').get().then(function(d){ return d.exists ? (d.data().geminiKey || '') : ''; }); },
@@ -42,7 +43,8 @@ var DB = TESTE ? (function(){
     if (id) return db.collection('to_anuncios').doc(id).get().then(function(d){ if (d.exists) return db.collection('to_anuncios').doc(id).set(o, {merge: true}).then(function(){ return id; }); return DB.anuncio(null, o); });
     o.dono = U.uid; o.criadoEm = firebase.firestore.FieldValue.serverTimestamp(); return db.collection('to_anuncios').add(o).then(function(r){ return r.id; }); },
   sobeVideo: function(blob, meta, prog){ return OKV.sobe(db, blob, meta, prog); },
-  apagaVideo: function(id){ return OKV.apaga(db, id); }
+  apagaVideo: function(id){ return OKV.apaga(db, id); },
+  apagaAnuncio: function(id){ return db.collection('to_anuncios').doc(id).delete(); }
 };
 function pegaChave(){ if (CHAVE) return Promise.resolve(CHAVE); return DB.chave().then(function(k){ CHAVE = k; return k; }).catch(function(){ return ''; }); }
 
@@ -485,8 +487,9 @@ async function salvar(quieto){
   catch (x) { toast('Não salvou: ' + (x.code || x.message), '#b91c1c', 4000); }
 }
 $('bSalvar').onclick = function(){ salvar(false); };
-$('bApagar').onclick = async function(){ if (!OF.id || !confirm('Apagar este comercial? (O anúncio no TelaOkê continua lá; apague pelo ADM se quiser.)')) return;
-  try { await DB.apaga(OF.id); toast('Apagado'); sujo = false; abreHome(); } catch (x) { toast('Não apagou: ' + (x.code || x.message), '#b91c1c'); } };
+$('bApagar').onclick = async function(){ if (!OF.id || !confirm('Apagar este comercial?')) return;
+  var tiraTv = !!OF.anuncioId && confirm('Este comercial está passando nas TVs do TelaOkê.\n\nTirar das TVs também?\n\nOK = tirar das TVs • Cancelar = deixar passando');
+  try { if (tiraTv) await DB.apagaAnuncio(OF.anuncioId).catch(function(){}); await DB.apaga(OF.id); toast(tiraTv ? 'Apagado e tirado das TVs' : 'Apagado'); sujo = false; abreHome(); } catch (x) { toast('Não apagou: ' + (x.code || x.message), '#b91c1c'); } };
 window.copia = copia;
 window.addEventListener('beforeunload', function(e){ if (sujo){ e.preventDefault(); e.returnValue = ''; } });
 if ('serviceWorker' in navigator && !TESTE){
