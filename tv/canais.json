@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-25T22:21",
+"atualizado": "2026-11-26T04:31",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -20,12 +20,6 @@
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
 },
 {
-"nome": "Canal 38",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/co7TCWC.png",
-"url": "https://cdn.jmvstream.com/w/LVW-8503/LVW8503_d0V5oduFlK/playlist.m3u8"
-},
-{
 "nome": "Canal Metropolitano de Noticias",
 "cat": "Notícias",
 "logo": "https://i.imgur.com/G0x4xqa.png",
@@ -42,12 +36,6 @@
 "cat": "Notícias",
 "logo": "https://i.imgur.com/lezIQyL.png",
 "url": "https://video01.brascast.com/d92ebb4f/d92ebb4f/playlist.m3u8"
-},
-{
-"nome": "Plena TV",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/lH4RT7b.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9591/LVW9591_PmXtgATnaS/playlist.m3u8"
 },
 {
 "nome": "SBT News",
@@ -194,6 +182,12 @@
 "url": "https://fpa-gateway.tvcultura.com.br:8181/memfs/606caef0-a290-413d-9f1f-8fcdb3a73831.m3u8"
 },
 {
+"nome": "EUTV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/8PxpamC.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
+},
+{
 "nome": "Fala Litoral",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/NF6PL8O.png",
@@ -270,12 +264,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/D8R0Af4.png",
 "url": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8"
-},
-{
-"nome": "SBT Nacional",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/tc1ALuu.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/chunklist.m3u8"
 },
 {
 "nome": "SBT Nova Mutum",
@@ -380,12 +368,6 @@
 "url": "https://tv02.zas.media:1936/tvmarajoara/tvmarajoara/playlist.m3u8"
 },
 {
-"nome": "TV Metropole",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/bJyjLpg.png",
-"url": "https://cdn-fundacao-2110.ciclano.io:1443/fundacao-2110/fundacao-2110/playlist.m3u8"
-},
-{
 "nome": "TV Pantanal MS",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/0FOmktl.png",
@@ -408,12 +390,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/f34CQIG.png",
 "url": "https://stmv1.voxtvhd.com.br/9030/9030/playlist.m3u8"
-},
-{
-"nome": "TV Sul Bahia",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/qM6nMWm.png",
-"url": "https://live.cdn.upx.com/00046/myStream.sdp/playlist.m3u8"
 },
 {
 "nome": "TV Vila Real",
@@ -516,6 +492,12 @@
 "cat": "Infantil",
 "logo": "https://i.imgur.com/SRX6EPY.png",
 "url": "https://w2.manasat.com/kkids/smil:kkids.smil/playlist.m3u8"
+},
+{
+"nome": "Retro Cartoon",
+"cat": "Infantil",
+"logo": "https://i.imgur.com/hIlEfhl.png",
+"url": "https://stmv1.video.brstream.com.br/retrotv/retrotv/chunklist_w1069200121.m3u8"
 },
 {
 "nome": "Lamore Rock Show WebTV",
