@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-26T16:29",
+"atualizado": "2026-11-26T22:22",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -12,6 +12,12 @@
 "cat": "Amazonas",
 "logo": "https://i.imgur.com/j51rBro.png",
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-20715/LVW20715_50E3x2MCm2/playlist.m3u8"
+},
+{
+"nome": "Aratu On",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/Ht4jCab.png",
+"url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
 },
 {
 "nome": "Canal Metropolitano de Noticias",
@@ -30,12 +36,6 @@
 "cat": "Notícias",
 "logo": "https://i.imgur.com/lezIQyL.png",
 "url": "https://video01.brascast.com/d92ebb4f/d92ebb4f/playlist.m3u8"
-},
-{
-"nome": "Plena TV",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/lH4RT7b.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9591/LVW9591_PmXtgATnaS/playlist.m3u8"
 },
 {
 "nome": "SBT News",
@@ -134,6 +134,12 @@
 "url": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8"
 },
 {
+"nome": "Boas Novas",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/ZqhizdP.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8"
+},
+{
 "nome": "Catve FM",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/w89yw36.png",
@@ -188,10 +194,10 @@
 "url": "https://fpa-gateway.tvcultura.com.br:8181/memfs/606caef0-a290-413d-9f1f-8fcdb3a73831.m3u8"
 },
 {
-"nome": "EUTV",
+"nome": "ElyTV",
 "cat": "Variedades",
-"logo": "https://i.imgur.com/8PxpamC.png",
-"url": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
+"logo": "https://i.imgur.com/1eHNe91.png",
+"url": "https://stmv1.srvsite.com/ely/ely/playlist.m3u8"
 },
 {
 "nome": "Fala Litoral",
@@ -260,22 +266,16 @@
 "url": "https://video01.logicahost.com.br/websptv/websptv/playlist.m3u8"
 },
 {
+"nome": "Rede TV! Mais",
+"cat": "Variedades",
+"logo": "https://i.ibb.co/F0Tm2WP/2103f4c07b851d64b4c96955765a9a95.png",
+"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8"
+},
+{
 "nome": "RedeTV! Parana",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/D8R0Af4.png",
 "url": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8"
-},
-{
-"nome": "SBT Interior",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/IkZfa4j.png",
-"url": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8"
-},
-{
-"nome": "SBT Nacional",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/tc1ALuu.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/chunklist.m3u8"
 },
 {
 "nome": "SBT Nova Mutum",
@@ -318,12 +318,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/wM9xXhc.png",
 "url": "https://stmv5.samcast.com.br/wagner7919/wagner7919/playlist.m3u8"
-},
-{
-"nome": "TV Brasil Oeste",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/noqGfuy.png",
-"url": "https://5ad482a77183d.streamlock.net/operacaotbomt.com/operacaotbomt.com/playlist.m3u8"
 },
 {
 "nome": "TV BRICS Portuguese",
@@ -384,12 +378,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/bJyjLpg.png",
 "url": "https://cdn-fundacao-2110.ciclano.io:1443/fundacao-2110/fundacao-2110/playlist.m3u8"
-},
-{
-"nome": "TV Pantanal MS",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/0FOmktl.png",
-"url": "https://5a2b083e9f360.streamlock.net/tvpantanal/tvpantanal.sdp/playlist.m3u8"
 },
 {
 "nome": "TV Passo Fundo",
@@ -518,6 +506,12 @@
 "url": "https://w2.manasat.com/kkids/smil:kkids.smil/playlist.m3u8"
 },
 {
+"nome": "Retro Cartoon",
+"cat": "Infantil",
+"logo": "https://i.imgur.com/hIlEfhl.png",
+"url": "https://stmv1.video.brstream.com.br/retrotv/retrotv/chunklist_w1069200121.m3u8"
+},
+{
 "nome": "Lamore Rock Show WebTV",
 "cat": "Música",
 "logo": "https://www.lamorerockshowwebtv.com.br/wp-content/uploads/2024/11/logo_rockshow.avif",
@@ -560,12 +554,6 @@
 "url": "https://app.tvufop.com.br/hls/tvufop.m3u8"
 },
 {
-"nome": "TVE RS",
-"cat": "Educação e Cultura",
-"logo": "https://i.imgur.com/MQ6lJpS.png",
-"url": "https://streaming.procergs.com.br:8443/tve/stve/playlist.m3u8"
-},
-{
 "nome": "Unisul TV",
 "cat": "Educação e Cultura",
 "logo": "https://i.imgur.com/N0TvAFz.png",
@@ -600,12 +588,6 @@
 "cat": "Religiosos",
 "logo": "",
 "url": "https://strv.painelvox.top/plenitude/plenitude/playlist.m3u8"
-},
-{
-"nome": "Rede Gospel",
-"cat": "Religiosos",
-"logo": "https://i.imgur.com/mttSwgO.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
 },
 {
 "nome": "RIT TV",
