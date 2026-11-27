@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-27T04:33",
+"atualizado": "2026-11-27T10:27",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -18,6 +18,12 @@
 "cat": "Notícias",
 "logo": "https://i.imgur.com/Ht4jCab.png",
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
+},
+{
+"nome": "Canal 38",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/co7TCWC.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8503/LVW8503_d0V5oduFlK/playlist.m3u8"
 },
 {
 "nome": "Canal Metropolitano de Noticias",
@@ -48,6 +54,12 @@
 "cat": "Notícias",
 "logo": "https://upload.wikimedia.org/wikipedia/commons/4/42/SBT_News_2025.svg",
 "url": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8"
+},
+{
+"nome": "STZ TV",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/SeF2I7q.png",
+"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-12952/playlist/playlist.m3u8"
 },
 {
 "nome": "TCM 10 HD",
@@ -132,6 +144,12 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/jl39ula.png",
 "url": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8"
+},
+{
+"nome": "Boas Novas",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/ZqhizdP.png",
+"url": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8"
 },
 {
 "nome": "Catve FM",
@@ -266,22 +284,10 @@
 "url": "https://video01.logicahost.com.br/websptv/websptv/playlist.m3u8"
 },
 {
-"nome": "Rede TV! Mais",
-"cat": "Variedades",
-"logo": "https://i.ibb.co/F0Tm2WP/2103f4c07b851d64b4c96955765a9a95.png",
-"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8"
-},
-{
 "nome": "RedeTV! Parana",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/D8R0Af4.png",
 "url": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8"
-},
-{
-"nome": "SBT Interior",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/IkZfa4j.png",
-"url": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8"
 },
 {
 "nome": "SBT Nacional",
@@ -332,6 +338,12 @@
 "url": "https://stmv5.samcast.com.br/wagner7919/wagner7919/playlist.m3u8"
 },
 {
+"nome": "TV Arapuan",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/3395A2h.png",
+"url": "https://5b7f3c45ab7c2.streamlock.net/arapuan/ngrp:arapuan_all/playlist.m3u8"
+},
+{
 "nome": "TV BRICS Portuguese",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/vLpm8tN.png",
@@ -366,12 +378,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/8PErNBT.png",
 "url": "https://video02.logicahost.com.br/tvguara23/tvguara23/playlist.m3u8"
-},
-{
-"nome": "TV Litoral RN",
-"cat": "Variedades",
-"logo": "https://upload.wikimedia.org/wikipedia/commons/3/3e/TV_LITORAL_RN.jpg",
-"url": "https://5ad482a77183d.streamlock.net/tvnordesteegmail.com/tvnordesteegmail.com/playlist.m3u8"
 },
 {
 "nome": "TV Mais Marica",
@@ -444,6 +450,12 @@
 "cat": "Variedades",
 "logo": "https://latinasat.com.br/logo.png",
 "url": "https://www.latinasat.com.br/hls/live/stream/index.m3u8"
+},
+{
+"nome": "TVNBN",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/zoHBxn1.png",
+"url": "https://cdn.jmvstream.com/w/LVW-8410/LVW8410_uiZOVm6vz1/playlist.m3u8"
 },
 {
 "nome": "UMA TV",
