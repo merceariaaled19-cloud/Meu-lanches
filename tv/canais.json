@@ -1,23 +1,11 @@
 {
-"atualizado": "2026-11-27T10:27",
+"atualizado": "2026-11-27T16:29",
 "canais": [
 {
 "nome": "Amazon Sat",
 "cat": "Amazonas",
 "logo": "https://i.imgur.com/7rjCS5i.png",
 "url": "https://amazonsat.brasilstream.com.br/hls/amazonsat/index.m3u8"
-},
-{
-"nome": "TV A Critica",
-"cat": "Amazonas",
-"logo": "https://i.imgur.com/j51rBro.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-20715/LVW20715_50E3x2MCm2/playlist.m3u8"
-},
-{
-"nome": "Aratu On",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/Ht4jCab.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
 },
 {
 "nome": "Canal 38",
@@ -54,12 +42,6 @@
 "cat": "Notícias",
 "logo": "https://upload.wikimedia.org/wikipedia/commons/4/42/SBT_News_2025.svg",
 "url": "https://dai.google.com/linear/hls/event/1XSOdtQ0SH2G8OEmEfGgjQ/master.m3u8"
-},
-{
-"nome": "STZ TV",
-"cat": "Notícias",
-"logo": "https://i.imgur.com/SeF2I7q.png",
-"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-12952/playlist/playlist.m3u8"
 },
 {
 "nome": "TCM 10 HD",
@@ -146,12 +128,6 @@
 "url": "https://video05.logicahost.com.br/ararunatv/ararunatv/playlist.m3u8"
 },
 {
-"nome": "Boas Novas",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/ZqhizdP.png",
-"url": "https://cdn.jmvstream.com/w/LVW-9375/LVW9375_6i0wPBCHYc/playlist.m3u8"
-},
-{
 "nome": "Catve FM",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/w89yw36.png",
@@ -210,12 +186,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/1eHNe91.png",
 "url": "https://stmv1.srvsite.com/ely/ely/playlist.m3u8"
-},
-{
-"nome": "EUTV",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/8PxpamC.png",
-"url": "https://cdn.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
 },
 {
 "nome": "Fala Litoral",
@@ -284,16 +254,22 @@
 "url": "https://video01.logicahost.com.br/websptv/websptv/playlist.m3u8"
 },
 {
+"nome": "Rede TV! Mais",
+"cat": "Variedades",
+"logo": "https://i.ibb.co/F0Tm2WP/2103f4c07b851d64b4c96955765a9a95.png",
+"url": "https://cdn.live.br1.jmvstream.com/webtv/AVJ-15235/playlist/playlist.m3u8"
+},
+{
 "nome": "RedeTV! Parana",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/D8R0Af4.png",
 "url": "https://tv01.zas.media:1936/redetvparana/redetvparana/playlist.m3u8"
 },
 {
-"nome": "SBT Nacional",
+"nome": "SBT Interior",
 "cat": "Variedades",
-"logo": "https://i.imgur.com/tc1ALuu.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/chunklist.m3u8"
+"logo": "https://i.imgur.com/IkZfa4j.png",
+"url": "https://cdn.jmvstream.com/w/LVW-10801/LVW10801_Xvg4R0u57n/playlist.m3u8"
 },
 {
 "nome": "SBT Nova Mutum",
@@ -518,12 +494,6 @@
 "url": "https://stmv1.srvif.com/gospelcartoon/gospelcartoon/playlist.m3u8"
 },
 {
-"nome": "Kuriakos Kids",
-"cat": "Infantil",
-"logo": "https://i.imgur.com/SRX6EPY.png",
-"url": "https://w2.manasat.com/kkids/smil:kkids.smil/playlist.m3u8"
-},
-{
 "nome": "Retro Cartoon",
 "cat": "Infantil",
 "logo": "https://i.imgur.com/hIlEfhl.png",
@@ -612,12 +582,6 @@
 "cat": "Religiosos",
 "logo": "",
 "url": "https://strv.painelvox.top/plenitude/plenitude/playlist.m3u8"
-},
-{
-"nome": "Rede Gospel",
-"cat": "Religiosos",
-"logo": "https://i.imgur.com/mttSwgO.png",
-"url": "https://cdn.live.br1.jmvstream.com/w/LVW-8719/LVW8719_AcLVAxWy5J/playlist.m3u8"
 },
 {
 "nome": "RIT TV",
