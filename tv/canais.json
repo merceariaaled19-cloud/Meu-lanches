@@ -1,5 +1,5 @@
 {
-"atualizado": "2026-11-27T22:22",
+"atualizado": "2026-11-28T04:26",
 "canais": [
 {
 "nome": "Amazon Sat",
@@ -12,6 +12,12 @@
 "cat": "Amazonas",
 "logo": "https://i.imgur.com/j51rBro.png",
 "url": "https://cdn.live.br1.jmvstream.com/w/LVW-20715/LVW20715_50E3x2MCm2/playlist.m3u8"
+},
+{
+"nome": "Aratu On",
+"cat": "Notícias",
+"logo": "https://i.imgur.com/Ht4jCab.png",
+"url": "https://cdn.live.br1.jmvstream.com/w/LVW-9359/LVW9359_XSyReL0QVf/playlist.m3u8"
 },
 {
 "nome": "Canal 38",
@@ -78,12 +84,6 @@
 "cat": "Notícias",
 "logo": "https://i.imgur.com/J2EAZPS.png",
 "url": "https://5ad482a77183d.streamlock.net/rodrigotvbrusque.com.br/5d880199c902eb4a1e8df00d/playlist.m3u8"
-},
-{
-"nome": "TV CAJUI WEB",
-"cat": "Notícias",
-"logo": "https://github.com/user-attachments/assets/e7af691d-0d31-4576-a1eb-bcf85507c891",
-"url": "https://cdn.live.br1.jmvstream.com/webtv/tvcajui/playlist/playlist.m3u8"
 },
 {
 "nome": "TV Camara (Brazil)",
@@ -248,6 +248,12 @@
 "url": "https://video04.logicahost.com.br/petloverstv/petloverstv/playlist.m3u8"
 },
 {
+"nome": "RBATV",
+"cat": "Variedades",
+"logo": "https://i.imgur.com/ZWFxlU1.png",
+"url": "https://cdn.live.br1.jmvstream.com/w/LVW-15748/LVW15748_Yed7yzLuRC/playlist.m3u8"
+},
+{
 "nome": "Rede Brasil",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/TXJKwzZ.png",
@@ -344,6 +350,12 @@
 "url": "https://porbrics.mediacdn.ru/cdn/brics/portuguese/playlist.m3u8"
 },
 {
+"nome": "TV CAJUI WEB",
+"cat": "Variedades",
+"logo": "https://github.com/user-attachments/assets/e7af691d-0d31-4576-a1eb-bcf85507c891",
+"url": "https://cdn.live.br1.jmvstream.com/webtv/tvcajui/playlist/playlist.m3u8"
+},
+{
 "nome": "TV Clube",
 "cat": "Variedades",
 "logo": "https://i.imgur.com/CpXjcyE.png",
@@ -408,12 +420,6 @@
 "cat": "Variedades",
 "logo": "https://i.imgur.com/f34CQIG.png",
 "url": "https://stmv1.voxtvhd.com.br/9030/9030/playlist.m3u8"
-},
-{
-"nome": "TV Sul Bahia",
-"cat": "Variedades",
-"logo": "https://i.imgur.com/qM6nMWm.png",
-"url": "https://live.cdn.upx.com/00046/myStream.sdp/playlist.m3u8"
 },
 {
 "nome": "TV Vila Real",
@@ -504,6 +510,12 @@
 "cat": "Filmes e Séries",
 "logo": "https://i.imgur.com/Ff5mj0o.png",
 "url": "https://stmv1.srvif.com/tvserie/tvserie/playlist.m3u8"
+},
+{
+"nome": "Cartoon Network Latin America Brazil",
+"cat": "Infantil",
+"logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Cartoon_Network_2010_logo.svg/960px-Cartoon_Network_2010_logo.svg.png",
+"url": "https://cdn-1.netplaygo.com.br/CARTOON_NETWORK/tracks-v1a1/mono.m3u8"
 },
 {
 "nome": "Gospel Cartoon",
